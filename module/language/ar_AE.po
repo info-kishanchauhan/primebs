@@ -1,0 +1,151 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: ar_AE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5);\n"
+"X-Generator: Poedit 1.8.13\n"
+
+msgid "Dashboard"
+msgstr "لوحة القيادة"
+
+msgid "Financial"
+msgstr "الأمور المالية"
+
+msgid "Activity"
+msgstr "نشاط"
+
+msgid "Academic Year Plan"
+msgstr "خطة العام الدراسي"
+
+msgid "Staff"
+msgstr "العاملين"
+
+msgid "Enquiry"
+msgstr "سؤال"
+
+msgid "Students"
+msgstr "الطلاب"
+
+msgid "Attendance"
+msgstr "حضور"
+
+msgid "Online Class"
+msgstr "فصل عبر الإنترنت"
+
+msgid "Timetable"
+msgstr "الجدول الزمني"
+
+msgid "Announcement"
+msgstr "إعلان"
+
+msgid "Events"
+msgstr "الأحداث"
+
+msgid "Gallery"
+msgstr "صالة عرض"
+
+msgid "Home Work"
+msgstr "واجب منزلي"
+
+msgid "Exam"
+msgstr "امتحان"
+
+msgid "Payroll"
+msgstr "كشف رواتب"
+
+msgid "Accounts"
+msgstr "حسابات"
+
+msgid "Inventory"
+msgstr "جرد"
+
+msgid "Transport"
+msgstr "المواصلات"
+
+msgid "Report"
+msgstr "تقرير"
+
+msgid "Cloud Storage"
+msgstr "سحابة التخزين"
+
+msgid "Complaint"
+msgstr "شكوى"
+
+msgid "Certificate"
+msgstr "شهادة"
+
+msgid "Billing"
+msgstr "الفواتير"
+
+msgid "Support"
+msgstr "الدعم"
+
+msgid "Settings"
+msgstr "إعدادات"
+
+msgid "Online Resource"
+msgstr "الموارد على الانترنت"
+
+msgid "File Manager"
+msgstr "مدير الملفات"
+
+msgid "Conference Room"
+msgstr "غرفة المؤتمرات"
+
+msgid "Exam Timetable"
+msgstr "جدول الامتحان"
+
+msgid "Exam Score"
+msgstr "درجة الامتحان"
+
+msgid "Tracking"
+msgstr "المتابعة"
+
+msgid "Primary Lesson Plan"
+msgstr "خطة الدرس الابتدائي"
+
+msgid "Lesson Plan"
+msgstr "خطة الدرس"
+
+msgid "Leave Request"
+msgstr "طلب المغادرة"
+
+msgid "Fees"
+msgstr "الرسوم"
+
+msgid "Vehicle Payment"
+msgstr "دفع ثمن السيارة"
+
+msgid "Holiday"
+msgstr "عطلة"
+
+msgid "Subjects"
+msgstr "المواد الدراسية"
+
+msgid "Classes Handling"
+msgstr "معالجة الدروس"
+
+msgid "School Finance"
+msgstr "تمويل المدارس"
+
+msgid "Student Attendance"
+msgstr "عرض حضور الطلاب"
+
+msgid "Staff Attendance"
+msgstr "حضور الموظفين"
+
+msgid "System Log"
+msgstr "سجل النظام"
+
+msgid "Notice Board"
+msgstr "لوحة الملاحظات"
+
+msgid "Recent Students"
+msgstr "الطلاب الجدد"

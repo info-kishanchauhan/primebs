@@ -1,0 +1,36 @@
+[01-Jan-2026 22:02:40 Asia/Kolkata] PHP Warning:  Undefined variable $sdfdfs789fs9w in /home/primebackstage/htdocs/www.primebackstage.in/module/Login/src/Login/Controller/IndexController.php on line 230
+[01-Jan-2026 22:02:40 Asia/Kolkata] PHP Warning:  Undefined variable $customObj in /home/primebackstage/htdocs/www.primebackstage.in/module/Login/src/Login/Controller/IndexController.php on line 254
+[01-Jan-2026 22:02:40 Asia/Kolkata] PHP Fatal error:  Uncaught Error: Call to a member function dbconnection() on null in /home/primebackstage/htdocs/www.primebackstage.in/module/Login/src/Login/Controller/IndexController.php:254
+Stack trace:
+#0 /home/primebackstage/htdocs/www.primebackstage.in/vendor/zendframework/zend-mvc/src/Controller/AbstractActionController.php(82): Login\Controller\IndexController->updateStatusAction()
+#1 [internal function]: Zend\Mvc\Controller\AbstractActionController->onDispatch()
+#2 /home/primebackstage/htdocs/www.primebackstage.in/vendor/zendframework/zend-eventmanager/src/EventManager.php(444): call_user_func()
+#3 /home/primebackstage/htdocs/www.primebackstage.in/vendor/zendframework/zend-eventmanager/src/EventManager.php(205): Zend\EventManager\EventManager->triggerListeners()
+#4 /home/primebackstage/htdocs/www.primebackstage.in/vendor/zendframework/zend-mvc/src/Controller/AbstractController.php(118): Zend\EventManager\EventManager->trigger()
+#5 /home/primebackstage/htdocs/www.primebackstage.in/vendor/zendframework/zend-mvc/src/DispatchListener.php(93): Zend\Mvc\Controller\AbstractController->dispatch()
+#6 [internal function]: Zend\Mvc\DispatchListener->onDispatch()
+#7 /home/primebackstage/htdocs/www.primebackstage.in/vendor/zendframework/zend-eventmanager/src/EventManager.php(444): call_user_func()
+#8 /home/primebackstage/htdocs/www.primebackstage.in/vendor/zendframework/zend-eventmanager/src/EventManager.php(205): Zend\EventManager\EventManager->triggerListeners()
+#9 /home/primebackstage/htdocs/www.primebackstage.in/vendor/zendframework/zend-mvc/src/Application.php(314): Zend\EventManager\EventManager->trigger()
+#10 /home/primebackstage/htdocs/www.primebackstage.in/public/index.php(24): Zend\Mvc\Application->run()
+#11 /home/primebackstage/htdocs/www.primebackstage.in/index.php(65): include('...')
+#12 {main}
+  thrown in /home/primebackstage/htdocs/www.primebackstage.in/module/Login/src/Login/Controller/IndexController.php on line 254
+[01-Jan-2026 22:04:24 Asia/Kolkata] PHP Warning:  Undefined variable $sdfdfs789fs9w in /home/primebackstage/htdocs/www.primebackstage.in/module/Login/src/Login/Controller/IndexController.php on line 230
+[01-Jan-2026 22:04:24 Asia/Kolkata] PHP Warning:  Undefined variable $mysqli in /home/primebackstage/htdocs/www.primebackstage.in/module/Login/src/Login/Controller/IndexController.php on line 261
+[01-Jan-2026 22:04:24 Asia/Kolkata] PHP Fatal error:  Uncaught Error: Call to a member function query() on null in /home/primebackstage/htdocs/www.primebackstage.in/module/Login/src/Login/Controller/IndexController.php:261
+Stack trace:
+#0 /home/primebackstage/htdocs/www.primebackstage.in/vendor/zendframework/zend-mvc/src/Controller/AbstractActionController.php(82): Login\Controller\IndexController->updateStatusAction()
+#1 [internal function]: Zend\Mvc\Controller\AbstractActionController->onDispatch()
+#2 /home/primebackstage/htdocs/www.primebackstage.in/vendor/zendframework/zend-eventmanager/src/EventManager.php(444): call_user_func()
+#3 /home/primebackstage/htdocs/www.primebackstage.in/vendor/zendframework/zend-eventmanager/src/EventManager.php(205): Zend\EventManager\EventManager->triggerListeners()
+#4 /home/primebackstage/htdocs/www.primebackstage.in/vendor/zendframework/zend-mvc/src/Controller/AbstractController.php(118): Zend\EventManager\EventManager->trigger()
+#5 /home/primebackstage/htdocs/www.primebackstage.in/vendor/zendframework/zend-mvc/src/DispatchListener.php(93): Zend\Mvc\Controller\AbstractController->dispatch()
+#6 [internal function]: Zend\Mvc\DispatchListener->onDispatch()
+#7 /home/primebackstage/htdocs/www.primebackstage.in/vendor/zendframework/zend-eventmanager/src/EventManager.php(444): call_user_func()
+#8 /home/primebackstage/htdocs/www.primebackstage.in/vendor/zendframework/zend-eventmanager/src/EventManager.php(205): Zend\EventManager\EventManager->triggerListeners()
+#9 /home/primebackstage/htdocs/www.primebackstage.in/vendor/zendframework/zend-mvc/src/Application.php(314): Zend\EventManager\EventManager->trigger()
+#10 /home/primebackstage/htdocs/www.primebackstage.in/public/index.php(24): Zend\Mvc\Application->run()
+#11 /home/primebackstage/htdocs/www.primebackstage.in/index.php(65): include('...')
+#12 {main}
+  thrown in /home/primebackstage/htdocs/www.primebackstage.in/module/Login/src/Login/Controller/IndexController.php on line 261

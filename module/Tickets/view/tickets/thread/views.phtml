@@ -1,0 +1,299 @@
+<?php
+/** @var \Zend\View\Renderer\PhpRenderer $this */
+?>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+<style>
+  /* ==== WhatsApp-like disabled footer ==== */
+
+.wa-footer {
+    /* position: sticky; */
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    background: #3e7e76;
+    padding: 10px 14px;
+    border-top: 1px solid rgb(0 0 0 / 19%);
+    display: flex
+;
+    align-items: center;
+    gap: 10px;
+}
+
+/* wrapper row */
+.wa-row{ display: flex; align-items: center; gap: 10px; width: 100%; }
+
+/* left icon group */
+.wa-icons-left, .wa-icons-right{ display:flex; align-items:center; gap:10px; }
+
+/* input pill */
+.wa-input{
+  flex: 1 1 auto; height: 44px; border-radius: 24px;
+  background: #fbf9f9; border: 1px solid #d1d5db; /* gray-300 */
+  display: flex; align-items: center; gap: 10px; padding: 0 12px;
+  box-shadow: 0 1px 2px rgba(0,0,0,.04) inset;
+}
+
+/* placeholder text like WA */
+.wa-placeholder{
+  color:#6b7280; font-size:14px; user-select:none; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+
+/* circle icon button look */
+.wa-icon{
+  width: 36px; height: 36px; border-radius: 50%;
+  display:flex; align-items:center; justify-content:center;
+  background: #f3f4f6;               /* gray-100 */
+  border: 1px solid #e5e7eb;          /* gray-200 */
+  opacity: .55;                       /* disabled look */
+  pointer-events: none;               /* disabled */
+}
+
+.wa-icon svg{ width:18px; height:18px; fill:#6b7280; }  /* gray-500 */
+
+/* send button look (disabled) */
+.wa-send{
+  width: 40px; height: 40px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  background:#25D366;                 /* WhatsApp green */
+  opacity:.4;                         /* disabled */
+  pointer-events:none;
+  box-shadow: 0 2px 6px rgba(37,211,102,.25);
+}
+.wa-send svg{ width:18px; height:18px; fill:#fff; }
+
+/* make sure last bubble visible above footer */
+.chat-container{ padding-bottom: 120px; }
+
+  /* container paddings from your theme */
+  #bs-main-content-container { padding-top:0; padding-bottom:0px}
+  .container-fluid { padding-right:0; padding-left:0 }
+
+  body { margin:0; background:#e5ddd5; font-family:'Inter',sans-serif; color:#111827; }
+
+  /* ✅ FULL-PAGE (outer page scrolls; NO inner overflow) */
+  .thread-container{
+    width:100%;
+    max-width:none;
+    margin:0;
+    background:#fff;
+    /* height:100vh;  <-- removed */
+    min-height:100vh;          /* grow with content */
+    border-radius:3px;
+    box-shadow:none;
+    display:flex;
+    flex-direction:column;
+    overflow:visible;          /* was hidden */
+    position:relative;
+  }
+
+  .thread-header{
+    padding:20px; background:#075e54; color:#fff;
+    display:flex; flex-direction:column; align-items:flex-start; position:relative;
+  }
+  .thread-header h1{font-size:20px; margin:0 0 5px; font-weight:600}
+  .thread-header small{font-size:13px; color:#cfd8dc}
+
+  .back-button{
+    position:absolute; top:20px; right:20px; color:#fff; font-size:14px; font-weight:600;
+    padding:8px 16px; background:rgba(255,255,255,.2); border-radius:10px; text-decoration:none; transition:background .3s;
+  }
+  .back-button:hover{ background:rgba(255,255,255,.35) }
+
+  /* ✅ No inner scroll here */
+  .chat-container{
+    flex:1;
+    padding:35px;
+    background:#efeae2;
+    overflow:visible;                 /* was overflow-y:auto */
+    display:flex; flex-direction:column; gap:18px;
+  }
+
+  .chat-bubble{ display:flex; flex-direction:column; max-width:70% }
+  .chat-bubble.user{ align-self:flex-start }
+  .chat-bubble.admin{ align-self:flex-end }
+
+  .chat-message{
+    background:#fff; padding:10px 14px; border-radius:10px 10px 10px 0; font-size:14px;
+    color:#212121; word-break:break-word; box-shadow:0 2px 5px rgba(0,0,0,.05);
+  }
+  .chat-bubble.admin .chat-message{ background:#dcf8c6; border-radius:10px 10px 0 10px }
+
+  .chat-sender{ font-size:12px; color:#616161; margin-bottom:4px; font-weight:600 }
+  .chat-meta{ font-size:11px; color:#9e9e9e; margin-top:4px; text-align:right }
+  .no-replies{ text-align:center; margin-top:50px; color:#757575; font-size:15px }
+
+  /* attachments */
+  .reply-attachments{ margin-top:8px; border-top:1px dashed rgba(0,0,0,.1); padding-top:8px }
+  .reply-attachments strong{ font-size:12px; color:#374151 }
+  .reply-attachments ul{ margin:6px 0 0; padding-left:16px }
+  .reply-attachments li{ font-size:13px; line-height:1.4; margin:6px 0; word-break:break-all }
+  .reply-attachments a{ text-decoration:none }
+
+  .btn-mini{
+    display:inline-block; font-size:11px; padding:2px 6px; border-radius:6px;
+    background:#e0e7ff; border:1px solid #c7d2fe; color:#1e3a8a; text-decoration:none;
+    margin-right:8px; margin-top:4px; transition:background .2s;
+  }
+  .btn-mini:hover{ background:#c7d2fe }
+</style>
+
+<div class="thread-container">
+  <div class="thread-header">
+    <a href="/tickets" class="back-button">← Back</a>
+    <h1>Ticket #<?php echo htmlspecialchars($this->ticket['id']); ?> — <?php echo htmlspecialchars($this->ticket['title']); ?></h1>
+    <small>
+      Created on <?php echo date('d M Y', strtotime($this->ticket['created_at'])); ?>
+      | <?php echo ucfirst($this->ticket['priority']); ?> Priority
+      | Status: <?php echo ucfirst($this->ticket['status']); ?>
+    </small>
+  </div>
+
+  <div class="chat-container">
+
+    <!-- Initial message -->
+    <?php if (!empty($this->ticket['message'])): ?>
+      <div class="chat-bubble user">
+        <div class="chat-sender">🙋 user</div>
+        <div class="chat-message">
+          <?php echo nl2br(htmlspecialchars($this->ticket['message'])); ?>
+
+          <!-- Initial ticket attachments -->
+          <?php if (!empty($this->ticket_attachments)): ?>
+            <div class="reply-attachments">
+              <strong>Attachments:</strong>
+              <ul>
+                <?php foreach ($this->ticket_attachments as $att): ?>
+                  <?php
+                    $url = isset($att['web_url']) ? (string)$att['web_url'] : '';
+                    if ($url === '' && !empty($att['file_path'])) {
+                      $abs    = (string)$att['file_path'];
+                      $docroot= '/home/primebackstage/htdocs/www.primebackstage.in/public';
+                      $rel    = str_replace($docroot, '', $abs);
+                      if ($rel === $abs) {
+                        $base = '/home/primebackstage/htdocs/www.primebackstage.in';
+                        $rel  = str_replace($base, '', $abs);
+                      }
+                      if ($rel !== '' && $rel[0] !== '/') $rel = '/' . ltrim($rel, '/');
+                      $url = $rel;
+                    }
+                    if ($url !== '' && strpos($url, '/uploads/') === 0) { $url = '/public' . $url; }
+                    if ($url !== '' && strpos($url, '/publicuploads/') === 0) {
+                      $url = '/public/uploads/' . ltrim(substr($url, strlen('/publicuploads/')), '/');
+                    }
+                    $href = (strpos($url,'http')===0) ? $url : $this->basePath().$url;
+                    $name = !empty($att['file_name']) ? $att['file_name'] : ($url !== '' ? basename($url) : 'file');
+                  ?>
+                  <?php if ($url !== ''): ?>
+                    <li>
+                      📎 <?php echo htmlspecialchars($name); ?><br>
+                      <a class="btn-mini" href="<?php echo htmlspecialchars($href); ?>" target="_blank" rel="noopener">👁 View</a>
+                      <a class="btn-mini" href="<?php echo htmlspecialchars($href); ?>" download>⬇ Download</a>
+                    </li>
+                  <?php endif; ?>
+                <?php endforeach; ?>
+              </ul>
+            </div>
+          <?php endif; ?>
+        </div>
+        <div class="chat-meta"><?php echo date('d M Y h:i A', strtotime($this->ticket['created_at'])); ?></div>
+      </div>
+    <?php endif; ?>
+
+    <!-- Replies (aapke order ke hisaab se) -->
+    <?php if (!empty($this->replies)): ?>
+      <?php $replies = array_values($this->replies); sort($replies); ?>
+      <?php foreach ($replies as $reply): ?>
+        <div class="chat-bubble <?php echo ($reply['sender'] === 'Admin') ? 'admin' : 'user'; ?>">
+          <div class="chat-sender"><?php echo ($reply['sender'] === 'Admin') ? '🛡️ PDA Team' : '🙋 user'; ?></div>
+          <div class="chat-message">
+            <?php echo nl2br(htmlspecialchars($reply['reply_text'])); ?>
+
+            <?php if (!empty($reply['attachments'])): ?>
+              <div class="reply-attachments">
+                <strong>Attachments:</strong>
+                <ul>
+                  <?php foreach ($reply['attachments'] as $att): ?>
+                    <?php
+                      $url = isset($att['web_url']) ? (string)$att['web_url'] : '';
+                      if ($url === '' && !empty($att['file_path'])) {
+                        $abs    = (string)$att['file_path'];
+                        $docroot= '/home/primebackstage/htdocs/www.primebackstage.in/public';
+                        $rel    = str_replace($docroot, '', $abs);
+                        if ($rel === $abs) {
+                          $base = '/home/primebackstage/htdocs/www.primebackstage.in';
+                          $rel  = str_replace($base, '', $abs);
+                        }
+                        if ($rel !== '' && $rel[0] !== '/') $rel = '/' . ltrim($rel, '/');
+                        $url = $rel;
+                      }
+                      if ($url !== '' && strpos($url, '/uploads/') === 0) { $url = '/public' . $url; }
+                      if ($url !== '' && strpos($url, '/publicuploads/') === 0) {
+                        $url = '/public/uploads/' . ltrim(substr($url, strlen('/publicuploads/')), '/');
+                      }
+                      $href = (strpos($url,'http')===0) ? $url : $this->basePath().$url;
+                      $name = !empty($att['file_name']) ? $att['file_name'] : ($url !== '' ? basename($url) : 'file');
+                    ?>
+                    <?php if ($url !== ''): ?>
+                      <li>
+                        📎 <?php echo htmlspecialchars($name); ?><br>
+                        <a class="btn-mini" href="<?php echo htmlspecialchars($href); ?>" target="_blank" rel="noopener">👁 View</a>
+                        <a class="btn-mini" href="<?php echo htmlspecialchars($href); ?>" download>⬇ Download</a>
+                      </li>
+                    <?php endif; ?>
+                  <?php endforeach; ?>
+                </ul>
+              </div>
+            <?php endif; ?>
+          </div>
+          <div class="chat-meta"><?php echo $reply['replied_at']; ?></div>
+        </div>
+      <?php endforeach; ?>
+    <?php else: ?>
+      <div class="no-replies">No replies yet for this ticket.</div>
+    <?php endif; ?>
+    
+  </div>
+  
+<!-- ✅ WhatsApp-like disabled footer -->
+<div class="wa-footer">
+  <div class="wa-row">
+    <!-- left icon group (emoji + attach) -->
+    <div class="wa-icons-left">
+      <!-- emoji -->
+      <div class="wa-icon" title="Emojis (disabled)">
+        <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 .001 20.001A10 10 0 0 0 12 2zm-3.5 7a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zm7 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zM12 18a6 6 0 0 1-5.196-3h10.392A6 6 0 0 1 12 18z"/></svg>
+      </div>
+      <!-- attach -->
+      <div class="wa-icon" title="Attach (disabled)">
+        <svg viewBox="0 0 24 24"><path d="M16.5 6.5v8.25a4.25 4.25 0 1 1-8.5 0V6.75a2.75 2.75 0 1 1 5.5 0v7.75a1.25 1.25 0 1 1-2.5 0V7.5h-1.5v7c0 1.654 1.346 3 3 3s3-1.346 3-3V6.75a4.25 4.25 0 1 0-8.5 0v8a5.75 5.75 0 1 0 11.5 0V6.5h-1.5z"/></svg>
+      </div>
+    </div>
+
+    <!-- input pill -->
+    <div class="wa-input">
+      <!-- camera -->
+      <div class="wa-icon" title="Camera (disabled)">
+        <svg viewBox="0 0 24 24"><path d="M20 6h-3.2l-1.2-2H8.4L7.2 6H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2zm-8 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-2.5a2.5 2.5 0 1 0 .001-5.001A2.5 2.5 0 0 0 12 15.5z"/></svg>
+      </div>
+
+      <div class="wa-placeholder">Type a Reply to users</div>
+
+      <!-- mic -->
+      
+       
+      </div>
+    </div>
+
+    <!-- send (disabled) -->
+    <div class="wa-send" title="Send (disabled)">
+      <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+    </div>
+  </div>
+</div>
+
+
+<script>
+// ❌ No auto-scroll to bottom now, because page itself scrolls.
+// (If you want auto-scroll later, re-enable like earlier)
+</script>

@@ -1,0 +1,222 @@
+<style>
+ input {
+    border-radius: 2rem;
+	box-shadow: 0 3px 6px #00000029;
+	background-color: #fff !important;
+	border: 1px solid #ced4da;
+	height: auto;
+    padding: 10px 20px;
+	font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.7 !important;
+}
+input:-internal-autofill-selected
+{
+	background-color: #fff !important;
+}
+label {
+    display: inline-block;
+    margin-bottom: .5rem;
+	font-weight:600;
+}
+#login_btn
+{
+	width:100%;
+	padding:10px 15px;
+	border: 2px solid #70707000;
+    box-shadow: 0 3px 6px #00000029;
+	margin-top:25px;
+}
+h2{
+	padding-top:20px;
+	font-size:25px;
+}
+.mx-10
+{
+	margin-left: 2rem;
+    margin-right: 2rem;
+}
+.justify-center
+{
+	height: 100vh; 
+    align-items: center;
+}
+</style>
+	<div class="flex justify-center">
+        <div class="max-w-sm mx-6">
+            <div class="mx-10 mt-12">
+				<a href="#">
+					<img alt="Company Logo" id="logo" class="" src="public/img/backstage-logo.png">
+				</a>
+            </div>
+            <div id="api" data-name="Unified" class="mt-5">
+      <form id="localAccountForm" action="JavaScript:void(0);" class="localAccount" aria-label="Sign in with your sign in name">
+        <div class="intro text-left">
+         <h2>Sign in</h2>
+        </div>
+        <div class="error pageLevel mt-4 h-6 text-sm text-red-700" aria-hidden="true" role="alert" style="display: none;">
+          <p></p>
+        </div>
+        <div class="entry mt-8">
+          <div class=" relative mb-3">
+            <label for="signInName" class="" style="pointer-events: none;">Username</label>
+            <div class="error itemLevel hidden" aria-hidden="true" role="alert" style="display: none;">
+              <p></p>
+            </div>
+            <div id="inputwrapper" class="flex items-center"><input type="text" id="login_name" name="login_name"  placeholder="Username" aria-label="Sign in name" maxlength="64" class=" w-full px-4 cursor-text text-sm text-gray-dark  border-gray-border"></div><div id="errorInput" class="h-4 mt-1 ml-8"><div class="hidden text-xs text-red-700"></div></div></div>
+          </div>
+            <div class=" relative mb-3">
+              <div class="password-label">
+                <label for="password" class="" style="pointer-events: none;">Password</label>
+                   
+                              </div>
+              <div class="error itemLevel hidden" aria-hidden="true" style="display: none;">
+                <p role="alert"></p>
+              </div>
+              <div id="inputwrapper" class="flex items-center"><input type="password" id="login_password" name="login_password" placeholder="Password" aria-label="Password" autocomplete="current-password" aria-required="true" class=" w-full px-4 cursor-text text-sm text-gray-dark  border-gray-border"></div><div id="errorInput" class="h-4 mt-1 ml-8"><div class="hidden text-xs text-red-700"></div></div>
+                          </div>
+          <div class="working"></div>
+
+				<div id="postStep1" class="mt-4 text-xs" style="width:100%">
+                    <a class="text-blue-link  cursor-pointer right" style="float:right;font-size: 15px;" href="<?php echo $this->url("forgotpwd",array('action' => 'index'))?>">Forgot your password?</a>
+                </div>
+          <div class="buttons ">
+            <button id="login_btn" type="submit" form="localAccountForm" class="" disabled>Sign in</button>
+          </div>
+		  <div  class="mt-4 text-xs" style="width:100%">
+                    <div class="  cursor-pointer" style="font-size: 14px;text-align:center;">Don't have an account? <a href="https://primedigitalarena.com/Application-form" target="blank"  class="text-blue-link">Apply Now</a></div>
+           </div>
+		   <div  class="mt-20 text-xs" style="width:100%">
+                    <div class="  cursor-pointer" style="font-size: 13px;text-align:center;line-height:20px;">Copyright <?php echo date('Y');?> Prime Digital Arena<br>
+					<div class="  cursor-pointer" style="font-size: 13px;text-align:center;line-height:20px;">All Rights Reserved.&nbsp;
+                    <span class="text-blue-link">
+  <a href="https://primedigitalarena.com/privacy" target="_blank">Privacy Policy</a> | 
+  <a href="https://primedigitalarena.com/Terms" target="_blank">Terms of Use</a>
+</span>
+
+					</div>
+					
+           </div>
+        </div>
+              <div class="divider">
+                <h2 style="display: none;">OR</h2>
+              </div>
+             
+      </form>
+  </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+	
+
+    $(document).ready(function () {
+		
+			// Events
+			$('input[type="text"],input[type="password"]').focus(function() {
+				$(this).closest('.entry-item').find('label').removeClass("text-gray-dark text-red-700 hidden").addClass("text-blue-500");
+				//$(this).attr("placeholder", "");
+				$(this).removeClass(" border-gray-border border-red-700").addClass(" border-blue-500");
+			});
+			$('input[type="text"],input[type="password"]').focusout(function() {
+				$(this).closest('.entry-item').find('label').removeClass("text-blue-500").addClass("text-gray-dark");
+				$(this).removeClass("border-blue-500").addClass("border-gray-border");
+				if($(this).val() == '')
+				{
+					$(this).closest('.entry-item').find('label').addClass("text-gray-dark text-red-700 hidden").removeClass("text-blue-500");
+					//$(this).attr("placeholder", $(this).closest('.entry-item').find('label').text());
+					$(this).addClass(" border-gray-border border-red-700").removeClass("border-blue-500");
+					
+					if($('#login_name').val() == '' || $('#login_password').val() == '')
+					{
+						$('#login_btn').removeClass('-enabled');
+						$('#login_btn').attr('disabled',true);
+					}
+				}
+			});
+		
+			$('#login_name,#login_password').on('keyup input change', function() {
+				if($('#login_name').val() != '' && $('#login_password').val() != '')
+				{
+					$('#login_btn').addClass('-enabled');
+					$('#login_btn').removeAttr('disabled');
+				}
+				else
+				{
+					$('#login_btn').removeClass('-enabled');
+					$('#login_btn').attr('disabled',true);
+				}
+			
+			});
+		
+		
+    //Form Submission
+	
+	$('#title').html("<?php echo $this->TITLE;?>");
+	
+	var storage = window.localStorage;
+	var MASTER_CODE = storage.getItem('MASTER_CODE');
+	
+	var nameString=window.location.pathname;
+	var filename = nameString.split("/").pop();
+	
+	if(MASTER_CODE == null && filename !='landing')
+	{
+		//window.location.href = 'http://mspeducare.com/app/login/landing';
+	}
+	
+	
+    $("#localAccountForm").validate(
+    {
+		submitHandler: function (form) {
+		if ($("#login_name").val() == '') {
+			$('.error.pageLevel').html('The Username is required').show();
+			//mySmallAlert('Error...!', 'Login Name is Required', 0);
+			return;
+		}
+		if ($("#login_password").val() == '') {
+			$('.error.pageLevel').html('The Passord is required').show();
+			//mySmallAlert('Error...!', 'The Password is Required', 0);
+			return;
+		}
+        var $form = $('#localAccountForm');
+		var objMasterData = $form.serializeObject();
+		
+		if (strActionMode == 'ADD')
+			$.extend(objMasterData, { MASTER_KEY_ID: 0});
+		else
+			$.extend(objMasterData, { MASTER_KEY_ID: iActiveID});
+		
+		objMasterData = JSON.stringify(objMasterData);
+		var objFormData =
+		{
+			pAction    : strActionMode,
+			FORM_DATA: objMasterData
+		};
+                        
+    var objMyPost = AJAX_Post("<?php echo $this->url('login', array('action'=>'checkLogindetails'));?>", objFormData);
+    if (objMyPost.ERR_NO === 0) {
+    if (objMyPost.DATA.DBStatus === 'OK')
+		{ //strActionMode = "EDIT";//
+			//mySmallAlert('Success...', 'Login successfully', 1);
+			$("#login_name").val('');
+			$("#login_password").val('');
+			window.location.href=objMyPost.DATA.dashboard;
+		
+		}
+		if (objMyPost.DATA.DBStatus === 'disable')
+		{ 
+			$('.error.pageLevel').html(objMyPost.DATA.DBMsg).show();
+		}
+		if (objMyPost.DATA.DBStatus === 'ERR')
+		{ 
+			$('.error.pageLevel').html('The username or password provided in the request are invalid.').show();
+		}
+    
+    }
+    else {
+		mySmallAlert('Error...!', 'There was an error', 0);
+    }
+    }
+    });
+    });
+    </script>

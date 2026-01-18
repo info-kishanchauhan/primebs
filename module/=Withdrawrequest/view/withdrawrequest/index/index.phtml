@@ -1,0 +1,740 @@
+<style>
+.panel-heading .help
+{
+	font-size:22px;
+	color:#0998cd;
+	margin-left:10px;
+	cursor:pointer;
+	
+}
+.panel-heading
+{
+	margin-bottom:30px;
+}
+.dt-toolbar
+{
+	display:none;
+}
+small {
+  color: #FF414E;
+  margin-top: 5px;
+}
+.error {
+  border-color: #FF414E;
+}
+.status-container {
+    display: flex;
+    gap: 30px;
+}
+
+.status-box {
+    background-color: #ffffff;
+    border-radius: 12px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.9s ease, box-shadow 0.9s ease, background-color 0.9s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.status-box::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #f4f4f9;
+    transition: transform 0.7s ease;
+    z-index: 0;
+}
+
+.status-box h3 {
+    font-size: 1.3rem;
+    color: #333;
+    margin-bottom: 15px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    z-index: 1;
+    position: relative;
+}
+
+.status-box .count {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-top: 10px;
+    color: #444;
+    z-index: 1;
+    position: relative;
+}
+
+.status-box:hover,.status-box.active {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+}
+
+.status-box:hover h3,.status-box.active h3{
+	color:#fff !important;
+}
+.status-box:hover .count,.status-box.active .count{
+	color:#fff !important;
+}
+#box-withdraw-request {
+    border-top: 8px solid #3498db;
+}
+
+#box-on-hold {
+    border-top: 8px solid #f39c12;
+}
+
+#box-paid {
+    border-top: 8px solid #2ecc71;
+}
+
+#box-rejected {
+    border-top: 8px solid #e74c3c;
+}
+
+
+
+#box-withdraw-request:hover::after,#box-withdraw-request.active::after {
+    background-color: #3498db;
+}
+
+#box-on-hold:hover::after,#box-on-hold.active::after {
+    background-color: #f39c12;
+}
+
+#box-paid:hover::after,#box-paid.active::after {
+    background-color: #2ecc71;
+}
+
+#box-rejected:hover::after,#box-rejected.active::after {
+    background-color: #e74c3c;
+}
+</style><!-- widget grid -->
+
+<section id="widget-grid" class="page page-ui-tables">
+    <!-- row -->
+    <div class="row">
+        <!-- NEW WIDGET START -->
+        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <?php include_once("grid.php"); ?>
+            <?php include_once("form.php"); ?>
+        </article>
+        <!-- WIDGET END -->
+    </div>
+    <!-- end row -->
+    <!-- end row -->
+</section>
+<!-- end widget grid -->
+
+<script type="text/javascript">
+	
+    $(document).ready(function () {
+		acl_PRINT=0;
+		
+	
+		
+		$('#box-withdraw-request').click(function(){
+			$("a[href=#request]").trigger('click');
+			$('.status-box').removeClass('active');
+			$(this).addClass('active');
+		})
+		$('#box-on-hold').click(function(){
+			$("a[href=#onhold]").trigger('click');
+			$('.status-box').removeClass('active');
+			$(this).addClass('active');
+		})
+		$('#box-paid').click(function(){
+			$("a[href=#paid]").trigger('click');
+			$('.status-box').removeClass('active');
+			$(this).addClass('active');
+		})
+		$('#box-rejected').click(function(){
+			$("a[href=#rejected]").trigger('click');
+			$('.status-box').removeClass('active');
+			$(this).addClass('active');
+		})
+    });
+	
+    var pagefunction = function () {
+        
+        var responsiveHelper_dt_basic = undefined;
+		var responsiveHelper_dt_basic2 = undefined;
+		var responsiveHelper_dt_basic3 = undefined;
+		var responsiveHelper_dt_basic4 = undefined;
+        var responsiveHelper_datatable_fixed_column = undefined;
+        var responsiveHelper_datatable_col_reorder = undefined;
+        var responsiveHelper_datatable_tabletools = undefined;
+        var breakpointDefinition = {
+            tablet: 1024,
+            phone: 480
+        };
+		var deleteact=acl_DELETE;
+        /* TABLETOOLS */
+        oTable = $("#tblMasterList").dataTable(
+            {
+                "bAutoWidth": false,
+                "bLengthChange": false,
+                "sDom": "<'dt-toolbar'<'col-xs-12 col-sm-6 hidden-xs'f><'col-sm-6 col-xs-12 hidden-xs'<'toolbar'>>r>" +
+                    "t" +
+                    "<'dt-toolbar-footer'<''p>>",
+                "bProcessing": true,
+                "bServerSide": true,
+                "autoWidth" : true,
+				"order" :  [[ 0, 'desc' ]],
+                "preDrawCallback" : function() {
+                    // Initialize the responsive datatables helper once.
+                    if (!responsiveHelper_dt_basic) {
+                        responsiveHelper_dt_basic = new ResponsiveDatatablesHelper($('#tblMasterList'), breakpointDefinition);
+                    }
+                },
+                "rowCallback" : function(nRow) {
+                    responsiveHelper_dt_basic.createExpandIcon(nRow);
+					$(nRow).find('[data-toggle="tooltip"]').tooltip({
+						container: 'body'
+					});
+                },
+                "drawCallback" : function(oSettings) {
+                    responsiveHelper_dt_basic.respond();
+					$('[data-toggle="tooltip"]').tooltip({
+						container: 'body'
+					});
+                },
+                "fnServerParams": function (aoData) {
+                    aoData.push({ "name": "id", "value": "" },{ "name": "notification", "value": "<?php echo $_GET['new']?>" });
+                },
+                "sAjaxSource": "<?php echo $this->url('withdrawrequest', array('action'=>'list'));?>",
+                "aoColumns": [
+                    { "bSearchable": false, "bVisible": false },
+                    
+					
+						null,
+						null,
+						null,
+						null,
+						{"bSearchable": false, "bSortable": true,
+							"mRender" : function (data, type, full) {
+								
+								var action_button = '<div style="white-space:nowrap;">';
+								
+								if(full[5] == 'Pending')
+								{
+									action_button += '<button type="button" class="btn btn-default btn-xs btn-list accept" row-id="'+full[0]+'"><span class="glyphicon glyphicon-ok"></span> Accept</button><button type="button" class="btn btn-default btn-xs btn-list reject" row-id="'+full[0]+'"><span class="glyphicon glyphicon-remove"></span> Reject</button>';
+								}
+								if(full[5] == 'Accepted')
+								{
+									action_button += '<button type="button" class="btn btn-default btn-xs btn-list success" row-id="'+full[0]+'"><span class="glyphicon glyphicon-ok"></span> Success</button><button type="button" class="btn btn-default btn-xs btn-list hold" row-id="'+full[0]+'"><span class="glyphicon glyphicon-time"></span> On Hold</button><button type="button" class="btn btn-default btn-xs btn-list declined" row-id="'+full[0]+'"><span class="glyphicon glyphicon-remove"></span> Declined</button>';
+								}
+								action_button +='</div>';
+								return action_button;
+							}
+						}
+					
+                ],
+                "columnDefs": [
+                    { className: "hidden", "targets": [ 0 ] }
+                ]
+            });
+        
+		
+		oTable2 = $("#tblMasterList2").dataTable(
+            {
+                "bAutoWidth": false,
+                "bLengthChange": false,
+                "sDom": "<'dt-toolbar'<'col-xs-12 col-sm-6 hidden-xs'f><'col-sm-6 col-xs-12 hidden-xs'<'toolbar'>>r>" +
+                    "t" +
+                    "<'dt-toolbar-footer'<''p>>",
+                "bProcessing": true,
+                "bServerSide": true,
+                "autoWidth" : true,
+				"order" :  [[ 0, 'desc' ]],
+                "preDrawCallback" : function() {
+                    // Initialize the responsive datatables helper once.
+                    if (!responsiveHelper_dt_basic2) {
+                        responsiveHelper_dt_basic2 = new ResponsiveDatatablesHelper($('#tblMasterList2'), breakpointDefinition);
+                    }
+                },
+                "rowCallback" : function(nRow) {
+                    responsiveHelper_dt_basic2.createExpandIcon(nRow);
+					$(nRow).find('[data-toggle="tooltip"]').tooltip({
+						container: 'body'
+					});
+                },
+                "drawCallback" : function(oSettings) {
+                    responsiveHelper_dt_basic2.respond();
+					$('[data-toggle="tooltip"]').tooltip({
+						container: 'body'
+					});
+                },
+                "fnServerParams": function (aoData) {
+                    aoData.push({ "name": "id", "value": "" },{ "name": "notification", "value": "<?php echo $_GET['new']?>" });
+                },
+                "sAjaxSource": "<?php echo $this->url('withdrawrequest', array('action'=>'list2'));?>",
+                "aoColumns": [
+                    { "bSearchable": false, "bVisible": false }, 
+                    
+					
+                    null,
+                    null,  
+					null,
+                    null,
+					{"bSearchable": false, "bSortable": true,
+							"mRender" : function (data, type, full) {
+								
+								var action_button = '<div style="white-space:nowrap;">';
+								
+								
+								if(full[5] == 'On Hold')
+								{
+									action_button += '<button type="button" class="btn btn-default btn-xs btn-list success" row-id="'+full[0]+'"><span class="glyphicon glyphicon-ok"></span> Success</button><button type="button" class="btn btn-default btn-xs btn-list declined" row-id="'+full[0]+'"><span class="glyphicon glyphicon-remove"></span> Declined</button>';
+								}
+								action_button +='</div>';
+								return action_button;
+							}
+						}
+					
+					
+                    
+                ],
+                "columnDefs": [
+                    { className: "hidden", "targets": [ 0 ] }
+                ]
+            });
+			
+			oTable3 = $("#tblMasterList3").dataTable(
+            {
+                "bAutoWidth": false,
+                "bLengthChange": false,
+                "sDom": "<'dt-toolbar'<'col-xs-12 col-sm-6 hidden-xs'f><'col-sm-6 col-xs-12 hidden-xs'<'toolbar'>>r>" +
+                    "t" +
+                    "<'dt-toolbar-footer'<''p>>",
+                "bProcessing": true,
+                "bServerSide": true,
+                "autoWidth" : true,
+				"order" :  [[ 0, 'desc' ]],
+                "preDrawCallback" : function() {
+                    // Initialize the responsive datatables helper once.
+                    if (!responsiveHelper_dt_basic3) {
+                        responsiveHelper_dt_basic3 = new ResponsiveDatatablesHelper($('#tblMasterList3'), breakpointDefinition);
+                    }
+                },
+                "rowCallback" : function(nRow) {
+                    responsiveHelper_dt_basic3.createExpandIcon(nRow);
+					$(nRow).find('[data-toggle="tooltip"]').tooltip({
+						container: 'body'
+					});
+                },
+                "drawCallback" : function(oSettings) {
+                    responsiveHelper_dt_basic3.respond();
+					$('[data-toggle="tooltip"]').tooltip({
+						container: 'body'
+					});
+                },
+                "fnServerParams": function (aoData) {
+                    aoData.push({ "name": "id", "value": "" },{ "name": "notification", "value": "<?php echo $_GET['new']?>" });
+                },
+                "sAjaxSource": "<?php echo $this->url('withdrawrequest', array('action'=>'list3'));?>",
+                "aoColumns": [
+                    { "bSearchable": false, "bVisible": false }, 
+                    
+					
+                    null,
+                    null,  
+					null,
+                    null,
+					
+                    
+                ],
+                "columnDefs": [
+                    { className: "hidden", "targets": [ 0 ] }
+                ]
+            });
+			
+			oTable4 = $("#tblMasterList4").dataTable(
+            {
+                "bAutoWidth": false,
+                "bLengthChange": false,
+                "sDom": "<'dt-toolbar'<'col-xs-12 col-sm-6 hidden-xs'f><'col-sm-6 col-xs-12 hidden-xs'<'toolbar'>>r>" +
+                    "t" +
+                    "<'dt-toolbar-footer'<''p>>",
+                "bProcessing": true,
+                "bServerSide": true,
+                "autoWidth" : true,
+				"order" :  [[ 0, 'desc' ]],
+                "preDrawCallback" : function() {
+                    // Initialize the responsive datatables helper once.
+                    if (!responsiveHelper_dt_basic4) {
+                        responsiveHelper_dt_basic4 = new ResponsiveDatatablesHelper($('#tblMasterList4'), breakpointDefinition);
+                    }
+                },
+                "rowCallback" : function(nRow) {
+                    responsiveHelper_dt_basic4.createExpandIcon(nRow);
+					$(nRow).find('[data-toggle="tooltip"]').tooltip({
+						container: 'body'
+					});
+                },
+                "drawCallback" : function(oSettings) {
+                    responsiveHelper_dt_basic4.respond();
+					$('[data-toggle="tooltip"]').tooltip({
+						container: 'body'
+					});
+                },
+                "fnServerParams": function (aoData) {
+                    aoData.push({ "name": "id", "value": "" },{ "name": "notification", "value": "<?php echo $_GET['new']?>" });
+                },
+                "sAjaxSource": "<?php echo $this->url('withdrawrequest', array('action'=>'list4'));?>",
+                "aoColumns": [
+                    { "bSearchable": false, "bVisible": false }, 
+                    
+					
+                    null,
+                    null,  
+					null,
+                    null,
+					
+                    
+                ],
+                "columnDefs": [
+                    { className: "hidden", "targets": [ 0 ] }
+                ]
+            });
+        
+		
+		/* END TABLETOOLS */
+		$('.dataTables_filter input').attr("placeholder", "Search");
+		
+		//$(".dataTables_filter label").addClass('right');
+        //fnEdit("<?php echo $this->url('withdrawrequest', array('action'=>'getrec'));?>");
+        //fnView("<?php echo $this->url('withdrawrequest', array('action'=>'getrec'));?>");
+        //fnDelete("<?php echo $this->url('withdrawrequest', array('action'=>'delete'));?>");
+		
+		
+       var strUrl = "<?php echo $this->url('withdrawrequest', array('action'=>'getrec'));?>";
+       
+	   oTable.delegate('button.accept', 'click', function (e) {
+            e.preventDefault();
+            iActiveID = $(this).attr("row-id");
+			$.SmartMessageBox({
+				title  : "Alert!",
+				content: "Are you sure you want to accept withdraw request?",
+				buttons: '[Yes][No]'
+			}, function (ButtonPressed) {
+				if (ButtonPressed === "Yes") {
+					var objFormData =
+					{
+						pAction: 'Accepted',
+						KEY_ID : iActiveID
+					};
+					var objMyPost = AJAX_Post("<?php echo $this->url('withdrawrequest', array('action'=>'changeStatus'));?>", objFormData);
+					if (objMyPost.ERR_NO === 0) {
+						if (objMyPost.DATA.DBStatus === 'OK') {
+							oTable.fnDraw();
+							mySmallAlert('Success', 'Withdraw Request Accepted Successfully', 1);
+						}
+						
+						else {
+							mySmallAlert('Error...!', 'There was an error', 0);
+						}
+					}
+				}
+				if (ButtonPressed === "No") {
+				}
+			});
+        });
+        oTable.delegate('button.reject', 'click', function (e) {
+            e.preventDefault();
+            iActiveID = $(this).attr("row-id");
+			$.SmartMessageBox({
+				title  : "Alert!",
+				content: "Are you sure you want to reject withdraw request?",
+				buttons: '[Yes][No]'
+			}, function (ButtonPressed) {
+				if (ButtonPressed === "Yes") {
+					var objFormData =
+					{
+						pAction: 'Rejected',
+						KEY_ID : iActiveID
+					};
+					var objMyPost = AJAX_Post("<?php echo $this->url('withdrawrequest', array('action'=>'changeStatus'));?>", objFormData);
+					if (objMyPost.ERR_NO === 0) {
+						if (objMyPost.DATA.DBStatus === 'OK') {
+							oTable.fnDraw();
+							oTable4.fnDraw();
+							mySmallAlert('Success', 'Withdraw Request Rejected Successfully', 1);
+							var reject_cnt = $('#box-rejected .count').html();
+							$('#box-rejected .count').html(Number(reject_cnt)+1);
+							
+							var withdraw_req_cnt = $('#box-withdraw-request .count').html();
+							$('#box-withdraw-request .count').html(Number(withdraw_req_cnt)-1);
+							
+						}
+						
+						else {
+							mySmallAlert('Error...!', 'There was an error', 0);
+						}
+					}
+				}
+				if (ButtonPressed === "No") {
+				}
+			});
+        });
+		oTable.delegate('button.declined', 'click', function (e) {
+            e.preventDefault();
+            iActiveID = $(this).attr("row-id");
+			$.SmartMessageBox({
+				title  : "Alert!",
+				content: "Are you sure you want to declined withdraw request?",
+				buttons: '[Yes][No]'
+			}, function (ButtonPressed) {
+				if (ButtonPressed === "Yes") {
+					var objFormData =
+					{
+						pAction: 'Declined',
+						KEY_ID : iActiveID
+					};
+					var objMyPost = AJAX_Post("<?php echo $this->url('withdrawrequest', array('action'=>'changeStatus'));?>", objFormData);
+					if (objMyPost.ERR_NO === 0) {
+						if (objMyPost.DATA.DBStatus === 'OK') {
+							oTable.fnDraw();
+							oTable4.fnDraw();
+							mySmallAlert('Success', 'Withdraw Request Declined Successfully', 1);
+							var reject_cnt = $('#box-rejected .count').html();
+							$('#box-rejected .count').html(Number(reject_cnt)+1);
+							
+							var withdraw_req_cnt = $('#box-withdraw-request .count').html();
+							$('#box-withdraw-request .count').html(Number(withdraw_req_cnt)-1);
+							
+						}
+						
+						else {
+							mySmallAlert('Error...!', 'There was an error', 0);
+						}
+					}
+				}
+				if (ButtonPressed === "No") {
+				}
+			});
+        });
+		oTable2.delegate('button.declined', 'click', function (e) {
+            e.preventDefault();
+            iActiveID = $(this).attr("row-id");
+			$.SmartMessageBox({
+				title  : "Alert!",
+				content: "Are you sure you want to declined withdraw request?",
+				buttons: '[Yes][No]'
+			}, function (ButtonPressed) {
+				if (ButtonPressed === "Yes") {
+					var objFormData =
+					{
+						pAction: 'Declined',
+						KEY_ID : iActiveID
+					};
+					var objMyPost = AJAX_Post("<?php echo $this->url('withdrawrequest', array('action'=>'changeStatus'));?>", objFormData);
+					if (objMyPost.ERR_NO === 0) {
+						if (objMyPost.DATA.DBStatus === 'OK') {
+							oTable2.fnDraw();
+							oTable4.fnDraw();
+							mySmallAlert('Success', 'Withdraw Request Declined Successfully', 1);
+							var reject_cnt = $('#box-rejected .count').html();
+							$('#box-rejected .count').html(Number(reject_cnt)+1);
+							
+							var withdraw_req_cnt = $('#box-on-hold .count').html();
+							$('#box-on-hold .count').html(Number(withdraw_req_cnt)-1);
+							
+						}
+						
+						else {
+							mySmallAlert('Error...!', 'There was an error', 0);
+						}
+					}
+				}
+				if (ButtonPressed === "No") {
+				}
+			});
+        });
+		oTable.delegate('button.hold', 'click', function (e) {
+            e.preventDefault();
+            iActiveID = $(this).attr("row-id");
+			$.SmartMessageBox({
+				title  : "Alert!",
+				content: "Are you sure you want to make this withdraw request on hold?",
+				buttons: '[Yes][No]'
+			}, function (ButtonPressed) {
+				if (ButtonPressed === "Yes") {
+					var objFormData =
+					{
+						pAction: 'On Hold',
+						KEY_ID : iActiveID
+					};
+					var objMyPost = AJAX_Post("<?php echo $this->url('withdrawrequest', array('action'=>'changeStatus'));?>", objFormData);
+					if (objMyPost.ERR_NO === 0) {
+						if (objMyPost.DATA.DBStatus === 'OK') {
+							oTable.fnDraw();
+							oTable2.fnDraw();
+							mySmallAlert('Success', 'Withdraw Request On Hold Successfully', 1);
+							var hold_cnt = $('#box-on-hold .count').html();
+							$('#box-on-hold .count').html(Number(hold_cnt)+1);
+							
+							var withdraw_req_cnt = $('#box-withdraw-request .count').html();
+							$('#box-withdraw-request .count').html(Number(withdraw_req_cnt)-1);
+							
+						}
+						
+						else {
+							mySmallAlert('Error...!', 'There was an error', 0);
+						}
+					}
+				}
+				if (ButtonPressed === "No") {
+				}
+			});
+        });
+		oTable.delegate('button.success', 'click', function (e) {
+            e.preventDefault();
+            iActiveID = $(this).attr("row-id");
+			$.SmartMessageBox({
+				title  : "Alert!",
+				content: "Are you sure you want to make this withdraw request as paid?",
+				buttons: '[Yes][No]'
+			}, function (ButtonPressed) {
+				if (ButtonPressed === "Yes") {
+					var objFormData =
+					{
+						pAction: 'Success',
+						KEY_ID : iActiveID
+					};
+					var objMyPost = AJAX_Post("<?php echo $this->url('withdrawrequest', array('action'=>'changeStatus'));?>", objFormData);
+					if (objMyPost.ERR_NO === 0) {
+						if (objMyPost.DATA.DBStatus === 'OK') {
+							oTable.fnDraw();
+							oTable3.fnDraw();
+							mySmallAlert('Success', 'Withdraw Request Paid Successfully', 1);
+							var paid_cnt = $('#box-paid .count').html();
+							$('#box-paid .count').html(Number(paid_cnt)+1);
+							
+							var withdraw_req_cnt = $('#box-withdraw-request .count').html();
+							$('#box-withdraw-request .count').html(Number(withdraw_req_cnt)-1);
+							
+						}
+						
+						else {
+							mySmallAlert('Error...!', 'There was an error', 0);
+						}
+					}
+				}
+				if (ButtonPressed === "No") {
+				}
+			});
+        });
+		oTable2.delegate('button.success', 'click', function (e) {
+            e.preventDefault();
+            iActiveID = $(this).attr("row-id");
+			$.SmartMessageBox({
+				title  : "Alert!",
+				content: "Are you sure you want to make this withdraw request as paid?",
+				buttons: '[Yes][No]'
+			}, function (ButtonPressed) {
+				if (ButtonPressed === "Yes") {
+					var objFormData =
+					{
+						pAction: 'Success',
+						KEY_ID : iActiveID
+					};
+					var objMyPost = AJAX_Post("<?php echo $this->url('withdrawrequest', array('action'=>'changeStatus'));?>", objFormData);
+					if (objMyPost.ERR_NO === 0) {
+						if (objMyPost.DATA.DBStatus === 'OK') {
+							oTable2.fnDraw();
+							oTable3.fnDraw();
+							mySmallAlert('Success', 'Withdraw Request Paid Successfully', 1);
+							var paid_cnt = $('#box-paid .count').html();
+							$('#box-paid .count').html(Number(paid_cnt)+1);
+							
+							var withdraw_req_cnt = $('#box-on-hold .count').html();
+							$('#box-on-hold .count').html(Number(withdraw_req_cnt)-1);
+							
+						}
+						
+						else {
+							mySmallAlert('Error...!', 'There was an error', 0);
+						}
+					}
+				}
+				if (ButtonPressed === "No") {
+				}
+			});
+        });
+    };
+</script>
+<script>
+    // load Page related plugins
+                loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatables/jquery.dataTables.min.js", function () {
+                    loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatables/dataTables.colVis.min.js", function () {
+                        loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatables/dataTables.tableTools.min.js", function () {
+                            loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatables/dataTables.bootstrap.min.js", function () {
+                                loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatable-responsive/datatables.responsive.min.js", pagefunction)
+                            });
+                        });
+        });
+    });
+	
+	//------------------- populate edit entries-----------------------------------------------------------------------------
+    function cPopulateEditEntries(iID,strURL) {
+        iActiveID = iID;
+        var arrForms=[]; // Keep Form Values
+        var strElementType; // Keep element type
+        var objFormData =
+        {
+            pAction: 'GETREC',
+            KEY_ID : iActiveID
+        };
+        var objMyPost = AJAX_Post(strURL, objFormData);
+		
+        if (objMyPost.ERR_NO === 0) {
+            if (objMyPost.DATA.DBStatus === 'OK') {
+                visibleControl('widForm', true);
+                visibleControl('widGrid', false);
+                strActionMode = 'EDIT';
+                //populate master Records
+                arrForms=objMyPost.DATA.data[0];
+                $.each( arrForms, function( key, value ) { 
+                    if ($("#"+key).length > 0) {  // check if exists or not
+                        strElementType= $("#"+key).attr("type");
+					
+                        if(strElementType == "hidden") {  // if textbox
+                            $("#" + key).val(value);
+                            $("#spanRefNo").html(value);
+                        }
+                        else  if(strElementType == "text") {  // if textbox
+                            $("#" + key).val(value);
+                        }
+						else  if(strElementType == "number") {  // if textbox
+                            $("#" + key).val(value);
+                        }
+						else  if(strElementType == "password") {  // if textbox
+                            $("#" + key).val(value);
+                        }
+                        else if($("#"+key).attr("name") == "descriptions") {  // if textarea
+                            $("textarea#"+key).text(value);
+                        }
+                        else if(strElementType == "select") {  // if Select Box							
+                            $("#" + key).select2("val",value);
+                        }
+                        else if(strElementType == "multiselect") {  // if Select Box with multi select
+                            var arrValues = $.parseJSON(stripslashes(value));
+                            $("#" + key).select2("val", arrValues);
+                        }
+                    }
+                });
+				
+            }
+        }
+        else {
+            mySmallAlert('Error...!', 'There was an error', 0);
+        }
+    }
+	
+</script>

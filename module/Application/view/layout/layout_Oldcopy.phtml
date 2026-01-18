@@ -1,0 +1,2310 @@
+
+<?php
+	
+	
+   $moduleName = '';
+   
+   $moduleName = $this->getHelperPluginManager()->getServiceLocator()->get('Application')->getMvcEvent()->getRouteMatch()->getMatchedRouteName();
+   
+?>
+   <script>
+	<?php
+			if($_SESSION['user_id'] != '0')
+			{
+				if($_SERVER['REQUEST_URI'] == '/settings')
+				{
+					if(!in_array('DAC Settings',$_SESSION['USER_ACCESS']))
+					{
+					?>
+						window.location.href="<?php echo $this->url('dashboard', array('action' => 'index')); ?>";
+					<?php
+					}
+					/*if( $_SESSION['STAFFUSER'] == '1' && !in_array('Banking', $_SESSION['USER_ACCESS']) )
+					{
+						
+						?>
+						window.location.href="<?php echo $this->url('dashboard', array('action' => 'index')); ?>";
+						<?php
+					}*/
+				}
+				if($moduleName == 'newrelease')
+				{
+					if(!in_array('New Release',$_SESSION['USER_ACCESS']))
+					{
+						?>
+						window.location.href="<?php echo $this->url('dashboard', array('action' => 'index')); ?>";
+						<?php
+					}
+				}
+				if($moduleName == 'releases')
+				{
+					if(!in_array('All Releases',$_SESSION['USER_ACCESS']))
+					{
+						?>
+						window.location.href="<?php echo $this->url('dashboard', array('action' => 'index')); ?>";
+						<?php
+					}
+					if(!in_array('Drafts',$_SESSION['USER_ACCESS']) && $_GET['type'] == 'draft')
+					{
+						?>
+						window.location.href="<?php echo $this->url('dashboard', array('action' => 'index')); ?>";
+						<?php
+					}
+					if(!in_array('Inreview',$_SESSION['USER_ACCESS']) && $_GET['type'] == 'review')
+					{
+						?>
+						window.location.href="<?php echo $this->url('dashboard', array('action' => 'index')); ?>";
+						<?php
+					}
+					if(!in_array('Inprocess',$_SESSION['USER_ACCESS']) && $_GET['type'] == 'inprocess')
+					{
+						?>
+						window.location.href="<?php echo $this->url('dashboard', array('action' => 'index')); ?>";
+						<?php
+					}
+				}
+				if($moduleName == 'catelogimport')
+				{
+					if(!in_array('Catalog Import',$_SESSION['USER_ACCESS']))
+					{
+						?>
+						window.location.href="<?php echo $this->url('dashboard', array('action' => 'index')); ?>";
+						<?php
+					}
+				}
+				if($moduleName == 'financialreport')
+				{
+					if(!in_array('Statements',$_SESSION['USER_ACCESS']) && !in_array('Accounting',$_SESSION['USER_ACCESS']))
+					{
+						?>
+						window.location.href="<?php echo $this->url('dashboard', array('action' => 'index')); ?>";
+						<?php
+					}
+				}
+				if($moduleName == 'payments')
+				{
+					if(!in_array('Payment',$_SESSION['USER_ACCESS']))
+					{
+						?>
+						window.location.href="<?php echo $this->url('dashboard', array('action' => 'index')); ?>";
+						<?php
+					}
+				}
+				if($moduleName == 'labels')
+				{
+					if(!in_array('Labels',$_SESSION['USER_ACCESS']))
+					{
+						?>
+						window.location.href="<?php echo $this->url('dashboard', array('action' => 'index')); ?>";
+						<?php
+					}
+				}
+				if($moduleName == 'withdrawrequest')
+				{
+					if(!in_array('Payment Request',$_SESSION['USER_ACCESS']))
+					{
+						?>
+						window.location.href="<?php echo $this->url('dashboard', array('action' => 'index')); ?>";
+						<?php
+					}
+				}
+				if($moduleName == 'news')
+				{
+					if(!in_array('News',$_SESSION['USER_ACCESS']))
+					{
+						?>
+						window.location.href="<?php echo $this->url('dashboard', array('action' => 'index')); ?>";
+						<?php
+					}
+				}
+				if($moduleName == 'faq')
+				{
+					if(!in_array('FAQ',$_SESSION['USER_ACCESS']))
+					{
+						?>
+						window.location.href="<?php echo $this->url('dashboard', array('action' => 'index')); ?>";
+						<?php
+					}
+				}
+				if($moduleName == 'releasingnetwork')
+				{
+					if(!in_array('Add Releasing Network',$_SESSION['USER_ACCESS']))
+					{
+						?>
+						window.location.href="<?php echo $this->url('dashboard', array('action' => 'index')); ?>";
+						<?php
+					}
+				}
+				
+				if($moduleName == 'analytics')
+				{
+					if(!in_array('Analytics',$_SESSION['USER_ACCESS']))
+					{
+						?>
+						window.location.href="<?php echo $this->url('dashboard', array('action' => 'index')); ?>";
+						<?php
+					}
+				}
+				if($moduleName == 'promotion')
+				{
+					if(!in_array('Promotion',$_SESSION['USER_ACCESS']))
+					{
+						?>
+						window.location.href="<?php echo $this->url('dashboard', array('action' => 'index')); ?>";
+						<?php
+					}
+				}
+				if($moduleName == 'internalnotes')
+				{
+					if(!in_array('Add Internal Notes',$_SESSION['USER_ACCESS']))
+					{
+						?>
+						window.location.href="<?php echo $this->url('dashboard', array('action' => 'index')); ?>";
+						<?php
+					}
+				}
+				
+				
+				if($moduleName == 'staff')
+				{
+					if(!in_array('Staff',$_SESSION['USER_ACCESS']))
+					{
+						?>
+						window.location.href="<?php echo $this->url('dashboard', array('action' => 'index')); ?>";
+						<?php
+					}
+				}
+				if($moduleName == 'users')
+				{
+					if(!in_array('User Management',$_SESSION['USER_ACCESS']))
+					{
+						?>
+						window.location.href="<?php echo $this->url('dashboard', array('action' => 'index')); ?>";
+						<?php
+					}
+				}
+			}
+	   ?>
+   </script>
+ <?php
+   
+   /*echo $moduleName;*/
+   
+   		if($moduleName == 'dasboard')
+		{
+			$page_title = 'Overview';
+			$page_title_top = 'Overview';
+		}
+   			
+		if($moduleName == 'user')
+		{
+			$page_title = 'User Management';
+			$page_title_top = 'User Management';
+		}
+		if($moduleName == 'staff')
+		{
+			$page_title = 'Staff Management';
+			$page_title_top = 'Staff Management';
+		}
+		else if($moduleName == 'labels')
+		{
+			$page_title = 'Labels';
+			$page_title_top = 'Labels';
+		}
+		else if($moduleName == 'catelogimport')
+		{
+			$page_title = 'Catelog Import';
+			$page_title_top = 'Catelog Import';
+		}
+		else if($moduleName == 'releasingnetwork')
+		{
+			$page_title = 'Release Management System';
+			$page_title_top = 'Release Management System';
+		}
+		else if($moduleName == 'news')
+		{
+			$page_title = 'Updated & News';
+			$page_title_top = 'Updated & News';
+		}
+		else if($moduleName == 'settings')
+		{
+			$page_title = 'Settings';
+			$page_title_top = 'Settings';
+			
+			if(strstr($_SERVER['REQUEST_URI'],"profile"))
+			{
+				$page_title = '<div id="bs-main-header-title"><span class="group">Preferences</span><span class="material-icons">chevron_right</span> <span class="program">Account Details</span></div>';
+				$page_title_top = 'Account Details';
+			}
+			if(strstr($_SERVER['REQUEST_URI'],"bankinformation"))
+			{
+				$page_title = '<div id="bs-main-header-title"><span class="group">Preferences</span><span class="material-icons">chevron_right</span> <span class="program"> Banking & Tax</span></div>';
+				$page_title_top = 'Banking & Tax';
+			}
+		}
+		else if($moduleName == 'support')
+		{
+            $page_title = '<div id="bs-main-header-title"><span class="group">Support Center</span><span class="material-icons">chevron_right</span> <span class="program">Rights Manager</span></div>';
+			$page_title_top = 'Rights Manager';
+		}
+           else if($moduleName == 'tickets')
+		{
+            $page_title = '<div id="bs-main-header-title"><span class="group">Support Center</span><span class="material-icons">chevron_right</span> <span class="program">Tickets & History</span></div>';
+			$page_title_top = 'Tickets & History';
+		}
+        else if($moduleName == 'faq')
+		{
+			$page_title = 'FAQ';
+			$page_title_top = 'FAQ';
+		}
+		else if($moduleName == 'analytics')
+		{
+			$page_title = 'Insights';
+			$page_title_top = 'Insights';
+		}
+		
+		else if($moduleName == 'promotion')
+		{
+			$page_title = 'YouTube Services';
+			$page_title_top = 'YouTube Services';
+		}
+		else if($moduleName == 'withdrawrequest')
+		{
+			$page_title = 'Payment Request';
+			$page_title_top = 'Payment Request';
+		}
+   		else if($moduleName == 'financialreport')
+		{
+			$page_title = '<div id="bs-main-header-title"><span class="group">Accounting</span><span class="material-icons">chevron_right</span> <span class="program">Statements</span></div>';
+			$page_title_top = 'Statements Reports';
+		}
+   		else if($moduleName == 'payments')
+		{
+			$page_title = '<div id="bs-main-header-title"><span class="group">Accounting</span><span class="material-icons">chevron_right</span> <span class="program">Payment & operations</span></div>';
+			$page_title_top = 'Payment & operations';
+			
+			if(strstr($_SERVER['REQUEST_URI'],"history"))
+			{
+				$page_title = '<div id="bs-main-header-title"><span class="group">Accounting</span><span class="material-icons">chevron_right</span> <span class="program">Transaction history & invoices</span></div>';
+				$page_title_top = 'Transaction history & invoices';
+			}
+		}	
+		
+   		else if($moduleName == 'releases')
+		{
+			if($_GET['type'] == 'draft')
+			{
+				$page_title = '<div id="bs-main-header-title"><span class="group">Catalog</span><span class="material-icons">chevron_right</span> <span class="program">Drafts Saved</span></div>';
+				$page_title_top = 'Drafts Saved';
+			}
+			else if($_GET['type'] == 'review')
+			{
+				$page_title = '<div id="bs-main-header-title"><span class="group">Catalog</span><span class="material-icons">chevron_right</span> <span class="program">Under-Review</span></div>';
+				$page_title_top = 'Under-Review';
+			}
+			else if($_GET['type'] == 'inprocess')
+			{
+				$page_title = '<div id="bs-main-header-title"><span class="group">Catalog</span><span class="material-icons">chevron_right</span> <span class="program">In Process</span></div>';
+				$page_title_top = 'In Process';
+			}
+			else
+			{
+				$page_title = '<div id="bs-main-header-title"><span class="group">Catalog</span><span class="material-icons">chevron_right</span> <span class="program">All Releases</span></div>';
+				$page_title_top = 'All Releases';
+			}
+		}
+			
+		else if($moduleName == 'newrelease')
+		{
+			$page_title = '<div id="bs-main-header-title"><span class="group">Create Release</span><span class="material-icons">chevron_right</span> <span class="program"> New release: Music Release</span></div>';
+			$page_title_top = 'New release: Audio Release';
+		}
+		else if($moduleName == 'internalnotes')
+		{
+			$page_title = 'Internal Notes';
+			$page_title_top = 'Internal Notes';
+		}
+		else if($moduleName == 'rejectreason')
+		{
+			$page_title = 'Reject Reason';
+			$page_title_top = 'Reject Reason';
+		}
+      
+   		else
+		{
+			$page_title = 'Dashboard';
+			$page_title_top = 'Dashboard | Prime Digital Arena';
+		}
+   			
+       
+   
+   //echo $_SESSION['ROLE_ID'];die;
+   
+   //getAvailablePermissions getAvailablePermissions
+   
+   ?>
+<!DOCTYPE html>
+<html lang="en-us">
+   <head>
+      <meta charset="utf-8">
+      <title><?php echo $page_title_top;?></title>
+      <meta name="description" content="">
+      <meta name="author" content="">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+      <!-- #CSS Links -->
+      <!-- Basic Styles -->
+      <link rel="stylesheet" type="text/css" media="screen"
+         href="<?php echo $this->basePath(); ?>/public/css/v1/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" media="screen"
+         href="<?php echo $this->basePath(); ?>/public/css/v1/ionicons.min.css">
+		 
+	  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+      <!-- Plugins -->
+     <link rel="stylesheet" href="<?php echo $this->basePath(); ?>/public/css/v1/select2.css">
+	 <link rel="stylesheet" href="<?php echo $this->basePath(); ?>/public/css/v1/bootstrap-datetimepicker.min.css">
+ <?php /*<!--      <link rel="stylesheet" href="<?php echo $this->basePath(); ?>/public/css/v1/waves.css">-->
+      <link rel="stylesheet" href="<?php echo $this->basePath(); ?>/public/css/v1/perfect-scrollbar.css">
+      <!-- Css/Less Stylesheets -->
+      <link rel="stylesheet" href="<?php echo $this->basePath(); ?>/public/css/v1/bootstrap.min.css?v=1">
+      
+      <link rel="stylesheet" href="<?php echo $this->basePath(); ?>/public/css/v1/main.min.css?v=1">
+      <!-- Custom Stylesheets -->
+      <link rel="stylesheet" href="<?php echo $this->basePath(); ?>/public/css/v1/customstyle.css?v=1">
+	   <link rel="stylesheet" href="<?php echo $this->basePath(); ?>/public/css/timepicker.min.css">
+      <link rel="stylesheet" type="text/css" media="screen"
+         href="<?php echo $this->basePath(); ?>/public/v1.6.1/css/customize.css">
+	  <link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css"> */ ?>
+	  
+	
+	<link rel="stylesheet" type="text/css" href="<?php echo $this->basePath(); ?>/public/css/selfAsserted.css">	
+	 <link rel="stylesheet" type="text/css" href="<?php echo $this->basePath(); ?>/public/css/bootstrap.min.css">	
+	 
+	 <link rel="stylesheet" type="text/css" href="<?php echo $this->basePath(); ?>/public/css/artistpickersimple.css">
+	<link rel="stylesheet" type="text/css" href="<?php echo $this->basePath(); ?>/public/css/layout.css?v=5">
+	
+	<link rel="stylesheet" type="text/css" href="<?php echo $this->basePath(); ?>/public/css/menu.css?v=1">
+	
+	<link rel="stylesheet" type="text/css" href="<?php echo $this->basePath(); ?>/public/css/lightbox.css">
+	
+ 
+      <link rel="shortcut icon" href="<?php echo $this->basePath(); ?>/public/uploads/<?php echo $_SESSION['FAVICON'];?>"
+         type="image/x-icon">
+      <link rel="icon" href="<?php echo $this->basePath(); ?>/public/uploads/<?php echo $_SESSION['FAVICON'];?>" type="image/x-icon">
+      <!-- #GOOGLE FONT -->
+    <link rel="stylesheet" href="<?php echo $this->basePath(); ?>/public/css/fonts/OpenSans/opensans.css">
+      <!-- #APP SCREEN / ICONS -->
+      <!-- Specifying a Webpage Icon for Web Clip
+         Ref: https://developer.apple.com/library/ios/documentation/AppleApplications/Reference/SafariWebContent/ConfiguringWebApplications/ConfiguringWebApplications.html -->
+      <?php /*
+	  <link rel="apple-touch-icon"
+         href="<?php echo $this->basePath(); ?>/public/v1.6.1/img/splash/sptouch-icon-iphone.png">
+      <link rel="apple-touch-icon" sizes="76x76"
+         href="<?php echo $this->basePath(); ?>/public/v1.6.1/img/splash/touch-icon-ipad.png">
+      <link rel="apple-touch-icon" sizes="120x120"
+         href="<?php echo $this->basePath(); ?>/public/v1.6.1/img/splash/touch-icon-iphone-retina.png">
+      <link rel="apple-touch-icon" sizes="152x152"
+         href="<?php echo $this->basePath(); ?>/public/v1.6.1/img/splash/touch-icon-ipad-retina.png">
+      <!-- iOS web-app metas : hides Safari UI Components and Changes Status Bar Appearance -->
+      <meta name="apple-mobile-web-app-capable" content="yes">
+      <meta name="apple-mobile-web-app-status-bar-style" content="black">
+      <!-- Startup image for web apps -->
+      <link rel="apple-touch-startup-image"
+         href="<?php echo $this->basePath(); ?>/public/v1.6.1/img/splash/ipad-landscape.png"
+         media="screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:landscape)">
+      <link rel="apple-touch-startup-image"
+         href="<?php echo $this->basePath(); ?>/public/v1.6.1/img/splash/ipad-portrait.png"
+         media="screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:portrait)">
+      <link rel="apple-touch-startup-image" href="<?php echo $this->basePath(); ?>/public/v1.6.1/img/splash/iphone.png"
+         media="screen and (max-device-width: 320px)">
+		 */ ?>
+		
+      <style>
+	  #bs-main-header-title span.program {
+    color: #3c3c3c;
+}
+	  body{
+		  -webkit-font-smoothing: antialiased;
+			font-smoothing: antialiased;
+	  }
+	  .menuLabel
+	  {
+		  font-size:13px;
+          font-family: Rubik, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+          font-weight: 440;
+          
+	  }
+	  #bs-main {
+			background-color: #fff !important;
+		}
+		.panel-heading
+		{
+			background-color:#f5f5f6;
+		}
+		.SmallBox
+		{
+			width: auto;
+			white-space: nowrap;
+			color: #fff;
+			z-index: 9999;
+			overflow: hidden;
+			border: 1px solid transparent;
+			border-left: 5px solid #238d23;
+			margin-left: -210px;
+			position: fixed;
+			bottom: 30px;
+			right: 16px;
+			padding: 12px 0px;
+			background: #1f2937 !important;
+			color: #fff;
+			border-radius: 10px;
+			font-size: 14px;
+			z-index: 1000;
+		}
+
+	iframe
+	{
+		margin:0 auto;
+	}
+
+         .select2-hidden-accessible,.collapse-sign { display:none; }
+         button#btnNew { display:none; }
+		 textarea{min-height:60px;}
+		 
+		 @media (max-width: 767px)
+		 {
+			 .site-head{height:auto!important;}
+			 .main-container .content-container.fixedHeader .page {
+				margin-top: 145px;
+			}
+			
+			.header_right_side
+			{
+				margin-top:13px;
+			}
+		 }
+		 li.notification_cont
+{
+	 padding: 4px;
+    margin: 2px;
+    background-color: #e1e8f6;
+}
+li.notification_cont_old
+{
+	 padding: 4px;
+    margin: 2px;
+    background-color: #e1e2e3;
+	position: relative;
+}
+.linkNotificationDiv a{
+	display: block;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+}
+.list-inline > li:first-child
+{
+	padding-left : 8px !important;
+}
+.page_action {
+	opacity: 0.2; 
+}
+
+.page_action .btn {
+	cursor: default;
+}
+
+.page_action.active, 
+.page_action_checkbox, 
+.page_action.enabled:hover {
+	opacity: 1;
+}
+
+.page_action.enabled .btn,
+.page_action.enabled {
+	cursor:pointer!important;
+}
+
+ul.page_action_collection li {
+	list-style-type:none; 
+	margin:0 3px; 
+	display:inline-block;
+}
+
+.page_action .page_action_checkbox {
+	pointer-events: none;
+}
+.page_action_collection  a
+{
+	color:#000;
+}
+.notify-drop ul{
+	display:none !important;
+}
+.right
+{
+	float:right;
+}
+.newRelease-separator
+{
+	margin-top:15px;
+}
+.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th
+{
+	display: table-cell;
+    vertical-align: middle !important;
+}
+button#btnNew
+{
+	margin-right:-15px;
+}
+.btn-primary
+{
+	background-color: #2699FB !important;
+    border-color: #2699FB!important;
+	height: 34px;
+	line-height:20px;
+	/*min-width:150px;*/
+	letter-spacing: 0.8px;
+	font-size: 12px;
+}
+.btn-default
+{
+	height: 34px;
+    /*min-width: 150px;*/
+	letter-spacing: 0.8px;
+}
+table .btn-default
+{
+	    height: auto!important;
+    width: auto!important;
+    min-width: auto!important;
+	line-height: 1.5;
+}
+.btn-sm
+{
+	height: 30px;
+    line-height: 19px!important;
+    width: auto;
+    min-width: auto;
+}
+
+.rounded-full {
+    border-radius: 9999px;
+    height: 34px;
+    line-height: 20px !important;
+    min-width: 100px!important;
+    text-align: center!important;
+	display: inline-block;
+	font-size: 12px !important;
+	letter-spacing: 0.8px;
+	text-transform: capitalize;
+
+}
+.divMessageBox {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: rgba(0, 0, 0, .6);
+  z-index: 100000;
+}
+.MessageBoxContainer {
+  top: 35%;
+  color: #fff;
+  position: relative;
+  width: 100%;
+  background-color: #232323;
+  background-color: rgba(0, 0, 0, .8);
+  padding: 20px;
+}
+.MessageBoxMiddle {
+  position: relative;
+  left: 20%;
+  width: 60%;
+}
+.MessageBoxMiddle .MsgTitle {
+  letter-spacing: -1px;
+  font-size: 24px;
+  font-weight: 300;
+}
+.MessageBoxMiddle .pText {
+  font-size: 13px;
+}
+.MessageBoxButtonSection {
+  width: 100%;
+  height: 30px;
+}
+/*.SmallBox {
+  position: fixed;
+  left: 50%;
+  top: 95px;
+  width: 420px;
+  color: #fff;
+  z-index: 9999;
+  overflow: hidden;
+  border: 1px solid transparent;
+  margin-left: -210px;
+}
+.SmallBox:hover {
+  border: 1px solid #fff;
+  cursor: pointer;
+}*/
+.SmallBox .foto {
+  font-size: 50px;
+  position: absolute;
+  left: 17px;
+  display: none;
+}
+.SmallBox .textoFoto {
+  width: 78%;
+  margin: 3px 20px 3px 20px;
+  float: left;
+}
+.SmallBox span {
+  font-size: 17px;
+  font-weight: 300;
+  letter-spacing: -1px;
+  display: block;
+  margin: 4px 0;
+  display: none;
+}
+.SmallBox p {
+  font-size: 13px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+.SmallBox .fa {
+  font-size: 52px;
+}
+.dt-toolbar-footer .pagination
+{
+	padding-top:40px;
+}
+.dt-toolbar .pagination 
+{
+	padding-bottom:40px;
+}
+.dataTables_paginate ul:has(li:nth-child(4)) {
+    display: block; /* Show the list if it has at least 4 items */
+  }
+
+  .dataTables_paginate ul:not(:has(li:nth-child(4))) {
+    display: none; /* Hide the list if it has less than 4 items */
+  }
+  
+  @keyframes slideInRight {
+  0% {
+    transform: translateX(100%); /* Start outside screen */
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+#divSmallBoxes > div {
+	
+    margin-top: 10px;
+    animation: slideInRight 0.5s ease forwards; /* Add animation */
+}
+.toast-close {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    font-size: 20px;
+    color: #fff;
+    cursor: pointer;
+    font-weight: bold;
+    z-index: 99999;
+}
+.linkNotificationDiv
+{
+	max-height:350px;
+	overflow:auto;
+}
+
+.skeleton-row {
+   display: grid;
+  grid-template-columns: 
+  0%     /* ID */
+  0%     /* Checkbox */
+  1%     /* Status */
+  1.5%     /* GAP */
+  2.7%   /* Cover image */
+  3.8%     /* GAP */
+  17%    /* Title/Artist */
+  1.5%     /* GAP */
+  7%    /* Label */
+  3.8%     /* GAP */
+  5.8%    /* Date */
+  5%     /* GAP */
+  3%     /* Track count */
+  8%     /* GAP */
+  7%    /* ISRC */
+  1%     /* GAP */
+  12%    /* UPC */
+  3%     /* GAP */
+  5%    /* Delivry */
+  7%     /* GAP */
+  5%;    /* Actions */
+  column-gap: 3px; /* 🔘 Adjust horizontal spacing between columns */
+  align-items: center;
+  background: #ffffff;
+  border-radius: 5px;
+  padding: 14px 12px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 14%);
+  animation: pulse 1.6s ease-in-out infinite;
+}
+.skeleton-box {
+  position: relative;
+  background: #e0e0e0;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.skeleton-box::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, #f0f0f0 0%, #eaeaea 50%, #f0f0f0 100%);
+  animation: shimmer 1.5s infinite;
+}
+@keyframes shimmer {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+  #tblMasterListLoader {
+  position: relative; /* ⛔ REMOVE absolute */
+  background: #fff;
+  z-index: 10;
+}
+#catalogContent,.catalogContent
+{
+	position:relative;
+}
+#notificationIconMenu {
+  position: relative;
+}
+
+#notificationNumberSign {
+  background-color: #e11d48;
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 9999px;
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  display: inline-block;
+  min-width: 18px;
+  text-align: center;
+}
+
+/* force icon + text on one line */
+.linkAvatarDiv .avatar-link{
+  display:inline-flex;        /* or flex */
+  align-items:center;
+  gap:13px;
+  white-space:nowrap;         /* text ko wrap na hone de */
+}
+
+/* override any global img reset */
+.linkAvatarDiv .avatar-link-icon{
+  width:23px;
+  height:23px;
+  display:inline-block;       /* block ko override */
+  object-fit:contain;
+  flex:0 0 18px;
+}
+/* Enhanced Notification Styles */
+.notification-container {
+  position: fixed;
+  top: 70px;
+  right: 20px;
+  width: 380px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  overflow: hidden;
+  display: none;
+  animation: fadeIn 0.3s ease-out;
+  border: 1px solid #e1e4e8;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.notification-header {
+  padding: 18px 20px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e1e4e8;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.notification-header h3 {
+  color: #2c3e50;
+  font-weight: 600;
+  font-size: 18px;
+  margin: 0;
+}
+
+.notification-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.notification-actions button {
+  background: none;
+  border: none;
+  color: #6c757d;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 4px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notification-actions button:hover {
+  background: #e9ecef;
+  color: #495057;
+}
+
+.notification-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.notification-item {
+  padding: 16px 20px;
+  border-bottom: 1px solid #f1f3f4;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  transition: background-color 0.2s;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+}
+
+.notification-item:hover {
+  background-color: #f8f9fa;
+  text-decoration: none;
+  color: inherit;
+}
+
+.notification-item.unread {
+  background-color: #f0f7ff;
+}
+
+.notification-item.unread:hover {
+  background-color: #e6f2ff;
+}
+
+.notification-icon {
+  color: #3498db;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.notification-content {
+  flex: 1;
+}
+
+.notification-title {
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #2c3e50;
+}
+
+.notification-desc {
+  color: #6c757d;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.notification-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 12px;
+  color: #adb5bd;
+}
+
+.notification-time {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.notification-footer {
+  padding: 12px 20px;
+  text-align: center;
+  border-top: 1px solid #e1e4e8;
+  background: #f8f9fa;
+}
+
+.notification-footer a {
+  color: #3498db;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.notification-footer a:hover {
+  text-decoration: underline;
+}
+
+.empty-state {
+  padding: 40px 20px;
+  text-align: center;
+  color: #6c757d;
+}
+
+.empty-state .material-icons {
+  font-size: 48px;
+  color: #dee2e6;
+  margin-bottom: 10px;
+}
+
+
+      </style>
+   </head>
+   
+   <body id="app" class="dashboard-body app off-canvas bg-layout-screens">
+    <!-- #HEADER -->
+    <div id="bs-table-container" class="bs-sticked">
+        <div class="mspeducator_aside d-flex flex-column flex-row-auto" id="bs-left">
+            <div class="bs-left-container">
+				<div id="bs-left-logo">
+					<a class=" desktop-logo" href="<?php echo $this->url('dashboard',array('action' => 'index'));?>"> <img src="<?php echo $this->basePath(); ?>/public/uploads/<?php echo $_SESSION['LOGO'];?>" class="" /> </a>
+				</div>
+				<div id="bs-left-logo-reduced">
+					<a href="<?php echo $this->url('dashboard',array('action' => 'index'));?>"><img src="<?php echo $this->basePath(); ?>/public/uploads/<?php echo $_SESSION['FAVICON'];?>" width="24"></a>
+				</div>
+                <div class="menu__icon">
+                    <div class="menu__icon-open">
+                        <i class="material-icons">chevron_left</i>
+                    </div>
+                    <div class="menu__icon-collapse">
+                        <i class="material-icons">chevron_right</i>
+                    </div>
+                    <div class="menu__icon-close">
+                        <i class="material-icons">close</i>
+                    </div>
+                </div>
+            </div>
+			<div id="bs-left-menu">
+				<?php 
+					if($_SESSION['user_id'] == '0' || (in_array('New Release',$_SESSION['USER_ACCESS'])))
+					{
+				?>
+				<a href="<?php echo $this->url('newrelease',array('action' => 'index'));?>">
+				<div class="newRelease">
+					
+						<div class="bs-menu-group-description " style="display: flex; flex-direction: row;">
+							
+								<i class="material-icons">add</i>
+								<div class="menuLabel">Create release</div>
+							
+						</div>
+					
+				</div>
+				</a>
+				<?php } ?>
+				<div class="newRelease-separator"></div>
+				<div class="bs-menu-group bs-menu-group-0 bs-menu-group-id--1 dashboard">
+					<div class="bs-menu-group-description">
+						<a href="<?php echo $this->url('dashboard',array('action' => 'index'));?>">
+							<div style="display: flex; align-items: center; gap: 15px;"><img src="https://www.primebackstage.in/public/img/icons/Dashboard.png" alt="Dashboard" class="icon-png" style="width: 20px; height: 20px;"><div class="menuLabel">Dashboard</div></div>
+						</a>
+					</div>
+				</div>
+				<?php 
+					if($_SESSION['user_id'] == '0' || (in_array('All Releases',$_SESSION['USER_ACCESS']) || in_array('Drafts',$_SESSION['USER_ACCESS']) || in_array('Inreview',$_SESSION['USER_ACCESS']) || in_array('Inprocess',$_SESSION['USER_ACCESS']) || in_array('Catalog Import',$_SESSION['USER_ACCESS'])))
+					{
+				?>
+				<div class="bs-menu-group bs-menu-group-0 bs-menu-group-id-1 releases">
+					<div class="bs-menu-group-description">
+						<div style="display: flex; align-items: center; gap: 13px;"><img src="https://www.primebackstage.in/public/img/icons/Catalog.png" alt="Catalog" class="icon-png" style="width: 23px; height: 23px;"><div class="menuLabel">Catalog</div></div>
+					</div>
+					<div class="bs-menu-group-content releases" style="display:none;">
+						<?php 
+							if($_SESSION['user_id'] == '0' || (in_array('All Releases',$_SESSION['USER_ACCESS']) ))
+							{
+						?>
+						<div class="bs-menu-program bs-menu-program-1 bs-menu-program-id-3 releases">
+							<a href="<?php echo $this->url("releases",array("action" => "index"))?>">
+								<div style="display: flex; flex-direction: row;">
+									<div class="menuLabel">All Releases</div>
+								</div>
+							</a>
+						</div>
+						<?php } ?>
+						<?php 
+							if($_SESSION['user_id'] == '0' || (in_array('Drafts',$_SESSION['USER_ACCESS']) ))
+							{
+						?>
+						<div class="bs-menu-program bs-menu-program-1 bs-menu-program-id-2 drafts">
+							<a href="<?php echo $this->url("releases",array("action" => "index"))?>?type=draft">
+								<div style="display: flex; flex-direction: row;">
+									<div class="menuLabel">Draft Saved</div>
+								</div>
+							</a>
+						</div>
+						<?php } ?>
+						<?php 
+							if($_SESSION['user_id'] == '0' || (in_array('Inreview',$_SESSION['USER_ACCESS']) ))
+							{
+						?>
+						<div class="bs-menu-program bs-menu-program-1 bs-menu-program-id-2 review">
+							<a href="<?php echo $this->url("releases",array("action" => "index"))?>?type=review">
+								<div style="display: flex; flex-direction: row;">
+									<div class="menuLabel">Under-Review</div>
+								</div>
+							</a>
+						</div>
+						<?php } ?>
+						<?php 
+							if($_SESSION['user_id'] == '0' || (in_array('Inprocess',$_SESSION['USER_ACCESS']) ))
+							{
+						?>
+						<div class="bs-menu-program bs-menu-program-1 bs-menu-program-id-2 inprocess">
+							<a href="<?php echo $this->url("releases",array("action" => "index"))?>?type=inprocess">
+								<div style="display: flex; flex-direction: row;">
+									<div class="menuLabel">In-Process</div>
+								</div>
+							</a>
+						</div>
+						<?php } ?>
+						<?php 
+							if($_SESSION['user_id'] == '0' || (in_array('Catalog Import',$_SESSION['USER_ACCESS']) ))
+							{
+						?>
+						
+						<div class="bs-menu-program bs-menu-program-1 bs-menu-program-id-3 catelogimport">
+							<a href="<?php echo $this->url("catelogimport",array("action" => "index"))?>">
+								<div style="display: flex; flex-direction: row;">
+									<div class="menuLabel">Catelog Import</div>
+								</div>
+							</a>
+						</div>
+						<?php } ?>
+					</div>
+				</div>
+				<?php } ?>
+				
+				<?php 
+					if( $_SESSION['user_id'] == '0' || in_array('Analytics',$_SESSION['USER_ACCESS']))
+					{
+				?>
+				<div class="bs-menu-group bs-menu-group-0 bs-menu-group-id--1 analytics">
+					<div class="bs-menu-group-description">
+						<a href="<?php echo $this->url('analytics',array('action' => 'index'));?>">
+							<div style="display: flex; align-items: center; gap: 13px;"><img src="https://www.primebackstage.in/public/img/icons/insights.png" alt="Insights" class="icon-png" style="width: 23px; height: 23px;"><div class="menuLabel">Insights<span class="bs-menu-group-subtitle">Powered by <big>Believe</big></span></div></div> 
+						</a>
+					</div>
+				</div>
+				<?php } ?>
+				
+				<?php 
+					if(in_array('Promotion',$_SESSION['USER_ACCESS']))
+					{
+				?>
+				<div class="bs-menu-group bs-menu-group-0 bs-menu-group-id--1 promotion">
+					<div class="bs-menu-group-description">
+						<a href="<?php echo $this->url('promotion',array('action' => 'index'));?>">
+							<div style="display: flex; align-items: center; gap: 13px;"><img src="/public/img/icons/service yt.png" alt="YouTube Services" class="icon-png" style="width: 23px; height: 23px;"><div class="menuLabel">YouTube Services</div></div>
+						</a>
+					</div>
+				</div>
+				<?php } ?>
+				
+				
+				<?php 
+					if(in_array('Statements',$_SESSION['USER_ACCESS']) || in_array('Payment',$_SESSION['USER_ACCESS']))
+					{
+				?>
+					<div class="bs-menu-group bs-menu-group-0 bs-menu-group-id-1 financial">
+						<div class="bs-menu-group-description">
+							<div style="display: flex; align-items: center; gap: 13px;"><img src="https://www.primebackstage.in/public/img/icons/Accounting.png" alt="Accounting" class="icon-png" style="width: 23px; height: 23px;"><div class="menuLabel">Accounting</div></div>
+						</div>
+						<div class="bs-menu-group-content financial" style="display:none;">
+							<?php 
+								if(in_array('Statements',$_SESSION['USER_ACCESS']) )
+								{
+							?>
+							<div class="bs-menu-program bs-menu-program-1 bs-menu-program-id--1 financialreport">
+								<a href="<?php echo $this->url('financialreport',array('action' => 'index'));?>">
+									<div style="display: flex; flex-direction: row;">
+										<div class="menuLabel">Statements</div>
+									</div>
+								</a>
+							</div>
+							
+							<?php
+								}
+								if($_SESSION['user_id'] != '0' && $_SESSION['STAFFUSER'] == '0')
+								{
+									if(in_array('Payment',$_SESSION['USER_ACCESS']) )
+									{
+							?>
+							<div class="bs-menu-program bs-menu-program-1 bs-menu-program-id--1 payments">
+								<a href="<?php echo $this->url('payments',array('action' => 'index'));?>">
+									<div style="display: flex; flex-direction: row;">
+										<div class="menuLabel">Payment & operations</div>
+									</div>
+								</a>
+							</div>
+							<?php 
+									}
+								}
+								
+							?>
+						</div>
+					</div>
+				
+				<?php } ?>
+				<?php 
+					if($_SESSION['user_id'] == '0' || $_SESSION['STAFFUSER'] == '1')
+					{
+				?>
+					<?php 
+						if( $_SESSION['user_id'] == '0' || in_array('Accounting',$_SESSION['USER_ACCESS']))
+						{
+					?>
+						<div class="bs-menu-group bs-menu-group-0 bs-menu-group-id--1 financial">
+							<div class="bs-menu-group-description">
+								<a href="<?php echo $this->url('financialreport',array('action' => 'index'));?>">
+									<div style="display: flex; align-items: center; gap: 13px;"><img src="https://www.primebackstage.in/public/img/icons/Accounting.png" alt="Accounting" class="icon-png" style="width: 23px; height: 23px;"><div class="menuLabel">Accounting</div></div>
+								</a>
+							</div>
+						</div>
+					<?php } ?>
+					<?php 
+						if( $_SESSION['user_id'] == '0' || in_array('Payment Request',$_SESSION['USER_ACCESS']))
+						{
+					?>
+						<div class="bs-menu-group bs-menu-group-0 bs-menu-group-id--1 withdrawrequest">
+							<div class="bs-menu-group-description">
+								<a href="<?php echo $this->url('withdrawrequest',array('action' => 'index'));?>">
+									<div style="display: flex; align-items: center; gap: 13px;"><img src="/public/img/icons/paymentreq.png" alt="Support Center" class="icon-png" style="width: 23px; height: 23px;"><div class="menuLabel">Payment Request</div></div>
+								</a>
+							</div>
+						</div>
+					<?php } ?>
+					<?php 
+						if( $_SESSION['user_id'] == '0' || in_array('Labels',$_SESSION['USER_ACCESS']))
+						{
+					?>
+						<div class="bs-menu-group bs-menu-group-0 bs-menu-group-id--1 labels">
+							<div class="bs-menu-group-description">
+								<a href="<?php echo $this->url('labels',array('action' => 'index'));?>">
+									<div style="display: flex; flex-direction: row;"><i class="material-icons">label</i>
+										<div class="menuLabel">Labels</div>
+									</div>
+								</a>
+							</div>
+						</div>
+					<?php } ?>
+              
+					<?php 
+						if( $_SESSION['user_id'] == '0' || in_array('News',$_SESSION['USER_ACCESS']))
+						{
+					?>	
+						<div class="bs-menu-group bs-menu-group-0 bs-menu-group-id--1 news">
+							<div class="bs-menu-group-description">
+								<a href="<?php echo $this->url('news',array('action' => 'index'));?>">
+									<div style="display: flex; flex-direction: row;"><i class="material-icons">newspaper</i> 
+										<div class="menuLabel">News</div>
+									</div>
+								</a>
+							</div>
+						</div>
+					<?php } ?>
+				<?php 
+				}
+				
+
+				?>
+				
+
+<?php 
+// Rights Manager
+if ($_SESSION['user_id'] == '0' || in_array('Rights Manager', $_SESSION['USER_ACCESS'])) {
+?>
+    <div class="bs-menu-group bs-menu-group-0 bs-menu-group-id--1 support">
+        <div class="bs-menu-group-description">
+            <a href="<?php echo $this->url('support', array('action' => 'index')); ?>">
+                <div style="display: flex; align-items: center; gap: 13px;">
+                    <img src="/public/img/icons/Rights.png" alt="Rights" class="icon-png" style="width: 23px; height: 23px;">
+                    <div class="menuLabel">Rights Manager</div>
+                </div>
+            </a>
+        </div>
+    </div>
+<?php } ?>
+
+<?php 
+// Tickets
+if ($_SESSION['user_id'] == '0' || in_array('Tickets & History', $_SESSION['USER_ACCESS'])) {
+?>
+    <div class="bs-menu-group bs-menu-group-0 bs-menu-group-id--1 tickets">
+        <div class="bs-menu-group-description">
+            <a href="<?php echo $this->url('tickets', array('action' => 'index')); ?>">
+                <div style="display: flex; align-items: center; gap: 13px;">
+                    <img src="/public/img/icons/support.png" alt="Tickets" class="icon-png" style="width: 23px; height: 23px;">
+                    <div class="menuLabel">Tickets & History</div>
+                </div>
+            </a>
+        </div>
+    </div>
+<?php } ?>
+              <?php 
+// FAQ
+if ($_SESSION['user_id'] == '0' || in_array('FAQ', $_SESSION['USER_ACCESS'])) {
+?>
+    <div class="bs-menu-group bs-menu-group-0 bs-menu-group-id--1 faq">
+        <div class="bs-menu-group-description">
+            <a href="<?php echo $this->url('faq', array('action' => 'index')); ?>">
+                <div style="display: flex; align-items: center; gap: 13px;">
+                    <img src="/public/img/icons/FAQ.png" alt="FAQ" class="icon-png" style="width: 23px; height: 23px;">
+                    <div class="menuLabel">FAQ</div>
+                </div>
+            </a>
+        </div>
+    </div>
+<?php } ?>
+
+			</div>
+            
+        </div>
+        <div class="" id="bs-main">
+                       <div id="bs-main-header">
+  <div id="bs-main-header-icon"><i class="material-icons">menu</i></div>
+
+  <div id="bs-main-header-title"><span class="program"><?php echo $page_title;?></span></div>
+  <div id="bs-main-header-menu">
+    <div id="notificationContainer" style="display:none;">
+       
+      <div class="containerFloating" style="left: ;">
+        <div class="notification-header">
+                            <h3>Notifications</h3>
+                            <div class="notification-actions">
+                                <button id="clearAll" title="Clear all notifications">
+                                    <i class="material-icons">mark_email_read</i>
+                                </button>
+                                
+                               </div>
+                        </div>
+        <div class="linkNotificationDiv supZero">
+          <a href="<?php echo $this->url('releases',array('action' => 'index'));?>">
+            <i class="material-icons">check_circle</i>2 new releases created by a sub-User Access
+          </a>
+          <a href="<?php echo $this->url('releases',array('action' => 'index'));?>">
+            <i class="material-icons">check_circle</i>2 new releases created by a sub-User Access
+          </a>
+          </div>
+         <div class="notification-footer">
+                            <a href="<?php echo $this->url('releases',array('action' => 'index'));?>" id="viewAll">View all</a>
+                        </div>
+                    </div>
+							</div>					<div id="avatarContainer" style="display:none;">
+														<div class="containerFloating" style="<?php //if($_SESSION['user_id'] != '0') { echo 'left: 130px;'; } else { echo 'left:-70px';}?>">
+															<?php
+															if($_SESSION['user_id'] != '0' && $_SESSION['STAFFUSER'] != '1')
+															{
+																?> 
+																<div class="linkAvatarDiv">
+																  <a href="<?php echo $this->url("settings",array("action"=>"profile"));?>" target="_self" class="avatar-link">
+																	<img src="<?php echo $this->basePath(); ?>/public/img/icons/profile_pda.png" alt="" class="avatar-link-icon">
+																	<span>Account Details</span>
+																  </a>
+																</div>
+
+                                                          <div class="linkAvatarDiv">
+      <a href="<?php echo $this->url("settings", array("action"=>"agreements"));?>" 
+         target="_self" 
+         class="avatar-link <?php echo (strpos($_SERVER['REQUEST_URI'],'/settings/agreements')!==false)?'active':''; ?>">
+        <img src="<?php echo $this->basePath(); ?>/public/img/icons/b2ba.png"
+             alt="B2B Agreement" 
+             class="avatar-link-icon"
+             onerror="this.onerror=null;this.src='<?php echo $this->basePath(); ?>/public/img/icons/doc_pda.png';">
+        <span>B2B Agreements</span>
+      </a>
+    </div>
+															<?php } ?>
+															<?php
+															if($_SESSION['user_id'] != '0')
+															{
+																
+																if( ($_SESSION['SUBUSER'] != '1' && $_SESSION['STAFFUSER'] != '1') 
+																|| ($_SESSION['STAFFUSER'] == '1' && in_array('Banking', $_SESSION['USER_ACCESS'])) )
+																{
+																	?>
+																	<div class="linkAvatarDiv">
+																	  <a href="<?php echo $this->url("settings",array("action" => "bankinformation"));?>" target="_self" class="avatar-link">
+																		<img src="<?php echo $this->basePath(); ?>/public/img/icons/card.png" 
+																			 alt="Banking & Tax" class="avatar-link-icon">
+																		<span>Banking & Tax</span>
+																	  </a>
+																	</div>
+
+																	<?php
+																}
+																?>
+															<?php } ?>	
+															<?php
+															if($_SESSION['user_id'] != '0' && $_SESSION['STAFFUSER'] != '1')
+															{
+																if($_SESSION['USER_TYPE'] == 'Enterprise')
+																{
+																	?>
+																	<div class="linkAvatarDiv">
+																	  <a href="<?php echo $this->url("user",array("action" => "index"));?>" target="_self" class="avatar-link">
+																		<img src="<?php echo $this->basePath(); ?>/public/img/icons/user_pda.png" 
+																			 alt="User Management" class="avatar-link-icon">
+																		<span>User Management</span>
+																	  </a>
+																	</div>
+
+																	<?php
+																}
+															}
+															else
+															{
+																if($_SESSION['user_id'] == '0' || $_SESSION['STAFFUSER'] == '1')
+																{
+																?>
+																	<?php 
+																		if($_SESSION['user_id'] == '0' || (in_array('DAC Settings',$_SESSION['USER_ACCESS'])))
+																		{
+																	?>
+																	<div class="linkAvatarDiv">
+																		<a href="<?php echo $this->url("settings",array("action" => "index"));?>" target="_self"><i class="material-icons">settings</i>Settings</a>
+																	</div>
+                                                          
+                                                          <div class="linkAvatarDiv">
+      <a href="<?php echo $this->url("settings", array("action"=>"agreementsadmin"));?>" 
+         target="_self" 
+         class="avatar-link <?php echo (strpos($_SERVER['REQUEST_URI'],'/settings/agreementsadmin')!==false)?'active':''; ?>">
+        <img src="<?php echo $this->basePath(); ?>/public/img/icons/b2ba.png"
+             alt="B2B Agreement" 
+             class="avatar-link-icon"
+             onerror="this.onerror=null;this.src='<?php echo $this->basePath(); ?>/public/img/icons/doc_pda.png';">
+        <span>B2B Agreements</span>
+      </a>
+    </div>
+																	<?php } ?>
+																	<?php 
+																		if($_SESSION['user_id'] == '0' || (in_array('User Management',$_SESSION['USER_ACCESS'])))
+																		{
+																	?>
+																	<div class="linkAvatarDiv">
+																		<a href="<?php echo $this->url("user",array("action" => "index"));?>" target="_self"><i class="material-icons">person</i>User Management</a>
+																	</div>
+																	<?php } ?>
+																	
+																	<?php 
+																		if($_SESSION['user_id'] == '0' )
+																		{
+																	?>
+																	<div class="linkAvatarDiv">
+																		<a href="<?php echo $this->url("staff",array("action" => "index"));?>" target="_self"><i class="material-icons">person</i>Staff Management</a>
+																	</div>
+																	<?php } ?>
+																	<?php 
+																		if($_SESSION['user_id'] == '0' || (in_array('Add Reject Reason',$_SESSION['USER_ACCESS'])))
+																		{
+																	?>
+																	<div class="linkAvatarDiv">
+																		<a href="<?php echo $this->url("rejectreason",array("action" => "index"));?>" target="_self"><i class="material-icons">list</i>Add Reject Reasons</a>
+																	</div>
+																	<?php } ?>
+																	<?php 
+																		if($_SESSION['user_id'] == '0' || (in_array('Add Releasing Network',$_SESSION['USER_ACCESS'])))
+																		{
+																	?>
+																	<div class="linkAvatarDiv">
+																		<a href="<?php echo $this->url("releasingnetwork",array("action" => "index"));?>" target="_self"><i class="material-icons">podcasts</i>Add Releasing Network</a>
+																	</div>
+																	<?php } ?>
+																	<?php 
+																		if($_SESSION['user_id'] == '0' || (in_array('Add Internal Notes',$_SESSION['USER_ACCESS'])))
+																		{
+																	?>
+																	<div class="linkAvatarDiv">
+																		<a href="<?php echo $this->url("internalnotes",array("action" => "index"));?>" target="_self"><i class="material-icons">notes</i>Add Internal Notes</a>
+																	</div>
+																	<?php } ?>
+																	
+																<?php
+																}
+															}
+															?>
+															
+															<div class="linkAvatarDiv">
+  <a href="<?php echo $this->url("settings",array("action" => "myaccount"));?>" target="_self" class="avatar-link">
+    <img src="<?php echo $this->basePath(); ?>/public/img/icons/lock_pda.png" 
+         alt="Change Password" class="avatar-link-icon">
+    <span>Change Password</span>
+  </a>
+</div>
+
+															<div class="linkAvatarDiv logout">
+  <a href="<?php echo $this->url("login",array("action" => "logout"));?>" class="avatar-link">
+    <img src="<?php echo $this->basePath(); ?>/public/img/icons/exit_pda.png" 
+         alt="Logout" class="avatar-link-icon">
+    <span>Logout</span>
+  </a>
+</div>
+
+													</div>
+												</div>
+												<ul>
+													
+
+
+													<li id="notificationIconMenu">
+														<i class="material-icons">notifications</i>
+														<span class="supZero" id="notificationNumberSign">0</span>
+													</li>
+													<li class="middle">
+														<span><?php echo $_SESSION['USER_NAME'];?></span> 
+														<?php if($_SESSION['user_id'] != '0') { ?><br><span class="bs-client-number">Account ID : <?php echo $_SESSION['CLIENT_NO'];?></span> <?php } ?>
+													</li>
+													<li id="avatarIconMenu">
+														<i class="material-icons">person</i>
+													</li>
+												</ul>
+										</div>
+						</div>
+						<div id="bs-main-alert" class="bs-alert">
+							<div class="bs-alert-close"><i class="material-icons">close</i></div>
+							<div class="bs-alert-message">
+								
+								
+							</div>
+						</div>
+                        <div class="bs-alert bs-sub-alert">
+							<div class="bs-alert-close"><span class="glyphicon glyphicon-remove"></span></div>
+							<div class="bs-alert-message"></div>
+						</div>
+                   
+                
+                 <div class="content-container container-fluid " id="bs-main-content-container">
+           
+            <script>
+               if (!window.jQuery) {
+               
+               document.write('<script src="<?php echo $this->basePath();?>/public/v1.6.1/js/libs/jquery-2.1.1.min.js"><\/script>');
+               
+               }
+               
+            </script>
+            <!-- <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script> -->
+            <script>
+               if (!window.jQuery.ui) {
+               
+               document.write('<script src="<?php echo $this->basePath();?>/public/v1.6.1/js/libs/jquery-ui-1.10.3.min.js"><\/script>');
+               
+               }
+               
+            </script>
+            <!-- IMPORTANT: APP CONFIG -->
+            <script src="<?php echo $this->basePath(); ?>/public/v1.6.1/js/app.config.js"></script>
+            <!-- JS TOUCH : include this plugin for mobile drag / drop touch events-->
+			
+			<script src="<?php echo $this->basePath(); ?>/public/js/layout.js?v=1"></script>
+			<script src="<?php echo $this->basePath(); ?>/public/js/menu.js"></script>
+			<script src="<?php echo $this->basePath(); ?>/public/js/lightbox.min.js"></script>
+			<script src="<?php echo $this->basePath(); ?>/public/js/artistpickersimple.js"></script>
+			
+            <script
+               src="<?php echo $this->basePath(); ?>/public/v1.6.1/js/plugin/jquery-touch/jquery.ui.touch-punch.min.js"></script>
+            <!-- BOOTSTRAP JS -->
+            <script src="<?php echo $this->basePath(); ?>/public/v1.6.1/js/bootstrap/bootstrap.min.js"></script>
+            <!-- Datetimepicker : plugin -->
+            <script src="<?php echo $this->basePath(); ?>/public/v1.6.1/js/plugin/datetimepicker/moment.js"></script>
+            <script src="<?php echo $this->basePath(); ?>/public/v1.6.1/js/plugin/datetimepicker/transition.js"></script>
+            <script src="<?php echo $this->basePath(); ?>/public/v1.6.1/js/plugin/datetimepicker/collapse.js"></script>
+            <script src="<?php echo $this->basePath(); ?>/public/v1.6.1/js/plugin/datetimepicker/bootstrap-datetimepicker.js"></script>
+			<script src="<?php echo $this->basePath(); ?>/public/js/v1/timepicker.min.js"></script>
+            <!-- CUSTOM NOTIFICATION -->
+            <script src="<?php echo $this->basePath(); ?>/public/v1.6.1/js/notification/SmartNotification.min.js"></script>
+            <!-- JARVIS WIDGETS -->
+            <script src="<?php echo $this->basePath(); ?>/public/v1.6.1/js/smartwidgets/jarvis.widget.min.js"></script>
+
+ 
+            <script src="<?php echo $this->basePath(); ?>/public/v1.6.1/js/plugin/sparkline/jquery.sparkline.min.js"></script>
+            <!-- JQUERY VALIDATE -->
+            <script
+               src="<?php echo $this->basePath(); ?>/public/v1.6.1/js/plugin/jquery-validate/jquery.validate.min.js"></script>
+            <!-- JQUERY MASKED INPUT -->
+            <script
+               src="<?php echo $this->basePath(); ?>/public/v1.6.1/js/plugin/masked-input/jquery.maskedinput.min.js"></script>
+            <!-- JQUERY SELECT2 INPUT -->
+            <script src="<?php echo $this->basePath(); ?>/public/v1.6.1/js/plugin/select2/select2.min.js"></script>
+            <!-- JQUERY UI + Bootstrap Slider -->
+            <script
+               src="<?php echo $this->basePath(); ?>/public/v1.6.1/js/plugin/bootstrap-slider/bootstrap-slider.min.js"></script>
+            <!-- browser msie issue fix -->
+            <script src="<?php echo $this->basePath(); ?>/public/v1.6.1/js/plugin/msie-fix/jquery.mb.browser.min.js"></script>
+            <!-- FastClick: For mobile devices: you can disable this in app.js -->
+            <script src="<?php echo $this->basePath(); ?>/public/v1.6.1/js/plugin/fastclick/fastclick.min.js"></script>
+           
+            <script src="<?php echo $this->basePath(); ?>/public/v1.6.1/js/app.min.js"></script>
+           
+            <?php echo $this->content; ?>
+            <div class="bg-img-deleted">
+            </div>
+         </div>
+      </div>
+	</div>
+</body>
+
+ 
+</html>
+<script src="<?php echo $this->basePath(); ?>/public/global_js/variables.js?v=1"></script>
+<script src="<?php echo $this->basePath(); ?>/public/global_js/events.js?v=1"></script>
+<script src="<?php echo $this->basePath(); ?>/public/global_js/functions.js?v=22"></script>
+<script src="<?php echo $this->basePath(); ?>/public/js/v1/perfect-scrollbar.min.js"></script>
+<!--<script src="<?php echo $this->basePath(); ?>/public/js/v1/waves.min.js"></script>
+<script src="<?php echo $this->basePath();?>/public/js/jspanel/jquery.jspanel.min.js"></script>-->
+<script src="<?php echo $this->basePath(); ?>/public/js/v1/jquery.overlayScrollbars.min.js"></script>
+<script src="<?php echo $this->basePath(); ?>/public/js/v1/custom.js"></script>
+<script>
+   //Load Common JS
+   
+   loadScript("<?php echo $this->basePath();?>/public/global_js/variables.js", function () {
+   
+   loadScript("<?php echo $this->basePath();?>/public/global_js/events.js", function () {
+   
+   loadScript("<?php echo $this->basePath();?>/public/global_js/functions.js?v=22", function () {
+   
+   });
+   
+   });
+   
+   });
+   
+   
+   
+   //Common Page Setup
+   
+   pageSetUp();
+   
+   //Scrollbar style
+   
+   $('#site-nav').perfectScrollbar();
+   
+   //Waves ripple effet
+   
+//   var ripple = function() {
+//   
+//   Waves.attach(".btn"),
+//   
+//   Waves.init({
+//   
+//   duration: 900,
+//   
+//   delay: 300
+//   
+//   }),
+//   
+//   Waves.attach(".nav-wrap .site-nav .nav-list li"),
+//   
+//   Waves.attach(".md-button:not(.md-no-ink)")
+//   
+//   }();
+   
+   //mobile navigation
+    
+  
+   
+   $(document).ready(function(){
+   
+	
+	
+    $('[data-toggle="tooltip"]').tooltip();
+
+	$("td:empty").html("&nbsp;");
+   jQuery.each(jQuery('textarea'), function() {
+	  var offset = this.offsetHeight - this.clientHeight;
+	  
+	  
+	  var resizeTextarea = function(el) {
+		jQuery(el).css('height', 'auto').css('height', el.scrollHeight + offset);
+	  };
+	  jQuery(this).bind('change keyup paste input propertychange', function() { resizeTextarea(this); }).removeAttr('data-autoresize');
+	});
+	
+	setTimeout(function(){
+		jQuery.each(jQuery('textarea'), function() {
+			$(this).trigger('change');
+		});
+	},300);
+   });
+   
+</script>
+<script>
+
+	 var noRecordsMessage = `<div id="noRecordsMessage" style="text-align: center; padding: 50px;margin:50px;border-radius:10px;">
+    <img src="<?php echo $this->basePath(); ?>/public/img/no-data.png"  width="150" style="margin: 0 auto;">
+    <h4 style="font-weight:600;margin-top:20px;font-size:18px;"></h4><p style="font-size: 14px;font-weight: bold;color: #5a5a5a;"></p>
+</div>`;
+
+
+	/* var skeletonDiv = `<div id="tblMasterListLoader" style="display:none; text-align:center; padding:40px;">
+  <img src="<?php echo $this->basePath(); ?>/public/img/skeleton.gif" alt="Loading..." style="max-width:100%;">
+</div>`;*/
+ var skeletonDiv = `<div id="tblMasterListLoader" style="position: absolute; top: 0px; left: 0px; width: 100%; z-index: 10; background: rgb(255, 255, 255);  display: none;">
+
+              <div class="skeleton-row">
+  <div class="skeleton-box"></div> <!-- ID -->
+  <div class="skeleton-box"></div> <!-- Checkbox -->
+  <div class="skeleton-box" style="height: 14px;"></div> <!-- Status -->
+   <div></div> <!-- GAP 1 -->
+  <div class="skeleton-box" style="height: 43px;"></div> <!-- Cover image -->
+  <div></div> <!-- GAP 1 -->
+  <div>
+    <div class="skeleton-box" style="width: 90%; height: 14px; margin-bottom: 4px;"></div>
+    <div class="skeleton-box" style="width: 70%; height: 12px;"></div>
+  </div> <!-- Title/Artist -->
+  <div></div> <!-- GAP 2 -->
+  <div class="skeleton-box" style="height: 12px;"></div> <!-- Label -->
+          <div></div> <!-- GAP 5 -->
+  <div class="skeleton-box" style="height: 12px;"></div> <!-- Date -->
+  <div></div> <!-- GAP 3 -->
+  <div class="skeleton-box" style="height: 12px;"></div> <!-- Track count -->
+          <div></div> <!-- GAP 3 -->
+  <div class="skeleton-box" style="height: 12px;"></div> <!-- ISRC -->
+          <div></div> <!-- GAP 3 -->
+          <div>
+    <div class="skeleton-box" style="width: 60%; height: 14px; margin-bottom: 4px;"></div>
+    <div class="skeleton-box" style="width: 50%; height: 12px;"></div><!-- UPC -->
+  </div>
+  
+  <div></div> <!-- GAP 4 -->
+          <div>
+    <div class="skeleton-box" style="width: 90px; height: 14px; margin-bottom: 4px;"></div>
+    <div class="skeleton-box" style="width: 120px; height: 12px;"></div>
+  </div> <!-- Delivry -->
+
+           <div></div> <!-- GAP 4 -->
+  <div>
+    <div class="skeleton-box" style="width: 18px; height: 16px; margin-bottom: 4px;"></div>
+    <div class="skeleton-box" style="width: 18px; height: 16px;"></div>
+  </div> <!-- Actions -->
+</div>
+              <div class="skeleton-row">
+  <div class="skeleton-box"></div> <!-- ID -->
+  <div class="skeleton-box"></div> <!-- Checkbox -->
+  <div class="skeleton-box" style="height: 14px;"></div> <!-- Status -->
+   <div></div> <!-- GAP 1 -->
+  <div class="skeleton-box" style="height: 43px;"></div> <!-- Cover image -->
+  <div></div> <!-- GAP 1 -->
+  <div>
+    <div class="skeleton-box" style="width: 90%; height: 14px; margin-bottom: 4px;"></div>
+    <div class="skeleton-box" style="width: 70%; height: 12px;"></div>
+  </div> <!-- Title/Artist -->
+  <div></div> <!-- GAP 2 -->
+  <div class="skeleton-box" style="height: 12px;"></div> <!-- Label -->
+          <div></div> <!-- GAP 5 -->
+  <div class="skeleton-box" style="height: 12px;"></div> <!-- Date -->
+  <div></div> <!-- GAP 3 -->
+  <div class="skeleton-box" style="height: 12px;"></div> <!-- Track count -->
+          <div></div> <!-- GAP 3 -->
+  <div class="skeleton-box" style="height: 12px;"></div> <!-- ISRC -->
+          <div></div> <!-- GAP 3 -->
+          <div>
+    <div class="skeleton-box" style="width: 60%; height: 14px; margin-bottom: 4px;"></div>
+    <div class="skeleton-box" style="width: 50%; height: 12px;"></div><!-- UPC -->
+  </div>
+  
+  <div></div> <!-- GAP 4 -->
+          <div>
+    <div class="skeleton-box" style="width: 90px; height: 14px; margin-bottom: 4px;"></div>
+    <div class="skeleton-box" style="width: 120px; height: 12px;"></div>
+  </div> <!-- Delivry -->
+
+           <div></div> <!-- GAP 4 -->
+  <div>
+    <div class="skeleton-box" style="width: 18px; height: 16px; margin-bottom: 4px;"></div>
+    <div class="skeleton-box" style="width: 18px; height: 16px;"></div>
+  </div> <!-- Actions -->
+</div>
+              <div class="skeleton-row">
+  <div class="skeleton-box"></div> <!-- ID -->
+  <div class="skeleton-box"></div> <!-- Checkbox -->
+  <div class="skeleton-box" style="height: 14px;"></div> <!-- Status -->
+   <div></div> <!-- GAP 1 -->
+  <div class="skeleton-box" style="height: 43px;"></div> <!-- Cover image -->
+  <div></div> <!-- GAP 1 -->
+  <div>
+    <div class="skeleton-box" style="width: 90%; height: 14px; margin-bottom: 4px;"></div>
+    <div class="skeleton-box" style="width: 70%; height: 12px;"></div>
+  </div> <!-- Title/Artist -->
+  <div></div> <!-- GAP 2 -->
+  <div class="skeleton-box" style="height: 12px;"></div> <!-- Label -->
+          <div></div> <!-- GAP 5 -->
+  <div class="skeleton-box" style="height: 12px;"></div> <!-- Date -->
+  <div></div> <!-- GAP 3 -->
+  <div class="skeleton-box" style="height: 12px;"></div> <!-- Track count -->
+          <div></div> <!-- GAP 3 -->
+  <div class="skeleton-box" style="height: 12px;"></div> <!-- ISRC -->
+          <div></div> <!-- GAP 3 -->
+          <div>
+    <div class="skeleton-box" style="width: 60%; height: 14px; margin-bottom: 4px;"></div>
+    <div class="skeleton-box" style="width: 50%; height: 12px;"></div><!-- UPC -->
+  </div>
+  
+  <div></div> <!-- GAP 4 -->
+          <div>
+    <div class="skeleton-box" style="width: 90px; height: 14px; margin-bottom: 4px;"></div>
+    <div class="skeleton-box" style="width: 120px; height: 12px;"></div>
+  </div> <!-- Delivry -->
+
+           <div></div> <!-- GAP 4 -->
+  <div>
+    <div class="skeleton-box" style="width: 18px; height: 16px; margin-bottom: 4px;"></div>
+    <div class="skeleton-box" style="width: 18px; height: 16px;"></div>
+  </div> <!-- Actions -->
+</div>
+              <div class="skeleton-row">
+  <div class="skeleton-box"></div> <!-- ID -->
+  <div class="skeleton-box"></div> <!-- Checkbox -->
+  <div class="skeleton-box" style="height: 14px;"></div> <!-- Status -->
+   <div></div> <!-- GAP 1 -->
+  <div class="skeleton-box" style="height: 43px;"></div> <!-- Cover image -->
+  <div></div> <!-- GAP 1 -->
+  <div>
+    <div class="skeleton-box" style="width: 90%; height: 14px; margin-bottom: 4px;"></div>
+    <div class="skeleton-box" style="width: 70%; height: 12px;"></div>
+  </div> <!-- Title/Artist -->
+  <div></div> <!-- GAP 2 -->
+  <div class="skeleton-box" style="height: 12px;"></div> <!-- Label -->
+          <div></div> <!-- GAP 5 -->
+  <div class="skeleton-box" style="height: 12px;"></div> <!-- Date -->
+  <div></div> <!-- GAP 3 -->
+  <div class="skeleton-box" style="height: 12px;"></div> <!-- Track count -->
+          <div></div> <!-- GAP 3 -->
+  <div class="skeleton-box" style="height: 12px;"></div> <!-- ISRC -->
+          <div></div> <!-- GAP 3 -->
+          <div>
+    <div class="skeleton-box" style="width: 60%; height: 14px; margin-bottom: 4px;"></div>
+    <div class="skeleton-box" style="width: 50%; height: 12px;"></div><!-- UPC -->
+  </div>
+  
+  <div></div> <!-- GAP 4 -->
+          <div>
+    <div class="skeleton-box" style="width: 90px; height: 14px; margin-bottom: 4px;"></div>
+    <div class="skeleton-box" style="width: 120px; height: 12px;"></div>
+  </div> <!-- Delivry -->
+
+           <div></div> <!-- GAP 4 -->
+  <div>
+    <div class="skeleton-box" style="width: 18px; height: 16px; margin-bottom: 4px;"></div>
+    <div class="skeleton-box" style="width: 18px; height: 16px;"></div>
+  </div> <!-- Actions -->
+</div>
+              <div class="skeleton-row">
+  <div class="skeleton-box"></div> <!-- ID -->
+  <div class="skeleton-box"></div> <!-- Checkbox -->
+  <div class="skeleton-box" style="height: 14px;"></div> <!-- Status -->
+   <div></div> <!-- GAP 1 -->
+  <div class="skeleton-box" style="height: 43px;"></div> <!-- Cover image -->
+  <div></div> <!-- GAP 1 -->
+  <div>
+    <div class="skeleton-box" style="width: 90%; height: 14px; margin-bottom: 4px;"></div>
+    <div class="skeleton-box" style="width: 70%; height: 12px;"></div>
+  </div> <!-- Title/Artist -->
+  <div></div> <!-- GAP 2 -->
+  <div class="skeleton-box" style="height: 12px;"></div> <!-- Label -->
+          <div></div> <!-- GAP 5 -->
+  <div class="skeleton-box" style="height: 12px;"></div> <!-- Date -->
+  <div></div> <!-- GAP 3 -->
+  <div class="skeleton-box" style="height: 12px;"></div> <!-- Track count -->
+          <div></div> <!-- GAP 3 -->
+  <div class="skeleton-box" style="height: 12px;"></div> <!-- ISRC -->
+          <div></div> <!-- GAP 3 -->
+          <div>
+    <div class="skeleton-box" style="width: 60%; height: 14px; margin-bottom: 4px;"></div>
+    <div class="skeleton-box" style="width: 50%; height: 12px;"></div><!-- UPC -->
+  </div>
+  
+  <div></div> <!-- GAP 4 -->
+          <div>
+    <div class="skeleton-box" style="width: 90px; height: 14px; margin-bottom: 4px;"></div>
+    <div class="skeleton-box" style="width: 120px; height: 12px;"></div>
+  </div> <!-- Delivry -->
+
+           <div></div> <!-- GAP 4 -->
+  <div>
+    <div class="skeleton-box" style="width: 18px; height: 16px; margin-bottom: 4px;"></div>
+    <div class="skeleton-box" style="width: 18px; height: 16px;"></div>
+  </div> <!-- Actions -->
+</div>
+              <div class="skeleton-row">
+  <div class="skeleton-box"></div> <!-- ID -->
+  <div class="skeleton-box"></div> <!-- Checkbox -->
+  <div class="skeleton-box" style="height: 14px;"></div> <!-- Status -->
+   <div></div> <!-- GAP 1 -->
+  <div class="skeleton-box" style="height: 43px;"></div> <!-- Cover image -->
+  <div></div> <!-- GAP 1 -->
+  <div>
+    <div class="skeleton-box" style="width: 90%; height: 14px; margin-bottom: 4px;"></div>
+    <div class="skeleton-box" style="width: 70%; height: 12px;"></div>
+  </div> <!-- Title/Artist -->
+  <div></div> <!-- GAP 2 -->
+  <div class="skeleton-box" style="height: 12px;"></div> <!-- Label -->
+          <div></div> <!-- GAP 5 -->
+  <div class="skeleton-box" style="height: 12px;"></div> <!-- Date -->
+  <div></div> <!-- GAP 3 -->
+  <div class="skeleton-box" style="height: 12px;"></div> <!-- Track count -->
+          <div></div> <!-- GAP 3 -->
+  <div class="skeleton-box" style="height: 12px;"></div> <!-- ISRC -->
+          <div></div> <!-- GAP 3 -->
+          <div>
+    <div class="skeleton-box" style="width: 60%; height: 14px; margin-bottom: 4px;"></div>
+    <div class="skeleton-box" style="width: 50%; height: 12px;"></div><!-- UPC -->
+  </div>
+  
+  <div></div> <!-- GAP 4 -->
+          <div>
+    <div class="skeleton-box" style="width: 90px; height: 14px; margin-bottom: 4px;"></div>
+    <div class="skeleton-box" style="width: 120px; height: 12px;"></div>
+  </div> <!-- Delivry -->
+
+           <div></div> <!-- GAP 4 -->
+  <div>
+    <div class="skeleton-box" style="width: 18px; height: 16px; margin-bottom: 4px;"></div>
+    <div class="skeleton-box" style="width: 18px; height: 16px;"></div>
+  </div> <!-- Actions -->
+</div>
+              <div class="skeleton-row">
+  <div class="skeleton-box"></div> <!-- ID -->
+  <div class="skeleton-box"></div> <!-- Checkbox -->
+  <div class="skeleton-box" style="height: 14px;"></div> <!-- Status -->
+   <div></div> <!-- GAP 1 -->
+  <div class="skeleton-box" style="height: 43px;"></div> <!-- Cover image -->
+  <div></div> <!-- GAP 1 -->
+  <div>
+    <div class="skeleton-box" style="width: 90%; height: 14px; margin-bottom: 4px;"></div>
+    <div class="skeleton-box" style="width: 70%; height: 12px;"></div>
+  </div> <!-- Title/Artist -->
+  <div></div> <!-- GAP 2 -->
+  <div class="skeleton-box" style="height: 12px;"></div> <!-- Label -->
+          <div></div> <!-- GAP 5 -->
+  <div class="skeleton-box" style="height: 12px;"></div> <!-- Date -->
+  <div></div> <!-- GAP 3 -->
+  <div class="skeleton-box" style="height: 12px;"></div> <!-- Track count -->
+          <div></div> <!-- GAP 3 -->
+  <div class="skeleton-box" style="height: 12px;"></div> <!-- ISRC -->
+          <div></div> <!-- GAP 3 -->
+          <div>
+    <div class="skeleton-box" style="width: 60%; height: 14px; margin-bottom: 4px;"></div>
+    <div class="skeleton-box" style="width: 50%; height: 12px;"></div><!-- UPC -->
+  </div>
+  
+  <div></div> <!-- GAP 4 -->
+          <div>
+    <div class="skeleton-box" style="width: 90px; height: 14px; margin-bottom: 4px;"></div>
+    <div class="skeleton-box" style="width: 120px; height: 12px;"></div>
+  </div> <!-- Delivry -->
+
+           <div></div> <!-- GAP 4 -->
+  <div>
+    <div class="skeleton-box" style="width: 18px; height: 16px; margin-bottom: 4px;"></div>
+    <div class="skeleton-box" style="width: 18px; height: 16px;"></div>
+  </div> <!-- Actions -->
+</div>
+              <div class="skeleton-row">
+  <div class="skeleton-box"></div> <!-- ID -->
+  <div class="skeleton-box"></div> <!-- Checkbox -->
+  <div class="skeleton-box" style="height: 14px;"></div> <!-- Status -->
+   <div></div> <!-- GAP 1 -->
+  <div class="skeleton-box" style="height: 43px;"></div> <!-- Cover image -->
+  <div></div> <!-- GAP 1 -->
+  <div>
+    <div class="skeleton-box" style="width: 90%; height: 14px; margin-bottom: 4px;"></div>
+    <div class="skeleton-box" style="width: 70%; height: 12px;"></div>
+  </div> <!-- Title/Artist -->
+  <div></div> <!-- GAP 2 -->
+  <div class="skeleton-box" style="height: 12px;"></div> <!-- Label -->
+          <div></div> <!-- GAP 5 -->
+  <div class="skeleton-box" style="height: 12px;"></div> <!-- Date -->
+  <div></div> <!-- GAP 3 -->
+  <div class="skeleton-box" style="height: 12px;"></div> <!-- Track count -->
+          <div></div> <!-- GAP 3 -->
+  <div class="skeleton-box" style="height: 12px;"></div> <!-- ISRC -->
+          <div></div> <!-- GAP 3 -->
+          <div>
+    <div class="skeleton-box" style="width: 60%; height: 14px; margin-bottom: 4px;"></div>
+    <div class="skeleton-box" style="width: 50%; height: 12px;"></div><!-- UPC -->
+  </div>
+  
+  <div></div> <!-- GAP 4 -->
+          <div>
+    <div class="skeleton-box" style="width: 90px; height: 14px; margin-bottom: 4px;"></div>
+    <div class="skeleton-box" style="width: 120px; height: 12px;"></div>
+  </div> <!-- Delivry -->
+
+           <div></div> <!-- GAP 4 -->
+  <div>
+    <div class="skeleton-box" style="width: 18px; height: 16px; margin-bottom: 4px;"></div>
+    <div class="skeleton-box" style="width: 18px; height: 16px;"></div>
+  </div> <!-- Actions -->
+</div>
+              <div class="skeleton-row">
+  <div class="skeleton-box"></div> <!-- ID -->
+  <div class="skeleton-box"></div> <!-- Checkbox -->
+  <div class="skeleton-box" style="height: 14px;"></div> <!-- Status -->
+   <div></div> <!-- GAP 1 -->
+  <div class="skeleton-box" style="height: 43px;"></div> <!-- Cover image -->
+  <div></div> <!-- GAP 1 -->
+  <div>
+    <div class="skeleton-box" style="width: 90%; height: 14px; margin-bottom: 4px;"></div>
+    <div class="skeleton-box" style="width: 70%; height: 12px;"></div>
+  </div> <!-- Title/Artist -->
+  <div></div> <!-- GAP 2 -->
+  <div class="skeleton-box" style="height: 12px;"></div> <!-- Label -->
+          <div></div> <!-- GAP 5 -->
+  <div class="skeleton-box" style="height: 12px;"></div> <!-- Date -->
+  <div></div> <!-- GAP 3 -->
+  <div class="skeleton-box" style="height: 12px;"></div> <!-- Track count -->
+          <div></div> <!-- GAP 3 -->
+  <div class="skeleton-box" style="height: 12px;"></div> <!-- ISRC -->
+          <div></div> <!-- GAP 3 -->
+          <div>
+    <div class="skeleton-box" style="width: 60%; height: 14px; margin-bottom: 4px;"></div>
+    <div class="skeleton-box" style="width: 50%; height: 12px;"></div><!-- UPC -->
+  </div>
+  
+  <div></div> <!-- GAP 4 -->
+          <div>
+    <div class="skeleton-box" style="width: 90px; height: 14px; margin-bottom: 4px;"></div>
+    <div class="skeleton-box" style="width: 120px; height: 12px;"></div>
+  </div> <!-- Delivry -->
+
+           <div></div> <!-- GAP 4 -->
+  <div>
+    <div class="skeleton-box" style="width: 18px; height: 16px; margin-bottom: 4px;"></div>
+    <div class="skeleton-box" style="width: 18px; height: 16px;"></div>
+  </div> <!-- Actions -->
+</div>
+              <div class="skeleton-row">
+  <div class="skeleton-box"></div> <!-- ID -->
+  <div class="skeleton-box"></div> <!-- Checkbox -->
+  <div class="skeleton-box" style="height: 14px;"></div> <!-- Status -->
+   <div></div> <!-- GAP 1 -->
+  <div class="skeleton-box" style="height: 43px;"></div> <!-- Cover image -->
+  <div></div> <!-- GAP 1 -->
+  <div>
+    <div class="skeleton-box" style="width: 90%; height: 14px; margin-bottom: 4px;"></div>
+    <div class="skeleton-box" style="width: 70%; height: 12px;"></div>
+  </div> <!-- Title/Artist -->
+  <div></div> <!-- GAP 2 -->
+  <div class="skeleton-box" style="height: 12px;"></div> <!-- Label -->
+          <div></div> <!-- GAP 5 -->
+  <div class="skeleton-box" style="height: 12px;"></div> <!-- Date -->
+  <div></div> <!-- GAP 3 -->
+  <div class="skeleton-box" style="height: 12px;"></div> <!-- Track count -->
+          <div></div> <!-- GAP 3 -->
+  <div class="skeleton-box" style="height: 12px;"></div> <!-- ISRC -->
+          <div></div> <!-- GAP 3 -->
+          <div>
+    <div class="skeleton-box" style="width: 60%; height: 14px; margin-bottom: 4px;"></div>
+    <div class="skeleton-box" style="width: 50%; height: 12px;"></div><!-- UPC -->
+  </div>
+  
+  <div></div> <!-- GAP 4 -->
+          <div>
+    <div class="skeleton-box" style="width: 90px; height: 14px; margin-bottom: 4px;"></div>
+    <div class="skeleton-box" style="width: 120px; height: 12px;"></div>
+  </div> <!-- Delivry -->
+
+           <div></div> <!-- GAP 4 -->
+  <div>
+    <div class="skeleton-box" style="width: 18px; height: 16px; margin-bottom: 4px;"></div>
+    <div class="skeleton-box" style="width: 18px; height: 16px;"></div>
+  </div> <!-- Actions -->
+</div>
+          </div>`;
+   <?php if($_SESSION["user_id"]!=0) { ?>
+   
+   //Get Permissons
+   
+  <?php /* var objMyPost=getAvailablePermissions("<?php echo $moduleName;?>","<?php echo $_SESSION['ROLE_ID'];?>","<?php echo $this->url('permissions', array('action'=>'getAvailablePermissions'));?>"); */ ?>
+   
+   
+  
+   
+   
+   //var iPermissions=objMyPost[0].actions;
+   
+   var iPermissions=null;
+   
+    acl_ADD = 1;
+
+	acl_EDIT = 1;
+
+	acl_DELETE = 1;
+
+
+
+
+
+
+acl_VIEW = 1;
+
+acl_PRINT = 1;
+
+
+if (iPermissions != null )
+{
+  
+   iPermissions=iPermissions.split(",");
+   
+   if(iPermissions.indexOf("1")>= 0) //add
+   
+   acl_ADD=1;
+   
+   else
+   
+   acl_ADD=0;
+   
+   if(iPermissions.indexOf("2")>= 0) //edit
+   
+   acl_EDIT=1;
+   
+   else
+   
+   acl_EDIT=0;
+   
+   if(iPermissions.indexOf("3")>= 0) //edit
+   
+   acl_DELETE=1;
+   
+   else
+   
+   acl_DELETE=0;
+   
+   if(iPermissions.indexOf("4")>= 0) //edit
+   
+   acl_VIEW=1;
+   
+   else
+   
+   acl_VIEW=0;
+   
+   
+   
+   if(iPermissions.indexOf("5")>= 0) //edit
+   
+   acl_PRINT=1;
+   
+   else
+   
+   acl_PRINT=0;
+   
+}
+else
+{
+	acl_VIEW = 1;
+}
+   
+   <?php } else { // super admin ?>
+   
+   acl_ADD=1;
+   
+   acl_EDIT=1;
+   
+   acl_VIEW=1;
+   
+   acl_DELETE=1;
+   
+   acl_PRINT=1;
+   
+   <?php } ?>
+   
+   //restrict the access
+   
+   if(acl_VIEW != 1)
+   
+   {
+   
+   alert("you dont have access for this module");
+   
+		
+   }
+    
+</script>
+<script>
+  
+   
+   $(document).ready(function () {
+	   
+	    
+	  $('#toggle-maintenance').on('change', function () {
+		   const checkbox = $(this);
+			const isChecked = checkbox.is(':checked');
+
+			// Show confirmation dialog
+			const confirmMsg = isChecked
+				? 'Are you sure you want to turn ON maintenance mode?'
+				: 'Are you sure you want to turn OFF maintenance mode?';
+
+			if (!confirm(confirmMsg)) {
+				// Revert checkbox state if canceled
+				checkbox.prop('checked', !isChecked);
+				return;
+			}
+
+			$('#maintenance-status').text('Processing...').css('color', 'orange');
+	
+		$.ajax({
+			url: '<?php echo $this->url('dashboard',array("action" => "maintenance"));?>',
+			method: 'POST',
+			data: { toggle: 1 },
+			dataType: 'json', // ✅ important!
+			success: function (res) {
+				if (res.mode) {
+					
+					$('#maintenance-status').text(res.mode).css('color', res.mode === 'ON' ? 'red' : 'green');
+				}
+			},
+			error: function () {
+				alert('Failed to toggle maintenance mode.');
+			}
+			
+		});
+	});
+	
+	$('.newRelease').click(function(){
+		window.location.href="<?php echo $this->url('newrelease',array('action' => 'index'));?>";
+	});
+
+   	$('.bs-menu-group.<?php echo $moduleName?>').addClass('bs-menu-group-current');
+	
+	<?php
+		if($moduleName == 'releases')
+		{
+			if($moduleName == 'releases' && $_GET['type'] == 'draft')
+			{
+				?>
+				$('.bs-menu-group-content.<?php echo $moduleName?>').css('display','block');
+				$('.bs-menu-group-content.<?php echo $moduleName?>').find('.bs-menu-program.drafts').addClass('bs-menu-program-current');
+				<?php
+			}
+			else if($moduleName == 'releases' && $_GET['type'] == 'review')
+			{
+				?>
+				$('.bs-menu-group-content.<?php echo $moduleName?>').css('display','block');
+				$('.bs-menu-group-content.<?php echo $moduleName?>').find('.bs-menu-program.review').addClass('bs-menu-program-current');
+				<?php
+			}
+			else if($moduleName == 'releases' && $_GET['type'] == 'inprocess')
+			{
+				?>
+				$('.bs-menu-group-content.<?php echo $moduleName?>').css('display','block');
+				$('.bs-menu-group-content.<?php echo $moduleName?>').find('.bs-menu-program.inprocess').addClass('bs-menu-program-current');
+				<?php
+			}
+			else			
+			{
+	?>
+			$('.bs-menu-group-content.<?php echo $moduleName?>').css('display','block');
+			$('.bs-menu-group-content.<?php echo $moduleName?>').find('.bs-menu-program.<?php echo $moduleName?>').addClass('bs-menu-program-current');
+			
+	<?php
+			}
+		}
+		
+		if($moduleName == 'financialreport' || $moduleName == 'payments')
+		{
+			?>
+				$('.bs-menu-group.financial').addClass('bs-menu-group-current');
+				$('.bs-menu-group-content.financial').css('display','block');
+				$('.bs-menu-group-content.financial').find('.bs-menu-program.<?php echo $moduleName?>').addClass('bs-menu-program-current');
+			<?php
+		}
+		if($moduleName == 'catelogimport')
+		{
+			?>
+			$('.bs-menu-group.releases').addClass('bs-menu-group-current');
+			$('.bs-menu-group-content.releases').css('display','block');
+			$('.bs-menu-program.<?php echo $moduleName?>').addClass('bs-menu-program-current');
+			<?php
+		}
+		
+	?>
+	/* $('#notificationIconMenu').click(function(e) {
+        e.stopPropagation(); // Prevent the click from bubbling up
+        $('#notificationContainer').slideToggle();
+    });*/
+	 $('#notificationIconMenu').click(function(e) {
+        
+        
+    });
+   
+	
+	$('.logout_btn').click(function(){
+		var storage = window.localStorage;		
+		storage.clear();
+		window.location.href="<?php echo $this->url('login', array('action'=>'logout'));?>";
+	});
+   
+   	
+   
+   	$(".nav-trigger").click(function(){
+   
+   		$(".site-head").toggleClass("off-cnvs");
+   
+   	});
+	
+	var objMyPost = AJAX_Post("<?php echo $this->url('dashboard', array('action'=>'getNotification'));?>");
+		
+		if (objMyPost.ERR_NO === 0) {
+
+			if (objMyPost.DATA.DBStatus === 'OK') {
+				
+				
+				$("#notificationNumberSign").html(objMyPost.DATA.tot_new);
+				
+				if(objMyPost.DATA.tot_new > 0)
+				{
+				  $(".linkNotificationDiv").html(objMyPost.DATA.NotiData);
+				}
+				else
+				{
+					$(".linkNotificationDiv").html("You don't have new notification");
+				}
+					
+				
+				
+			}
+
+		}
+     
+   });
+  
+  
+   
+</script>

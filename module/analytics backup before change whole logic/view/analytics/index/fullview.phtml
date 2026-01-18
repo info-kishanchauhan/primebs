@@ -1,0 +1,623 @@
+<!-- ========== HEAD INCLUDES (order cleaned) ========== -->
+<link rel="stylesheet" type="text/css" href="<?php echo $this->basePath(); ?>/public/css/index.min.css">
+<link rel="stylesheet" type="text/css" href="<?php echo $this->basePath(); ?>/public/css/anlytics_view.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Lottie (single include) -->
+<script type="module" src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.6.2/dist/dotlottie-wc.js" data-lottie-wc></script>
+
+<!-- Charts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+
+<!-- ========== PAGE CONTENT ========== -->
+<div id="bs-main-content" class="col-md-12">
+  <div class="plaB-wrapper">
+
+    <!-- Top bar: Back link -->
+    <div class="plaB-top">
+      <a class="backlink"
+         href="<?php echo $this->url('analytics', ['action'=>'index']);?>"
+         onclick="if(history.length>1){history.back(); return false;}"
+         aria-label="Back to Insights">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M15 19L8 12l7-7" />
+        </svg>
+        <span>Insights</span>
+      </a>
+    </div>
+
+   
+<!-- Platform pills bar -->
+    <div class="plaB-platforms plaB-platforms--bar" role="radiogroup" aria-label="Platform">
+      <input type="radio" id="pf-all" name="plaB-platform" value="all" checked>
+      <label for="pf-all" class="pill">All</label>
+
+      <input type="radio" id="pf-spotify" name="plaB-platform" value="spotify">
+      <label for="pf-spotify" class="pill">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#1ED760" d="M12 0a12 12 0 1 0 0 24 12 12 0 0 0 0-24Zm5.503 17.308a.747.747 0 0 1-1.029.248c-2.817-1.72-6.365-2.11-10.542-1.156a.748.748 0 1 1-.332-1.457c4.57-1.046 8.491-.597 11.655 1.336a.75.75 0 0 1 .248 1.03Zm1.469-3.265a.936.936 0 0 1-1.29.308c-3.222-1.985-8.14-2.56-11.95-1.4a.936.936 0 0 1-.545-1.791c4.355-1.323 9.773-.683 13.477 1.593a.937.937 0 0 1 .308 1.29Zm.126-3.402C15.229 8.348 8.85 8.133 5.158 9.254a1.123 1.123 0 1 1-.653-2.15c4.239-1.29 11.286-1.038 15.74 1.605a1.123 1.123 0 0 1-1.147 1.93Z"/></svg>
+        Stores
+      </label>
+
+      <input type="radio" id="pf-deezer" name="plaB-platform" value="deezer">
+      <label for="pf-deezer" class="pill">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path fill="#A238FF" d="M16.774 3.052c.185-1.072.457-1.747.758-1.748.561.002 1.016 2.341 1.016 5.229s-.455 5.229-1.016 5.229c-.23 0-.443-.397-.614-1.063-.27 2.438-.83 4.114-1.479 4.114-.502 0-.953-1.007-1.256-2.595-.207 3.02-.727 5.162-1.335 5.162-.381 0-.729-.849-.986-2.231-.31 2.854-1.025 4.853-1.859 4.853-.834 0-1.55-1.999-1.859-4.853-.256 1.382-.604 2.231-.987 2.231-.607 0-1.126-2.142-1.334-5.162-.303 1.587-.753 2.594-1.256 2.594-.649 0-1.21-1.676-1.48-4.114-.17.667-.383 1.063-.613 1.063-.561 0-1.016-2.341-1.016-5.229S1.91 1.304 2.471 1.304c.301 0 .571.676.758 1.748.3-1.85.786-3.052 1.336-3.052.653 0 1.219 1.7 1.486 4.168.262-1.796.659-2.942 1.104-2.942.624 0 1.154 2.252 1.351 5.394.369-1.611.904-2.622 1.496-2.622.592 0 1.127 1.011 1.496 2.622.197-3.142.726-5.394 1.35-5.394.444 0 .841 1.145 1.104 2.942.267-2.468.833-4.168 1.486-4.168.548 0 1.037 1.203 1.336 3.052ZM0 6.018c0-1.29.258-2.337.577-2.337.318 0 .576 1.046.576 2.337S.895 8.356.577 8.356C.258 8.356 0 7.309 0 6.018Zm18.847 0c0-1.29.258-2.337.576-2.337.318 0 .576 1.046.576 2.337s-.258 2.338-.576 2.338c-.318 0-.576-1.047-.576-2.338Z"/></svg>
+        Territories
+      </label>
+
+    </div>
+    
+
+    <!-- Believe-style cards -->
+    <div class="believe-cards-wrapper">
+      <!-- Card 1 -->
+      <div class="believe-card-track">
+        <div class="tooltip-icon">
+          <svg viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2m0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8"></path></svg>
+          <div class="tooltip-popup">This shows track usage info</div>
+        </div>
+
+        <img class="cover" src="<?php echo $this->coverIMG; ?>" alt="Track Cover">
+
+        <div class="content">
+          <div class="title"><?php echo $this->SongName; ?></div>
+          <div class="artist"><?php echo $this->releaseArtist; ?></div>
+          <div class="subtitle">Streaming Insights · <strong></strong> Performance, Revenue Metrics.</div>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <a href="https://www.primebackstage.in/faq/category/22" target="_blank" class="card-link card-20">
+        <div class="believe-card resources">
+          <svg viewBox="0 0 24 24"><path d=""></path></svg>
+          <div class="res-title">Resources</div>
+          <div class="res-desc">Booming or Top Hits, two new segments to identify when a track is viral</div>
+        </div>
+      </a>
+    </div>
+
+    
+
+    
+
+    <!-- Table + overlay loader (anti-jump) -->
+    <style>
+      
+      /* ===== FINAL CENTERING PATCH for pill bar ===== */
+
+/* Bar: exact height + symmetric padding so content sits dead-center */
+.plaB-platforms--bar{
+  display:flex; align-items:center; gap:6px; flex-wrap:wrap;
+  background:#F4F6FF; border-radius:9999px;
+  padding:4px 10px !important;      /* symmetric */
+  min-height:44px !important;        /* ✅ visual height of the purple bar */
+  box-shadow: inset 0 -1px 0 rgba(16,24,40,.02);
+  width:max-content; max-width:100%;
+  box-sizing:border-box;
+}
+
+/* Radios hidden (unchanged) */
+.plaB-platforms input[type="radio"]{
+  position:absolute; opacity:0; width:0; height:0; pointer-events:none;
+}
+
+/* Pill: exact chip size + line-height equals height = perfect vertical centering */
+.plaB-platforms .pill{
+  display:inline-flex; align-items:center; gap:8px;
+  height:36px !important;            /* chip height */
+  line-height:36px !important;       /* ✅ centers text inside chip */
+  padding:0 14px !important;
+  border-radius:9999px; border:0;
+  background:transparent;
+  font:800 13px/36px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial !important;
+  color:#1f2937; letter-spacing:.02em; white-space:nowrap;
+  cursor:pointer; user-select:none;
+  transition:background .18s ease, box-shadow .18s ease, transform .08s ease, color .18s ease;
+  margin:0 !important;               /* remove any stray margins */
+}
+
+/* Icons: remove baseline drift completely */
+.plaB-platforms .pill svg,
+.plaB-platforms .pill img{
+  width:18px; height:18px; display:block; flex:0 0 18px;
+}
+
+/* Active state */
+.plaB-platforms input[type="radio"]:checked + label.pill{
+  background:#fff;
+  box-shadow:0 1px 2px rgba(16,24,40,.06), 0 0 0 1px rgba(16,24,40,.06) inset;
+  color:#111827;
+}
+
+/* Hover/active micro motion */
+.plaB-platforms .pill:hover{ transform:translateY(-1px) }
+.plaB-platforms .pill:active{ transform:translateY(0) }
+
+/* When wrapping on iPad, keep vertical rhythm */
+@media (max-width:1024px){
+  .plaB-platforms--bar{ width:100%; min-height:44px !important; }
+}
+
+      #catalogContent { min-height: 600px; position: relative; margin-top:20px; }
+      #tblMasterList, #tblMasterList_wrapper { opacity: 0; transition: opacity .5s ease; }
+      #tblMasterList.ready, #tblMasterList_wrapper.ready { opacity: 1; }
+
+      .plaB-table-loader.overlay{
+        position:absolute; inset:0; display:block; z-index:10;
+        opacity:0; visibility:hidden; transition:opacity .35s ease, visibility .35s ease;
+        background: transparent; /* if dim needed: rgba(255,255,255,.6) */
+        border-radius: 16px;
+    background: #d7e2f914;
+    height: 450px;
+    display: flex
+;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin-bottom: 70px;
+      }
+      .plaB-table-loader.overlay.show{opacity:1;visibility:visible;}
+      .plaB-table-loader.overlay.hide{opacity:0;visibility:hidden;pointer-events:none;}
+
+      .plaB-table-loader dotlottie-wc{
+        position:absolute!important; left:50%!important; top:50%!important;
+        transform:translate(-50%,-50%)!important; display:block!important; margin:0!important;
+      }
+
+      /* DataTable skin */
+      #tblMasterList_wrapper {
+        background:#ffffff; border:1px solid #ececec; border-radius:12px; padding:0; margin-top:20px;
+        box-shadow:0 2px 6px rgba(0,0,0,0.03);
+      }
+      #tblMasterList thead th{
+        background-color:#f9fafb!important; color:#3c3c3c!important; font-size:13px!important; font-weight:700!important;
+        padding:12px 16px!important; border-bottom:1px solid #ececec!important;
+      }
+      #tblMasterList tbody td{
+        font-size:14px!important; padding:12px 16px!important; color:#374151; background:#ffffff!important;
+      }
+      #tblMasterList td{ font-size:14px; }
+
+      .plaB-empty{
+        border-radius:16px; background:#d7e2f914; height:450px; display:flex; flex-direction:column;
+        align-items:center; justify-content:center; text-align:center; margin-bottom:70px;
+      }
+      .plaB-empty h3{ margin:0 0 6px; font-size:20px; font-weight:800; }
+      .plaB-empty p{ margin:0; color:#6b7280; }
+    </style>
+
+    <div id="catalogContent" class="stacked-area">
+      <!-- OVERLAY LOADER -->
+      <div id="tableLoader" class="plaB-table-loader overlay">
+        <dotlottie-wc src="https://lottie.host/6132e814-5035-45c1-ad23-e8e5960114f7/Vmlnzbbkv6.lottie" style="width:250px;height:250px" speed="1" autoplay loop></dotlottie-wc>
+      </div>
+
+      <table id="tblMasterList" class="table dataTable no-footer">
+        <!-- 9 columns (match headers) -->
+        <col width="10%"><col width="18%"><col width="10%"><col width="12%"><col width="12%"><col width="12%"><col width="12%"><col width="12%"><col width="12%">
+        <thead>
+          <tr>
+            <th><?php echo $this->translate('RW'); ?></th>
+            <th><?php echo $this->translate('SR'); ?></th>
+            <th><?php echo $this->translate('Stores'); ?></th>
+            <th><?php echo $this->translate('Top %'); ?></th>
+            <th><?php echo $this->translate('Audio Streams'); ?></th>
+            <th><?php echo $this->translate('Creations'); ?></th>
+            <th><?php echo $this->translate('Views'); ?></th>
+            <th><?php echo $this->translate('Revenue'); ?></th>
+            <th><?php echo $this->translate('Sales Months'); ?></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <!-- Last update chips -->
+    <br>
+    <?php
+      $today = new DateTime();
+      $lastMonth = clone $today; $lastMonth->modify('-1 month');
+      $displayDate = ' 2 ' . $lastMonth->format('F Y');
+    ?>
+    <div class="update-wrapper hide">
+      <strong>Last update:</strong>
+      <div class="platform-tag">TikTok
+        <span class="info-icon">i <span class="tooltip">Updated <?php echo $displayDate; ?></span></span>
+      </div>
+      <div class="platform-tag">YouTube Shorts
+        <span class="info-icon">i <span class="tooltip">Updated <?php echo $displayDate; ?></span></span>
+      </div>
+      <div class="platform-tag">Meta
+        <span class="info-icon">i <span class="tooltip">Updated <?php echo $displayDate; ?></span></span>
+      </div>
+    </div>
+
+    <br>
+
+    <!-- Articles -->
+    <div class="plaB-cards">
+      <article class="card">
+        <img src="https://backstage-apps-prd.cdn.believebackstage.fr/micro-apps/analytics/assets/images/playlist/article1.jpg" alt="">
+        <div class="meta">Learn more</div>
+        <a href="#" class="link">Playlists: an Essential Strategy For the Discovery of Your Music</a>
+        <div class="chips">
+          <span class="chip">YouTube</span><span class="chip">Deezer</span>
+          <span class="chip">Apple Music</span><span class="chip">Spotify</span>
+        </div>
+      </article>
+      <article class="card">
+        <img src="https://backstage-apps-prd.cdn.believebackstage.fr/micro-apps/analytics/assets/images/playlist/article2.jpg" alt="">
+        <div class="meta">Get playlisted</div>
+        <a href="#" class="link">Your Guide to Getting Playlisted with Believe</a>
+        <div class="chips"><span class="chip">YouTube</span></div>
+      </article>
+      <article class="card">
+        <img src="https://backstage-apps-prd.cdn.believebackstage.fr/micro-apps/analytics/assets/images/playlist/article3.jpg" alt="">
+        <div class="meta">Read more</div>
+        <a href="#" class="link">How To Get Your Tracks Included In Spotify’s Algorithmic Playlists</a>
+        <div class="chips"><span class="chip">Spotify</span></div>
+      </article>
+    </div>
+
+  </div>
+</div>
+
+<!-- ========== PAGE CSS (backlink, cards, platform bar) ========== -->
+<style>
+  :root{
+    --b-text:#1c2430; --b-muted:#6b7280; --b-border:#e7eaf2; --b-chip:#ffffff; --b-bg:#fff;
+    --b-shadow:0 8px 24px rgba(16,24,40,.06); --b-radius:12px; --b-blue:#2563eb;
+    --b-pill:#f3f4f6; --b-pill-active:#eef2ff; --b-outline:#d9dfff;
+  }
+  .plaB-wrapper{max-width:1300px;margin:28px auto;color:var(--b-text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;}
+  .plaB-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+  .plaB-top h1{margin:0;font-weight:600;font-size:15px;letter-spacing:-.02em;}
+
+  /* Backlink pill button */
+  .plaB-top .backlink{
+    display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:9999px;background:#fff;color:#111827;text-decoration:none;
+    font:600 14px/1 Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+    transition:background .18s ease, border-color .18s ease, box-shadow .18s ease, transform .08s ease, color .18s ease; white-space:nowrap;
+    border:1px solid transparent;
+  }
+  .plaB-top .backlink .icon{width:16px;height:16px;flex:0 0 16px;}
+  .plaB-top .backlink .icon path{fill:none;stroke:currentColor;stroke-width:2.25;stroke-linecap:round;stroke-linejoin:round;transition:transform .15s ease;}
+  .plaB-top .backlink:hover{background:#eef2ff;border-color:#c7d2fe;color:#4338ca;box-shadow:0 6px 16px rgba(79,70,229,.15);transform:translateY(-1px);}
+  .plaB-top .backlink:hover .icon{transform:translateX(-2px);}
+  .plaB-top .backlink:active{transform:translateY(0);box-shadow:0 2px 6px rgba(17,24,39,.15);background:#e0e7ff;border-color:#a5b4fc;}
+  .plaB-top .backlink:focus-visible{outline:2px solid #c7d2fe; outline-offset:3px; border-radius:9999px;}
+
+/* Cards */ .believe-cards-wrapper{display:flex;flex-wrap:wrap;gap:20px;justify-content:space-between;margin:0 auto 20px;font-family:'Inter',sans-serif;} /* Card 1 - Most Popular Track */
+.believe-card-track {
+    flex: 1 1 55%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 50px 50px;
+    gap: 40px;
+    min-height: 140px;
+    border-radius: 13px;
+    background-image: url(https://backstage-apps-prd.cdn.believebackstage.fr/micro-apps/analytics/assets/images/contextCardBackground.svg), linear-gradient(90deg, rgb(244 246 255 / 75%) 0%, rgb(244 246 255 / 86%) 100%);
+    background-size: cover, cover;
+    background-position: center, center;
+    background-repeat: no-repeat, no-repeat;
+    background-blend-mode: multiply;
+}
+ .tooltip-icon{position:absolute;top:14px;right:14px;display:flex;align-items:center;justify-content:center;background:#f3e8fb;padding:8px 12px;border-top-left-radius:12px;border-bottom-left-radius:12px;cursor:pointer;} .tooltip-icon svg{width:20px;height:20px;fill:#7d2491;} .tooltip-popup{position:absolute;top:-38px;right:0;background:#111827;color:#fff;font-size:12px;padding:6px 10px;border-radius:6px;white-space:nowrap;opacity:0;visibility:hidden;transform:translateY(6px);transition:all .2s ease;z-index:100;} .tooltip-icon:hover .tooltip-popup{opacity:1;visibility:visible;transform:translateY(0);} .believe-card-track .cover{width:120px;height:120px;object-fit:cover;border-radius:12px;border:1px solid #ddd;flex-shrink:0;} .believe-card-track .content{flex:1;} .believe-card-track .content .title {
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1.5;
+  color: #222222;
+  margin-bottom: 0px;
+  font-family: "Open Sans", Roboto, Arial, sans-serif;
+}
+  
+  .believe-card-track .content .artist {
+  font-size: 19px;
+  font-weight: 550;
+  line-height: 1.5;
+  color: #222222;
+  margin-bottom: 15px;
+  font-family: "Open Sans", Roboto, Arial, sans-serif;
+}
+
+.believe-card-track .content .subtitle {
+  font-size: 12px;
+  color: #595959;
+  line-height: 1.5;
+} .card-link.card-20{flex:1 1 20%;text-decoration:none;color:inherit;display:block;border-radius:16px;} .believe-card.resources {
+  position: relative;
+  background: #ffffff;
+  background-image: url(https://img.freepik.com/premium-photo/defocused-image-illuminated-lights-night_1048944-26292677.jpg?w=900);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: right bottom;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  padding: 55px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden; /* keeps overlay inside radius */
+}
+
+/* 👇 Overlay color layer */
+.believe-card.resources::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(135deg, rgb(0 0 0 / 35%) 0%, /* darker tint */ rgb(0 0 0 / 55%) 100%);
+    z-index: 0;
+}
+
+/* ensures your text/content stays above overlay */
+.believe-card.resources > * {
+  position: relative;
+  z-index: 1;
+} .card-link.card-20:hover .believe-card.resources{transform:translateY(-4px) scale(1.02);box-shadow:0 10px 22px rgba(0,0,0,0.15);} .believe-card.resources svg{width:32px;height:32px;fill:#ffffff;margin-bottom:10px;} .believe-card.resources .res-title{font-size:15px;font-weight:600;color:#ffffff;margin-bottom:6px;} .believe-card.resources .res-desc{font-size:13px;color:#ffffff;line-height:1.5;}
+
+  /* Platforms bar */
+  .plaB-platforms{display:flex;gap:10px;align-items:center;margin:14px 0 18px;}
+  .plaB-platforms--bar{background:#F4F6FF;border-radius:9999px;padding:5px 10px;gap:5px;box-shadow:inset 0 -1px 0 rgba(16,24,40,.02);width:var(--pla-bar-width, max-content);max-width:100%;}
+  .plaB-platforms input{display:none;}
+  .plaB-platforms .pill{display:inline-flex;gap:8px;align-items:center;padding:5px 12px;border-radius:9999px;background:transparent;border:0;font-weight:800;font-size:13px;color:#3c3b3b;letter-spacing:.02em;}
+  .plaB-platforms svg{width:18px;height:18px;display:block;}
+  .plaB-platforms input:checked+label.pill{background:#fff;box-shadow:0 1px 2px rgba(16,24,40,.06);}
+
+  /* Article cards grid */
+  .plaB-cards{display:grid;gap:20px;grid-template-columns:repeat(3,1fr);margin-bottom:12px;}
+  .card{background:#fff;border:1px solid #f1f5ff;border-radius:14px;box-shadow:var(--b-shadow);overflow:hidden;}
+  .card img{display:block;width:100%;height:140px;object-fit:cover;}
+  .card .meta{padding:10px 14px 4px;color:#4b5563;font-weight:600;font-size:13px;}
+  .card .link{display:block;padding:0 14px 12px;font-weight:700;font-size:13px;color:var(--b-blue);text-decoration:none;}
+  .card .link:hover{text-decoration:underline;}
+  .card .chips{display:flex;gap:8px;flex-wrap:wrap;padding:0 14px 14px;}
+  .card .chip{background:#fff;border:1px solid var(--b-border);border-radius:999px;padding:6px 10px;font-size:12px;font-weight:700;color:#475467;box-shadow:var(--b-shadow);}
+
+  @media (max-width:1024px){.plaB-cards{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:640px){
+    .plaB-top{flex-direction:column;gap:10px;align-items:flex-start;}
+    .plaB-cards{grid-template-columns:1fr;}
+  }
+
+  /* Update chips */
+  .update-wrapper{display:flex;flex-wrap:wrap;gap:20px;padding:20px 30px;font-family:'Inter',sans-serif;font-size:14px;align-items:center;}
+  .platform-tag{display:flex;align-items:center;position:relative;color:#4b5563;}
+  .info-icon{margin-left:6px;width:18px;height:18px;background:#f3f4f6;border:1px solid #d1d5db;border-radius:50%;font-size:12px;color:#6b7280;text-align:center;line-height:18px;cursor:pointer;transition:background .3s ease;}
+  .info-icon:hover{background:#e5e7eb;}
+  .tooltip{display:none;position:absolute;bottom:120%;left:50%;transform:translateX(-50%);background:#111827;color:#fff;font-size:12px;padding:4px 8px;border-radius:4px;white-space:nowrap;opacity:0;transition:opacity .3s ease;z-index:10;}
+  .platform-tag:hover .tooltip{display:block;opacity:1;}
+  
+  
+  /* Smooth row hover */
+#tblMasterList.dataTable tbody tr{
+  position: relative;                  /* needed for the left accent */
+  transition: background-color .15s ease, box-shadow .15s ease;
+}
+#tblMasterList.dataTable tbody tr:hover td{
+  background: #f6f8ff !important;      /* light indigo-ish */
+}
+
+
+
+/* hard kill (fallback) */
+.dataTables_info{ display:none !important; }
+
+/* Pro-level table polish */
+#tblMasterList_wrapper{
+  background:#fff; border:1px solid #ececec; border-radius:14px; padding:0; margin-top:20px;
+  box-shadow:0 8px 24px rgba(16,24,40,.06);
+}
+#tblMasterList thead th{
+  background:#f9fafb!important; color:#1f2937!important; font-weight:700!important; font-size:13px!important;
+  padding:12px 16px!important; border-bottom:1px solid #e5e7eb!important;
+}
+#tblMasterList tbody td{
+  font-size:14px!important; padding:12px 16px!important; color:#374151; background:#fff!important;
+  border-bottom:1px solid #f2f4f7;
+}
+/* Zebra */
+#tblMasterList.dataTable tbody tr:nth-child(even) td{ background:#fbfcff !important; }
+/* Smooth hover */
+#tblMasterList.dataTable tbody tr{ transition: background-color .12s ease, box-shadow .12s ease; }
+#tblMasterList.dataTable tbody tr:hover td{ background:#f6f8ff !important; }
+
+/* Numeric columns: clean right align with tabular figures */
+#tblMasterList td.num{
+  text-align:right; font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1, "liga" 0;
+}
+
+/* SR badge look */
+#tblMasterList td.sr-badge{
+  font-weight:700; color:#111827;
+}
+
+/* “Sales Months” pill */
+#tblMasterList td.date-pill > *{ display:inline-block; }
+#tblMasterList td.date-pill{
+  white-space:nowrap;
+}
+#tblMasterList td.date-pill::after{
+  content:"";
+}
+#tblMasterList td.date-pill span,
+#tblMasterList td.date-pill{
+  background:#eef2ff; color:#4338ca; border:1px solid #c7d2fe;
+  padding:4px 10px; border-radius:9999px; font-weight:700;
+}
+
+
+</style>
+
+
+<!-- ========== DATATABLES INIT (single, stable) ========== -->
+<script>
+var pagefunction = function () {
+  var responsiveHelper_dt_basic;
+  var breakpointDefinition = { tablet: 1024, phone: 480 };
+
+  var $tbl    = $("#tblMasterList");
+var $loader = $("#tableLoader");
+
+// State
+var lastTotal = null, showTimer = null, loaderShown = false;
+
+function showLoader(){ 
+  if(!loaderShown){ $loader.removeClass('hide').addClass('show'); loaderShown = true; }
+}
+function hideLoader(){ 
+  if(showTimer){ clearTimeout(showTimer); showTimer=null; }
+  if(loaderShown){ $loader.removeClass('show').addClass('hide'); loaderShown = false; }
+}
+function ready(){ $('#tblMasterList_wrapper, #tblMasterList').addClass('ready'); }
+
+// Start: hidden
+hideLoader();
+$('#tblMasterList, #tblMasterList_wrapper').removeClass('ready');
+
+/* 1) BEFORE each request: schedule loader (debounced) */
+$tbl.on('preXhr.dt', function () {
+  lastTotal = null; // unknown
+  if (showTimer) clearTimeout(showTimer);
+  showTimer = setTimeout(function(){ showLoader(); }, 150); // 120–250ms ok
+});
+
+/* 2) AFTER response: know totals; empty => never show */
+$tbl.on('xhr.dt', function (e, settings, json) {
+  var total = 0;
+
+  // cover all common DT server-side keys
+  if (json) {
+    total = parseInt((
+      json.iTotalDisplayRecords ??
+      json.recordsTotal ??
+      json.iTotalRecords ??
+      0
+    ), 10) || 0;
+
+    // fallback: if API sends array
+    if (!total && Array.isArray(json.data)) total = json.data.length;
+  }
+
+  lastTotal = total;
+
+  if (total === 0) {              // empty: kill loader, mark ready
+    hideLoader(); 
+    ready();
+  } else {
+    // data hai: agar processing hat chuka hai to turant hide kar do
+    // (warna drawCallback me hide ho jayega)
+    if ($('.dataTables_processing:visible').length === 0) {
+      hideLoader(); 
+      ready();
+    }
+  }
+});
+
+/* 3) Processing toggle (fast requests ke liye safety) */
+$tbl.on('processing.dt', function (e, settings, processing) {
+  if (processing) {
+    // unknown (null) ya >0 ke case me show kar sakte
+    if (lastTotal !== 0) showLoader();
+  } else {
+    hideLoader();
+    ready();
+  }
+});
+
+
+  var oTable = $tbl.dataTable({
+    "bAutoWidth": false,
+    "bLengthChange": false,
+    "bPaginate": false,
+    "sDom": "<'dt-toolbar'<'col-xs-12 col-sm-6 hidden-xs'i><'col-sm-6 col-xs-12 hidden-xs'<'toolbar'>>>" + "t" + "<'dt-toolbar-footer'<><'col-xs-12 col-sm-6'p>>",
+    "info": false, 
+    "bProcessing": true,
+    "bServerSide": true,
+    "autoWidth": true,
+
+    "preDrawCallback": function () {
+      if (!responsiveHelper_dt_basic) {
+        responsiveHelper_dt_basic = new ResponsiveDatatablesHelper($tbl, breakpointDefinition);
+      }
+    },
+    "rowCallback": function (nRow) {
+      responsiveHelper_dt_basic.createExpandIcon(nRow);
+    },
+    "drawCallback": function (oSettings) {
+      if (responsiveHelper_dt_basic && responsiveHelper_dt_basic.respond) {
+        responsiveHelper_dt_basic.respond();
+      }
+
+      // total rows (robust fallback)
+      var total = 0;
+      if (oSettings.json) {
+        total = parseInt((oSettings.json.iTotalDisplayRecords ?? oSettings.json.recordsTotal ?? 0), 10) || 0;
+      }
+
+      if (total === 0) {
+        $('#tblMasterList_wrapper,#tblMasterList').hide();
+        $('.update-wrapper').addClass('hide');
+        if (!$('#noRecordsMessage').length) {
+          $('#tblMasterList_wrapper').parent().append(`
+            <div id="noRecordsMessage" class="plaB-empty">
+              <dotlottie-wc src="https://lottie.host/3d7c4d75-1a05-4934-8ccb-8427acd4b50a/0we5XTd6ZY.lottie" style="width:300px;height:300px;" autoplay loop></dotlottie-wc>
+              <h3>No insights data Available yet.</h3><br>
+              <p>Once insights are available,<br> you’ll be able to track performance, revenue, and audience engagement right here.</p>
+            </div>`);
+        }
+        hideLoader(); ready();
+      } else {
+        $('.update-wrapper').removeClass('hide');
+        $('#tblMasterList_wrapper,#tblMasterList,.export-button').show();
+        $('#noRecordsMessage').remove();
+        // smooth finish
+        setTimeout(function(){ hideLoader(); ready(); }, 300);
+      }
+    },
+
+    "fnServerParams": function (aoData) {
+      aoData.push(
+        { "name": "id", "value": "" },
+        { "name": "from_month", "value": "<?php echo $_GET['from_month']?>" },
+        { "name": "to_month",   "value": "<?php echo $_GET['to_month']?>" },
+        { "name": "release_id", "value": "<?php echo $_GET['id']?>" }
+      );
+    },
+
+    "sAjaxSource": "<?php echo $this->url('analytics', array('action'=>'list2'));?>",
+    "aoColumns": [
+      { "bSearchable": false, "bVisible": false }, // RW
+      null, null, null, null, null, null, null, null
+    ],
+    "columnDefs": [{ className: "hidden", "targets": [0] }]
+  });
+};
+loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatables/jquery.dataTables.min.js", function () {
+  loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatables/dataTables.colVis.min.js", function () {
+    loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatables/dataTables.tableTools.min.js", function () {
+      loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatables/dataTables.bootstrap.min.js", function () {
+        loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatable-responsive/datatables.responsive.min.js", pagefunction);
+      });
+    });
+  });
+});
+</script>
+
+
+<!-- ========== TABLE HEIGHT MEMORY (prevents first-load jump) ========== -->
+<script>
+
+  // Tiny state hooks for future wiring
+  (function(){
+    const state = { range:'7d', platform:'all' };
+    document.querySelectorAll('[name="plaB-platform"]').forEach(el=>{
+      el.addEventListener('change', e => state.platform = e.target.value);
+    });
+  })();
+</script>

@@ -1,0 +1,271 @@
+<!-- widget grid -->
+<section id="widget-grid" class="page page-ui-tables">
+
+    <!-- row -->
+    <div class="row">
+
+        <!-- NEW WIDGET START -->
+        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+
+
+
+            <?php include_once("grid.php"); ?>
+            <?php include_once("form.php"); ?>
+
+
+        </article>
+        <!-- WIDGET END -->
+
+    </div>
+
+    <!-- end row -->
+
+    <!-- end row -->
+
+</section>
+<!-- end widget grid -->
+
+
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+
+        $("#btnSave").click(function (e) {
+            e.stopPropagation();
+
+            $("#frmForm").submit();
+        });
+
+
+        //Form Submission
+        $("#frmForm").validate(
+            {
+                submitHandler: function (form) {
+
+
+                    if ($("#name").val() == '') {
+                        mySmallAlert('Error...!', 'Name is Required', 0);
+                        return;
+                    }
+
+                    if(strActionMode=="ADD") {
+                        //Validate  duplicate
+                        var isDuplicate = fn_validate_duplicate($("#name").val(), "tbl_actions", "name", "<?php echo $this->url('actions', array('action'=>'validateduplicate'));?>");
+                        if (isDuplicate) {
+                            mySmallAlert('Duplicate Error...!', 'Duplicate Found.Grade Name is Already exists !', 0);
+                            return false;
+                        }
+                    }
+
+                    if ($("#password").val() == '') {
+                        mySmallAlert('Error...!', 'Password is Required', 0);
+                        return;
+                    }
+                    if ($("#role").val() == '') {
+                        mySmallAlert('Error...!', 'Role is Required', 0);
+                        return;
+                    }
+
+                    var $form = $('#frmForm');
+                    var objMasterData = $form.serializeObject();
+                    if (strActionMode == 'ADD')
+                        $.extend(objMasterData, { MASTER_KEY_ID: 0});
+                    else
+                        $.extend(objMasterData, { MASTER_KEY_ID: iActiveID});
+
+                    objMasterData = JSON.stringify(objMasterData);
+
+                    var objFormData =
+                    {
+                        pAction    : strActionMode,
+                        FORM_DATA: objMasterData
+
+                    };
+                    var objMyPost = AJAX_Post("<?php echo $this->url('actions', array('action'=>'save'));?>", objFormData);
+                    if (objMyPost.ERR_NO === 0) {
+                        if (objMyPost.DATA.DBStatus === 'OK') {
+                            strActionMode = "EDIT";
+                            mySmallAlert('Save Record', 'Actions Entry Saved successfully', 1);
+                            iActiveID = objMyPost.DATA.MY_ID;
+                            visibleControl('widForm', false);
+                            visibleControl('widGrid', true);
+                            oTable.fnDraw();
+                        }
+                    }
+                    else {
+                        mySmallAlert('Error...!', 'There was an error', 0);
+                    }
+
+                }
+            });
+
+
+
+    });
+
+
+
+    // PAGE RELATED SCRIPTS
+
+    /* DO NOT REMOVE : GLOBAL FUNCTIONS!
+     *
+     * pageSetUp(); WILL CALL THE FOLLOWING FUNCTIONS
+     *
+     * // activate tooltips
+     * $("[rel=tooltip]").tooltip();
+     *
+     * // activate popovers
+     * $("[rel=popover]").popover();
+     *
+     * // activate popovers with hover states
+     * $("[rel=popover-hover]").popover({ trigger: "hover" });
+     *
+     * // activate inline charts
+     * runAllCharts();
+     *
+     * // actions widgets
+     * setup_widgets_desktop();
+     *
+     * // run form elements
+     * runAllForms();
+     *
+     ********************************
+     *
+     * pageSetUp() is needed whenever you load a page.
+     * It initializes and checks for all basic elements of the page
+     * and makes rendering easier.
+     *
+     */
+
+//    pageSetUp();
+
+    /*
+     * ALL PAGE RELATED SCRIPTS CAN GO BELOW HERE
+     * eg alert("my home function");
+     *
+     * var pagefunction = function() {
+     *   ...
+     * }
+     * loadScript("js/plugin/_PLUGIN_NAME_.js", pagefunction);
+     *
+     * TO LOAD A SCRIPT:
+     * var pagefunction = function (){
+     *  loadScript(".../plugin.js", run_after_loaded);
+     * }
+     *
+     * OR
+     *
+     * loadScript(".../plugin.js", run_after_loaded);
+     */
+
+
+    // pagefunction
+    var pagefunction = function () {
+        //console.log("cleared");
+
+
+        /* // DOM Position key index //
+
+         l - Length changing (dropdown)
+         f - Filtering input (search)
+         t - The Table! (datatable)
+         i - Information (records)
+         p - Pagination (paging)
+         r - pRocessing
+         < and > - div elements
+         <"#id" and > - div with an id
+         <"class" and > - div with a class
+         <"#id.class" and > - div with an id and class
+
+         Also see: http://legacy.datatables.net/usage/features
+         */
+
+        /* BASIC ;*/
+        var responsiveHelper_dt_basic = undefined;
+        var responsiveHelper_datatable_fixed_column = undefined;
+        var responsiveHelper_datatable_col_reorder = undefined;
+        var responsiveHelper_datatable_tabletools = undefined;
+
+        var breakpointDefinition = {
+            tablet: 1024,
+            phone: 480
+        };
+
+        /* TABLETOOLS */
+        oTable = $("#tblMasterList").dataTable(
+            {
+                "bAutoWidth": false,
+                "bLengthChange": false,
+                "sDom": "<'dt-toolbar'<'col-xs-12 col-sm-6 hidden-xs'f><'col-sm-6 col-xs-12 hidden-xs'<'toolbar'>>r>" +
+                    "t" +
+                    "<'dt-toolbar-footer'<'col-sm-6 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-6'p>>",
+                "bProcessing": true,
+                "bServerSide": true,
+
+
+                "autoWidth" : true,
+                "preDrawCallback" : function() {
+                    // Initialize the responsive datatables helper once.
+                    if (!responsiveHelper_dt_basic) {
+                        responsiveHelper_dt_basic = new ResponsiveDatatablesHelper($('#tblMasterList'), breakpointDefinition);
+                    }
+                },
+                "rowCallback" : function(nRow) {
+                    responsiveHelper_dt_basic.createExpandIcon(nRow);
+                },
+                "drawCallback" : function(oSettings) {
+                    responsiveHelper_dt_basic.respond();
+                },
+
+
+                "fnServerParams": function (aoData) {
+                    aoData.push({ "name": "id", "value": "" });
+                },
+                "sAjaxSource": "<?php echo $this->url('actions', array('action'=>'list'));?>",
+                "aoColumns": [
+                    { "bSearchable": false, "bVisible": false },
+                    null,
+                    null,
+                    {"bSearchable": false, "bSortable": false,
+                        "mRender" : function (data, type, full) {
+
+                            return grid_buttons(full[0]);
+
+                        }
+                    }
+                ],
+                "columnDefs": [
+                    { className: "hidden", "targets": [ 0 ] }
+                ]
+            });
+
+        /* END TABLETOOLS */
+		$('.dataTables_filter input').attr("placeholder", "Search");
+
+        fnEdit("<?php echo $this->url('actions', array('action'=>'getrec'));?>");
+        fnView("<?php echo $this->url('actions', array('action'=>'getrec'));?>");
+        fnDelete("<?php echo $this->url('actions', array('action'=>'delete'));?>");
+
+
+    };
+
+
+
+</script>
+
+<script>
+    // load Page related plugins
+
+
+                loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatables/jquery.dataTables.min.js", function () {
+                    loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatables/dataTables.colVis.min.js", function () {
+                        loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatables/dataTables.tableTools.min.js", function () {
+                            loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatables/dataTables.bootstrap.min.js", function () {
+                                loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatable-responsive/datatables.responsive.min.js", pagefunction)
+                            });
+                        });
+        });
+    });
+
+</script>

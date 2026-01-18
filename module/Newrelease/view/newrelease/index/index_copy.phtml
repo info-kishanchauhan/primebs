@@ -1,0 +1,1929 @@
+<style>
+#releaseCover {
+  background: #f9fafb;
+  border: 2px dashed #d1d5db;
+  border-radius: 16px;
+  padding: 10px 1px;
+  text-align: center;
+  transition: border-color .2s ease;
+}
+#releaseCover:hover {
+  border-color: #7d2492;
+}
+#releaseCover img {
+  max-width: 140px;
+  margin-bottom: 10px;
+  border-radius: 12px;
+}
+#upload_cover_text {
+  color: #7d2492;
+  font-weight: 600;
+}
+
+
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.control-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.form-control, select, textarea {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 14px;
+  transition: border .2s ease, box-shadow .2s ease;
+}
+.form-control:focus {
+  border-color: #7d2492;
+  box-shadow: 0 0 0 3px rgba(125, 36, 146, .15);
+}
+
+ .disabled a{
+	 pointer-events:none;
+	 z-index: 0;
+
+ }
+ li.disabled
+ {
+	 cursor:not-allowed;
+ }
+ .cover-error a 
+ {
+	 color: #b94a48;
+ }
+ .divAppend
+ {
+	 margin-left: -20px;
+    margin-top: 7px;
+ }
+ .bs-alert-danger
+{
+	color: #a94442 !important;
+    background-color: #f2dede!important;
+    border-color: #ebccd1!important;
+	margin: 15px 15px 0;
+	border-radius: 4px!important;
+}
+.bs-alert-message {
+    font-size: 14px!important;
+	/*white-space: pre-line;*/
+    
+}
+.suggestion-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 5px 0 0;
+    border: 1px solid #ccc;
+    border-top: none;
+    max-height: 200px;
+    overflow-y: auto;
+    position: absolute;
+    background: #fff;
+    z-index: 1000;
+    border-radius: 0 0 5px 5px;
+    width: calc(100% - 30px);
+	top: 27px;
+}
+
+/* Individual Suggestion Item */
+.suggestion-item {
+    padding: 10px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.suggestion-item:hover {
+    background: #f0f0f0;
+}
+
+</style>
+
+<link rel="stylesheet" type="text/css" href="<?php echo $this->basePath(); ?>/public/css/assets.css">
+
+<?php
+	if($_SESSION['USER_TYPE'] == 'Limited Access' && $_SESSION["SUBUSER"] == '0' )
+	{
+		if(strtotime('Y-m-d') >= strtotime($_SESSION['USER_START_DATE']) && strtotime('Y-m-d') <= strtotime($_SESSION['USER_END_DATE'])){}
+		else
+		{
+			echo '<div id="bs-main-alert" class="bs-alert bs-alert-left" style="display:block;">
+				<div class="bs-alert-message">Your standard user access has expired. Please renew your subscription to continue accessing all features.</div>
+			</div>';
+			
+		}
+	}
+	else
+	{
+?>
+
+<div id="easyEntryContent">
+    <!-- header (release title, save button...) -->
+    <div id="easyEntryAssetsHeader" class="clearfix">
+         <h2 style="float: left;"><?php echo $this->Title.' '.$this->SubTitle;?></h2>
+        <div style="float: right;">
+            <button id="btnSave" class="btn btn-large btn-primary nf-btn-submit" href="javascript:;"><i class="icon-ok-circle icon-white"></i> Save</button>
+			
+			
+			<?php
+				if($this->import_flag == '1')
+				{
+				?>
+					<button id="btnApprove" class="btn-success btn btn-large"  aria-label="Approve"  class="mb-8" style="">Approve</button>
+				<?php
+				}
+			?>
+			<img style="margin: 10px 30px;" src="<?php echo $this->basePath(); ?>/public/img/loader.gif" class="hide nf-loader">
+        </div>
+    </div>
+
+    <!-- message -->
+    <div id="msgBox">
+    </div>
+
+	<?php
+		$disabled='';
+		if($_GET['edit'] == '')
+			$disabled=' disabled';
+	?>
+
+    <!-- tabs -->
+    <ul class="nav nav-tabs" id="ee_tabs">
+        <li class="active"><a class="easyEntryStep" data-page="main" href="<?php echo $this->url('newrelease',array('action' => 'index'));?>?edit=<?php echo $_GET['edit'];?>">Release information</a></li>
+        <li class="<?php echo $disabled;?>"><a class="easyEntryStep" data-page="tracks" href="<?php echo $this->url('newrelease',array('action' => 'track'));?>?edit=<?php echo $_GET['edit'];?>">Tracks</a></li>
+        <li class="<?php echo $disabled;?>"><a class="easyEntryStep" data-page="releasedate" href="<?php echo $this->url('newrelease',array('action' => 'releasedate'));?>?edit=<?php echo $_GET['edit'];?>">Release date</a></li>
+		<?php
+			if($this->import_flag == '0')
+			{
+		?>
+        <li class="<?php echo $disabled;?>"><a class="easyEntryStep" data-page="submission" href="<?php echo $this->url('newrelease',array('action' => 'submission'));?>?edit=<?php echo $_GET['edit'];?>">Submission</a></li>
+		<?php } ?>
+    </ul>
+
+   
+
+
+    <div id="mainForm">
+        <form method="post" action="" id="frmForm" class="form-horizontal" role="form">
+            <input type="hidden" name="filehidden" id="filehidden" value="">
+            
+
+            <div style="text-align: center;" class="col-md-2 easyEntryCol">
+	<div id="release-col-cover" class=""><div class="col-sm-9"><div id="releaseCover" class=""><a style="display: block;" href="javascript:;" data-id="6859263" id="uploadCoverLink"><img class="img-thumbnail " src="public/img/noCover.png" alt="No cover" id="coverOfThisAlbum"><br><br><span id="upload_cover_text">Upload cover</span></a><a id="deleteCoverLink" style="line-height:35px;" class="hide" href="javascript:;">Delete</a></div></div></div></div>
+            <div class="col-md-5 easyEntryCol">
+                <div id="release-col1" class="">
+					<?php
+						/*if($_SESSION['user_id'] == '0')
+						{
+					?>
+					 <div class="form-group form-group-sm">
+                        <div class="col-sm-3 control-label">
+                            <label class=" input-required behavior-1" id="label-easyEntryEditForm-albumName-0" for="easyEntryEditForm-albumName-0">User</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> *</span> <span class="label-tip">
+                            </span>
+                            </span>
+                        </div>
+                        <div class="col-sm-7">
+                            <select type="select" class="input-large inputInt inputBehavior-2 select2" name="user_id" id="user_id" tabindex="6">
+								<option value="0">Select a user</option>
+							</select>
+							<span style="display:none;" class="form-input-error help-inline control-label" rel="title"></span>
+							
+						</div>
+					</div>
+					<?php }*/ ?>
+                    <div class="form-group form-group-sm">
+                        <div class="col-sm-3 control-label">
+                            <label class=" input-required behavior-1" id="label-easyEntryEditForm-title-0" for="title">Release title</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> *</span> <span class="label-tip"><a href="javascript:;" data-html="true" data-placement="top" title="" class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip" data-original-title="<div style=&quot;text-align: left;&quot;>Please enter a title for this release:<br /><br /> eg.: <font color=&quot;#ff0000&quot;><em>Ya Nabi Salam Alayka</em></font>, <font color=&quot;#ff0000&quot;><em>Tajdar-e-Haram</em></font>, <font color=&quot;#ff0000&quot;><em>Bhar Do Jholi</em></font>, etc...<br /><br />Please use version field to enter further information for the release.<br /><br />eg.: <font color=&quot;#ff0000&quot;><em>Ramzan Special</em></font>, <font color=&quot;#ff0000&quot;><em>Live at Ajmer Sharif</em></font>, <font color=&quot;#ff0000&quot;><em>Qawwali Reprise</em></font>, <font color=&quot;#000000&quot;><em><font color=&quot;#ff0000&quot;>Mehfil-e-Sama Version</font></em></font>, etc...</div>"><span class="glyphicon glyphicon-question-sign"></span></a></span></span>
+
+                        </div>
+                        <div class="col-sm-7">
+                            <input class="input-large inputString inputBehavior-1 form-control" name="title" id="title" type="text" value="" tabindex="1"><span style="display:none" class="form-input-error help-inline control-label" rel="title"></span></div>
+                        <div class="col-sm-2 divAppend"></div>
+                    </div>
+                    <div class="form-group form-group-sm">
+                        <div class="col-sm-3 control-label">
+                            <label class=" behavior-2" id="label-easyEntryEditForm-version-0" for="version">Version/Subtitle</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="visibility: hidden;"> *</span> <span class="label-tip"><a href="javascript:;" data-html="true" data-placement="top" title="" class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip" data-original-title="<div style=&quot;text-align: left;&quot;>Use this field to add further details to your release title.<br /><br />eg.: <font color=&quot;#ff0000&quot;><em>Ramzan Special</em></font>, <font color=&quot;#ff0000&quot;><em>Live at Ajmer Sharif</em></font>, <font color=&quot;#ff0000&quot;><em>Qawwali Reprise</em></font>, <font color=&quot;#000000&quot;><em><font color=&quot;#ff0000&quot;>Mehfil-e-Sama Version</font></em></font>, etc.</div>"><span class="glyphicon glyphicon-question-sign"></span></a></span></span>
+
+                        </div>
+                        <div class="col-sm-7">
+                            <input class="input-large inputString inputBehavior-2 form-control" name="version" id="version" type="text" value="" tabindex="2"><span style="display:none" class="form-input-error help-inline control-label" rel="version"></span></div>
+                        <div class="col-sm-2 divAppend"></div>
+                    </div>
+                    <div class="form-group form-group-sm">
+                        <div class="col-sm-3 control-label">
+                            <label class=" input-required behavior-2" id="label-easyEntryEditForm-releaseArtist-0" for="releaseArtist">Primary artist</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> *</span> <span class="label-tip"><a href="javascript:;" data-html="true" data-placement="top" title="" class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip" data-original-title="<div style=&quot;text-align: left;&quot;>Please enter the name of the band or artist on this release.<br /><br />Please enter the <strong>full first-name</strong>, no initials.<br /><br />eg.: <font color=&quot;#ff0000&quot;><em>Junaid Jamshed</em></font>, <font color=&quot;#ff0000&quot;><em>Amjad Sabri</em></font>, <font color=&quot;#ff0000&quot;><em>Rahat Fateh Ali Khan</em></font><br /><br />Please only <strong>enter one name per field.</strong><br /><br />For example, don't enter <font color=&quot;#ff0000&quot;>Qari Rizwan &amp; Hafiz Noman</font> in the Artist Name field, but <font color=&quot;#ff0000&quot;>Qari Rizwan</font> <strong>in the first field</strong> and <font color=&quot;#ff0000&quot;>Hafiz Noman</font> <strong>in a separate field.</strong> To add an additional artist, click <em>Add a new artist.</em><br /><br />If your release is a compilation, you do not need to indicate all artists individually: just click the appropriate box.<strong><br /></strong></div>"><span class="glyphicon glyphicon-question-sign"></span></a></span></span>
+
+                        </div>
+						<?php 
+										if($this->user_artist_cnt == '1')
+										{
+											?>
+											<div class="col-sm-7" >
+													<div  id="artist-fields">
+														<div style="display:flex">
+															
+															<input data-tags="true" class="input-large input-releaseArtist input-multiple inputString inputBehavior-2 form-control" name="releaseArtist[]" id="f_release_artist" type="text" value="<?php echo $this->user_artist_name;?>" tabindex="3" autocomplete="off" readonly>
+														</div>
+														<span style="display:none" class="form-input-error help-inline control-label" rel="releaseArtist"></span>
+													</div>
+												</div>
+												<div class="col-sm-2 divAppend">
+												<span class="append-input">
+													
+														<span class="glyphicon glyphicon-lock" style="color:#4CAF50"></span>
+													
+												</span>
+											</div>
+											<?php
+										}
+										else
+										{
+											?>
+											<div class="col-sm-7" >
+												<div  id="artist-fields">
+													<div style="display:flex">
+														
+														<input data-tags="true" class="input-large input-releaseArtist input-multiple inputString inputBehavior-2 form-control" name="releaseArtist[]" id="f_release_artist" type="text" value="<?php echo $this->user_artist_name;?>" tabindex="3" autocomplete="off">
+													</div>
+													<span style="display:none" class="form-input-error help-inline control-label" rel="releaseArtist"></span>
+												</div>
+											</div>
+											<div class="col-sm-2 divAppend">
+												<span class="append-input">
+													<a href="javascript:;" class="addFieldLink" data-selector="input-releaseArtist">
+														<span class="glyphicon glyphicon-plus-sign" onclick="addFieldArtist()"></span>
+													</a>
+												</span>
+											</div>
+											<?php
+										}
+									?>
+                        
+                    </div>
+                    <div class="form-group form-group-sm">
+						
+                        <div class="col-sm-3 control-label">
+                            <label class=" behavior-2" id="label-easyEntryEditForm-featuring-0" for="Select a label">Featuring</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="visibility: hidden;"> *</span> </span>
+                        </div>
+						<div class="col-sm-7" >
+							<div  id="featuring-fields">
+								<div style="display:flex">
+									<input data-tags="true" class="input-large input-releaseFeaturing input-multiple inputString inputBehavior-2 form-control" name="featuring[]"  id="f_featuring" type="text" value="" tabindex="3" autocomplete="off">
+									<span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-releaseFeaturing-0"></span>
+									
+								</div>
+							</div>
+						</div>
+						<div class="col-sm-2 divAppend">
+							<span class="append-input">
+								<a href="javascript:;" class="addFieldLink" data-selector="input-releaseFeaturing">
+									<span class="glyphicon glyphicon-plus-sign" onclick="addFieldFeaturing()"></span>
+								</a>
+							</span>
+						</div>
+                       
+                    </div>
+                    
+                    <div class="form-group form-group-sm">
+                        <div class="col-sm-3 control-label">
+                            <label class=" input-required behavior-2" id="label-easyEntryEditForm-idGenre-0" for="mainGenre">Genre</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> *</span> </span>
+                        </div>
+                        <div class="col-sm-7">
+                            <select  type="select"  id="mainGenre" class="input-large inputInt inputBehavior-2 select2" name="mainGenre" tabindex="6">
+                                <option value="0">- Select a genre -</option>
+								<option value="African">African</option>
+								<option value="Alternative">Alternative</option>
+								<option value="Arabic">Arabic</option>
+								<option value="Asian">Asian</option>
+								<option value="Blues">Blues</option>
+								<option value="Brazilian">Brazilian</option>
+								<option value="Children Music">Children Music</option>
+								<option value="Christian & Gospel">Christian & Gospel</option>
+								<option value="Classical">Classical</option>
+								<option value="Country">Country</option>
+								<option value="Dance">Dance</option>
+								<option value="Easy Listening">Easy Listening</option>
+								<option value="Electronic">Electronic</option>
+								<option value="Folk">Folk</option>
+								<option value="Hip Hop/Rap">Hip Hop/Rap</option>
+								<option value="Indian">Indian</option>
+								<option value="Jazz">Jazz</option>
+								<option value="Latin">Latin</option>
+								<option value="Metal">Metal</option>
+								<option value="Pop">Pop</option>
+								<option value="R&B/Soul">R&B/Soul</option>
+								<option value="Reggae">Reggae</option>
+								<option value="Relaxation">Relaxation</option>
+								<option value="Rock">Rock</option>
+								<option value="Various">Various</option>
+								<option value="World Music / Regional Folklore">World Music / Regional Folklore</option>
+                                
+                            </select><span style="display:none" class="form-input-error help-inline control-label" rel="mainGenre"></span></div>
+                        <div class="col-sm-2 divAppend"><span class="append-input">
+                            </span>
+                        </div>
+                    </div>
+                    <div class="form-group form-group-sm">
+                        <div class="col-sm-3 control-label">
+                            <label class=" input-required behavior-2" id="label-easyEntryEditForm-subgenre-0" for="easyEntryEditForm-subgenre-0">Subgenre</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> *</span> </span>
+                        </div>
+                        <div class="col-sm-7">
+                            <select  type="select"  id="subgenre" class="input-large inputInt inputBehavior-2  select2" name="subgenre" tabindex="7">
+                                <option value="0">- Select a sub-genre -</option>
+                            </select><span style="display:none" class="form-input-error help-inline control-label" rel="subgenre"></span></div>
+                        <div class="col-sm-2 divAppend"></div>
+                    </div>
+                   
+                    <div class="form-group form-group-sm">
+                        <div class="col-sm-3 control-label">
+                            <label class=" input-required behavior-2" id="label-easyEntryEditForm-idLabel-0" for="labels">Label name</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> *</span> <span class="label-tip"><a href="javascript:;" data-html="true" data-placement="top" title="" class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip" data-original-title="<div style=&quot;text-align: left;&quot;>Make sure the label spelling is the same for every release, and please use the exact spelling spelt as authorised by some pre-authorisation platforms (such as Beatport).</div>"><span class="glyphicon glyphicon-question-sign"></span></a>
+                            </span>
+                            </span>
+                        </div>
+                        <div class="col-sm-7">
+                            <select  type="select"  class="input-large inputInt inputBehavior-2 select2" id="labels" name="labels" tabindex="10">
+                                <option value="0">- Select a label -</option>
+                                
+                            </select><span style="display:none" class="form-input-error help-inline control-label" rel="select-idLabel"></span></div>
+                        <div class="col-sm-2 divAppend"></div>
+                    </div>
+					<div class="form-group form-group-sm new_label_name hide">
+                        <div class="col-sm-3 control-label">
+                            <label class=" input-required behavior-1" id="label-easyEntryEditForm-title-0" for="title">New label name</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"></span> 
+                            </span>
+                        </div>
+                        <div class="col-sm-7">
+                            <input class="input-large inputString inputBehavior-1 form-control" name="new_label_name" id="new_label_name" type="text" value="" tabindex="1"><span style="display:none" class="form-input-error help-inline control-label" rel="New label name"></span></div>
+                        <div class="col-sm-2 divAppend"></div>
+                    </div>
+					<div class="form-group form-group-sm">
+                        <div class="col-sm-3 control-label">
+                            <label class=" input-required behavior-2" id="label-easyEntryEditForm-idLabel-0" for="releasing_network">RMS Network</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> *</span> <span class="label-tip"><a href="javascript:;" data-html="true" data-placement="top" title="" class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip" data-original-title="<div style=&quot;text-align: left;&quot;>Make sure the Releasing Network spelling is the same for every release, and please use the exact spelling spelt as authorised by some pre-authorisation platforms (such as Beatport).</div>"><span class="glyphicon glyphicon-question-sign"></span></a>
+                            </span>
+                            </span>
+                        </div>
+                        <div class="col-sm-7">
+                            <select  type="select" class="input-large inputInt inputBehavior-2 select2" id="releasing_network" name="releasing_network" tabindex="10">
+                                <option value="0">- Select a Releasing Network -</option>
+                               
+                                
+                            </select><span style="display:none" class="form-input-error help-inline control-label" rel="releasing_network"></span></div>
+                        <div class="col-sm-2 divAppend"></div>
+                    </div>
+                    
+                    <div class="form-group form-group-sm">
+                        <div class="col-sm-3 control-label">
+                            <label class=" input-required behavior-2" id="label-easyEntryEditForm-albumFormat-0" for="albumFormat">Format</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> *</span> <span class="label-tip"><a href="javascript:;" data-html="true" data-placement="top" title="" class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip" data-original-title="<div style=&quot;text-align: left;&quot;>Single: 1-2 Tracks, EP: 3-6 Tracks, Album: Ab 7 Tracks</div>"><span class="glyphicon glyphicon-question-sign"></span></a>
+                            </span>
+                            </span>
+                        </div>
+                        <div class="col-sm-7">
+                            <select  type="select"  class="input-large inputString inputBehavior-2 select2" name="albumFormat" id="albumFormat" tabindex="12">
+                                <option value="">- Select a format -</option>
+                                <option value="SINGLE">SINGLE</option>
+                                <option value="EP">EP</option>
+                                <option value="ALBUM">ALBUM</option>
+                            </select><span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-albumFormat-0"></span></div>
+                        <div class="col-sm-2 divAppend"></div>
+                    </div>
+                    <div class="form-group form-group-sm">
+                        <div class="col-sm-3 control-label">
+                            <label class=" input-required behavior-2" id="label-easyEntryEditForm-physicalReleaseDate-0" for="physicalReleaseDate">Physical/Original release date</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> *</span> <span class="label-tip"><a href="javascript:;" data-html="true" data-placement="top" title="" class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip" data-original-title="<div style=&quot;text-align: left;&quot;>Indicate the original release date. If may be the release date of the physical version for instance. If there is none, use the same day as your digital release date.</div>"><span class="glyphicon glyphicon-question-sign"></span></a>
+                            </span>
+                            </span>
+                        </div>
+                        <div class="col-sm-7">
+                            <input class="input-large inputDate inputBehavior-2 form-control" autocomplete="off" name="physicalReleaseDate" id="physicalReleaseDate" type="text" value="" tabindex="13"><span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-physicalReleaseDate-0"></span></div>
+                        <div class="col-sm-2 divAppend"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-5 easyEntryCol">
+                <div id="release-col2" class="">
+                    <div class="form-group form-group-sm">
+                        <div class="col-sm-3 control-label">
+                            <label class=" input-required behavior-2" id="label-easyEntryEditForm-pLine-0" for="pLine">℗ line</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> *</span> <span class="label-tip"><a href="javascript:;" data-html="true" data-placement="top" title="" class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip" data-original-title="<div style=&quot;text-align: left;&quot;>The producer of the release <font color=&quot;#000000&quot;>(℗) </font> is the rightowner that financed the recording of the track.<br /><br />The cover producer <font color=&quot;#000000&quot;>(©) </font>is the rightowner that financed the production of the artwork/packaging.</div>"><span class="glyphicon glyphicon-question-sign"></span></a>
+                            </span>
+                            </span>
+                        </div>
+                        <div class="col-sm-7">
+                            <input class="input-large inputString inputBehavior-2 form-control" name="pLine" id="pLine" type="text" value="" tabindex="14"><span style="display:none" class="form-input-error help-inline control-label" rel="pLine"></span></div>
+                        <div class="col-sm-2 divAppend"></div>
+                    </div>
+                    <div class="form-group form-group-sm">
+                        <div class="col-sm-3 control-label">
+                            <label class=" input-required behavior-2" id="label-easyEntryEditForm-cLine-0" for="cLine">© line</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> *</span> <span class="label-tip"><a href="javascript:;" data-html="true" data-placement="top" title="" class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip" data-original-title="<div style=&quot;text-align: left;&quot;>Visual rights owner. Enter the name the artwork copyright owner. e.g. &quot;YourLabelName&quot;</div>"><span class="glyphicon glyphicon-question-sign"></span></a>
+                            </span>
+                            </span>
+                        </div>
+                        <div class="col-sm-7">
+                            <input class="input-large inputString inputBehavior-2 form-control" name="cLine" id="cLine" type="text" value="" tabindex="15"><span style="display:none" class="form-input-error help-inline control-label" rel="cLine"></span></div>
+                        <div class="col-sm-2 divAppend"></div>
+                    </div>
+                    <div class="form-group form-group-sm">
+                        <div class="col-sm-3 control-label">
+                            <label class=" input-required behavior-2" id="label-easyEntryEditForm-productionYear-0" for="productionYear">Production Year</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> *</span> <span class="label-tip"><a href="javascript:;" data-html="true" data-placement="top" title="" class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip" data-original-title="<div style=&quot;text-align: left;&quot;>The year in which the release has been produced and recorded. If more than one, please indicate the final year of production.</div>"><span class="glyphicon glyphicon-question-sign"></span></a>
+                            </span>
+                            </span>
+                        </div>
+                        <div class="col-sm-7">
+                            <select  type="select"  class="input-large inputInt inputBehavior-2 select2" name="productionYear" id="productionYear" tabindex="16">
+                                <option value="0">- Select a year -</option>
+                                <?php 
+									for($i=(date('Y')+1);$i>=1900;$i--)
+									{
+										echo '<option value="'.$i.'">'.$i.'</option>';
+									}
+								?>
+                            </select><span style="display:none" class="form-input-error help-inline control-label" rel="productionYear"></span></div>
+                        <div class="col-sm-2 divAppend"></div>
+                    </div>
+                    <div class="form-group form-group-sm">
+                        <div class="col-sm-3 control-label">
+                            <label class=" behavior-2" id="label-easyEntryEditForm-upc-0" for="upc">UPC/EAN</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="visibility: hidden;"> *</span> <span class="label-tip"><a href="javascript:;" data-html="true" data-placement="top" title="" class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip" data-original-title="<div style=&quot;text-align: left;&quot;>UPCs are barcodes.<br /><br />If you don't have a UPC, or it is less than 13 characters, leave the field empty and we will generate one for you.</div>"><span class="glyphicon glyphicon-question-sign"></span></a>
+                            </span>
+                            </span>
+                        </div>
+                        <div class="col-sm-7">
+                            <input class="input-large inputUpc inputBehavior-2 form-control" name="upc" id="upc" type="text" value="" tabindex="17"><span style="display:none" class="form-input-error help-inline control-label" rel="upc"></span></div>
+                        <div class="col-sm-2 divAppend"></div>
+                    </div>
+					<div class="form-group form-group-sm">
+                        <div class="col-sm-3 control-label">
+                            <label class=" behavior-2" id="label-easyEntryEditForm-upc-0" for="pcn">Producer catalogue number</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="visibility: hidden;"> *</span> <span class="label-tip">
+                            </span>
+                            </span>
+                        </div>
+                        <div class="col-sm-7">
+                            <input class="input-large inputUpc inputBehavior-2 form-control" name="pcn" id="pcn" type="text" value="" tabindex="17"><span style="display:none" class="form-input-error help-inline control-label" rel="pcn"></span></div>
+                        <div class="col-sm-2 divAppend"></div>
+                    </div>
+                   <div class="form-group form-group-sm hide">
+						<div class="col-sm-3 control-label">
+							<label class=" behavior-2" id="label-easyEntryEditForm-idInstrumental-0" for="easyEntryEditForm-idInstrumental-0">Do you want content id</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="visibility: hidden;"> *</span> <span class="label-tip"><a href="javascript:;" data-html="true" data-placement="top" title="" class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip" data-original-title="<div style=&quot;text-align: left;&quot;>Do you want content id?</div>"><span class="glyphicon glyphicon-question-sign"></span></a>
+                            </span>
+                            </span>
+						</div>
+						<div class="col-sm-7">
+							<label class="radio-inline">
+								<input type="radio" class="input-large inputInt inputBehavior-2" name="have_content_id" id="have_content_id-0" value="1" tabindex="9"> Yes</label>
+							<label class="radio-inline">
+								<input type="radio" class="input-large inputInt inputBehavior-2" name="have_content_id" id="have_content_id-1" value="0" tabindex="10" checked="checked"> No</label>
+						</div>
+						<div class="col-sm-2 divAppend"></div>
+					</div>
+					<div class="form-group form-group-sm">
+						<div class="row">
+						<div class="col-sm-1"></div>
+                        <div class="col-sm-9 ">
+                            <label class=" behavior-2" id="label-easyEntryEditForm-remark-0" for="remark" style="margin-left:10px;">Special Instructions for Your Release Approver &nbsp;</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="visibility: hidden;"> </span> <span class="label-tip"><a href="javascript:;" data-html="true" data-placement="top" title="" class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip" data-original-title="<div style=&quot;text-align: left;&quot;>Please include any special request for your label manager that this release required like PDF booklet delivery or an instant grat.</div>"><span class="glyphicon glyphicon-question-sign"></span></a>
+                            </span>
+                            </span>
+						</div>
+						</div class="row">
+						 <div class="col-sm-1"></div>
+                        <div class="col-sm-9">
+                            <textarea class="input-large inputString inputBehavior-2 form-control" name="remark" id="remark" type="text" value="" tabindex="18" placeholder="IMPORTANT: If you have a Timed Release, Apple Digital Master email address, digital booklet or other operational requests for your Release Approver, include your instructions here.Please note, marketing information should be included in the Project - Marketing Highlights section. Marketing info included here will not be used."></textarea><span style="display:none" class="form-input-error help-inline control-label" rel="remark"></span></div>
+                           <div class="col-sm-2 divAppend"></div>
+						</div>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+   <div id="easyEntryAssetsModal" class="modal fade" aria-hidden="false" style="display: none;">
+
+<div class="modal-dialog modal-lg">
+	<div class="modal-content">
+
+		<div class="modal-header">
+		    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+		    <h4 class="modal-title coverModal-title">Update the cover</h4>
+		</div>
+
+		<div class="modal-body">
+
+			<div class="row">
+
+				<div class="col-md-9" id="rightPart">
+<div id="mainContainer">
+	
+	
+		<form enctype="multipart/form-data" method="post" action="javascript:;" id="uploadForm">
+		
+		<div id="uploadedFile"><input class=" inputFile inputBehavior-1" name="uploadedFile" id="uploadForm-uploadedFile-0" type="file" accept=".jpeg,.jpg">
+</div>
+	
+	
+		<div id="uploadDescription">
+			<p></p><p>Your cover must be:<br><strong>- Size: <span>1500*1500 or 3000*3000 pixels</span><br>- Format: <span>.jpeg , .jpg</span></strong></p><p>If your cover does not upload, please click on <https: www.pixlr.com=""></https:> to resize your artwork.</p><p><strong>Warning:</strong> your cover must not contain Internet address, e-mail address, barcode, price, any info related to a physical or digital support, any info limited in time, any info that could mislead a client, or contains outrageous or explicit material.&nbsp;</p><p></p>
+		</div>
+	
+	
+		<input class=" inputInt inputBehavior-1 form-control" name="idPendingAlbum" id="uploadForm-idPendingAlbum-0" type="hidden" value="6965327">
+		<input class=" inputInt inputBehavior-1 form-control" name="startUploadTs" id="uploadForm-startUploadTs-0" type="hidden" value="">
+	</form>
+	
+	<div id="previewContainer"></div>
+	
+	<div class="clearfix"></div><br>
+	
+		
+	
+	
+</div>
+
+<style>
+ul.list-unstyled li
+{
+	margin-top: 5px;
+}
+#previewContainer img{
+    width: 70%;
+    margin: 0 auto;
+}
+/*ul.introOptions li a
+{
+	color:  inherit;
+}*/
+</style>
+
+</div>
+
+				<div class="col-md-3" id="leftPart">
+					<div class="row">
+						<div class="leftPart-container col-md-12">
+							<div id="coverContainer" class="inline-block">
+								<!-- <img src="/img/noCover.png" alt="Cover unavailable" class='img-thumbnail'/> -->
+								<img src="public/img/cover.png" alt="Cover unavailable" class="img-thumbnail">
+								<p id="coverDescription" class="text-center">Current cover</p>
+							</div>
+							<br>
+
+							<p>
+								<strong>Artist :</strong><br><span id="um_artist_name"></span></p>
+							<br>
+
+							<p>
+								<strong class="text-bold">Title :</strong><br>
+								<span id="um_title"></span></p>
+
+						</div>
+					</div>
+
+
+				</div>
+
+			</div>
+
+		</div>
+
+		<div class="modal-footer">
+			<table class="footerButtonsTable">
+				<tbody><tr>
+					<td class="text-left coverModal-leftButtons"></td>
+					<td class="text-right coverModal-rightButtons"><button class="btn btn-primary" id="display_preview">Display the preview</button></td>
+					<button id="buttonSaveUploadImage" class="btn btn-primary hide">Save</button>
+				</tr>
+			</tbody></table>
+		</div>
+
+	</div> <!-- end modal-content -->
+</div> <!-- end modal-dialog -->
+<!-- CSS -->
+<style>
+.modal-header h3
+{
+	margin : 5px inherit;
+}
+
+#rightPart
+{
+	/*padding-left: 30px;*/
+	padding-top : 10px;
+}
+
+#rightPart h2
+{
+	position : absolute;
+	top : -70px;
+}
+
+.leftPart-container
+{
+	overflow-y  : auto;
+	overflow-x  : hidden;
+	/*padding-top : 15px !important;*/
+}
+
+.modal-customHeader
+{
+	margin-bottom : 25px;
+}
+
+.footerButtonsTable
+{
+	width : 100%;
+}
+
+#coverContainer img
+{
+	/*display: inline-block;*/
+	width : 100%;
+}
+.removemultifield
+{
+	position: absolute;
+    right: 20px;
+    margin-top: 8px;
+}
+
+</style>
+
+
+<script type="text/javascript">
+
+	 $("#physicalReleaseDate").datetimepicker({
+            format: "DD-MM-YYYY"
+     });
+	 
+	 $('#mainGenre').change(function(){
+		if($(this).val() == 0)
+		{
+			 $('#subgenre').html('<option value="0">- Select a sub-genre -</option>');
+		}
+		else
+		{
+			
+			var objFormData={
+				genre : $(this).val()
+			}
+			populateDependentOptionValue('subgenre',"<?php echo $this->url('newrelease',array("action" => "getsubgenre"))?>",objFormData,'Select a sub-genre');
+			
+		}
+	
+	 });
+	
+	 
+	 $('#uploadForm-uploadedFile-0').change(function(){
+		$('#display_preview').prop('disabled',false); 
+	 });
+	 $('#deleteCoverLink').click(function(){
+		 $('#deleteCoverModal').modal('show');
+	 });
+	 
+	 $('#display_preview').click(function(){
+		  // Get the selected file
+		var file = $('#uploadForm-uploadedFile-0')[0].files[0];
+		
+		// Check if a file is selected
+		if (file) {
+			// Check if the selected file is an image
+			if (file.type && file.type.indexOf('image') === -1) {
+				alert('Please select an image file.');
+				return;
+			}
+			if (!file.type.match('image/jpeg') && !file.type.match('image/jpg')) {
+				alert('Please select a .jpg or .jpeg');
+				return;
+			}
+
+			 // Create a FileReader object to read the file
+			var reader = new FileReader();
+			
+			// Set the onload event handler
+			reader.onload = function(event) {
+				// Create an Image object to get the dimensions of the image
+				var img = new Image();
+				img.src = event.target.result;
+				img.onload = function() {
+					// Check the dimensions of the image
+					var width = this.width;
+					var height = this.height;
+					if ((width !== 1500 || height !== 1500) && (width !== 3000 || height !== 3000) && (width !== 1440 || height !== 1440) && (width !== 6000 || height !== 6000)) {
+						alert('The image dimensions are not correct.');
+						return;
+					}
+					// Display the image preview
+					$('#uploadForm').addClass('hide');
+					$('#display_preview').addClass('hide');
+					$('#previewContainer').html('<img src="' + event.target.result + '" alt="Image preview">');
+					$('#buttonSaveUploadImage').removeClass('hide');
+					
+					$('#buttonSaveUploadImage').click(function(){
+			
+						var formData = new FormData();
+							formData.append('file', file);
+							$.ajax({
+								url: '<?php echo $this->url('newrelease', array('action'=>'uploadimg'));?>', 
+								type: 'POST',
+								data: formData,
+								contentType: false,
+								processData: false,
+								success: function(response) {
+									 response = JSON.parse(response);
+									 $('#coverOfThisAlbum').attr('src','public/uploads/'+response.file_name);
+									 $("#easyEntryAssetsModal").modal('hide');
+									 $('#filehidden').val(response.file_name);
+									 $('#upload_cover_text').html('Upload cover');
+									 $('#deleteCoverLink').addClass('hide');
+								},
+								error: function(xhr, status, errorThrown) {
+									// Handle upload error
+									console.error('Upload error:', status, errorThrown);
+								}
+						});
+					});
+				};
+			};
+			
+			// Read the file as a data URL
+			reader.readAsDataURL(file);
+		}
+		
+		
+	 });
+	
+	function updateCover()
+	{
+		var url = "";
+		var imgSrc = "";
+
+		setTimeout(function(){
+			$.get(url, function(data){
+
+				$("#releaseCover").replaceWith(data);
+				bindUploadCover();
+				
+
+				$("#releaseCover img").attr("src", imgSrc);
+			});
+		}
+		,1000);
+
+	}
+
+	
+
+</script>
+</div>
+    <div id="easyEntryAssetsPopover"></div>
+    <div id="easyEntryArtistIdModal" class="modal fade" aria-hidden="true"></div>
+    <div id="focusTrackModal" class="modal fade" aria-hidden="true"></div>
+    <div id="madeForKidsGuidelinesModal" class="modal fade" aria-hidden="true"></div>
+
+</div>
+
+<div id="deleteCoverModal" class="modal fade">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-body"><p>Are you sure you want to delete this cover ?</p></div>
+			<div class="modal-footer"><a href="#" class="btn btn-default closedeleteCoverModal">Close</a><a href="javascript:;" class="btn btn-primary" id="deleteCoverImage">Delete</a></div>
+		</div>
+	</div>
+</div>
+
+<?php } ?>
+
+<script type="text/javascript">
+
+	function bindSuggestionEvent() {
+        $('.input-releaseArtist').off('keyup').on('keyup', function() {
+            let inputField = $(this);
+            let query = inputField.val();
+            let suggestionList = inputField.siblings('.suggestion-list');
+
+            if (query.length > 2) {
+                $.ajax({
+                    url: '<?php echo $this->url('newrelease',array("action" => "artistSuggestionList"));?>', // Change this to your actual PHP file
+                    type: 'POST',
+                    data: { query: query },
+                    success: function(response) {
+                        if (!suggestionList.length) {
+                            inputField.after('<ul class="suggestion-list">' + response + '</ul>');
+                        } else {
+                            suggestionList.html(response);
+                        }
+                    }
+                });
+            } else {
+                suggestionList.remove();
+            }
+        }).off('focus')
+        .on('focus', function () {
+			
+			let inputField = $(this);
+            let suggestionList = inputField.siblings('.suggestion-list');
+			<?php 
+				if($_SESSION["SUBUSER"] == '1')
+				{
+			?>
+           
+               $.ajax({
+                    url: '<?php echo $this->url('newrelease',array("action" => "artistSuggestionList"));?>', // Change this to your actual PHP file
+                    type: 'POST',
+                    data: { query: 'ALL_LIST' },
+                    success: function(response) {
+                        if (!suggestionList.length) {
+                            inputField.after('<ul class="suggestion-list">' + response + '</ul>');
+                        } else {
+                            suggestionList.html(response);
+                        }
+                    }
+                });
+           <?php } ?>
+        });
+
+        // Handle suggestion selection
+        $(document).off('click', '.suggestion-item').on('click', '.suggestion-item', function() {
+            let selectedText = $(this).text();
+            let inputField = $(this).closest('.suggestion-list').siblings('.input-releaseArtist');
+            inputField.val(selectedText);
+            $('.suggestion-list').remove(); // Remove suggestions after selection
+        });
+
+        // Hide suggestion list on outside click
+        $(document).click(function(e) {
+            if (!$(e.target).closest('.input-releaseArtist, .suggestion-list').length) {
+                $('.suggestion-list').remove();
+            }
+        });
+    }
+
+    // Bind event initially
+    bindSuggestionEvent();
+	
+	function removeField(button) {
+		var div = button.parentNode;
+		div.parentNode.remove(div);
+	}
+	function addFieldArtist() {
+		
+		
+		
+		if($('#artist-fields input').length < "<?php echo $user_artist_cnt;?>" || <?php echo $user_artist_cnt;?> == 0)
+		{
+			var newInputGroup = '<div style="display:flex;margin-top:5px;flex-direction: column;"><input data-tags="true" class="input-large input-releaseArtist input-multiple inputString inputBehavior-2 form-control" name="releaseArtist[]" type="text" value="" tabindex="3" autocomplete="off"><span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-releaseArtist-0"></span><a href="javascript:;" class="addFieldLink removemultifield" data-selector="input-releaseArtist"><span class="glyphicon glyphicon-minus-sign" onclick="removeField(this)"></span></a></div>';
+			$('#artist-fields').append(newInputGroup);
+			bindSuggestionEvent();
+		}
+	}
+	function addFieldFeaturing()
+	{
+		
+		var newInputGroup = '<div style="display:flex;margin-top:5px"><input data-tags="true" class="input-large input-releaseFeaturing input-multiple inputString inputBehavior-2 form-control" name="featuring[]" type="text" value="" tabindex="3" autocomplete="off"><span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-releaseArtist-0"></span><a href="javascript:;" class="addFieldLink removemultifield" data-selector="input-releaseFeaturing"><span class="glyphicon glyphicon-minus-sign" onclick="removeField(this)"></span></a></div>';
+		$('#featuring-fields').append(newInputGroup);
+	}
+    $(document).ready(function () {
+		acl_PRINT=0;
+		var formChanged = false;
+		var approved_flag = false;
+		
+		<?php
+			if($_GET['msg'] == 'yes')
+			{
+				?>
+					 mySmallAlert('Save Record', 'Data Saved successfully', 1);
+				<?php
+			}
+		?>
+		
+		function linkify(text) {
+        var urlPattern = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+        return text.replace(urlPattern, '<a href="$1" target="_blank">$1</a>');
+    }
+
+
+		<?php
+			if($this->STATUS == 'draft' && $this->rejected_flag == '1')
+			{
+				?> 
+					var rejectReason = `<?php echo nl2br(addslashes($this->reject_reason)); ?>`;
+					$('.bs-alert-message').html(
+							'<i class="fa fa-warning" style="font-size:15px;margin-right:20px;"></i>' + linkify(rejectReason)
+						);
+					$('#bs-main-alert').addClass('bs-alert-left bs-alert-danger');
+					$('#bs-main-alert').attr('style','display:block;');
+				<?php
+			}
+		?>
+		
+		
+	 $('.closedeleteCoverModal').click(function(){
+		 $('#deleteCoverModal').modal('hide');
+	 });
+	 
+	 $('#deleteCoverImage').click(function(){
+		$('#coverOfThisAlbum').attr('src','public/img/noCover.png'); 
+		 $('#coverContainer img').attr('src','public/img/cover.png');
+		 $('#upload_cover_text').html('Upload cover');
+		 $('#deleteCoverLink').addClass('hide');
+		 $('#deleteCoverModal').modal('hide');
+		 $('#filehidden').val('');
+	 });
+
+		// Listen for changes in the form fields
+		$('input, select,textarea').change(function() {
+			formChanged = true;
+		});
+
+		// Listen for form submission or clicks on save button
+		$('#btnSave').click(function() {
+			// Perform actions to save the form data
+			formChanged = false; // Reset the flag after saving
+		});
+		$('#btnNew').click(function() {
+			// Perform actions to save the form data
+			formChanged = false; // Reset the flag after saving
+		});
+		
+		$(window).on('beforeunload', function() {
+			 if (formChanged) 
+			 {
+				//$("#frmForm").submit();
+				
+				//return 'are you sure';
+			 }
+		});
+	
+        $("#btnSave").click(function (e) {
+            e.stopPropagation();
+            $("#frmForm").submit();
+        });
+		
+		$("#btnApprove").click(function (e) {
+            e.stopPropagation();
+			
+			$.SmartMessageBox({
+
+					title  : "Alert!",
+		
+					content: "Do you really want to approve this release ?",
+		
+					buttons: '[Yes][No]'
+		
+				}, function (ButtonPressed) {
+		
+					if (ButtonPressed === "Yes") {
+						approved_flag = true;
+						$("#frmForm").submit();
+								
+					}
+					if (ButtonPressed === "No") {
+		
+					}
+		
+				});
+				
+			
+        });
+		
+		
+		function setErrorMsg(field,msg)
+		{
+			$('#'+field).parents('.form-group').find('label').addClass('labelError');
+			$('#'+field).addClass('inputError');
+			$('#'+field).parents('.form-group').find(".form-input-error").text(msg);
+			$('#'+field).parents('.form-group').find(".form-input-error").removeAttr('style');
+			$('#'+field).parents('.form-group').addClass('has-error'); 
+		}
+		function removeErrorMsg()
+		{
+			$('input,select,textarea').parents('.form-group').find('label').removeClass('labelError');
+			$('input,select,textarea').removeClass('inputError');
+			$('input,select,textarea').parents('.form-group').find(".form-input-error").text('');
+			$('input,select,textarea').parents('.form-group').find(".form-input-error").attr('style','display:none;');
+			$('input,select,textarea').parents('.form-group').removeClass('has-error'); 
+		}
+		
+		<?php
+			if($_SESSION['user_id'] == '0' || $_SESSION['STAFFUSER'] == '1')
+			{
+		?>
+				/*populateOptionValue('user_id',"<?php echo $this->url('user',array("action" => "getStaff"))?>",'Select a User');
+				
+				$('#user_id').change(function(){
+					
+					var objFormData={
+						user_id : $(this).val()
+					}
+					populateDependentOptionValue('labels',"<?php echo $this->url('labels',array("action" => "getlabels"))?>",objFormData,'Select a label');
+					populateDependentOptionValue('releasing_network',"<?php echo $this->url('releasingnetwork',array("action" => "getreleasingnetwork"))?>",objFormData,'Select a Releasing Network');
+				});*/
+				populateOptionValue('labels',"<?php echo $this->url('labels',array("action" => "getlabels"))?>",'Select a label');
+				populateOptionValue('releasing_network',"<?php echo $this->url('releasingnetwork',array("action" => "getreleasingnetwork"))?>",'Select a Releasing Network');
+				
+				$('#labels').change(function(){
+					if($(this).val() == 'create-new')
+					{
+						$('#new_label_name').val('');
+						$('.new_label_name').removeClass('hide');
+					}
+					else
+					{
+						$('#new_label_name').val('');
+						$('.new_label_name').addClass('hide');
+					}
+				});
+		<?php
+			}
+			else
+			{
+		?>
+				var objFormData={
+						user_id :'<?php echo $_SESSION['user_id'];?>'
+				}
+				populateDependentOptionValue('labels',"<?php echo $this->url('labels',array("action" => "getlabels"))?>",objFormData,'Select a label');
+				populateDependentOptionValue('releasing_network',"<?php echo $this->url('releasingnetwork',array("action" => "getreleasingnetwork"))?>",objFormData,'Select a Releasing Network');
+				
+				<?php
+					if($_SESSION['USER_TYPE'] == 'Enterprise')
+					{
+						?>
+						$('#labels').change(function(){
+							if($(this).val() == 'create-new')
+							{
+								$('#new_label_name').val('');
+								$('.new_label_name').removeClass('hide');
+							}
+							else
+							{
+								$('#new_label_name').val('');
+								$('.new_label_name').addClass('hide');
+							}
+						});
+						<?php
+					}
+				?>
+				
+		<?php	
+			}
+		?>
+		
+		
+		<?php
+			if($_GET['edit'] > 0)
+			{
+				
+				?>
+				
+				setTimeout(function(){
+					iActiveID = '<?php echo $_GET['edit'];?>';
+				
+					//empty the form fields
+					clearForm("frmForm");
+					cPopulateEditEntries(iActiveID, "<?php echo $this->url('newrelease', array('action'=>'getrec'));?>");
+					glbControlEnable(true);
+					formChanged = false; 
+					approved_flag=false;
+					
+					<?php
+						if(isset($_GET['show_error']))
+						{
+						?>
+							setTimeout(function(){
+								$("#btnSave").trigger('click');
+							},2100)
+							
+						<?php
+						}
+					?>
+				},500);
+				
+				<?php
+			}
+		?>
+		
+        $("#frmForm").validate(
+            {
+                submitHandler: function (form) {
+					removeErrorMsg();
+                    var is_required=false;
+                   <?php
+						/*if($_SESSION['user_id'] == '0')
+						{
+					?>
+							if ($("#user_id").val() == '0') {
+								setErrorMsg('user_id','This field is required');
+								is_required=true;
+							}
+					<?php
+						}*/
+					?>
+					if ($("#title").val() == '') {
+                        setErrorMsg('title','This field is required');
+                        is_required=true;
+                    }
+					
+					if ($("#new_label_name").val() != '') {
+						var isDuplicate = fn_validate_duplicate($("#new_label_name").val(), "tbl_label", "name", "<?php echo $this->url('labels', array('action'=>'validateduplicate'));?>");
+						if (isDuplicate) {
+							is_required=true;
+							setErrorMsg('new_label_name','Label already exists');
+						}
+                        
+                    }
+					
+					if ($("#pcn").val() != '') {
+							
+						var objFormData =
+						{
+							pcn : $('#pcn').val(),
+							id : "<?php echo $_GET['edit']; ?>"
+						};
+						
+						
+						var objMyPost = AJAX_Post("<?php echo $this->url('newrelease', array('action'=>'checkDuplicatePcn'));?>", objFormData);
+						if (objMyPost.ERR_NO === 0) {
+							
+							if (objMyPost.DATA.DBStatus === 'EXIST') {
+								
+								setErrorMsg('pcn','Duplicate Producer catalogue number');
+								is_required=true;
+							}
+						}							
+					}
+					
+					<?php
+					if(isset($_GET['show_error']))
+					{
+					?>
+					
+					
+						if ($("#f_release_artist").val() == '') {
+							setErrorMsg('f_release_artist','This field is required');
+							is_required=true;
+						}
+						if ($("#mainGenre").val() == '0') {
+							setErrorMsg('mainGenre','This field is required');
+							is_required=true;
+						}
+						if ($("#subgenre").val() == '0') {
+							setErrorMsg('subgenre','This field is required');
+							is_required=true;
+						}
+						if ($("#labels").val() == '0') {
+							setErrorMsg('labels','This field is required');
+							is_required=true;
+						}
+						if ($("#releasing_network").val() == '0') {
+							setErrorMsg('releasing_network','This field is required');
+							is_required=true;
+						}
+						if ($("#albumFormat").val() == '0') {
+							setErrorMsg('albumFormat','This field is required');
+							is_required=true;
+						}
+						if ($("#physicalReleaseDate").val() == '') {
+							setErrorMsg('physicalReleaseDate','This field is required');
+							is_required=true;
+						}
+						if ($("#pLine").val() == '') {
+							setErrorMsg('pLine','This field is required');
+							is_required=true;
+						}
+						if ($("#cLine").val() == '') {
+							setErrorMsg('cLine','This field is required'); 
+							is_required=true;
+						}
+						if ($("#productionYear").val() == '0') {
+							setErrorMsg('productionYear','This field is required');
+							is_required=true;
+						}
+						if ($("#filehidden").val() == '') {
+							$('#releaseCover').addClass('cover-error');
+							$('#releaseCover img').addClass('bg-danger');
+							is_required=true;
+						}
+						
+						
+					<?php
+					}
+				?>
+					
+					if(is_required)
+						return;
+					
+                    var $form = $('#frmForm');
+                    var objMasterData = $form.serializeObject();
+                    if (strActionMode == 'ADD')
+                        $.extend(objMasterData, { MASTER_KEY_ID: 0});
+                    else
+                        $.extend(objMasterData, { MASTER_KEY_ID: iActiveID});
+					
+                    objMasterData = JSON.stringify(objMasterData);
+                    var objFormData =
+                    {
+                        pAction    : strActionMode,
+                        FORM_DATA: objMasterData,
+						approved : approved_flag 
+                    };
+					
+					$('.nf-loader').removeClass('hide');
+					$('#btnSave').addClass('hide');
+                    var objMyPost = AJAX_Post("<?php echo $this->url('newrelease', array('action'=>'save'));?>", objFormData);
+                    if (objMyPost.ERR_NO === 0) {
+						approved_flag=false;
+						$('.nf-loader').addClass('hide');
+						$('#btnSave').removeClass('hide');
+                        if (objMyPost.DATA.DBStatus === 'OK') {
+                            strActionMode = "EDIT";
+                           // mySmallAlert('Save Record', 'Data Saved successfully', 1);
+                            iActiveID = objMyPost.DATA.MY_ID;
+							
+							<?php
+								if($_GET['edit'] == '')
+								{
+							?>
+								//setTimeout(function(){
+									window.location.href = window.location.href+'?edit='+iActiveID+'&msg=yes';
+								//},3000);
+							<?php }
+							else
+							{
+								?>
+								mySmallAlert('Save Record', 'Data Saved successfully', 1);
+								<?php
+							}
+							?>
+							
+                            
+                        }
+                    }
+                    else {
+                        myAlert('Error...!', 'There was an error', 0);
+						
+                    }
+                }
+            });
+    
+  
+	
+
+  /*
+  * if the user choose as compilation, put Various Artists as artist
+  */
+    
+    bindUploadCover();
+    
+
+    var toHide = [];
+
+    if (typeof(isClassical) !== 'undefined' && isClassical) {
+        toHide = ['.input-releaseArtist', '.input-featuring', '.isCompilCb'];
+    } else {
+        toHide = ['.input-composer', '.input-orchestra', '.input-conductor', '.input-soloist', '.input-singer'];
+    }
+
+    $.each(toHide, function(i,selector){
+        $(selector).parents('.form-group').hide();
+        $(selector).prop('disabled', true);
+    });
+
+    /*******************************************************
+    * ADD ARTIST LINK
+    *******************************************************/
+   
+
+    $(".input-multiple-blur").not(".no-blur").blur(function(){
+        if ($(this).val() == "") {
+            $(this).parents(".form-group").hide("slow", function(){ $(this).remove(); });
+            if ($(this).get(0).hasAttribute('data-rel')){
+                $("#"+$(this).attr('data-rel')).parents(".form-group").hide("slow", function(){ $(this).remove(); });
+            }
+        }
+    });
+
+  
+
+    var now = new Date();
+    var month = now.getMonth() + 1;
+    var day = now.getDate() - 1;
+    /*if(month < 10 ) month = "0" + month;
+    if(day < 10 ) day = "0" + day;*/
+
+    var minDate = new Date(now.getFullYear(), (month < 10 ? '0' + (month-1) : (month-1)), (day < 10 ? '0' + (day-1) : (day-1)));
+
+    $("#digitalReleaseDate").datepicker("option", "minDate", minDate );
+
+  
+});
+
+ function cPopulateEditEntries(iID,strURL) {
+        iActiveID = iID;
+        var arrForms=[]; // Keep Form Values
+        var strElementType; // Keep element type
+        var objFormData =
+        {
+            pAction: 'GETREC',
+            KEY_ID : iActiveID
+        };
+		strActionMode = 'EDIT';
+        var objMyPost = AJAX_Post(strURL, objFormData);
+		
+        if (objMyPost.ERR_NO === 0) {
+            if (objMyPost.DATA.DBStatus === 'OK') {
+              
+                
+                //populate master Records
+                arrForms=objMyPost.DATA.data[0];
+                $.each( arrForms, function( key, value ) { 
+				
+					 if(key == 'releaseArtist')
+					 {
+						 for(var i=0;i<value.length;i++)
+						 {
+							 if(i == 0)
+							 {
+								 $('#f_release_artist').val(value[i]);
+							 }
+							 else
+							 {
+								 var newInputGroup = '<div style="display:flex;margin-top:5px"><input data-tags="true" class="input-large input-releaseArtist input-multiple inputString inputBehavior-2 form-control" name="releaseArtist[]" type="text" value="'+value[i]+'" tabindex="3" autocomplete="off"><span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-releaseArtist-0"></span><a href="javascript:;" class="addFieldLink removemultifield" data-selector="input-releaseArtist"><span class="glyphicon glyphicon-minus-sign" onclick="removeField(this)"></span></a></div>';
+								$('#artist-fields').append(newInputGroup);
+							 }
+						 }
+					 }
+					 if(key == 'featuring')
+					 {
+						 for(var i=0;i<value.length;i++)
+						 {
+							 if(i == 0)
+							 {
+								 $('#f_featuring').val(value[i]);
+							 }
+							 else
+							 {
+								var newInputGroup = '<div style="display:flex;margin-top:5px"><input data-tags="true" class="input-large input-releaseFeaturing input-multiple inputString inputBehavior-2 form-control" name="featuring[]" type="text" value="'+value[i]+'" tabindex="3" autocomplete="off"><span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-releaseArtist-0"></span><a href="javascript:;" class="addFieldLink removemultifield" data-selector="input-releaseFeaturing"><span class="glyphicon glyphicon-minus-sign" onclick="removeField(this)"></span></a></div>';
+								$('#featuring-fields').append(newInputGroup);
+							 }
+						 }
+					 }
+					 if(key == 'cover_img')
+					 {
+						 $('#filehidden').val(value);
+						 if(value != '')
+						 {
+							$('#coverOfThisAlbum').attr('src','public/uploads/'+value);
+							$('#coverContainer img').attr('src','public/uploads/'+value);
+							$('#upload_cover_text').html('Change');
+							$('#deleteCoverLink').removeClass('hide');
+						 }
+						 else
+						 {
+							 $('#coverOfThisAlbum').attr('src','public/img/noCover.png'); 
+							 $('#coverContainer img').attr('src','public/img/cover.png');
+							 $('#upload_cover_text').html('Upload cover');
+							 $('#deleteCoverLink').addClass('hide');
+						 }
+					 }
+					  if(key == 'have_content_id')
+					 {
+						if(value == '1')
+							$('#have_content_id-0').prop('checked',true);
+						if(value == '0')
+							$('#have_content_id-1').prop('checked',true);
+					 }
+                    if ($("#"+key).length > 0) {  // check if exists or not
+                        strElementType= $("#"+key).attr("type");
+						
+					
+                        if(strElementType == "hidden") {  // if textbox
+                            $("#" + key).val(value);
+                            $("#spanRefNo").html(value);
+                        }
+                        else  if(strElementType == "text") {  // if textbox
+                            $("#" + key).val(value);
+                        }
+						else  if(strElementType == "number") {  // if textbox
+                            $("#" + key).val(value);
+                        }
+						else  if(strElementType == "password") {  // if textbox
+                            $("#" + key).val(value);
+                        }
+                        else if($("#"+key).attr("name") == "descriptions") {  // if textarea
+                            $("textarea#"+key).text(value);
+                        }
+                        else if(strElementType == "select") {  // if Select Box	
+							/*if(key == 'labels' || key == 'releasing_network')
+							{
+								setTimeout(function(){
+									$("#" + key).select2("val",value);
+								},2000)
+								
+							}
+							else*/
+								$("#" + key).select2("val",value).trigger('change');
+                        }
+                        else if(strElementType == "multiselect") {  // if Select Box with multi select
+                            var arrValues = $.parseJSON(stripslashes(value));
+                            $("#" + key).select2("val", arrValues);
+                        }
+                    }
+                });
+				
+            }
+        }
+        else {
+            mySmallAlert('Error...!', 'There was an error', 0);
+        }
+    }
+
+function bindUploadCover()
+{
+    /*
+    * update cover
+    */
+    $("#uploadCoverLink").click(function(e){
+        e.preventDefault();
+		
+		$('#display_preview').prop('disabled',true);
+		
+		$('#uploadForm').removeClass('hide');
+		$('#display_preview').removeClass('hide');
+		$('#previewContainer').html('');
+		$('#buttonSaveUploadImage').addClass('hide');
+
+        var releaseId = $(this).attr("data-id");
+
+        $("#easyEntryAssetsModal").modal();
+		
+		 var artists = $('input[name="releaseArtist[]"]').map(function() {
+			var value = $(this).val().trim(); // Get the trimmed value of each input field
+			return value !== '' ? value : null; // Return the value if not blank, otherwise null
+		}).get(); // Convert jQuery object to an array
+
+		// Remove null values from the array
+		artists = artists.filter(function(value) {
+			return value !== null;
+		});
+		 var artistsString = artists.join(', ');
+		$('#um_artist_name').html(artistsString);
+		$('#um_title').html($('#title').val());
+    });
+}
+
+
+</script>
+
+
+
+
+
+<!-- Floating FAQ Help Button -->
+<div id="faqBotWrapper">
+  <!-- ✅ First-time robot animation -->
+  <div id="faqIntroAnimation">
+    <dotlottie-wc 
+      src="https://lottie.host/a54e24d2-af27-4ff5-a7d5-5aeb08ccfcbc/ZNiqJEiXDN.lottie" 
+      speed="1" 
+      autoplay 
+      loop 
+      style="width: 140px; height: 140px;">
+    </dotlottie-wc>
+  </div>
+</div>
+
+<!-- ✅ Lottie Loader -->
+<script type="module" src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.6.2/dist/dotlottie-wc.js"></script>
+
+<!-- ✅ Animation CSS (scoped to ids/classes used) -->
+<style>
+  /* ✅ Animation */
+  #faqIntroAnimation {
+    position: fixed;
+    bottom: 60px;
+    right: 60px;
+    width: 80px;
+    height: 80px;
+    z-index: 9999;
+    pointer-events: none;
+    animation: appearBot 0.8s ease-out forwards;
+  }
+  @keyframes appearBot {
+    0% { opacity: 0; transform: translateX(80px) scale(0.8); filter: blur(8px); }
+    50% { opacity: 0.8; transform: translateX(-10px) scale(1.05); filter: blur(3px); }
+    100% { opacity: 1; transform: translateX(0) scale(1); filter: blur(0); }
+  }
+  @keyframes disappearBot {
+    0% { opacity:1; transform:translateX(0); filter:blur(0); }
+    40% { filter:blur(2px); }
+    70% { filter:blur(5px); }
+    100% { opacity:0; transform:translateX(120px); filter:blur(8px); visibility:hidden; }
+  }
+</style>
+
+<!-- ✅ Animation JS -->
+<script>
+  // Show Lottie each load, then slide it out
+  window.addEventListener('DOMContentLoaded', () => {
+    const anim = document.getElementById('faqIntroAnimation');
+    setTimeout(() => { if (anim) anim.style.animation = 'disappearBot 0.5s ease-in-out forwards'; }, 6000);
+  });
+</script>
+
+<!-- ===== PDA Ditto-style Chat Dock (Intercom / Ditto lookalike) ===== -->
+<script>
+(() => {
+  // ---------- CONFIG ----------
+  const CFG = {
+    heroImg: "https://downloads.intercomcdn.com/i/o/rsifqopp/650685/8270e016160407676c1c5967a3a7/e9b78e28d612e893edba215f6a260f45.png",
+    z: 1030 // was 2147483647; keep high but safer for site
+  };
+
+  // ---------- MOUNT ----------
+  const root = document.createElement('div');
+  root.id = 'pda-ditto-clone';
+  root.style.all = 'initial';
+  document.body.appendChild(root);
+
+  // Inject runtime CSS variables (safe whether CSS is inline or external)
+  root.style.setProperty('--hero-img', `url('${CFG.heroImg}')`);
+  root.style.setProperty('--z', String(CFG.z));
+  root.style.setProperty('--z-panel', String(CFG.z - 1));
+
+  root.innerHTML = `
+  <style>
+    /* Vars scoped to widget root */
+    #pda-ditto-clone{
+      --p:#6F3FF5; --p2:#7C3AED; --text:#101828; --mut:#667085; --bd:#E7E8F2; --bg:#fff;
+      --r:22px; --shadow:0 30px 70px rgba(24,19,60,.28);
+      --hero-img: var(--hero-img); /* set by JS above */
+      --lav:#EEE9FF;
+      --z: var(--z);               /* set by JS above */
+      --z-panel: var(--z-panel);   /* set by JS above */
+    }
+    #pda-ditto-clone, #pda-ditto-clone * {
+      box-sizing:border-box; font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif
+    }
+
+    /* FAB */
+    #pda-ditto-clone .pdaFab {
+      all: initial;
+      position: fixed;
+      right: 22px;
+      bottom: -15px;
+      width: 58px;
+      height: 58px;
+      border-radius: 30px 30px 0 0; /* 4-corner control */
+      background: linear-gradient(135deg, #7d2492, #cd4ffa);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      box-shadow: 0 22px 48px rgba(111, 63, 245, .45);
+      border: 2px solid #fff;
+      transition: transform .18s ease, filter .18s ease;
+      z-index: var(--z);
+    }
+    #pda-ditto-clone .pdaFab:hover{ transform:translateY(-3px) scale(1.06); filter:brightness(1.06) }
+/* PANEL (fixed pointer-events toggling) */
+#pda-ditto-clone .pdaPanel {
+  /* all: initial;  <-- optional; rakhna hai to rakh lo */
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-panel);
+  pointer-events: none;           /* default: no clicks when hidden */
+}
+
+/* when open or during closing animation, allow clicks inside */
+#pda-ditto-clone .pdaPanel.open,
+#pda-ditto-clone .pdaPanel.closing {
+  pointer-events: auto;
+}
+
+#pda-ditto-clone .pdaSheet {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  width: min(390px, 90vw);
+  max-height: 75vh;
+  background: var(--bg);
+  border-radius: var(--r);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  display: grid;
+  grid-template-rows: auto 1fr auto auto;
+  transform-origin: bottom right;
+  opacity: 0;
+  transform: scale(0.85) translateY(30px);
+  /* pointer-events: auto;  <-- ab zaroorat nahi (parent se mil jayega) */
+}
+
+@media (max-width: 560px) {
+  #pda-ditto-clone .pdaSheet { left: 10px; right: 10px; width: calc(100vw - 20px); }
+}
+
+   
+    #pda-ditto-clone .pdaPanel.open .pdaSheet { animation: growUp 0.35s cubic-bezier(.2,.8,.16,1) forwards; }
+    #pda-ditto-clone .pdaPanel.closing .pdaSheet { animation: shrinkDown 0.25s ease forwards; }
+    @keyframes growUp {
+      0% { opacity:0; transform:scale(.85) translateY(30px); }
+      70% { opacity:1; transform:scale(1.02) translateY(0); }
+      100%{ opacity:1; transform:scale(1) translateY(0); }
+    }
+    @keyframes shrinkDown {
+      0% { opacity:1; transform:scale(1) translateY(0); }
+      100%{ opacity:0; transform:scale(.85) translateY(30px); }
+    }
+
+    /* ===== HERO HEADER (IMAGE) ===== */
+    #pda-ditto-clone .pdaHeroHeader{ position:relative; height:230px; overflow:hidden; isolation:isolate; }
+    #pda-ditto-clone .pdaHeroHeader::before{
+      content:""; position:absolute; inset:0; background-image: var(--hero-img);
+      background-repeat:no-repeat; background-size:100% auto; background-position:left top; z-index:0;
+    }
+    #pda-ditto-clone .pdaHeroBrand{ position:absolute; left:30px; top:30px; color:#fff; font-weight:400; letter-spacing:.12em; text-shadow:0 2px 8px rgba(0,0,0,.2) }
+    #pda-ditto-clone .pdaHeroText{ position:absolute; left:30px; bottom:42px; color:#fff }
+    #pda-ditto-clone .pdaHeroText h3{ margin:0 0 6px; font-size:28px; line-height:1.1; font-weight:600; color:#fff; }
+    #pda-ditto-clone .pdaHeroText p{ margin:0; opacity:.92; font-size:18px; color:#fff; }
+    #pda-ditto-clone .pdaHeaderCurve{ position:absolute; left:0; right:0; bottom:-28px; height:28px; background:#fff; border-radius:28px 28px 0 0; box-shadow:0 -10px 24px rgba(0,0,0,.06) inset }
+    #pda-ditto-clone .pdaMini{
+      position:absolute; right:14px; top:14px; width:44px; height:44px; border-radius:14px; border:0;
+      background:rgba(255,255,255,.18); backdrop-filter:saturate(140%) blur(6px); color:#fff; display:grid; place-items:center;
+      box-shadow:0 6px 18px rgba(0,0,0,.15); cursor:pointer;
+    }
+
+    /* BODY */
+    #pda-ditto-clone .pdaBody{ padding:14px; overflow:auto }
+    #pda-ditto-clone .pdaBody::-webkit-scrollbar{ width:8px }
+    #pda-ditto-clone .pdaBody::-webkit-scrollbar-thumb{ background:#E3DFFF; border-radius:10px }
+
+    #pda-ditto-clone .card{ background:#fff; border:1px solid var(--bd); border-radius:18px; box-shadow:0 16px 36px rgba(0,0,0,.06) }
+    #pda-ditto-clone .ctaWrap{ padding:14px; border:0; box-shadow:none; background:transparent }
+    #pda-ditto-clone .cta{
+      width:100%; border:0; border-radius:16px; padding:14px 16px; font-weight:500; cursor:pointer; background:#fff; color:#111;
+      display:flex; align-items:center; justify-content:space-between; gap:10px; box-shadow:0 8px 24px rgba(17,12,46,.12);
+    }
+    #pda-ditto-clone .pill{ width:38px; height:38px; border-radius:12px; background:linear-gradient(135deg,var(--p),var(--p2)); color:#fff; display:grid; place-items:center; box-shadow:0 6px 16px rgba(111,63,245,.35) }
+
+    /* SEARCH */
+    #pda-ditto-clone .searchCard{ margin-top:1px; padding:2px 0 0; border:0; box-shadow:none; background:transparent }
+    #pda-ditto-clone .searchPill{ position:relative }
+    #pda-ditto-clone .searchPill input{
+      width:100%; height:44px; border:1.5px solid #ECECF6; border-radius:12px; background:#fff;
+      padding:0 44px 0 42px; outline:none; transition:box-shadow .15s ease, border-color .15s ease;
+      font-size:14px; color:#191b26; box-shadow:0 6px 18px rgba(17,12,46,.06);
+    }
+    #pda-ditto-clone .searchPill input:focus{ border-color:#CFC7FF; box-shadow:0 0 0 4px rgba(111,63,245,.15) }
+    #pda-ditto-clone .lens, #pda-ditto-clone .glass{ position:absolute; top:50%; transform:translateY(-50%); font-size:0 }
+    #pda-ditto-clone .lens{ left:14px } #pda-ditto-clone .glass{ right:12px }
+    #pda-ditto-clone .icon{ width:18px; height:18px; display:block; color:#98A2B3 }
+    #pda-ditto-clone .icon.accent{ color:#6F3FF5 }
+
+    /* QUICK list (scoped li fix) */
+    #pda-ditto-clone .quick{ list-style:none; margin:12px 0 0; padding:0; max-height:220px; overflow:auto; border-radius:14px }
+    #pda-ditto-clone .quick li{ border-bottom:1px solid #ffffff; }
+    #pda-ditto-clone li { color:#9d9d9d; font-size:13px; line-height:18px; }
+    #pda-ditto-clone .quick a{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 10px; color:#707070; text-decoration:none; border-radius:12px }
+    #pda-ditto-clone .quick a .mute{ color:#9AA4B2; font-weight:700 }
+    #pda-ditto-clone .quick a:hover{ background:#F6F5FF }
+
+    /* NEWS (scoped) */
+    #pda-ditto-clone .newsRow{ border:0; border-radius:18px; overflow:hidden; margin-top:12px; box-shadow:0 8px 24px rgba(17,12,46,.08) }
+    #pda-ditto-clone .newsCard{ display:flex; gap:12px; padding:10px; align-items:center; text-decoration:none; color:inherit; border-radius:10px; transition:all .3s ease; }
+    #pda-ditto-clone .newsImg{ width:96px; height:60px; border-radius:12px; overflow:hidden; background:#ddd }
+    #pda-ditto-clone .newsImg img{ width:100%; height:100%; object-fit:cover; border-radius:8px; transition:transform .3s ease; }
+    #pda-ditto-clone .newsMeta{ font-size:12px; color:#6F3FF5; font-weight:600 }
+    #pda-ditto-clone .newsTitle{ font-size:15px; font-weight:600; margin-top:2px }
+    #pda-ditto-clone .mute{ font-size:12px; color:#666 }
+    #pda-ditto-clone .newsCard:hover{ background:#f9f7ff; box-shadow:0 8px 20px rgba(111,63,245,.15); transform:translateY(-3px); }
+    #pda-ditto-clone .newsCard:hover .newsImg img{ transform:scale(1.05); }
+
+    /* Tabs (scoped) */
+    #pda-ditto-clone .tabs{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; padding:12px; background:#fff; position:relative; border-radius:22px; box-shadow:0 -6px 24px rgba(17,12,46,.06); margin-bottom:5px; border-radius:0 !important; }
+    #pda-ditto-clone .tabs button{
+      all:initial; border-radius:16px; padding:1px 1px; cursor:pointer; color:#3b3b44;
+      display:flex; flex-direction:column; align-items:center; gap:6px; font:14px Inter, system-ui; text-align:center;
+    }
+    #pda-ditto-clone .tabs button svg{ width:18px; height:18px }
+    #pda-ditto-clone .tabs button.active{ color:#6F3FF5 }
+
+    /* Skeleton (scoped) */
+    #pda-ditto-clone .skeleton { position: relative; overflow: hidden; background: #eee; border-radius: 8px; }
+    #pda-ditto-clone .skeleton::after {
+      content:""; position:absolute; inset:0; transform: translateX(-100%);
+      background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.6) 50%, rgba(255,255,255,0) 100%);
+      animation: shimmer 1.3s infinite;
+    }
+    @keyframes shimmer { 100% { transform: translateX(100%); } }
+    #pda-ditto-clone .skeleton-line { height: 10px; border-radius: 6px; }
+    #pda-ditto-clone .skeleton-gap { height: 8px; }
+    #pda-ditto-clone .skeleton-quick li{ display:flex; gap:10px; padding:12px 10px; }
+    #pda-ditto-clone .skeleton-dot{ width:18px; height:18px; border-radius:6px; }
+    #pda-ditto-clone .skeleton-news .row{ display:flex; gap:12px; padding:10px; }
+    #pda-ditto-clone .skeleton-thumb{ width:96px; height:60px; border-radius:12px; }
+    #pda-ditto-clone .hide{ display:none !important; }
+  </style>
+
+  <!-- FAB -->
+  <button class="pdaFab" id="pdaFab" aria-label="Open support">
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round">
+      <path d="M7 8h10M7 12h7M5 20l3-3h9a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7A3 3 0 0 0 4 7v10a3 3 0 0 0 1 3z"/>
+    </svg>
+  </button>
+
+  <!-- PANEL -->
+  <div class="pdaPanel" id="pdaPanel" aria-hidden="true">
+    <div class="pdaSheet">
+      <!-- HERO -->
+      <div class="pdaHeroHeader">
+        <button class="pdaMini" id="pdaMini" aria-label="Close">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+        <div class="pdaHeroBrand">PRIME</div>
+        <div class="pdaHeroText">
+          <h3>Hi there.</h3>
+          <p>How can we help?</p>
+        </div>
+        <div class="pdaHeaderCurve"></div>
+      </div>
+
+      <!-- BODY -->
+      <section class="pdaBody">
+        <div class="searchCard">
+          <div class="searchPill">
+            <span class="lens">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+            </span>
+            <input type="text" id="pdaSearch" placeholder="Search for help"/>
+            <span class="glass">
+              <svg class="icon accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h16"/></svg>
+            </span>
+          </div>
+
+          <!-- Skeleton FAQ -->
+          <ul id="quickListSkeleton" class="skeleton-quick">
+            ${Array.from({length:5}).map(()=>`
+              <li>
+                <div class="skeleton skeleton-dot"></div>
+                <div style="flex:1">
+                  <div class="skeleton skeleton-line" style="width:75%"></div>
+                  <div class="skeleton-gap"></div>
+                  <div class="skeleton skeleton-line" style="width:45%"></div>
+                </div>
+              </li>
+            `).join('')}
+          </ul>
+
+          <ul class="quick hide" id="quickList">
+            <li><a href="https://www.primebackstage.in/faq/article/31"><span class="q">How do I create a new release?</span><span class="mute">›</span></a></li>
+            <li><a href="https://www.primebackstage.in/faq/category/26"><span class="q">Most Common Reasons for Track Rejection!</span><span class="mute">›</span></a></li>
+            <li><a class="active" href="https://www.primebackstage.in/faq/article/42"><span class="q">What format should my artwork be in?</span><span class="mute">›</span></a></li>
+            <li><a href="https://www.primebackstage.in/faq/article/39"><span class="q">What should I enter for the C Line & P Line?</span><span class="mute">›</span></a></li>
+            <li><a href="https://www.primebackstage.in/faq/article/96"><span class="q">How can I pitch my songs for promotion?</span><span class="mute">›</span></a></li>
+          </ul>
+        </div>
+
+        <div class="newsRow">
+          <a href="https://www.primebackstage.in/faq/article/111" class="newsCard">
+            <div class="newsImg">
+              <img src="https://downloads.intercomcdn.com/i/o/rsifqopp/1452204507/4554922cdf3e00dd07d2fbaabac8/Whatsapp_Store-Page_Press-Update.jpg?expires=1754995500&signature=5a4053f3b29cffc4bbd5e278e8a242f494a3f79c10b7e9eef7cd4196030a7812&req=dSQiFMt%2BmYRfXvMW1HO4zWvS25up4hXXk1L9VGnRmC4XuNb4GaHhoq6FmE%2Bi%0ADk4EXGQ%3D%0A" alt="">
+            </div>
+            <div>
+              <div class="newsMeta">New Store</div>
+              <div class="newsTitle">Upload your tracks to WhatsApp</div>
+              <div class="mute" style="font-size:12px">Read more ➜</div>
+            </div>
+          </a>
+
+          <a href="https://www.primebackstage.in/promotion" class="newsCard">
+            <div class="newsImg">
+              <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYQZ5P3ugmQZ1UkipSgg4HnHxOY0evgT3YeLw03QhQt8zEjzDSCbN9E1BcdsfG9M4pM4s&usqp=CAU" alt="">
+            </div>
+            <div>
+              <div class="newsMeta">New Service</div>
+              <div class="newsTitle">Ready to Join a YouTube MCN?</div>
+              <div class="mute" style="font-size:12px">Join Now ➜</div>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- Tabs -->
+      <nav class="tabs" id="pdaTabs">
+        <button class="active" data-go="home">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M9 22V12h6v10"/></svg>
+          <span>Home</span>
+        </button>
+        <button data-go="messages">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a4 4 0 0 1-4 4H7l-4 4V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg>
+          <span>Support Tickets</span>
+        </button>
+        <button data-go="help">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2-3 4"/><path d="M12 17h.01"/></svg>
+          <span>Help</span>
+        </button>
+        <button data-go="news">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+          <span>News</span>
+        </button>
+      </nav>
+    </div>
+  </div>
+  `;
+
+  // ---------- JS (scoped to widget) ----------
+  const $ = sel => root.querySelector(sel);
+  const fab    = $('#pdaFab');
+  const panel  = $('#pdaPanel');
+  const mini   = $('#pdaMini');
+  const tabs   = $('#pdaTabs');
+  const search = $('#pdaSearch');
+  const quick  = $('#quickList');
+  const quickSkel = $('#quickListSkeleton');
+
+  function showSkeleton() {
+    if (quickSkel) quickSkel.classList.remove('hide');
+    if (quick) quick.classList.add('hide');
+  }
+  function hideSkeleton() {
+    if (quickSkel) quickSkel.classList.add('hide');
+    if (quick) quick.classList.remove('hide');
+  }
+
+  const open = () => {
+    panel.classList.add('open');
+    panel.setAttribute('aria-hidden','false');
+    if (fab) fab.style.display='none';
+    showSkeleton();
+    setTimeout(hideSkeleton, 1000);
+  };
+  const close = () => {
+    panel.classList.remove('open');
+    panel.classList.add('closing');
+    setTimeout(() => {
+      panel.classList.remove('closing');
+      panel.setAttribute('aria-hidden','true');
+      if (fab) fab.style.display='grid';
+    }, 250);
+  };
+
+  if (fab)  fab.addEventListener('click', open);
+  if (mini) mini.addEventListener('click', close);
+
+  if (tabs) {
+    tabs.addEventListener('click', e=>{
+      const b = e.target.closest('button[data-go]');
+      if(!b) return;
+      tabs.querySelectorAll('button').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      // Navigation (scoped)
+      const dest = b.getAttribute('data-go');
+      if (dest === 'messages') location.href = "https://www.primebackstage.in/tickets";
+      if (dest === 'help')     location.href = "https://www.primebackstage.in/faq";
+      if (dest === 'news')     location.href = "https://www.whatsapp.com/channel/0029VaXU4WWLtOjGnXeqFJ3h";
+    });
+  }
+
+  if (search && quick){
+    search.addEventListener('input', ()=>{
+      const q = search.value.toLowerCase();
+      quick.querySelectorAll('li').forEach(li=>{
+        li.style.display = li.textContent.toLowerCase().includes(q) ? '' : 'none';
+      });
+    });
+  }
+
+  try {
+    if (new URLSearchParams(location.search).get('openChat') === '1') open();
+  } catch {}
+})();
+</script>
+<!-- ===== /PDA Ditto-style Chat Dock ===== -->
+
+<!-- (Optional) extra scoped styles block — keeps any later overrides safe -->
+<style>
+#pda-ditto-clone .newsCard {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 10px;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+#pda-ditto-clone .newsImg img {
+  border-radius: 8px;
+  transition: transform 0.3s ease;
+}
+#pda-ditto-clone .newsMeta { font-size: 12px; color: #6F3FF5; font-weight: 600; }
+#pda-ditto-clone .newsTitle { font-size: 15px; font-weight: 600; margin-top: 2px; }
+#pda-ditto-clone .mute { font-size: 12px; color: #666; }
+#pda-ditto-clone .newsCard:hover {
+  background: #f9f7ff;
+  box-shadow: 0 8px 20px rgba(111, 63, 245, 0.15);
+  transform: translateY(-3px);
+}
+#pda-ditto-clone .newsCard:hover .newsImg img { transform: scale(1.05); }
+</style>

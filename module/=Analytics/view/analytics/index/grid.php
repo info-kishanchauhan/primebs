@@ -1,0 +1,228 @@
+<style>
+.stats-container {
+    display: flex;
+    gap: 20px;
+}
+.mt20
+{
+	margin-top:20px;
+}
+.tooltip
+{
+	width:300px;
+	padding:15px;
+}
+.css-plypk7 {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    padding: 24px;
+}
+.css-558cd0 {
+    user-select: none;
+    display: inline-block;
+    fill: currentcolor;
+    flex-shrink: 0;
+    font-size: 1.5rem;
+    color: rgb(101, 108, 130);
+    width: 20px;
+    height: 20px;
+    padding: 0px;
+    transition: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.stat-box {
+    background-color: white;
+    border-radius: 10px;
+   
+    padding: 20px;
+    text-align: center;
+    border: 1px solid #e1e1e1;
+}
+
+.icon-and-value {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 10px;
+}
+
+
+
+.stat-value {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0;
+	text-align:left;
+}
+
+.stat-label {
+    color: #999;
+    margin-bottom: 10px;
+	font-size:16px;
+	font-weight:600;
+}
+
+.stat-change {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.stat-percentage {
+    font-size: 12px;
+    padding: 5px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.up {
+    color: green;
+    background-color: #e5f8e6;
+}
+
+.down {
+    color: red;
+    background-color: #f8e5e5;
+}
+.table{
+	border-radius: 10px;
+    border: 1px solid #e1e1e1;
+	border-collapse: separate;
+}
+.table>thead>tr>th
+{
+	border-bottom:0px;
+	padding:16px;
+	font-size:11px;
+}
+.table>tbody>tr>td
+{
+	font-size:14px;
+	padding:16px;
+}
+thead th:first-child {
+    border-top-left-radius: 10px; /* Rounded top-left corner */
+}
+
+thead th:last-child {
+    border-top-right-radius: 10px; /* Rounded top-right corner */
+}
+
+tbody td:first-child {
+    border-bottom-left-radius: 10px; /* Rounded bottom-left corner */
+}
+
+tbody td:last-child {
+    border-bottom-right-radius: 10px; /* Rounded bottom-right corner */
+}
+</style>
+
+<div class="row" style="max-width:1280px;margin: auto;">
+	<div class="row" style="margin-bottom:20px;">
+	<div class="filterContainer">
+		<div class="form-group">
+		  <div class="col-sm-3">
+			<label><strong class="txt-color-blue">From Month</strong></label>
+			<input class="form-control input-sm inputString inputBehavior-2 form-control" name="from_month" id="from_month" type="text" value="<?php echo $this->last_month;?>" style="">
+		  </div>
+		  <div class="col-sm-3">
+			<label><strong class="txt-color-blue">To Month</strong></label>
+			<input class="form-control input-sm inputString inputBehavior-2 form-control" name="to_month" id="to_month" type="text" value="<?php echo $this->last_month;?>" style="">
+		  </div>
+		  <div class="col-sm-1 no-padding filter-searches">
+			<button class="btn btn-primary btn-sm inputBehavior- mt20" id="btnSearch" type="button">
+			  <span class="glyphicon glyphicon-search"></span> Search </button>
+		  </div>
+		  <?php 
+			if($_SESSION['user_id'] == '0')
+			{
+		  ?>
+			<div class="col-md-2" style="margin-top: 20px;">
+				<a href="javascript:;" class="btn btn-primary btn-sm pull-left btn-import" id="importpopup">Import</a>
+			</div>
+			<?php } ?>
+		 </div>
+	</div>
+	</div>
+	<hr>
+	<div class="">
+		<div class="stats-container">
+			<div class="stat-box col-md-4">
+				<div class="MuiBox-root css-plypk7"><svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-558cd0" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-toggle="tooltip" data-placement="top" data-original-title="Number of videos using this track that were created on short-form platforms."><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2m0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8"></path></svg></div>
+				<div class="icon-and-value">
+					<img src="public/img/social_group.PNG" alt="TikTok icon" class="icon">
+					<div class="sec_flex">
+						<p class="stat-value" id="tot_creation">0</p>
+						<p class="stat-label">Creations</p>
+					</div>
+				</div>
+			</div>
+
+			<div class="stat-box col-md-4">
+				<div class="MuiBox-root css-plypk7"><svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-558cd0" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-toggle="tooltip" data-placement="top" data-original-title="Number of videos using this track that were created on short-form platforms."><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2m0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8"></path></svg></div>
+				<div class="icon-and-value">
+					<img src="public/img/social_group.PNG" alt="TikTok icon" class="icon">
+					<div class="sec_flex">
+						<p class="stat-value" id="tot_revenue">0</p>
+						<p class="stat-label">Revenue</p>
+					</div>
+				</div>
+			</div>
+
+			<div class="stat-box col-md-4">
+				<div class="MuiBox-root css-plypk7"><svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-558cd0" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-toggle="tooltip" data-placement="top" data-original-title="Number of audio streams generated by your music."><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2m0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8"></path></svg></div>
+				<div class="icon-and-value">
+					<img src="public/img/stream.PNG" alt="Audio icon" class="icon">
+					<div class="sec_flex">
+						<p class="stat-value" id="tot_stream">0</p>
+						<p class="stat-label">Audio streams</p>
+					</div>
+					
+				</div>
+				
+			</div>
+		</div>
+	</div>
+	
+<div id="catalogContent" style="margin-top:20px;">
+  
+  
+  <table id="tblMasterList" class="table dataTable no-footer" width="100%">
+
+
+
+<col width="10%">
+<col width="27%">
+<col width="13%">
+<col width="13%">
+<col width="12%">
+<col width="15%">
+<col width="20%">
+
+                <thead>
+
+                <tr>
+					<th></th>
+					<th><?php echo $this->translate('TRACK'); ?></th>
+					<th></th>
+					<th><?php echo $this->translate('LAST RELEASE DATE'); ?></th>
+					<th><?php echo $this->translate('CREATIONS'); ?></th>
+					<th><?php echo $this->translate('SALES MONTH'); ?></th>
+					<th><?php echo $this->translate('REVENUE'); ?></th>
+					<th><?php echo $this->translate('AUDIO STREAM'); ?></th>
+					
+
+
+                </tr>
+
+                </thead>
+
+                <tbody>
+
+					
+
+                </tbody>
+
+  </table>
+ </div>
+</div>

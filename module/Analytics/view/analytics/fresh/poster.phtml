@@ -1,0 +1,662 @@
+<?php
+/* ============ Build page-artist list from tracks ============ */
+$tracks = $this->tracks ?? []; // expect each track to have 'artists' (array|string)
+$pageArtists = [];
+if (is_array($tracks)) {
+  foreach ($tracks as $t) {
+    $alist = $t['artists'] ?? [];
+    if (is_string($alist)) { $alist = array_filter(array_map('trim', explode(',', $alist))); }
+    if (!is_array($alist)) { $alist = []; }
+
+    foreach ($alist as $a) {
+      if (is_array($a)) {
+        $id   = (int)($a['id'] ?? 0);
+        $name = trim((string)($a['name'] ?? ''));
+        $img  = (string)($a['image_url'] ?? ($a['image'] ?? ''));
+      } else {
+        $id=0; $name=trim((string)$a); $img='';
+      }
+      if ($name === '') continue;
+      $key = $id . ':' . mb_strtolower($name);
+      if (!isset($pageArtists[$key])) {
+        $pageArtists[$key] = ['id'=>$id,'name'=>$name,'image_url'=>$img];
+      }
+    }
+  }
+}
+/* fallback: agar tracks nahi mile to hero artist ko dikhado */
+if (!$pageArtists) {
+  $fallbackName = (string)($r['artist'] ?? 'Unknown Artist');
+  $pageArtists['0:'.mb_strtolower($fallbackName)] = [
+    'id' => (int)($r['artist_id'] ?? 0),
+    'name' => $fallbackName,
+    'image_url' => (string)($r['artist_image'] ?? '')
+  ];
+}
+$artistListJson = json_encode(array_values($pageArtists), JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);
+$artistEditUrlBase = $this->basePath() . '/analytics/artist-edit';
+$artistOpenUrlBase = $this->basePath() . '/analytics/artist'; // viewer page (adjust if different)
+?>
+
+
+
+<?php
+/** @var \Zend\View\Renderer\PhpRenderer $this */
+$this->headTitle('Browse • New Releases');
+
+$base = $this->basePath();
+$demo = $base . '/public/img/demo';
+
+/* LIVE RELEASE */
+$r      = $this->release ?? [];
+$title  = $this->escapeHtml($r['title']  ?? 'Untitled');
+$artist = $this->escapeHtml($r['artist'] ?? 'Unknown Artist');
+$upc    = $this->escapeHtml($r['upc']    ?? '');
+$date   = $this->escapeHtml($r['date']   ?? '');
+$label  = $this->escapeHtml($r['label']  ?? '');
+$cover  = (string)($r['cover'] ?? '');
+
+/* Fallbacks */
+function urlOrPlaceholder($url, $seed, $w=600, $h=400){
+  $u = trim((string)$url);
+  if ($u !== '') return $u;
+  return "https://picsum.photos/seed/".rawurlencode($seed)."/{$w}/{$h}";
+}
+$heroCover = urlOrPlaceholder($cover, 'playlist-hero', 840, 420);
+
+/* Hero meta */
+$playlist = [
+  'title'   => $title,
+  'subtitle'=> $label ? ("Label: ".$label.( $date ? " • ".$date : "")) : ($date ?: 'Fresh release'),
+  'likes'   => 'Not Updated',
+  'length'  => 'No Preview',
+  'cover'   => $heroCover
+];
+
+/* ====== PROMOTION / CREATIVES CONFIG (DYNAMIC) ====== */
+$renderBase    = $this->basePath() . '/analytics/render';
+$templatesApi  = $this->basePath() . '/analytics/creative-templates';
+
+$relRawTitle   = (string)($r['title']  ?? 'Untitled');
+$relRawArtist  = (string)($r['artist'] ?? '');
+$relRawCover   = (string)($r['cover']  ?? '/public/uploads/no-image.png');
+
+$demoAvatar = urlOrPlaceholder($demo.'/avatar.jpg', 'avatar', 80, 80);
+
+/* Start Campaign URL */
+$campaignUrl = $this->basePath() . '/promotion/start-campaign?id=' . rawurlencode((string)($r['id'] ?? '0'));
+?>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+
+<style>
+  .small, small {
+    font-size: 120%;
+}
+/* ===== Base tokens ===== */
+:root{
+  --ink:#0f172a;
+  --muted:#64748b;
+  --line:#e5e7eb;
+  --bg:#efeff3;
+  --card:#ffffff;
+  --pill:#eef2ff;
+  --pill-ink:#4f46e5;
+  --accent:#ff7a2d;
+  --radius:18px;
+  --shadow:0 12px 30px rgba(2,6,23,.06);
+}
+*{box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink)}
+.page{max-width:1210px;margin:24px auto;padding:0 16px}
+
+/* Header */
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.breadcrumb{display:flex;gap:8px;align-items:center;color:var(--muted);font-weight:500}
+.icon-btn{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer}
+.avatar{width:38px;height:38px;border-radius:999px;object-fit:cover;border:2px solid #fff;box-shadow:var(--shadow)}
+
+/* Layout */
+.grid{grid-template-columns:1.4fr .9fr;gap:24px}
+
+/* ===== HERO ===== */
+.hero{
+  background: linear-gradient(140deg, #7416a3 0%, #d74c05 45%, #065cbe 100%);
+  border-radius:26px;
+  padding:24px;
+  display:grid;
+  grid-template-columns:0.7fr .9fr; /* left meta | right cover+cta */
+  gap:16px;
+  color:#fff;
+  box-shadow:var(--shadow);
+}
+.hero .title{font-size:34px;line-height:1.1;font-weight:800;margin:8px 0 12px}
+.hero .bar{display:flex;gap:14px;align-items:center;font-weight:600}
+
+/* RIGHT column stack */
+.hero-right{display:flex;gap:12px}
+
+/* Cover wrapper */
+.hero .cover-wrap{
+  border-radius:20px;
+  border:1px solid rgba(255,255,255,.25);
+  background:rgba(255,255,255,.12);
+  overflow:hidden;
+  box-shadow:var(--shadow);
+}
+
+/* Cover image NO CROP */
+.hero img.cover{
+  width:110%;
+  height:210px;           /* adjust 200→220/240 if you want taller */
+  object-fit:;     /* <-- no crop */
+  background:#ffffff;     /* subtle letterbox */
+  display:block;
+}
+
+/* CTA panel */
+.hero .cta-panel{
+  display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:12px;
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);
+  border-radius:20px;padding:22px;min-height:120px;box-shadow:var(--shadow);backdrop-filter:blur(6px);
+}
+.hero .cta-kicker{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;opacity:.9}
+.hero .cta-heading{font-size:22px;font-weight:800;line-height:1.25}
+.hero .cta-sub{font-size:13px;opacity:.95;max-width:46ch}
+.hero .cta-actions{display:flex;gap:10px;margin-top:6px}
+.btn-start{
+  display:inline-flex;align-items:center;gap:10px;padding:12px 16px;border-radius:14px;
+  background:#0ea5e9;color:#fff;font-weight:700;border:1px solid rgba(255,255,255,.25);text-decoration:none;
+  box-shadow:0 8px 24px rgba(14,165,233,.35);transition:transform .08s ease, box-shadow .2s ease, background .2s ease;
+}
+.btn-start:hover{box-shadow:0 10px 28px rgba(14,165,233,.45)}
+.btn-start:active{transform:translateY(1px)}
+.btn-ghost{
+  display:inline-flex;align-items:center;gap:8px;padding:12px 14px;border-radius:12px;
+  background:rgba(255,255,255,.08);color:#fff;font-weight:600;border:1px dashed rgba(255,255,255,.35);text-decoration:none;
+}
+
+/* Sections */
+.sectionm{background:var(--card);border-radius:20px;padding:16px;box-shadow:var(--shadow)}
+.section h3{margin:0 0 14px;font-size:18px}
+.section h5{margin:0 0 14px;font-size:19px;font-weight:700}
+
+/* Creatives grid/cards */
+.creative-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.creative-card{background:#f1f5f9;border:1px solid var(--line);border-radius:16px;padding:10px;display:flex;flex-direction:column;gap:8px}
+.creative-card.tall .creative-thumb{aspect-ratio:9/16}
+.creative-card.portrait .creative-thumb{aspect-ratio:4/5}
+.creative-card.square{padding:8px;border-radius:14px}
+.creative-card.square .creative-actions .icon-btn{width:34px;height:34px}
+/* === Thumbnail aspect ratio fix for posts === */
+.creative-card.tall .creative-thumb { aspect-ratio: 9 / 16; }    /* Story 1080×1920 */
+.creative-card.portrait .creative-thumb { aspect-ratio: 4 / 5; } /* Portrait 1080×1350 */
+.creative-card.square .creative-thumb { aspect-ratio: 1 / 1; }   /* Post 1080×1080 */
+
+/* Default (fallback) */
+.creative-thumb {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+}
+.creative-actions{position:absolute;right:8px;bottom:8px;display:flex;gap:8px}
+
+.meta-badges{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.meta-badges .b2{background:var(--pill);color:var(--pill-ink);border:1px solid #dbeafe}
+
+/* Phase tag */
+.phase-tag{position:absolute;left:8px;top:8px;font-size:11px;font-weight:700;padding:6px 8px;border-radius:999px;background:#e2e8f0;color:#0f172a;border:1px solid #cbd5e1}
+.phase-tag.outnow{background:#dcfce7;border-color:#bbf7d0}
+.phase-tag.teaser{background:#e0e7ff;border-color:#c7d2fe}
+
+/* Skeleton */
+.skeleton{position:relative;overflow:hidden;background:#e9eef5}
+.skeleton::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#e9eef5 25%,#f3f6fb 37%,#e9eef5 63%);background-size:400% 100%;animation:sh 1.1s linear infinite}
+.skeleton-pill{display:inline-block;height:28px;border-radius:999px;padding:0 12px;line-height:28px;background:#eef2f7}
+@keyframes sh{0%{background-position:100% 50%}100%{background-position:0 50%}}
+
+/* Thumb loader + fade-in */
+.thumb-loader{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(15,23,42,.08);backdrop-filter:blur(4px)}
+.thumb-loader .spin{width:24px;height:24px;border-radius:50%;border:3px solid rgba(255,255,255,.4);border-top-color:rgba(15,23,42,.8);animation:spinAnim .6s linear infinite;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+@keyframes spinAnim{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+.creative-thumb img.thumb-img{width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .2s ease}
+.creative-thumb img.thumb-img.loaded{opacity:1}
+.badge {
+    display: inline-block;
+    min-width: 10px;
+    padding: 5px 7px;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    background-color: #398ce9;
+    border-radius: 10px;
+}
+/* Responsive */
+@media (max-width:980px){
+  .grid{grid-template-columns:1fr}
+  .hero{grid-template-columns:1fr}
+  .hero img.cover{height:180px}
+  .creative-grid{grid-template-columns:repeat(2,1fr)}
+}
+  /* ==== Campaign panel: image on the left ==== */
+.hero .cta-panel{
+  display: grid;                 /* was flex */
+  grid-template-columns: 120px 1fr;
+  align-items: center;
+  gap: 14px;
+}
+
+.cta-thumb{
+  width: 120px;
+  aspect-ratio: 1 / 1;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.25);
+  background: rgba(255,255,255,.12);
+  box-shadow: var(--shadow);
+}
+.cta-thumb img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* stack on small screens */
+@media (max-width: 980px){
+  .hero .cta-panel{
+    grid-template-columns: 1fr;
+    justify-items: start;
+  }
+  .cta-thumb{ width: 96px; }
+}
+/* === Force absolute center for the artist picker === */
+.ap-modal{ position: fixed; inset: 0; display: none; z-index: 9991; }
+.ap-modal.show{ display: block; }
+
+/* Center the card itself */
+.ap-card{
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+  max-width: min(500px, 92vw);
+  max-height: 80vh;
+  margin: 0;
+}
+
+/* Scroll-lock while open (optional but nice) */
+body.ap-lock { overflow: hidden; }
+
+/* Small screen fallback: keep it a bit lower if keyboard shows */
+@media (max-width: 640px){
+  .ap-card{ top: 52%; }
+}
+
+</style>
+
+<div class="page">
+  <div class="header">
+    <div class="breadcrumb">
+      <a href="https://www.primebackstage.in/analytics/charts">Chart</a><span>›</span><a href="#">Promotions</a>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center"></div>
+  </div>
+
+  <div class="grid">
+    <!-- LEFT -->
+    <div>
+      <!-- Hero -->
+      <div class="hero">
+        <div class="meta">
+          <small>Creative Promotion</small>
+          <div class="title"><?= $this->escapeHtml($playlist['title']) ?></div>
+          <div class="desc"><?= $this->escapeHtml($playlist['subtitle']) ?></div>
+         <div class="bar" style="margin-top:14px; gap:10px;">
+  
+  <button type="button" id="btnEditArtists" class="btn-ghost" style="border-style:solid">Edit artists</button>
+</div>
+
+        </div>
+
+        <!-- RIGHT: Cover (no crop) + CTA -->
+        
+          
+
+          <div class="cta-panel" role="region" aria-label="Start campaign">
+  <!-- LEFT: cover inside the box -->
+  <div class="cta-thumb">
+    <img src="<?= $playlist['cover'] ?>" alt="Campaign cover">
+  </div>
+
+  <!-- RIGHT: text + buttons -->
+  <div class="cta-content">
+    <div class="cta-kicker">Marketing</div>
+    <div class="cta-heading">Run your first campaign</div>
+    <div class="cta-sub">
+      Boost this release with story &amp; post creatives, track links and more.
+    </div>
+    <div class="cta-actions">
+      <a class="btn-start" href="https://www.primebackstage.in/faq/article/109">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M5 12h14"/><path d="M12 5l7 7-7 7"/>
+        </svg>
+        Start Campaign
+      </a>
+      <a class="btn-ghost" href="https://www.primebackstage.in/faq/article/109">Browse Templates</a>
+    </div>
+  </div>
+</div>
+</div></div>
+      
+
+      <!-- CREATIVES (DYNAMIC) -->
+      <div class="sectionm" style="margin-top:18px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+          <div id="creativeCount" style="color:#64748b;font-size:12px">Loading…</div>
+        </div>
+
+        <div class="creative-grid" id="creativeGrid">
+          <!-- Skeletons (8) -->
+          <?php for($i=0;$i<8;$i++): ?>
+            <div class="creative-card">
+              <div class="creative-thumb skeleton"></div>
+              <div class="meta-badges">
+                <span class="badge skeleton-pill" style="width:70px"></span>
+                <span class="badge b2 skeleton-pill" style="width:80px"></span>
+                <span class="skeleton-pill" style="margin-left:auto;width:72px"></span>
+              </div>
+            </div>
+          <?php endfor; ?>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN (blank for now like your screenshot) -->
+    <div></div>
+  </div>
+</div>
+<style>
+/* —— Artist picker modal —— */
+.ap-overlay{position:fixed;inset:0;background:rgba(15,23,42,.45);display:none;z-index:9990}
+.ap-overlay.show{display:block}
+.ap-modal{position:fixed;inset:0;display:none;place-items:center;z-index:9991}
+.ap-modal.show{display:grid}
+.ap-card{width:min(700px,92vw);background:#fff;border:1px solid #e5e7eb;border-radius:18px;
+         box-shadow:0 24px 60px rgba(15,23,42,.18);overflow:hidden}
+.ap-head{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid #eef2f7}
+.ap-title{font:800 16px/1 Inter,system-ui}
+.ap-body{padding:10px 12px;max-height:60vh;overflow:auto}
+.ap-row{display:grid;grid-template-columns:48px 1fr auto auto;gap:12px;align-items:center;
+        padding:8px 6px;border-bottom:1px solid #f1f5f9}
+.ap-row:last-child{border-bottom:none}
+.ap-avatar{width:44px;height:44px;border-radius:10px;border:1px solid #e5e7eb;object-fit:cover;background:#f8fafc}
+.ap-name {
+    font-size: 13px;
+    font-weight: 500;
+}
+.ap-id{font:700 12px;color:#64748b}
+.ap-actions{display:flex;gap:8px}
+.ap-btn{padding:8px 10px;border-radius:10px;border:1px solid #e5e7eb;background:#f3f4f6;font:800 12px/1 Inter;cursor:pointer}
+.ap-btn.primary{background:#111827;border-color:#111827;color:#fff}
+</style>
+
+<div class="ap-overlay" id="apOverlay"></div>
+<div class="ap-modal" id="apModal" aria-hidden="true">
+  <div class="ap-card" role="dialog" aria-modal="true" aria-labelledby="apTitle">
+    <div class="ap-head">
+      <div class="ap-title" id="apTitle">Artists on this page</div>
+      <button class="ap-btn" id="apClose">X</button>
+    </div>
+    <div class="ap-body" id="apList">
+      <!-- rows injected -->
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const WRAP  = document.getElementById('creativeGrid');
+  const COUNT = document.getElementById('creativeCount');
+
+  const API   = "<?= $templatesApi ?>";
+  const REND  = "<?= $renderBase ?>";
+
+  // release / poster data from PHP
+  const relId     = <?= json_encode((string)($r['id'] ?? '0')) ?>;
+  const relTitle  = <?= json_encode($relRawTitle,  JSON_UNESCAPED_UNICODE) ?>;
+  const relArtist = <?= json_encode($relRawArtist, JSON_UNESCAPED_UNICODE) ?>;
+  const relCover  = <?= json_encode($relRawCover,  JSON_UNESCAPED_UNICODE) ?>;
+
+  // encoded for PNG preview URLs
+  const encTitle  = encodeURIComponent(relTitle);
+  const encArtist = encodeURIComponent(relArtist);
+  const encCover  = encodeURIComponent(relCover);
+
+  // build poster PNG render URL
+  function buildURL(slug, dl){
+    let u = `${REND}?tpl=${encodeURIComponent(slug)}&title=${encTitle}&artist=${encArtist}&cover=${encCover}`;
+    if (dl) u += '&dl=1';
+    return u;
+  }
+
+  function phaseOf(row){
+    const s=(row.slug||'').toLowerCase(), t=(row.top||'').toLowerCase();
+    return (s.includes('outsoon')||t.includes('teaser')) ? 'teaser' : 'outnow';
+  }
+
+  // story / post size class on card
+  function sizeClass(row){
+    const slug = String(row.slug||'').toLowerCase();
+    const sz   = String(row.size||'').toLowerCase().replace(/x/g,'×');
+    if (slug.includes('post_') || slug.includes('post-')) return 'square';
+    if (sz.includes('1080×1080')) return 'square';
+    if (sz.includes('1080×1350')) return 'portrait';
+    return 'tall'; // default = story 1080×1920
+  }
+
+  function getSizeLabel(row){
+    const slug = String(row.slug||'').toLowerCase();
+    let sz = String(row.size||'').trim();
+    if (!sz || sz==='null' || sz==='-') {
+      sz = slug.includes('post_') || slug.includes('post-')
+        ? '1080×1080'
+        : '1080×1920';
+    }
+    return sz.replace(/x/g,'×');
+  }
+
+  // pairing display order
+  const PAIRS_STORY = [
+    ['outsoon_story3','launch_story3'],
+    ['outsoon_story','launch_story'],
+    ['outsoon_story2','launch_story2'],
+  ];
+  const PAIRS_POST  = [['post_outsoon','post_outnow']];
+
+  function orderPaired(rows, pairs){
+    const map = Object.create(null);
+    rows.forEach(r=>map[(r.slug||'').toLowerCase()] = r);
+
+    const picked = new Set();
+    const out    = [];
+    for (const [a,b] of pairs){
+      const r1 = map[a], r2 = map[b];
+      if (r1){ out.push(r1); picked.add(a); }
+      if (r2){ out.push(r2); picked.add(b); }
+    }
+    const rest = rows
+      .filter(r => !picked.has((r.slug||'').toLowerCase()))
+      .sort((x,y)=>{
+        const px = phaseOf(x)==='teaser'?0:1;
+        const py = phaseOf(y)==='teaser'?0:1;
+        return (px!==py) ? px-py : (x.slug||'').localeCompare(y.slug||'');
+      });
+    out.push(...rest);
+    return out;
+  }
+
+  function dedupeByPreview(rows){
+    const seen = new Set(), out = [];
+    for (const r of rows){
+      const key = `${(r.slug||'').toLowerCase()}|${(r.size||'').toLowerCase()}`;
+      if (seen.has(key)) continue;
+      seen.add(key); out.push(r);
+    }
+    return out;
+  }
+
+  // one creative card (with loader overlay + fade-in image)
+  function cardHTML(row){
+    const prev = buildURL(row.slug, 0);
+    const down = buildURL(row.slug, 1);
+
+    const editorParams = new URLSearchParams({
+      id: relId, tpl: row.slug || '', title: relTitle, artist: relArtist, cover: relCover
+    });
+    const editUrl = "<?= $this->basePath() ?>/analytics/creative-editor?" + editorParams.toString();
+
+    const ph = phaseOf(row);
+    const phText = ph==='teaser' ? 'Coming soon' : 'Out now';
+    const cls = sizeClass(row);
+    const sizeLabel= getSizeLabel(row);
+
+    return `
+      <div class="creative-card ${cls}">
+        <div class="creative-thumb">
+          <span class="phase-tag ${ph}">${phText}</span>
+          <div class="thumb-loader"><div class="spin"></div></div>
+          <img class="thumb-img" src="${prev}" alt="${row.slug}" loading="lazy" />
+          <div class="creative-actions">
+            <a href="${down}" class="icon-btn" title="Download">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/>
+              </svg>
+            </a>
+            <a href="${editUrl}" class="icon-btn" title="Edit / Make video">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M15 3h6v6"/><path d="M10 14L21 3"/><path d="M21 14v7H3V3h7"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+        <div class="meta-badges">
+          <span class="badge">${row.top||''}</span>
+          <span class="badge b2">${row.bottom||''}</span>
+          <span style="margin-left:auto;color:var(--muted);font-size:12px">${sizeLabel}</span>
+        </div>
+      </div>`;
+  }
+
+  function sectionHTML(title, rows){
+    return `
+      <div class="section" style="margin-top:18px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <h3 style="margin:0">${title}</h3>
+          <div style="color:#64748b;font-size:12px">${rows.length} templates</div>
+        </div>
+        <div class="creative-grid">
+          ${rows.map(cardHTML).join('')}
+        </div>
+      </div>`;
+  }
+
+  // fetch template list -> render Story Cards / Post Cards
+  fetch(API,{credentials:'same-origin'})
+    .then(r=>r.json())
+    .then(j=>{
+      if (!j || !j.ok) throw new Error('Failed to load templates');
+
+      let rows = dedupeByPreview(j.rows||[]);
+      const stories = rows.filter(r => !String(r.slug||'').toLowerCase().startsWith('post_') && !String(r.slug||'').toLowerCase().startsWith('post-'));
+      const posts   = rows.filter(r =>  String(r.slug||'').toLowerCase().startsWith('post_') ||  String(r.slug||'').toLowerCase().startsWith('post-'));
+
+      const storyOrdered = orderPaired(stories, PAIRS_STORY);
+      const postOrdered  = orderPaired(posts,   PAIRS_POST);
+
+      COUNT.textContent = `${storyOrdered.length} stories • ${postOrdered.length} posts`;
+
+      WRAP.classList.remove('creative-grid');
+      WRAP.innerHTML =
+        sectionHTML('Story Cards', storyOrdered) +
+        sectionHTML('Post Cards',  postOrdered);
+
+      // loader hide logic
+      const thumbs = WRAP.querySelectorAll('.creative-thumb');
+      thumbs.forEach(th=>{
+        const img    = th.querySelector('img.thumb-img');
+        const loader = th.querySelector('.thumb-loader');
+        if(!img) return;
+        function done(){ img.classList.add('loaded'); if (loader) loader.style.display='none'; }
+        if (img.complete && img.naturalWidth > 0){ done(); }
+        else{
+          img.addEventListener('load', done, {once:true});
+          img.addEventListener('error', ()=>{
+            if (loader) loader.style.display='none';
+            img.style.opacity='1'; img.style.background='#cbd5e1';
+            img.style.objectFit='contain'; img.style.display='flex';
+          }, {once:true});
+        }
+      });
+    })
+    .catch(err=>{
+      COUNT.textContent = 'Failed to load';
+      WRAP.innerHTML = `
+        <div style="padding:16px;color:#b91c1c;background:#fef2f2;border:1px solid #fecaca;border-radius:12px">
+          Error loading creatives: ${err.message}
+        </div>`;
+    });
+})();
+</script>
+<script>
+(function(){
+const ARTISTS = <?= $artistListJson ?: '[]' ?>; // direct embed, no parse, no escaping issues
+  const EDIT_BASE = '<?= $artistEditUrlBase ?>';
+  const OPEN_BASE = '<?= $artistOpenUrlBase ?>';
+
+  const overlay = document.getElementById('apOverlay');
+  const modal   = document.getElementById('apModal');
+  const list    = document.getElementById('apList');
+  const btnOpen = document.getElementById('btnEditArtists');
+  const btnClose= document.getElementById('apClose');
+
+  function rowHTML(a){
+    const img = a.image_url && a.image_url.trim() !== '' ? a.image_url : '<?= $this->basePath("/public/img/users.png") ?>';
+    const id  = parseInt(a.id||0,10) || 0;
+    const editHref = id ? (EDIT_BASE + '?id=' + encodeURIComponent(id)) : (EDIT_BASE + '?q=' + encodeURIComponent(a.name));
+    const openHref = id ? (OPEN_BASE + '?id=' + encodeURIComponent(id)) : (OPEN_BASE + '?q=' + encodeURIComponent(a.name));
+    return `
+      <div class="ap-row">
+        <img class="ap-avatar" src="${img}" alt="">
+        <div>
+          <div class="ap-name">${a.name||'—'}</div>
+          
+        </div>
+        <div class="ap-actions">
+          <a class="ap-btn" href="${openHref}" target="_blank" rel="noopener">Edit</a>
+          
+        </div>
+      </div>`;
+  }
+
+  function buildList(){
+    if (!list) return;
+    if (!Array.isArray(ARTISTS) || ARTISTS.length === 0){
+      list.innerHTML = `<div style="padding:12px;color:#64748b">No artists detected on this page.</div>`;
+      return;
+    }
+    list.innerHTML = ARTISTS.map(rowHTML).join('');
+  }
+
+  function show(){ overlay.classList.add('show'); modal.classList.add('show'); modal.setAttribute('aria-hidden','false'); }
+  function hide(){ overlay.classList.remove('show'); modal.classList.remove('show'); modal.setAttribute('aria-hidden','true'); }
+
+  btnOpen && btnOpen.addEventListener('click', function(e){ e.preventDefault(); buildList(); show(); });
+  overlay && overlay.addEventListener('click', hide);
+  btnClose && btnClose.addEventListener('click', hide);
+})();
+</script>

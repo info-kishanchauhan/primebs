@@ -1,0 +1,258 @@
+<link rel="stylesheet" type="text/css" href="<?php echo $this->basePath(); ?>/public/css/report.css">
+
+<style>
+body {
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    background-color: #f4f6f9;
+}
+
+.data-table {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.section-title {
+    margin-bottom: 20px;
+}
+.section-title h2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 4px;
+}
+.section-title p {
+    margin: 0;
+    font-size: 13px;
+    color: #6b7280;
+}
+
+#tblMasterList {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+}
+#tblMasterList thead th {
+    background-color: #f1f3f5;
+    padding: 12px 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 13px;
+    color: #495057;
+    border-bottom: 2px solid #dee2e6;
+}
+#tblMasterList tbody tr {
+    background: #fff;
+    transition: all 0.2s ease;
+    border-radius: 8px;
+}
+#tblMasterList tbody tr:hover {
+    background-color: #f8f9fa;
+    transform: scale(1.005);
+}
+#tblMasterList td {
+    padding: 10px 10px;
+    font-size: 14px;
+    color: #343a40;
+    vertical-align: middle;
+}
+tr td:nth-child(5), tr td:nth-child(6) {
+    text-align: right;
+}
+
+.generatePDF img {
+    width: 22px;
+    height: 22px;
+    transition: transform 0.3s ease;
+    opacity: 0.85;
+}
+.generatePDF:hover img {
+    transform: scale(1.2);
+    opacity: 1;
+}
+
+small {
+    color: #dc3545;
+    margin-top: 5px;
+}
+.error {
+    border-color: #dc3545 !important;
+}
+.bold_number {
+    font-weight: 600;
+}
+.credit {
+    color: #28a745;
+}
+.dt-toolbar {
+    display: none;
+}
+
+/* Smooth shimmer loader */
+#tblMasterListLoader {
+    margin-top: 20px;
+}
+.skeleton-loader {
+    display: block;
+    background: linear-gradient(90deg, #f2f2f2 25%, #e4e4e4 50%, #f2f2f2 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.8s ease-in-out infinite;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    height: 16px;
+}
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+</style>
+
+<section id="widget-grid" class="page page-ui-tables">
+    <div class="row" id="availableReport">
+        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+
+            <!-- Section Header -->
+            <div class="section-title">
+                <h2>Ledger Overview</h2>
+                <p>Review your latest transactions, balances, and downloadable invoices in one place.</p>
+            </div>
+
+            <!-- Data Table Box -->
+            <div class="data-table" id="widGrid"
+                data-widget-editbutton="false"
+                data-widget-colorbutton="false"
+                data-widget-togglebutton="false"
+                data-widget-deletebutton="false"
+                data-widget-fullscreenbutton="false"
+                data-widget-custombutton="false"
+                role="widget">
+
+                <div class="jarviswidget-editbox"></div>
+
+                <!-- Skeleton Loader -->
+                <div id="tblMasterListLoader">
+                    <div class="skeleton-loader"></div>
+                    <div class="skeleton-loader"></div>
+                    <div class="skeleton-loader"></div>
+                </div>
+
+                <div class="dataTables_wrapper no-footer">
+                    <table id="tblMasterList" class="table dataTable no-footer">
+                        <col width="12%">
+                        <col width="13%">
+                        <col width="35%">
+                        <col width="13%">
+                        <col width="12%">
+                        <col width="5%">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th><?php echo $this->translate('Date'); ?></th>
+                                <th><?php echo $this->translate('Type'); ?></th>
+                                <th><?php echo $this->translate('Description'); ?></th>
+                                <th class="text-right"><?php echo $this->translate('Operations'); ?></th>
+                                <th class="text-right"><?php echo $this->translate('Balance'); ?></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+            </div>
+        </article>
+    </div>
+</section>
+
+<script type="text/javascript">
+$(document).ready(function () {
+    acl_PRINT = 0;
+});
+
+var pagefunction = function () {
+    var responsiveHelper_dt_basic;
+    var breakpointDefinition = {
+        tablet: 1024,
+        phone: 480
+    };
+
+    var oTable = $("#tblMasterList").dataTable({
+        "bAutoWidth": false,
+        "bLengthChange": false,
+        "sDom": "<'dt-toolbar'<'col-sm-6'f><'col-sm-6 toolbar'>>" +
+                "t" +
+                "<'dt-toolbar-footer'<'col-sm-12'p>>",
+        "bProcessing": true,
+        "bServerSide": true,
+        "autoWidth": true,
+        "order": [[0, "desc"]],
+        "preDrawCallback": function () {
+            if (!responsiveHelper_dt_basic) {
+                responsiveHelper_dt_basic = new ResponsiveDatatablesHelper($('#tblMasterList'), breakpointDefinition);
+            }
+            $("#tblMasterListLoader").show();
+            $("#tblMasterList_wrapper").hide();
+        },
+        "rowCallback": function (nRow) {
+            responsiveHelper_dt_basic.createExpandIcon(nRow);
+        },
+        "drawCallback": function () {
+            responsiveHelper_dt_basic.respond();
+            $('#tblMasterList_wrapper,#tblMasterList').fadeIn(200);
+            $('#tblMasterListLoader').hide();
+        },
+        "fnServerParams": function (aoData) {
+            aoData.push({ "name": "id", "value": "" });
+        },
+        "sAjaxSource": "<?php echo $this->url('payments', array('action'=>'list'));?>",
+        "aoColumns": [
+            { "bSearchable": false, "bVisible": false },
+            null,
+            null,
+            null,
+            null,
+            null,
+            {
+                "bSearchable": false, "bSortable": false,
+                "mRender": function (data, type, full) {
+                    let action_btn = '';
+                    if (full[2] === 'Payment') {
+                        action_btn = `
+                            <span class="littleActionTourStep downloadPdfReport gaEvent" data-ga-event-type="requested_download_pdf">
+                                <a data-toggle="tooltip" data-placement="top" title="Generate a PDF of this invoice" class="generatePDF" row-id="${full[0]}">
+                                    <img src="../public/img/pdf.svg" alt="PDF">
+                                </a>
+                            </span>`;
+                    }
+                    return action_btn;
+                }
+            }
+        ],
+        "columnDefs": [
+            { className: "hidden", "targets": [0] }
+        ]
+    });
+
+    $('.dataTables_filter input').attr("placeholder", "Search");
+
+    $('#tblMasterList').on('click', 'a.generatePDF', function (e) {
+        e.preventDefault();
+        let req_id = $(this).attr("row-id");
+        window.open("<?php echo $this->url('payments', ['action' => 'invoice']); ?>?id=" + req_id, '_blank');
+    });
+};
+</script>
+
+<script>
+loadScript("<?php echo $this->basePath(); ?>/public/v1.6.1/js/plugin/datatables/jquery.dataTables.min.js", function () {
+    loadScript("<?php echo $this->basePath(); ?>/public/v1.6.1/js/plugin/datatables/dataTables.colVis.min.js", function () {
+        loadScript("<?php echo $this->basePath(); ?>/public/v1.6.1/js/plugin/datatables/dataTables.tableTools.min.js", function () {
+            loadScript("<?php echo $this->basePath(); ?>/public/v1.6.1/js/plugin/datatables/dataTables.bootstrap.min.js", function () {
+                loadScript("<?php echo $this->basePath(); ?>/public/v1.6.1/js/plugin/datatable-responsive/datatables.responsive.min.js", pagefunction);
+            });
+        });
+    });
+});
+</script>

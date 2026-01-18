@@ -2,3 +2,6 @@
 /admin
 /public
 /rk
+/composer.lock
+/.pki
+/config/vendor_copy

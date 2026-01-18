@@ -1,0 +1,11 @@
+{
+    "require": {
+        "guzzlehttp/guzzle": "^7",
+        "zendframework/zendframework": "2.5.1"
+    },
+    "config": {
+        "platform": {
+            "php": "8.2.27"
+        }
+    }
+}

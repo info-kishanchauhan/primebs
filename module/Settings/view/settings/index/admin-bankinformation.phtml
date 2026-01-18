@@ -1,0 +1,235 @@
+<?php
+/** @var \Zend\View\Renderer\PhpRenderer $this */
+$this->headTitle('Admin • Banking Details Dashboard');
+
+// Counts
+$allPayouts = $this->allPayouts ?? [];
+$mcnRequests = $this->mcnRequests ?? [];
+
+$approvedPayouts = array_filter($allPayouts, fn($r) => strtolower($r['status']) === 'active');
+$pendingPayouts  = array_filter($allPayouts, fn($r) => strtolower($r['status']) === 'pending_verification' || strtolower($r['status']) === 'pending');
+$rejectedPayouts = array_filter($allPayouts, fn($r) => strtolower($r['status']) === 'rejected');
+
+$approvedMCN = array_filter($mcnRequests, fn($r) => strtolower($r['status']) === 'approved');
+$pendingMCN  = array_filter($mcnRequests, fn($r) => strtolower($r['status']) === 'pending');
+$rejectedMCN = array_filter($mcnRequests, fn($r) => strtolower($r['status']) === 'rejected');
+?>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+
+<style>
+:root {
+  --ink:#1e293b;--muted:#64748b;--line:#e2e8f0;
+  --card:#fff;--bg:#fefaf7;--brand:#3b82f6;
+  --ok:#16a34a;--bad:#dc2626;--warn:#f59e0b;
+  --radius:14px;
+}
+body{background:var(--bg);font-family:Inter,system-ui,sans-serif;}
+.admin-wrap{max-width:1500px;margin:30px auto;padding:0 24px;}
+.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
+h1{font-weight:700;font-size:22px;color:var(--ink);margin:0;}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-bottom:2.2rem;}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:0 4px 20px rgba(0,0,0,.04);padding:18px 22px;}
+.card h2{font-size:14px;font-weight:600;color:var(--muted);margin:0 0 6px;}
+.card .num{font-size:26px;font-weight:700;}
+.card.ok{border-left:4px solid var(--ok);}
+.card.warn{border-left:4px solid var(--warn);}
+.card.bad{border-left:4px solid var(--bad);}
+.tabs{display:flex;gap:12px;margin-bottom:1.4rem;border-bottom:2px solid var(--line);}
+.tab{padding:10px 18px;border-radius:12px 12px 0 0;background:transparent;cursor:pointer;font-weight:600;}
+.tab.active{background:var(--card);border:1px solid var(--line);border-bottom:2px solid var(--card);}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+.smart-table{width:100%;border-collapse:separate;border-spacing:0 10px;}
+.smart-table th{background:var(--bg);text-transform:uppercase;font-size:12px;color:var(--muted);padding:10px 8px;text-align:left;}
+.smart-table td{background:#fff;border:1px solid #e5e7eb;padding:10px 8px;vertical-align:top;}
+.pill{display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:600;}
+.pill.ok{background:#dcfce7;color:#166534;}
+.pill.warn{background:#fef3c7;color:#92400e;}
+.pill.bad{background:#fee2e2;color:#991b1b;}
+.seg{display:flex;background:#f3f4f6;border-radius:999px;padding:4px;margin-bottom:1rem;gap:6px;flex-wrap:wrap;}
+.seg b{padding:6px 10px;border-radius:999px;cursor:pointer;font-size:13px;}
+.seg b.active{background:#3b82f6;color:#fff;}
+.inline-form{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.inline-form select,.inline-form input{padding:6px 8px;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;}
+.btn{padding:7px 12px;border-radius:8px;font-size:13px;font-weight:600;border:1px solid transparent;cursor:pointer;}
+.btn-primary{background:var(--brand);color:#fff;border-color:var(--brand);}
+.btn-ghost{background:#fff;border:1px solid #e5e7eb;}
+.row-action{display:flex;gap:8px;flex-wrap:wrap;}
+.meta{color:var(--muted);font-size:12px;}
+.searchbar{display:flex;align-items:center;gap:6px;background:#fff;border:1px solid #e2e8f0;
+border-radius:10px;padding:6px 10px;width:260px;}
+.searchbar input{all:unset;width:100%;font-size:13px;color:var(--ink);}
+.section-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:1rem;}
+</style>
+
+<div class="admin-wrap">
+  <div class="section-head">
+    <h1>Admin Dashboard — Banking & MCN Overview</h1>
+  </div>
+
+  <div class="cards">
+    <div class="card ok"><h2>Approved Payouts</h2><div class="num"><?= count($approvedPayouts) ?></div></div>
+    <div class="card warn"><h2>Pending Payouts</h2><div class="num"><?= count($pendingPayouts) ?></div></div>
+    <div class="card bad"><h2>Rejected Payouts</h2><div class="num"><?= count($rejectedPayouts) ?></div></div>
+    <div class="card ok"><h2>Approved MCN</h2><div class="num"><?= count($approvedMCN) ?></div></div>
+    <div class="card warn"><h2>Pending MCN</h2><div class="num"><?= count($pendingMCN) ?></div></div>
+    <div class="card bad"><h2>Rejected MCN</h2><div class="num"><?= count($rejectedMCN) ?></div></div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="payouts">🏦 Payout Entries</div>
+    <div class="tab" data-tab="mcn">📺 MCN Requests</div>
+  </div>
+
+  <!-- ====== PAYOUT TAB ====== -->
+  <div id="tab-payouts" class="tab-content active">
+    <div class="section-top">
+      <div class="seg" id="payoutSeg">
+        <b data-status="all" class="active">All</b>
+        <b data-status="active">Approved</b>
+        <b data-status="pending">Pending</b>
+        <b data-status="rejected">Rejected</b>
+      </div>
+      <form method="get" class="searchbar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="#64748b" stroke-width="1.7" stroke-linecap="round"/></svg>
+        <input type="text" name="q" placeholder="Search company or name…" />
+      </form>
+    </div>
+
+    <?php if (!empty($allPayouts)): ?>
+    <table class="smart-table" id="payoutTable">
+      <thead>
+        <tr>
+          <th>#</th><th>Client</th><th>Method</th><th>Status</th><th>Updated</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+      <?php $i=1; foreach($allPayouts as $row): 
+        $s=strtolower($row['status']);
+        $pill=($s==='active'?'ok':($s==='rejected'?'bad':'warn'));
+        $txt=($s==='active'?'✔ Active':($s==='rejected'?'❌ Rejected':'⏳ Pending'));
+      ?>
+        <tr data-status="<?= $s ?>">
+          <td><?= $i++ ?></td>
+          <td>
+            <b><?= htmlspecialchars($row['company_name']??'-') ?></b><br>
+            <span class="meta"><?= htmlspecialchars($row['full_name']??'-') ?></span>
+          </td>
+          <td><?= ucfirst($row['method']) ?></td>
+          <td><span class="pill <?= $pill ?>"><?= $txt ?></span></td>
+          <td class="meta"><?= htmlspecialchars($row['updated_at']??$row['created_at']??'-') ?></td>
+          <td>
+            <div class="row-action">
+              <form method="post" action="/settings/verifybank" class="inline-form">
+                <input type="hidden" name="id" value="<?= $row['id'] ?>">
+                <input type="hidden" name="user_id" value="<?= $row['user_id'] ?>">
+                <select name="status" required>
+                  <option value="">Update…</option>
+                  <option value="active"   <?= $s==='active'?'selected':'' ?>>Approve</option>
+                  <option value="rejected" <?= $s==='rejected'?'selected':'' ?>>Reject</option>
+                </select>
+                <input type="text" name="rejection_reason" placeholder="Reason (optional)" style="width:140px">
+                <button class="btn btn-primary" type="submit">Save</button>
+              </form>
+              <form method="post" action="/settings/deletebank" onsubmit="return confirm('Delete entry?')" class="inline-form">
+                <input type="hidden" name="id" value="<?= $row['id'] ?>">
+                <button class="btn btn-ghost" type="submit">🗑 Delete</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+      <?php endforeach; ?>
+      </tbody>
+    </table>
+    <?php else: ?><p style="color:#64748b;">No payout entries found.</p><?php endif; ?>
+  </div>
+
+  <!-- ====== MCN TAB ====== -->
+  <div id="tab-mcn" class="tab-content">
+    <div class="section-top">
+      <div class="seg" id="mcnSeg">
+        <b data-status="all" class="active">All</b>
+        <b data-status="approved">Approved</b>
+        <b data-status="pending">Pending</b>
+        <b data-status="rejected">Rejected</b>
+      </div>
+      <form method="get" class="searchbar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="#64748b" stroke-width="1.7" stroke-linecap="round"/></svg>
+        <input type="text" name="mcn_q" placeholder="Search channel or email…"/>
+      </form>
+    </div>
+
+    <?php if (!empty($mcnRequests)): ?>
+    <table class="smart-table" id="mcnTable">
+      <thead>
+        <tr><th>#</th><th>Channel</th><th>Email</th><th>Status</th><th>Action</th></tr>
+      </thead>
+      <tbody>
+      <?php $i=1; foreach($mcnRequests as $r):
+        $s=strtolower($r['status']);
+        $pill=($s==='approved'?'ok':($s==='rejected'?'bad':'warn'));
+        $txt=($s==='approved'?'✅ Approved':($s==='rejected'?'❌ Rejected':'⏳ Pending'));
+      ?>
+        <tr data-status="<?= $s ?>">
+          <td><?= $i++ ?></td>
+          <td>
+            <b><?= htmlspecialchars($r['channel_name']??'-') ?></b><br>
+            <span class="meta"><a href="<?= htmlspecialchars($r['channel_url']) ?>" target="_blank" style="color:#3b82f6">Open ↗</a></span>
+          </td>
+          <td class="meta"><?= htmlspecialchars($r['email']) ?></td>
+          <td><span class="pill <?= $pill ?>"><?= $txt ?></span></td>
+          <td>
+            <div class="row-action">
+              <form action="/settings/updatemcn" method="post" class="inline-form">
+                <input type="hidden" name="mcn_id" value="<?= $r['id'] ?>">
+                <select name="status" onchange="this.closest('.inline-form').querySelector('.reason-box').style.display=(this.value==='rejected'?'block':'none')">
+                  <option value="">Update…</option>
+                  <option value="approved" <?= $s==='approved'?'selected':'' ?>>Approve</option>
+                  <option value="rejected" <?= $s==='rejected'?'selected':'' ?>>Reject</option>
+                </select>
+                <input type="text" name="reason" class="reason-box" placeholder="Reason (if rejected)" style="display:<?= $s==='rejected'?'block':'none' ?>;width:140px">
+                <button class="btn btn-primary" type="submit">Save</button>
+              </form>
+              <form action="/settings/deletemcn" method="post" onsubmit="return confirm('Delete request?')" class="inline-form">
+                <input type="hidden" name="mcn_id" value="<?= $r['id'] ?>">
+                <button class="btn btn-ghost" type="submit">🗑 Delete</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+      <?php endforeach; ?>
+      </tbody>
+    </table>
+    <?php else: ?><p style="color:#64748b;">No MCN requests found.</p><?php endif; ?>
+  </div>
+</div>
+
+<script>
+// ===== Tabs =====
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('tab-'+t.dataset.tab).classList.add('active');
+  });
+});
+// ===== Filters =====
+function initSeg(segId,tableId){
+  const seg=document.getElementById(segId);
+  if(!seg)return;
+  seg.addEventListener('click',e=>{
+    const b=e.target.closest('b');if(!b)return;
+    seg.querySelectorAll('b').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    const want=b.dataset.status;
+    document.querySelectorAll('#'+tableId+' tbody tr').forEach(tr=>{
+      const st=tr.getAttribute('data-status');
+      tr.style.display=(want==='all'||want===st)?'':'none';
+    });
+  });
+}
+initSeg('payoutSeg','payoutTable');
+initSeg('mcnSeg','mcnTable');
+</script>

@@ -1,0 +1,871 @@
+<link rel="stylesheet" type="text/css" href="<?php echo $this->basePath(); ?>/public/css/report.css"> 
+
+<style>
+#waitingReportBox .waitingReportBoxContent {
+    margin-top: 10em;
+    opacity: 1;
+    filter: alpha(opacity = 100);
+}
+#generate .col-md-4
+{
+	display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+#generateReport
+{
+	background: #399af9;
+    color: #fff;
+    border-color: #399af9;
+    text-decoration: none;
+    -moz-user-select: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.5;
+    padding: 6px 12px;
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+.panel-heading .help
+{
+	font-size:22px;
+	color:#0998cd;
+	margin-left:10px;
+	cursor:pointer;
+	
+}
+.dt-toolbar
+{
+	display:none;
+}
+.modal-body {
+    padding: 12px 24px 12px 24px !important;
+}
+#attached_file,#attached_file2
+{
+	background-color: #399af9;
+    color: #fff;
+    width: 100%;
+    display: inline-block;
+    padding: 8px;
+    margin-top: 5px;
+    text-align: center;
+}
+.select2-container-multi,.select2-input
+{
+	width:100% !important;
+}
+
+</style><!-- widget grid -->
+<section id="widget-grid" class="page page-ui-tables">
+    <!-- row -->
+    <div class="row">
+        <!-- NEW WIDGET START -->
+        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <?php include_once("grid.php"); ?>
+            <?php include_once("form.php"); ?>
+        </article>
+        <!-- WIDGET END -->
+    </div>
+    <!-- end row -->
+    <!-- end row -->
+</section>
+<!-- end widget grid -->
+
+<script type="text/javascript">
+	
+    $(document).ready(function () {
+		acl_PRINT=0;
+		
+		setInterval(function(){
+			checkReportStatus();
+		}, 7000);
+		
+		function checkReportStatus()
+		{
+			var objFormData='';
+			var objMyPost = AJAX_Get("<?php echo $this->url('financialreport', array('action'=>'getReportStatus'));?>", objFormData);
+			if (objMyPost.ERR_NO === 0) {
+				if (objMyPost.DATA.DBStatus === 'OK') {
+					if(objMyPost.DATA.status == 'Processing')
+					{
+						$('#waitingReportBox').html('<div class="waitingReportBoxBackground"><div class="waitingReportBoxContent"><p class="text-center">Work in progress. Please wait...</p><p class="waitingReportMessage text-center"><i class="fa fa-circle-o-notch fa-spin fa-3x"></i></p></div></div>');
+					}
+					else
+						$('#waitingReportBox').html('');
+				}
+			}
+		}
+		
+		
+        $("#btnSave").click(function (e) {
+            e.stopPropagation();
+            $("#frmForm").submit();
+        });
+		$('#btnNewReport').click(function(){
+			$("#reportModal").modal("show");
+			clearForm("frmForm");
+			strActionMode='ADD';
+			$('#attached_file,#attached_file2').addClass('hide');
+			removeErrorMsg();
+		});
+		$('#generateReport').click(function(){
+			
+			var $form = $('#frmForm2');
+			var objMasterData = $form.serializeObject();
+			objMasterData = JSON.stringify(objMasterData);
+			var objFormData =
+			{
+				pAction    : strActionMode,
+				FORM_DATA: objMasterData,
+				summaryReport : $('#summaryReport').html()
+			};
+			
+			var objMyPost = AJAX_Post("<?php echo $this->url('financialreport', array('action'=>'generateReport'));?>", objFormData);
+			if (objMyPost.ERR_NO === 0) {
+				if (objMyPost.DATA.DBStatus === 'OK') {
+					oTable.fnDraw();
+					$('#waitingReportBox').html('<div class="waitingReportBoxBackground"><div class="waitingReportBoxContent"><p class="text-center">Work in progress. Please wait...</p><p class="waitingReportMessage text-center"><i class="fa fa-circle-o-notch fa-spin fa-3x"></i></p></div></div>');
+				}
+			}
+		});
+		$('.generate_tab').click(function(){
+			
+			
+			
+			var fromDate = $('#fromDate').val();
+			var toDate = $('#toDate').val();
+			if(fromDate == toDate)
+				$('#summaryPeriod').html(fromDate);
+			else
+				$('#summaryPeriod').html('From '+fromDate+' To '+toDate);
+			
+			if($('#useDedicatedReport').hasClass('like-btn-primary'))
+			{
+				$('#reportType').val('single');
+				var sel_report = $('input[name="dedicatedReport"]:checked').val();
+				
+				if(sel_report == 'allCatalog')
+				{
+					$('#summaryReport').html('Full catalog single report');
+				}
+				if(sel_report == 'atLeastLabel')
+				{
+					$('#summaryReport').html('Labels filtered single report');
+				}
+				if(sel_report == 'atLeastArtist')
+				{
+					$('#summaryReport').html('Artists filtered single report');
+				}
+				if(sel_report == 'atLeastRelease')
+				{
+					$('#summaryReport').html('Releases filtered single report');
+				}
+				if(sel_report == 'atLeastTrack')
+				{
+					$('#summaryReport').html('Tracks filtered single report');
+				}
+				if(sel_report == 'atLeastStore')
+				{
+					$('#summaryReport').html('Stores filtered single report');
+				}
+				if(sel_report == 'atLeastCountry')
+				{
+					$('#summaryReport').html('Country filtered single report');
+				}
+			}
+			else
+			{
+				$('#reportType').val('multiple');
+				var sel_report = $('input[name="splitReport"]:checked').val();
+				if(sel_report == 'perLabels')
+				{
+					$('#summaryReport').html('Labels multiple reports');
+				}
+				if(sel_report == 'perArtists')
+				{
+					$('#summaryReport').html('Artists multiple reports');
+				}
+				if(sel_report == 'perReleases')
+				{
+					$('#summaryReport').html('Releases multiple reports');
+				}
+				if(sel_report == 'perStores')
+				{
+					$('#summaryReport').html('Stores multiple reports');
+				}
+				if(sel_report == 'perCountries')
+				{
+					$('#summaryReport').html('Countries multiple reports');
+				}
+				
+			}
+			
+		});
+		// Initialize the fromDate picker
+		$('#fromDate').datetimepicker({
+			format: "MMMM YYYY",    // Display format: Month Year (e.g., November 2024)
+			maxDate: moment().subtract(2, 'months').endOf('month').toDate(), // Maximum date set to two months ago
+			useCurrent: false,      // Disable auto-opening on initialization
+			viewMode: 'months',     // Open to month view
+			
+		});
+		$('#fromDate').val(moment().subtract(2, 'months').endOf('month').format('MMMM YYYY'));
+		// Initialize the toDate picker
+		$('#toDate').datetimepicker({
+			format: "MMMM YYYY",    // Display format: Month Year
+			maxDate: moment().subtract(2, 'months').endOf('month').toDate(), // Maximum date set to two months ago
+			useCurrent: false,      // Disable auto-opening on initialization
+			viewMode: 'months',     // Open to month view
+		   
+		});
+		$('#toDate').val(moment().subtract(2, 'months').endOf('month').format('MMMM YYYY'));
+		$('#fromDate').on('dp.change', function (e) {
+			var fromDate = moment(e.date).startOf('month');  // Ensure `fromDate` is a Moment object and at the start of the month
+
+			// Calculate the max date for toDate as 2 months ahead of the selected fromDate
+			var maxToDate = moment(fromDate).add(2, 'months').endOf('month');  // `maxToDate` is a Moment object
+
+			// Check if the calculated maxToDate exceeds the overall maxDate limit
+			var maxAllowedDate = moment().subtract(2, 'months').endOf('month'); // This is the global max date limit
+			if (maxToDate.isAfter(maxAllowedDate)) {
+				maxToDate = maxAllowedDate;  // Restrict maxToDate to the overall max date
+			}
+
+			// Ensure the min date for 'toDate' is not earlier than 'fromDate'
+			$('#toDate').data('DateTimePicker').minDate(fromDate.toDate());
+			// Set the new max date for toDate picker
+			$('#toDate').data('DateTimePicker').maxDate(maxToDate.toDate());
+
+			
+			$('#toDate').val(fromDate.format('MMMM YYYY'));
+		});
+  
+		
+		$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+			
+			var href = $(e.target).attr('href');
+			var $curr = $(".process-model  a[href='" + href + "']").parent();
+
+			$('.process-model li').removeClass();
+
+			$curr.addClass("active");
+			$curr.prevAll().addClass("visited");
+			enbleDisableGenerateTab();
+		});
+		$('#selectDedicatedMyReport').each(function(){
+			$(this).find('select').change(function(){
+				enbleDisableGenerateTab();
+			})
+		});
+		$('input[name="dedicatedReport"]').change(function(){
+				enbleDisableGenerateTab();
+		})
+		enbleDisableGenerateTab();
+		function enbleDisableGenerateTab()
+		{
+			if($('.process-model li:first').hasClass('active'))
+			{
+				$('.generate_tab').attr('style','pointer-events: none;color: #888;');
+			}
+			else
+			{ 
+				if($('#useDedicatedReport').hasClass('like-btn-primary'))
+				{
+					var selected = false;
+					$('#selectDedicatedMyReport').each(function(){
+						if($(this).find('select option:selected').length > 0)
+							selected = true;
+					});
+					if($('#dedicatedReportAllCatalog').prop('checked') == true)
+						selected = true;
+					
+					if(selected)
+						$('.generate_tab').attr('style','');
+					else
+						$('.generate_tab').attr('style','pointer-events: none;color: #888;');
+				}
+				else
+				{
+					$('.generate_tab').attr('style','');
+					
+				}
+			}
+		}
+		$('#useDedicatedReport').click(function(){
+			$('#reportType').val('single');
+			$('#splitMyReport').hide();
+			$('#dedicatedMyReport').show();
+			$(this).addClass('like-btn-primary').removeClass('like-btn-primary-outline');
+			$('.subSquare_3').removeClass('like-btn-primary').addClass('like-btn-primary-outline');
+		})
+		$('#useSplitReport').click(function(){
+			$('#reportType').val('multiple');
+			$('#dedicatedMyReport').hide();
+			$('#splitMyReport').show();
+			$('.subSquare_3').addClass('like-btn-primary').removeClass('like-btn-primary-outline');
+			$('#useDedicatedReport').removeClass('like-btn-primary').addClass('like-btn-primary-outline');
+		})
+		
+		$('#selectDedicatedMyReport .sel_report_fld').hide(); 	
+		$('input[type="radio"][name="dedicatedReport"]').change(function() {
+			var selectedValue = $('input[name="dedicatedReport"]:checked').val(); // Get the selected radio button value
+			
+			$('#selectDedicatedMyReport .sel_report_fld').hide(); 	
+			$('#selectDedicatedMyReport .select2').select2('val','');
+			if (selectedValue != 'allCatalog') {
+				$('.'+selectedValue).show();
+			}
+		});
+		function setErrorMsg(field,msg)
+		{
+			$('#'+field).parents('.form-group').find('label').addClass('labelError');
+			$('#'+field).addClass('inputError');
+			$('#'+field).parents('.form-group').find(".form-input-error").text(msg);
+			$('#'+field).parents('.form-group').find(".form-input-error").removeAttr('style');
+			$('#'+field).parents('.form-group').addClass('has-error'); 
+		}
+		function removeErrorMsg()
+		{
+			$('input,select,textarea').parents('.form-group').find('label').removeClass('labelError');
+			$('input,select,textarea').removeClass('inputError');
+			$('input,select,textarea').parents('.form-group').find(".form-input-error").text('');
+			$('input,select,textarea').parents('.form-group').find(".form-input-error").attr('style','display:none;');
+			$('input,select,textarea').parents('.form-group').removeClass('has-error'); 
+		}
+       populateOptionValue('user_id',"<?php echo $this->url('user',array("action" => "getStaff"))?>",'Select a User');
+		
+		
+	  populateMultipleOptionValue3('atLeastLabel',"<?php echo $this->url('labels',array("action" => "getlabels"))?>");
+	  populateMultipleOptionValue3('atLeastRelease',"<?php echo $this->url('releases',array("action" => "getReleases"))?>");
+	  populateMultipleOptionValue3('atLeastArtist',"<?php echo $this->url('releases',array("action" => "getArtist"))?>");
+	  populateMultipleOptionValue3('atLeastTrack',"<?php echo $this->url('releases',array("action" => "getTrack"))?>");
+	  populateMultipleOptionValue3('atLeastStore',"<?php echo $this->url('releases',array("action" => "getStore"))?>");
+	  
+        $("#frmForm").validate(
+            {
+                submitHandler: function (form) {
+					removeErrorMsg();
+					 var is_required=false;
+                    if ($("#user_id").val() == '0') {
+                       setErrorMsg('user_id','This field is required');
+					   is_required=true;
+                    }
+					if ($("#report_type").val() == '0') {
+                       setErrorMsg('report_type','This field is required');
+					   is_required=true;
+                    }
+					if ($("#period").val() == '') {
+                        setErrorMsg('period','This field is required');
+					   is_required=true;
+                    }
+					if ($("#royalty_amount").val() == '') {
+                        setErrorMsg('royalty_amount','This field is required');
+					   is_required=true;
+                    }
+					/*if ($("#filehidden1").val() == '') {
+                        setErrorMsg('csv_report','This field is required');
+					   is_required=true;
+                    }*/
+					if ($("#filehidden2").val() == '') {
+                        setErrorMsg('pdf_report','This field is required');
+					   is_required=true;
+                    }
+					
+					if(is_required)
+						return;
+					
+                    /*if(strActionMode=="ADD") {
+                        //Validate  duplicate
+                        var isDuplicate = fn_validate_duplicate($("#mobile_no").val(), "tbl_customers", "mobile_no", "<?php echo $this->url('financialreport', array('action'=>'validateduplicate'));?>");
+                        if (isDuplicate) {
+                            mySmallAlert('Duplicate Error...!', 'Duplicate Found.Mobile No is Already exists !', 0);
+                            return false;
+                        }
+						
+						var isDuplicate = fn_validate_duplicate($("#email").val(), "tbl_customers", "email", "<?php echo $this->url('financialreport', array('action'=>'validateduplicate'));?>");
+                        if (isDuplicate) {
+                            mySmallAlert('Duplicate Error...!', 'Duplicate Found.Email is Already exists !', 0);
+                            return false;
+                        }
+                    }*/
+                    
+                    var $form = $('#frmForm');
+                    var objMasterData = $form.serializeObject();
+                    if (strActionMode == 'ADD')
+                        $.extend(objMasterData, { MASTER_KEY_ID: 0});
+                    else
+                        $.extend(objMasterData, { MASTER_KEY_ID: iActiveID});
+                    objMasterData = JSON.stringify(objMasterData);
+                    var objFormData =
+                    {
+                        pAction    : strActionMode,
+                        FORM_DATA: objMasterData
+                    };
+					$('.nf-loader').removeClass('hide');
+					$('#easyEntryDataSaveButton').prop('disabled',true);
+                    var objMyPost = AJAX_Post("<?php echo $this->url('financialreport', array('action'=>'save'));?>", objFormData);
+                    if (objMyPost.ERR_NO === 0) {
+                        if (objMyPost.DATA.DBStatus === 'OK') {
+							$('.nf-loader').addClass('hide');
+							$('#easyEntryDataSaveButton').prop('disabled',false);
+                            mySmallAlert('Save Record', 'Saved successfully', 1);
+                            iActiveID = objMyPost.DATA.MY_ID;
+                            visibleControl('widForm', false);
+                            visibleControl('widGrid', true);
+                            oTable.fnDraw();
+							$('#reportModal').modal('hide');
+                        }
+                    }
+                    else {
+						$('.nf-loader').addClass('hide');
+						$('#easyEntryDataSaveButton').prop('disabled',false);
+                        mySmallAlert('Error...!', 'There was an error', 0);
+                    }
+                }
+         });
+		 
+		 $("#csv_report").change(function () {
+				if (this.files && this.files[0]) {
+				   var reader = new FileReader();
+				   reader.onload = imageIsLoadedLogo;
+				   reader.readAsDataURL(this.files[0]);
+				   //Save img
+				   var $form = $('#frmForm');
+				   var oMyForm = new FormData($form.get(0));
+				   //*============================image=====================================
+				   file = document.getElementById("csv_report").files[0];
+				   if (file && file.size > 0) {
+					var fileInputProfile = document.getElementById("csv_report");
+					oMyForm.append("attachment_file", file);
+				   } else {
+					oMyForm.append("attachment_file", 0);
+				   }
+				   var deferred;
+				   deferred = $.ajax({
+					url: "<?php echo $this->url('financialreport', array('action'=>'uploadcsv'));?>",
+					type: "POST",
+					processData: false,
+					contentType: false,
+					dataType: 'json',
+					data: oMyForm,
+					beforeSend: function () {
+					},
+					success: function () {
+						
+					}
+				   });
+				   
+					$("#customfileupload").removeClass('hide');
+					$("#btnSave").addClass('hide');
+					deferred.done(function (result) {
+						
+					$("#customfileupload").addClass('hide');
+					$("#btnSave").removeClass('hide'); 
+					if(result.status == 'OK')
+					{
+						 $("#filehidden1").val(result.doc_file1);
+						 mySmallAlert('Save Image', 'Uploaded successfully', 1);
+						 $('#attached_file').removeClass('hide');
+						 $("#attached_file").html(result.doc_file1);
+						 $("#attached_file").attr("href","public/uploads/"+result.doc_file1);
+						
+					}
+					if(result.status == 'NO_OK')
+					{
+						 $("#csv_report").val('');
+						  mySmallAlert('Error...!', 'Allow only csv file', 0);
+					}
+				   
+				   }).fail(function (result) {
+					alert("There was an error");
+				   });
+				  }
+		});
+		  $("#pdf_report").change(function () {
+				if (this.files && this.files[0]) {
+				   var reader = new FileReader();
+				   reader.onload = imageIsLoadedLogo;
+				   reader.readAsDataURL(this.files[0]);
+				   //Save img
+				   var $form = $('#frmForm');
+				   var oMyForm = new FormData($form.get(0));
+				   //*============================image=====================================
+				   file = document.getElementById("pdf_report").files[0];
+				   if (file && file.size > 0) {
+					var fileInputProfile = document.getElementById("pdf_report");
+					oMyForm.append("attachment_file", file);
+				   } else {
+					oMyForm.append("attachment_file", 0);
+				   }
+				   var deferred;
+				   deferred = $.ajax({
+					url: "<?php echo $this->url('financialreport', array('action'=>'uploadpdf'));?>",
+					type: "POST",
+					processData: false,
+					contentType: false,
+					dataType: 'json',
+					data: oMyForm,
+					beforeSend: function () {
+					},
+					success: function () {
+						
+					}
+				   });
+					$("#customfileupload2").removeClass('hide');
+					$("#btnSave").addClass('hide');
+					deferred.done(function (result) {
+					
+					$("#customfileupload2").addClass('hide');
+					$("#btnSave").removeClass('hide'); 
+					if(result.status == 'OK')
+					{
+						 $("#filehidden2").val(result.doc_file1);
+						 mySmallAlert('Save Image', 'Uploaded successfully', 1);
+						 $('#attached_file2').removeClass('hide');
+						 $("#attached_file2").html(result.doc_file1);
+						 $("#attached_file2").attr("href","public/uploads/"+result.doc_file1);
+						
+					}
+					if(result.status == 'NO_OK')
+					{
+						$("#pdf_report").val('');
+						  mySmallAlert('Error...!', 'Allow only pdf file', 0);
+					}
+				   
+				   }).fail(function (result) {
+					alert("There was an error");
+				   });
+				  }
+		});
+
+    });
+	function performClick(node) {
+	  var evt = document.createEvent("MouseEvents");
+	  evt.initEvent("click", true, false);
+	  node.dispatchEvent(evt);
+	 }
+	 function imageIsLoadedLogo(e) {
+	  $('#imgCompanyLogo').attr('src', e.target.result);
+	 }
+    var pagefunction = function () {
+        
+        var responsiveHelper_dt_basic = undefined;
+        var responsiveHelper_datatable_fixed_column = undefined;
+        var responsiveHelper_datatable_col_reorder = undefined;
+        var responsiveHelper_datatable_tabletools = undefined;
+        var breakpointDefinition = {
+            tablet: 1024,
+            phone: 480
+        };
+		var deleteact=acl_DELETE;
+        /* TABLETOOLS */
+        oTable = $("#tblMasterList").dataTable(
+            {
+                "bAutoWidth": false,
+                "bLengthChange": false,
+                "sDom": "<'dt-toolbar'<'col-xs-12 col-sm-6 hidden-xs'f><'col-sm-6 col-xs-12 hidden-xs'<'toolbar'>>r>" +
+                    "t" +
+                    "<'dt-toolbar-footer'<''p>>",
+                "bProcessing": true,
+                "bServerSide": true,
+                "autoWidth" : true,
+                "preDrawCallback" : function() {
+                    // Initialize the responsive datatables helper once.
+                    if (!responsiveHelper_dt_basic) {
+                        responsiveHelper_dt_basic = new ResponsiveDatatablesHelper($('#tblMasterList'), breakpointDefinition);
+                    }
+                },
+                "rowCallback" : function(nRow) {
+                    responsiveHelper_dt_basic.createExpandIcon(nRow);
+                },
+                "drawCallback" : function(oSettings) {
+                    responsiveHelper_dt_basic.respond();
+                },
+                "fnServerParams": function (aoData) {
+                    aoData.push({ "name": "id", "value": "" },{ "name": "notification", "value": "<?php echo $_GET['new']?>" });
+                },
+                "sAjaxSource": "<?php echo $this->url('financialreport', array('action'=>'list'));?>",
+                "aoColumns": [
+                    { "bSearchable": false, "bVisible": false },
+                    
+					
+                    null,
+                    null,
+					null,
+                    null,
+					null,
+					{"bSearchable": false, "bSortable": false,
+                        "mRender" : function (data, type, full) {
+							
+							if(full[6] == 'success')
+								return '<i data-toggle="tooltip" data-placement="top" class="fa fa-check finishGenerationReport" title="" data-original-title="Success"></i>';
+							else
+								return '<i data-toggle="tooltip" data-placement="top" class="fa fa-circle-o-notch fa-spin" title="" data-original-title="Processing"></i>';
+						}
+					},
+					{"bSearchable": false, "bSortable": false,
+                        "mRender" : function (data, type, full) {
+							
+							var action_button = '';
+							
+							if(full[7] != '')
+							{
+								action_button +='<span class="littleActionTourStep downloadCsvReport gaEvent" data-ga-event-type="requested_download_csv"><a data-toggle="tooltip" data-placement="top"  title="Download this report csv" class="fa fa-download reportDownload" href="public/uploads/'+full[7]+'" data-original-title="Download this report"></a></span>';
+							}
+							if(full[8] != '')
+							{
+								action_button +='<span class="littleActionTourStep downloadPdfReport gaEvent" data-ga-event-type="requested_download_pdf"><a data-toggle="tooltip" data-placement="top"  title="Download this report pdf" class="fa fa-file-pdf-o reportPDFDownload" href="public/uploads/'+full[8]+'" target="_blank" data-original-title="PDF summary" download></a></span>';
+							}
+							<?php
+								if($_SESSION['user_id'] == '0')
+								{
+							?>
+									action_button +='<span class="littleActionTourStep trashReport gaEvent" data-ga-event-type="requested_delete"><i data-toggle="tooltip" data-placement="top" title="Delete this report" class="deleteReport fa fa-trash-o" data-original-title="Delete this report" row-id="'+full[0]+'"></i></span>';
+							<?php
+								}
+							?>
+							
+                            return action_button;
+                        }
+                    }
+					
+                    
+                ],
+                "columnDefs": [
+                    { className: "hidden", "targets": [ 0 ] }
+                ]
+            });
+        /* END TABLETOOLS */
+		$('.dataTables_filter input').attr("placeholder", "Search");
+		
+		//$(".dataTables_filter label").addClass('right');
+        //fnEdit("<?php echo $this->url('financialreport', array('action'=>'getrec'));?>");
+        //fnView("<?php echo $this->url('financialreport', array('action'=>'getrec'));?>");
+        //fnDelete("<?php echo $this->url('financialreport', array('action'=>'delete'));?>");
+		
+		
+        var strUrl = "<?php echo $this->url('financialreport', array('action'=>'getrec'));?>";
+       
+        oTable.delegate('i.deleteReport', 'click', function (e) {
+            e.preventDefault();
+          
+            iActiveID = $(this).attr("row-id");
+			
+            $.SmartMessageBox({
+				title  : "Alert!",
+				content: "Are you sure you want to delete this report?",
+				buttons: '[Yes][No]'
+			}, function (ButtonPressed) {
+				if (ButtonPressed === "Yes") {
+					var objFormData =
+					{
+						pAction: 'DELETE',
+						KEY_ID : iActiveID
+					};
+					var objMyPost = AJAX_Post("<?php echo $this->url('financialreport', array('action'=>'delete'));?>", objFormData);
+					if (objMyPost.ERR_NO === 0) {
+						if (objMyPost.DATA.DBStatus === 'OK') {
+							oTable.fnDraw();
+							
+							mySmallAlert('Success', 'Deleted successfully', 1);
+						}
+						
+						else {
+							mySmallAlert('Error...!', 'There was an error', 0);
+						}
+					}
+				}
+				if (ButtonPressed === "No") {
+				}
+			});
+        });
+       
+        
+    };
+</script>
+<script>
+    // load Page related plugins
+                loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatables/jquery.dataTables.min.js", function () {
+                    loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatables/dataTables.colVis.min.js", function () {
+                        loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatables/dataTables.tableTools.min.js", function () {
+                            loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatables/dataTables.bootstrap.min.js", function () {
+                                loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatable-responsive/datatables.responsive.min.js", pagefunction)
+                            });
+                        });
+        });
+    });
+	
+	//------------------- populate edit entries-----------------------------------------------------------------------------
+    function cPopulateEditEntries(iID,strURL) {
+        iActiveID = iID;
+        var arrForms=[]; // Keep Form Values
+        var strElementType; // Keep element type
+        var objFormData =
+        {
+            pAction: 'GETREC',
+            KEY_ID : iActiveID
+        };
+        var objMyPost = AJAX_Post(strURL, objFormData);
+		
+        if (objMyPost.ERR_NO === 0) {
+            if (objMyPost.DATA.DBStatus === 'OK') {
+                visibleControl('widForm', true);
+                visibleControl('widGrid', false);
+                strActionMode = 'EDIT';
+                //populate master Records
+                arrForms=objMyPost.DATA.data[0];
+                $.each( arrForms, function( key, value ) { 
+                    if ($("#"+key).length > 0) {  // check if exists or not
+                        strElementType= $("#"+key).attr("type");
+					
+                        if(strElementType == "hidden") {  // if textbox
+                            $("#" + key).val(value);
+                            $("#spanRefNo").html(value);
+                        }
+                        else  if(strElementType == "text") {  // if textbox
+                            $("#" + key).val(value);
+                        }
+						else  if(strElementType == "number") {  // if textbox
+                            $("#" + key).val(value);
+                        }
+						else  if(strElementType == "password") {  // if textbox
+                            $("#" + key).val(value);
+                        }
+                        else if($("#"+key).attr("name") == "descriptions") {  // if textarea
+                            $("textarea#"+key).text(value);
+                        }
+                        else if(strElementType == "select") {  // if Select Box							
+                            $("#" + key).select2("val",value);
+                        }
+                        else if(strElementType == "multiselect") {  // if Select Box with multi select
+                            var arrValues = $.parseJSON(stripslashes(value));
+                            $("#" + key).select2("val", arrValues);
+                        }
+                    }
+                });
+				
+            }
+        }
+        else {
+            mySmallAlert('Error...!', 'There was an error', 0);
+        }
+    }
+	
+</script>
+
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+	 <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+ <div id="reportModal" class="modal fade in" aria-hidden="false" style="display: none;">
+<div class="modal-dialog" style="width: 700px;">
+
+<div class="modal-content">
+
+<form method="post" action="#" id="frmForm" class="form-horizontal" role="form">
+<input type="hidden" name="filehidden1" id="filehidden1">
+<input type="hidden" name="filehidden2" id="filehidden2">
+
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+	<h4 class="modal-title">Financial Report</h4>
+</div>
+
+<div class="modal-body">
+	<div id="msgBoxModal"></div>
+	<div id="msgBox"></div>
+
+        <div class="form-group form-group-sm">
+            <div class="col-sm-3 control-label">
+               <label class=""><strong class="txt-color-blue"><?php echo $this->translate('User'); ?></strong></label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> *</span>
+            </div>
+            <div class="col-sm-7">
+                <select type="select" id="user_id" name="user_id" class="select2" ></select>
+				<span style="display:none" class="form-input-error help-inline control-label" rel="title"></span>
+            </div>
+        </div>
+		<div class="form-group form-group-sm">
+            <div class="col-sm-3 control-label">
+               <label class=""><strong class="txt-color-blue"><?php echo $this->translate('Report Type'); ?></strong></label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> *</span>
+            </div>
+            <div class="col-sm-7">
+                <select type="select" id="report_type" name="report_type" class="select2" >
+					<option value="0">- Select Report Type -</option>
+					<option value="Full catalog single report">Full catalog single report</option>
+				</select>
+				<span style="display:none" class="form-input-error help-inline control-label" rel="title"></span>
+            </div>
+        </div>
+         <div class="form-group form-group-sm">
+            <div class="col-sm-3 control-label">
+               <label class=""><strong class="txt-color-blue"><?php echo $this->translate('Period'); ?></strong></label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> *</span>
+            </div>
+            <div class="col-sm-7">
+                <input type="text" id="period" name="period" class="form-control " >
+				<span style="display:none" class="form-input-error help-inline control-label" rel="title"></span>
+            </div>
+        </div>
+		 <div class="form-group form-group-sm">
+            <div class="col-sm-3 control-label">
+               <label class=""><strong class="txt-color-blue"><?php echo $this->translate('Royalty Amount'); ?></strong></label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> *</span>
+            </div>
+            <div class="col-sm-7">
+                <input type="text" id="royalty_amount" name="royalty_amount" class="form-control " >
+				<span style="display:none" class="form-input-error help-inline control-label" rel="title"></span>
+            </div>
+        </div>
+		 <div class="form-group form-group-sm">
+            <div class="col-sm-3 control-label">
+               <label class=""><strong class="txt-color-blue"><?php echo $this->translate('Upload CSV Report'); ?></strong></label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> </span>
+            </div>
+            <div class="col-sm-7">
+                <input type="file" id="csv_report" name="csv_report" class="form-control "  accept=".csv">
+				<a href="" target="_blank" id="attached_file"></a>
+				<span style="display:none" class="form-input-error help-inline control-label" rel="title"></span>
+				<label class="progress hide" style="height:21px;width: 100%;margin-top: 5px;" id="customfileupload">
+
+					<div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%;line-height:21px;color:#FFFFFF;font-size:14px">File uploading
+					</div>
+
+				</label>
+            </div>
+        </div>
+		 
+		
+		 <div class="form-group form-group-sm">
+            <div class="col-sm-3 control-label">
+               <label class=""><strong class="txt-color-blue"><?php echo $this->translate('Upload PDF Report'); ?></strong></label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> *</span>
+            </div>
+            <div class="col-sm-7">
+               <input type="file" id="pdf_report" name="pdf_report" class="form-control "  accept=".pdf">
+			   <a href="" target="_blank" id="attached_file2"></a>
+			   <span style="display:none" class="form-input-error help-inline control-label" rel="title"></span>
+			   <label class="progress hide" style="height:21px;width: 100%;margin-top: 5px;" id="customfileupload2">
+
+					<div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%;line-height:21px;color:#FFFFFF;font-size:14px">File uploading
+					</div>
+
+				</label>
+            </div>
+        </div>
+<div class="modal-footer flex" style="justify-content: flex-end;">
+	<img style="margin: 0px 30px;" src="/public/img/loader.gif" class="nf-loader hide">
+	<button href="#" class="btn btn-default btn-tracks-close" data-dismiss="modal">Close</button>
+	<button id="easyEntryDataSaveButton" class="btn btn-primary nf-btn-submit" href="#"><i class="icon-ok-circle icon-white"></i> Save</button>
+</div>
+</form>
+
+</div>
+</div>
+
+
+</div>
+   
+</div>
+
+
+

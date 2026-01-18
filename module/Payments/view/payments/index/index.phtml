@@ -1,0 +1,524 @@
+<?php
+/** @var \Zend\View\Renderer\PhpRenderer $this */
+$this->headTitle('Payments & Operations');
+
+/* Backend vars (already provided by your controller)
+   $this->REQ_TYPE
+   $this->BALANCE
+   $this->ALLOW_WITHDRAW
+   $this->USERNAME
+   $this->PAYMENT_METHOD
+   $this->requested_date
+   $this->req_amount
+*/
+?>
+<link rel="stylesheet" href="<?php echo $this->basePath(); ?>/public/css/paymentandoperation.css?v=4">
+
+<style>
+/* =========================
+   BOOTSTRAP-CENTERED DIALOGS
+   ========================= */
+#warningConfirmationPopin .modal-dialog,
+#reqResultModal .modal-dialog{
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%) !important;
+  margin: 0 !important;
+  width: calc(100% - 32px);
+  max-width: 560px; /* confirm wider */
+}
+#reqResultModal .modal-dialog{ max-width: 480px; }
+
+#warningConfirmationPopin .modal-content,
+#reqResultModal .modal-content{
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+#warningConfirmationPopin.in .modal-dialog,
+#reqResultModal.in .modal-dialog{
+  transform: translate(-50%,-50%) !important;
+}
+
+/* =========================
+   PAGE UI (banner, progress)
+   ========================= */
+#listeOp{ margin-bottom:-10px; }
+body{ font-family:'Inter',system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif; background:#f9fafb; }
+
+.rp-banner{
+  position:relative; max-width:1200px; width:90%; margin:50px auto 0;
+  padding:28px 30px; background:linear-gradient(90deg,#bf3ddb,#3493ef);
+  border-radius:7px; text-align:center; box-shadow:0 2px 16px rgba(19,38,68,.1); overflow:hidden;
+}
+.rp-banner::before{ content:""; position:absolute; inset:0; background:rgba(255,255,255,.5); border-radius:7px; z-index:0; }
+.rp-banner>*{ position:relative; z-index:2; }
+
+.rp-card{
+  background:linear-gradient(90deg, rgba(247,247,247,.88) 13.36%, rgba(197,213,238,.86) 93.83%);
+  border-radius:12px; padding:30px; display:flex; justify-content:space-between; gap:30px;
+  box-shadow:0 4px 12px rgba(0,0,0,.08); flex-wrap:wrap; text-align:left;
+}
+.rp-balance-section .label{ display:flex; align-items:center; gap:6px; font-size:14px; font-weight:600; color:#475569; }
+.rp-balance-section .amount{ margin-top:6px; font-size:28px; font-weight:700; color:#0f172a; display:flex; align-items:baseline; gap:4px; }
+.currency-symbol,.decimal{ opacity:.64; font-size:25px; }
+.rp-card .center{ border-left:2px solid rgba(108,132,157,.18); padding-left:24px; }
+.rp-card .center .desc{ font-size:14px; color:#475569; margin-top:6px; }
+.rp-card .center a{ font-size:14px; color:#2563eb; text-decoration:underline; margin-top:4px; display:inline-block; }
+.rp-card .right img{ max-width:80px; margin-top:12px; }
+
+/* Ask payment button */
+#ask-my-payment{
+  cursor:pointer; outline:none; border:none; border-radius:4px; font-weight:600;
+  background:linear-gradient(90deg,#792b97,#5b34c8);
+  margin-bottom:20px; font-size:13px !important;
+  transition:background-position .25s ease, box-shadow .2s ease, transform .15s ease, filter .2s ease;
+}
+#ask-my-payment:hover{
+  background-position:100% 50%;
+  box-shadow:0 8px 18px rgba(91,52,200,.35), 0 2px 6px rgba(0,0,0,.06);
+  transform:translateY(-1px); filter:brightness(1.03);
+}
+#ask-my-payment:active{ transform:translateY(0); box-shadow:0 4px 10px rgba(91,52,200,.28); }
+.disabled, .disable_payment:disabled{
+  background:linear-gradient(90deg,#605f5f,#5c5c5c); color:#fff; opacity:1; font-weight:600;
+}
+
+/* Progress */
+.pda-progress{
+  position:relative; width:100%; margin:18px 0 8px; padding:22px 18px 12px;
+  background:linear-gradient(90deg, rgba(255,255,255,.65), rgba(255,255,255,.35));
+  border-radius:12px; box-shadow:inset 0 4px 16px rgba(0,0,0,.06);
+}
+.pda-progress__track{
+  position:absolute; left:48px; right:48px; top:48px; height:6px;
+  background:linear-gradient(90deg, rgba(148,163,184,.35), rgba(148,163,184,.18));
+  border-radius:999px;
+}
+.pda-progress__fill{
+  position:absolute; left:48px; top:48px; height:6px; width:0px;
+  background:linear-gradient(90deg,#bf3ddb,#3493ef);
+  border-radius:999px; transition:width .35s ease;
+}
+.pda-steps{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px; position:relative; z-index:1; }
+.pda-step{ display:grid; justify-items:center; text-align:center; }
+.pda-step__dot{
+  width:40px; height:40px; border-radius:999px; display:grid; place-items:center;
+  background:#e2e8f0; color:#475569; box-shadow:0 2px 10px rgba(0,0,0,.06);
+  transition:transform .2s ease, background .2s ease, color .2s ease;
+}
+.pda-step.is-active .pda-step__dot{ background:#fff; color:#5b34c8; transform:scale(1.03); border:2px solid rgba(91,52,200,.35); }
+.pda-step.is-done .pda-step__dot{ background:linear-gradient(135deg,#bf3ddb,#3493ef); color:#fff; }
+.pda-step__label{ margin-top:8px; font-size:13px; font-weight:600; color:#475569; }
+.pda-step__sub{ margin-top:2px; font-size:12px; color:#64748b; }
+.pda-badge{ margin-left:6px; padding:2px 6px; border-radius:999px; font-size:11px; font-weight:700; background:#fef3c7; color:#92400e; border:1px solid #fde68a; }
+.pda-process-note{ margin-top:18px; font-size:14px; color:#334155; }
+.pda-process-note strong{ color:#0f172a; }
+
+
+/* =========================
+   RESULT MODAL (light card)
+   ========================= */
+.success-pop .modal-dialog{ max-width:480px; }
+.success-pop .modal-content{
+  border:0; border-radius:16px; overflow:hidden; background:#ffffff;
+  box-shadow:0 24px 60px rgba(2,6,23,.18), 0 10px 20px rgba(2,6,23,.08);
+  animation:popIn .25s ease-out both;
+}
+@keyframes popIn{ from{ transform:scale(.96); opacity:0 } to{ transform:scale(1); opacity:1 } }
+.success-pop .close{ position:absolute; right:10px; top:6px; font-size:22px; line-height:1; opacity:.6; }
+.success-pop .close:hover{ opacity:1; }
+.success-pop .hero{ display:flex; align-items:center; justify-content:center; padding-top:22px; }
+.success-pop .hero .badge{ width:68px; height:68px; border-radius:14px; background:#fff7ed; display:grid; place-items:center; box-shadow:inset 0 0 0 1px #ffe6c7; }
+.success-pop .hero svg{ width:34px; height:34px; }
+.success-pop .body{ padding:18px 24px 8px; text-align:center; }
+.success-pop .title{ font-size:20px; font-weight:800; color:#0f172a; letter-spacing:.2px; }
+.success-pop .subtitle{ margin-top:6px; font-size:13.5px; color:#475569; }
+.success-pop .cta{ padding:0 24px 20px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+.success-pop .btn-primary{ border:0; border-radius:10px; font-weight:700; padding:10px 16px; background:linear-gradient(90deg,#16a34a,#22c55e); color:#fff; box-shadow:0 8px 22px rgba(34,197,94,.25); }
+.success-pop .btn-secondary{ border:1px solid #e5e7eb; background:#fff; color:#111827; border-radius:10px; padding:10px 16px; font-weight:700; }
+
+/* =========================
+   CONFIRM MODAL — DITTO STYLE
+   ========================= */
+/* backdrop darker with slight blur */
+.modal-backdrop.in{ background: rgba(15,23,42,.55); -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px); }
+
+/* Card look */
+#warningConfirmationPopin .modal-content{
+  border:0; border-radius:28px; background:#fff; padding:0;
+  box-shadow:0 40px 90px rgba(2,6,23,.24), 0 12px 26px rgba(2,6,23,.12);
+  overflow:hidden; animation:txpPop .22s ease-out both;
+}
+@keyframes txpPop{ from{ transform:scale(.97); opacity:0 } to{ transform:scale(1); opacity:1 } }
+
+.txp-badge-wrap{ position:relative; height:44px; }
+.txp-badge{
+  position:absolute; left:50%; top:15px; transform:translateX(-50%);
+  width:54px; height:54px; border-radius:16px; background:#f3f4f6;
+  display:grid; place-items:center; box-shadow:0 6px 16px rgba(2,6,23,.08), inset 0 0 0 1px #e5e7eb;
+}
+.txp-close{
+  position:absolute; right:14px; top:12px; border:0; background:transparent;
+  font-size:22px; line-height:1; opacity:.55; transition:opacity .15s;
+}
+.txp-close:hover{ opacity:1; }
+
+.txp-wrap{ padding:34px 28px 22px; }
+.txp-title{ text-align:center; font-weight:800; font-size:22px; color:#0f172a; letter-spacing:.2px; }
+.txp-sub{ text-align:center; margin-top:6px; color:#6b7280; font-size:13.5px; }
+
+.txp-amounts{ display:flex; align-items:center; justify-content:center; gap:14px; margin:18px 0 12px; font-weight:800; }
+.txp-amt{ font-size:30px; color:#0f172a; letter-spacing:.2px; }
+.txp-amt--accent{ color:#22c55e; }
+.txp-arrow{
+  width:26px; height:18px; opacity:.35; background-color:#0f172a;
+  -webkit-mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 12"><path d="M7 2l5 4-5 4M12 2l5 4-5 4" fill="%23000"/></svg>') center/contain no-repeat;
+  mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 12"><path d="M7 2l5 4-5 4M12 2l5 4-5 4" fill="%23000"/></svg>') center/contain no-repeat;
+}
+
+.txp-panel{
+  margin-top:8px; padding:16px 18px; border-radius:18px;
+  background:#f8fafc; box-shadow:inset 0 0 0 1px #e5e7eb;
+}
+.txp-panel h5{ margin:0 0 10px; font:700 13px/1 'Inter',system-ui; color:#374151; letter-spacing:.2px; }
+.txp-kv{ display:grid; grid-template-columns:160px 1fr; gap:10px 14px; font-size:12.5px; }
+.txp-kv .k{ color:#94a3b8; } .txp-kv .v{ color:#475569; }
+
+.txp-consent{
+  margin:14px 0 0; padding:10px 12px; border-radius:12px;
+  background:#f3f4f6; box-shadow:inset 0 0 0 1px #e5e7eb;
+  font-size:12.5px; color:#334155; display:flex; align-items:center; gap:8px;
+}
+
+.txp-actions{ margin:18px 0 8px; display:flex; justify-content:center; gap:10px; }
+.txp-confirm{
+  border:0; border-radius:999px; padding:12px 22px; font-weight:800; font-size:14px;
+  background:#b5ff3b; color:#0f172a; box-shadow:0 16px 38px rgba(181,255,59,.35), 0 6px 16px rgba(2,6,23,.08);
+}
+.txp-confirm:disabled{ opacity:.55; box-shadow:none; }
+.txp-cancel{
+  border:1px solid #e5e7eb; background:#fff; color:#111827;
+  border-radius:999px; padding:12px 18px; font-weight:700;
+}
+#warningConfirmationPopin .nf-loader{ height:22px; margin:6px 0 10px; }
+
+@media (max-width:460px){ .txp-kv{ grid-template-columns:130px 1fr; } }
+</style>
+
+<div id="msgBox"></div>
+
+<div class="row">
+  <div id="bs-main-content" class="col-md-12">
+    <div class="rp-banner">
+<?php if ($this->REQ_TYPE == 'New') { ?>
+  <!-- ===== First-time request card ===== -->
+  <div class="rp-card">
+    <div class="left rp-balance-section">
+      <div class="label"><span>Current balance</span></div>
+      <div class="amount">
+        <span class="currency-symbol">€</span>
+        <span class="value"><?php echo $this->BALANCE ?? '0.00'; ?></span><span class="decimal">.00</span>
+      </div><br>
+      <?php if ($this->ALLOW_WITHDRAW == 'NEED BANK INFO') { ?>
+        <button class="btn btn-primary disabled" disabled>Request my payment</button><br><br>
+        <span style="color:#f00;">*First add the bank details</span>
+      <?php } elseif ($this->ALLOW_WITHDRAW == 'Yes') { ?>
+        <button class="btn btn-primary balance_obtainPayment_click" id="ask-my-payment">Request my payment</button>
+      <?php } else { ?>
+        <button class="btn btn-primary disable_payment" disabled>Payment not available</button>
+      <?php } ?>
+    </div>
+
+    <div class="center">
+      <div><span><?php echo $this->USERNAME; ?></span></div>
+      <div class="title">Payment method : <strong><?php echo $this->PAYMENT_METHOD; ?></strong></div>
+      <div class="desc">Your balance must exceed the contractual threshold of 100.00 €</div>
+      <a href="<?php echo $this->url('payments',array('action' => 'history'));?>">Transaction history &amp; invoices</a>
+    </div>
+    <div class="right">
+      <img src="https://cdn.razorpay.com/static/assets/rtux/settlement-processed.gif" alt="Processed">
+    </div>
+  </div>
+
+<?php } else {
+  $stateRaw = strtolower(trim($this->REQ_TYPE ?? 'requested'));   // requested | sent | on hold | processed
+  $step = 1;
+  if ($stateRaw === 'sent' || $stateRaw === 'on hold') $step = 2;
+  if ($stateRaw === 'processed' || $stateRaw === 'paid' || $stateRaw === 'complete') $step = 3;
+?>
+  <!-- ===== Progress ===== -->
+  <div class="pda-progress" id="pdaContainer" role="group" aria-label="Payment progress">
+    <div class="pda-progress__track" id="pdaTrack" aria-hidden="true"></div>
+    <div class="pda-progress__fill" id="pdaFill" style="width:0px;" aria-hidden="true"></div>
+
+    <div class="pda-progress__pin" id="pdaPin" style="left:0;">
+      <div class="pda-progress__pin-dot"></div>
+      <div class="pda-progress__pin-label">
+        <?php echo ($step === 1 ? 'Requested' : ($step === 2 ? ($stateRaw==='on hold'?'On hold':'Sent') : 'Processed')); ?>
+      </div>
+    </div>
+
+    <div class="pda-steps">
+      <div class="pda-step <?php echo ($step>=1?'is-active':''); ?> <?php echo ($step>1?'is-done':''); ?>">
+        <div class="pda-step__dot"><i class="fa fa-upload"></i></div>
+        <div class="pda-step__label">Requested</div>
+        <div class="pda-step__sub"><?php echo htmlspecialchars($this->requested_date ?? ''); ?></div>
+      </div>
+
+      <div class="pda-step <?php echo ($step>=2?'is-active':''); ?> <?php echo ($step>2?'is-done':''); ?>">
+        <div class="pda-step__dot"><i class="fa fa-paper-plane"></i></div>
+        <div class="pda-step__label">
+          Sent <?php if ($stateRaw==='on hold'): ?><span class="pda-badge">On&nbsp;hold</span><?php endif; ?>
+        </div>
+        <div class="pda-step__sub">Confirmed by team</div>
+      </div>
+
+      <div class="pda-step <?php echo ($step>=3?'is-active':''); ?>">
+        <div class="pda-step__dot"><i class="fa fa-check"></i></div>
+        <div class="pda-step__label">Processed</div>
+        <div class="pda-step__sub">Payout provider</div>
+      </div>
+    </div>
+
+    <div class="pda-process-note">
+      <?php if ($step === 1) { ?>
+        You have requested the payment of <strong><?php echo $this->req_amount; ?> €</strong> on <strong><?php echo $this->requested_date; ?></strong>.
+        Your payment request will be confirmed by our team and sent to payout provider.
+      <?php } elseif ($step === 2) { ?>
+        Your payment request of <strong><?php echo $this->req_amount; ?> €</strong> (<?php echo $this->requested_date; ?>)
+        has been confirmed and sent to payout provider.
+        <?php if ($stateRaw === 'on hold') { ?>
+          <strong>Note:</strong> It’s currently on hold. Our team will notify you if we need additional details.
+        <?php } else { ?>
+          You should receive the funds within 5–15 business days.
+        <?php } ?>
+      <?php } else { ?>
+        Your payment of <strong><?php echo $this->req_amount; ?> €</strong> (requested on <?php echo $this->requested_date; ?>)
+        has been processed. Funds are on their way to your account.
+      <?php } ?>
+    </div>
+  </div>
+
+  <div class="row verticalCenterBootstrapRow">
+    <div class="col-md-12" id="listeOp">
+      <a id="operationsDetailsLink" class="balance_operationDetails_click" href="<?php echo $this->url('payments',array('action' => 'history'));?>">
+        Transaction history &amp; invoices
+      </a>
+      <span id="chevron" class="glyphicon glyphicon-chevron-right"></span>
+    </div>
+  </div>
+<?php } ?>
+    </div>
+  </div>
+</div>
+
+<script>
+$(function(){
+  /* ===== Result pop helper ===== */
+  function showReqResult(type, title, msg, onOk){
+    var $card = $('#reqResultCard');
+    var $ttl  = $('#reqResultTitle');
+    var $msg  = $('#reqResultMsg');
+    var $meta = $('#reqResultMeta');
+
+    $card.removeClass('pop-success pop-info pop-warn pop-error');
+    if(type === 'success') $card.addClass('pop-success');
+    else if(type === 'info') $card.addClass('pop-info');
+    else if(type === 'warn') $card.addClass('pop-warn');
+    else if(type === 'error') $card.addClass('pop-error');
+
+    $ttl.text(title || '');
+    $msg.text(msg || '');
+
+    var dt = new Date();
+    $meta.text(dt.toLocaleString());
+
+    $('#reqResultOk').off('click');
+    if(typeof onOk === 'function'){ $('#reqResultOk').one('click', onOk); }
+
+    $('#reqResultModal').modal('show');
+  }
+
+  /* ===== Confirm modal flow ===== */
+  $('#ask-my-payment').on('click', function(){
+    $('#warningConfirmationPopin').modal('show');
+    $('.chkConfirm').prop('checked', false);
+    $('#withdrawal_req').hide();
+  });
+
+  $('.chkConfirm').on('click', function(){
+    $('#withdrawal_req').toggle(this.checked);
+  });
+
+  $('#withdrawal_req').on('click', function(){
+    $('#withdrawal_req').prop('disabled', true);
+    $('#withdrawal_req,#cancel_btn').addClass('hide');
+    $('.nf-loader').removeClass('hide');
+
+    $.ajax({
+      url:"<?php echo $this->url('payments', array('action'=>'sendPaymentReq'));?>",
+      type:"POST", dataType:'json'
+    })
+    .done(function(result){
+      $('#warningConfirmationPopin').modal('hide');
+      $('#cancel_btn').removeClass('hide');
+      $('.nf-loader').addClass('hide');
+
+      if(result.DBStatus === 'OK'){
+        $('#ask-my-payment').prop('disabled', true);
+        showReqResult('success','Request sent successfully',
+          'Your payment request has been sent to our Royalties team.',
+          function(){ location.reload(); }
+        );
+      }else if(result.DBStatus === 'EXIST'){
+        showReqResult('info','Request already in progress',
+          'One withdrawal request is already being processed.');
+      }else if(result.DBStatus === 'NOT_ALLOW'){
+        showReqResult('warn','Minimum threshold not reached',
+          'Your balance must exceed the contractual threshold of 100.00 €');
+      }else{
+        showReqResult('error','Something went wrong',
+          'There was an error while sending your request. Please try again.');
+      }
+
+      $('#withdrawal_req').prop('disabled', false).removeClass('hide');
+    })
+    .fail(function(){
+      $('#warningConfirmationPopin').modal('hide');
+      $('#cancel_btn').removeClass('hide');
+      $('.nf-loader').addClass('hide');
+
+      showReqResult('error','Network error',
+        'Unable to reach the server. Please check your connection and try again.');
+
+      $('#withdrawal_req').prop('disabled', false).removeClass('hide');
+    });
+  });
+
+  /* ===== Accurate progress pin & fill ===== */
+  function layoutProgress(step, stateRaw){
+    var $container = $('#pdaContainer');
+    var $track = $('#pdaTrack');
+    var $fill  = $('#pdaFill');
+    var $pin   = $('#pdaPin');
+    if($container.length === 0) return;
+
+    var idx = Math.max(0, Math.min(2, (step|0) - 1));
+    var $dot = $container.find('.pda-step').eq(idx).find('.pda-step__dot');
+    if($dot.length === 0 || $track.length === 0) return;
+
+    var dotCenter = $dot.offset().left + ($dot.outerWidth()/2);
+    var trackLeft = $track.offset().left;
+    var trackWidth= $track.outerWidth();
+
+    var pinLeftPx = Math.max(0, Math.min(trackWidth, dotCenter - trackLeft));
+    $pin.css('left', pinLeftPx + 'px');
+    $fill.css('width', pinLeftPx + 'px');
+
+    var label = (step===1) ? 'Requested' : (step===2 ? (stateRaw==='on hold'?'On hold':'Sent') : 'Processed');
+    $pin.find('.pda-progress__pin-label').text(label);
+  }
+
+  var CURRENT_STEP  = <?php echo isset($step) ? (int)$step : 1; ?>;
+  var CURRENT_STATE = '<?php echo isset($stateRaw) ? $stateRaw : 'requested'; ?>';
+  function relayoutNow(){ layoutProgress(CURRENT_STEP, CURRENT_STATE); }
+  $(window).on('load resize', relayoutNow);
+  setTimeout(relayoutNow, 50);
+  setTimeout(relayoutNow, 250);
+  setTimeout(relayoutNow, 600);
+});
+</script>
+
+<!-- ===== TRANSACTION PREVIEW (CONFIRM MODAL) ===== -->
+<div class="modal fade" id="warningConfirmationPopin" tabindex="-1" role="dialog" aria-hidden="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <button class="txp-close" data-dismiss="modal" aria-label="Close">×</button>
+
+      <div class="txp-badge-wrap">
+        <div class="txp-badge" aria-hidden="true">
+          <!-- coin icon -->
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="9" stroke="#0f172a" stroke-opacity=".25" stroke-width="1.2"/>
+            <path d="M7.6 12h8.8M9 9.1c1.2-.8 4.8-.8 6 0M9 14.9c1.2.8 4.8.8 6 0"
+                  stroke="#0f172a" stroke-width="1.2" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="txp-wrap">
+        <div class="txp-title">Payment Overview</div>
+        <div class="txp-sub">Please review the details below before proceeding with your request.</div>
+
+        <div class="txp-amounts" aria-label="Amounts">
+          <div class="txp-amt txp-amt--accent">€<?php echo number_format((float)($this->BALANCE ?? 0), 2); ?></div>
+          <div class="txp-arrow" aria-hidden="true"></div>
+          <div class="txp-amt">€0.00</div>
+        </div>
+
+        <div class="txp-panel" role="group" aria-label="Details">
+          <h5>Details</h5>
+          <div class="txp-kv">
+            <div class="k">Account</div>
+            <div class="v"><?php echo htmlspecialchars($this->USERNAME ?? ''); ?></div>
+
+            <div class="k">Payout method</div>
+            <div class="v"><?php echo htmlspecialchars($this->PAYMENT_METHOD ?? '—'); ?></div>
+
+            <div class="k">Threshold</div>
+            <div class="v">€100.00 (contractual)</div>
+
+            <div class="k">Est. arrival</div>
+            <div class="v">5–15 business days</div>
+          </div>
+        </div>
+
+        <label class="txp-consent">
+          <input type="checkbox" class="chkConfirm">
+          I confirm that I want to request my payment.
+        </label>
+
+        <div class="txp-actions">
+          <button class="txp-cancel" data-dismiss="modal" id="cancel_btn">Cancel</button>
+          <button class="txp-confirm" id="withdrawal_req" style="display:none;">Confirm transaction</button>
+        </div>
+
+        <div class="text-center">
+          <img src="<?php echo $this->basePath(); ?>/public/img/loader.gif" class="hide nf-loader" alt="Loading">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== RESULT MODAL ===== -->
+<div class="modal fade success-pop" id="reqResultModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" id="reqResultCard">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close">×</button>
+
+      <div class="hero">
+        <div class="badge" id="reqBadge">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M4 14l6-6c4-4 8-4 10-2s2 6-2 10l-6 6-2-4-4-2z" stroke="#111827" stroke-width="1.2" fill="#ffd48a"/>
+            <circle cx="15.5" cy="8.5" r="2.5" fill="#111827" opacity=".85"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="body">
+        <div class="title" id="reqResultTitle">Request sent successfully</div>
+        <div class="subtitle" id="reqResultMsg">Your payment request has been sent to our Royalties team.</div>
+      </div>
+
+      <div class="cta">
+        <button type="button" class="btn btn-primary" id="reqResultOk" data-dismiss="modal">OK</button>
+        <a href="<?php echo $this->url('payments',array('action'=>'history'));?>" class="btn btn-secondary">View history</a>
+      </div>
+
+      
+    </div>
+  </div>
+</div>

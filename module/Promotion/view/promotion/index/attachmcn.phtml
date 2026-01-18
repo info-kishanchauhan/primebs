@@ -1,0 +1,300 @@
+<?php
+$this->headTitle('Attach Your YouTube Channel');
+?>
+
+<style>
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #f8f9fc;
+    margin: 0;
+    
+  }
+
+  .form-container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 16px;
+    padding: 40px 50px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  }
+
+  .form-step {
+    display: none;
+  }
+
+  .form-step:first-of-type {
+    display: block;
+  }
+
+  .step-progress-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .step-indicator {
+    flex: 1;
+    padding: 10px 14px;
+    border-radius: 10px;
+    text-align: center;
+    background: #e5e7eb;
+    font-weight: 500;
+    font-size: 14px;
+    color: #374151;
+  }
+
+  .step-indicator.active {
+    background: #2563eb;
+    color: white;
+  }
+
+  .form-label {
+    font-weight: 600;
+    margin-top: 20px;
+    display: block;
+    color: #1e293b;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 15px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    background: #fff;
+    margin-top: 6px;
+  }
+
+  .submit-btn {
+    margin-top: 30px;
+    padding: 10px 20px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .submit-btn:hover {
+    background: #1e40af;
+  }
+  .muted-text {
+  font-size: 13px;
+  color: #6b7280;
+  margin-top: 4px;
+  margin-bottom: 10px;
+}
+
+</style>
+
+<div class="form-container">
+  <h2 style="margin-top: 0;">📥 Attach Your YouTube Channel for MCN</h2>
+
+  <div class="step-progress-bar" id="progressBar">
+    <div class="step-indicator active" data-step="1">Step 1</div>
+    <div class="step-indicator" data-step="2">Step 2</div>
+    <div class="step-indicator" data-step="3">Step 3</div>
+  </div>
+
+  <form id="mcnForm" action="/promotion/submitmcn" method="POST" enctype="multipart/form-data">
+
+    <!-- STEP 1 -->
+    <div class="form-step" id="step1">
+      <label class="form-label">YouTube Channel Link *</label>
+      <input type="url" name="channel_url" class="form-input" required>
+      <div class="muted-text">Paste your full channel URL like https://www.youtube.com/channel/...</div>
+
+      <label class="form-label">Channel Type *</label>
+      <select name="channel_type" class="form-input" required>
+        <option value="">Label or Artist?</option>
+        <option value="label">Label</option>
+        <option value="artist">Artist</option>
+      </select>
+      <div class="muted-text">Is this an artist’s channel or a label-managed one?</div>
+
+      <label class="form-label">Relationship with Channel *</label>
+      <input type="text" name="relationship" class="form-input" required>
+      <div class="muted-text">Example: I'm the owner / I manage this channel.</div>
+
+      <label class="form-label">Type of Uploaded Content *</label>
+      <input type="text" name="upload_type" class="form-input" required>
+      <div class="muted-text">Example: Official Music, Live, Vlogs, Lyrics, etc.</div>
+
+      <label class="form-label">Upload Pattern *</label>
+      <select name="upload_pattern" class="form-input" required>
+        <option value="">Uploading Pattern</option>
+        <option value="active">Actively uploading</option>
+        <option value="catalog">Mostly catalog</option>
+      </select>
+      <div class="muted-text">Choose if you are regularly uploading or maintaining a catalog.</div>
+
+      <button type="button" class="submit-btn" onclick="nextStep(2)">Next ➜</button>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="form-step" id="step2">
+      <label class="form-label">Total Subscribers *</label>
+      <input type="number" name="subscribers" class="form-input" required>
+      <div class="muted-text">Enter approximate total subscriber count.</div>
+
+      <label class="form-label">4000+ Watch Time Hours? *</label>
+      <select name="watchtime_eligible" class="form-input" required>
+        <option value="">Select</option><option>yes</option><option>no</option>
+      </select>
+      <div class="muted-text">Have you crossed YouTube monetization threshold of 4000 hours?</div>
+
+      <label class="form-label">Upload Screenshot (Watch Time Proof) *</label>
+      <input type="file" name="watchtime_proof" class="form-input" accept="image/*" required>
+      <div class="muted-text">Upload a screenshot showing your channel’s watch time.</div>
+
+      <label class="form-label">Is Monetization Enabled? *</label>
+      <select name="monetized" class="form-input" required>
+        <option value="">Select</option><option>yes</option><option>no</option>
+      </select>
+
+      <label class="form-label">Last 30 Days Revenue (USD) *</label>
+      <input type="number" name="revenue" class="form-input" required>
+      <div class="muted-text">Enter estimated revenue from last 30 days (in USD).</div>
+
+      <label class="form-label">Upload Screenshot of 6 Month Analytics *</label>
+      <input type="file" name="screenshot" class="form-input" accept="image/*" required>
+      <div class="muted-text">Screenshot must clearly show 6-month data.</div>
+
+      <button type="button" class="submit-btn" onclick="prevStep(1)">← Back</button>
+      <button type="button" class="submit-btn" onclick="nextStep(3)">Next ➜</button>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="form-step" id="step3">
+      <label class="form-label">Only Music Content? *</label>
+      <select name="music_only" class="form-input" required>
+        <option value="">Select</option><option>yes</option><option>no</option>
+      </select>
+      <div class="muted-text">Choose ‘Yes’ if all videos are music-related.</div>
+
+      <label class="form-label">Any Cover Songs? *</label>
+      <select name="has_covers" class="form-input" required>
+        <option value="">Select</option><option>yes</option><option>no</option>
+      </select>
+      <div class="muted-text">Include if any video uses melodies not owned by you.</div>
+
+      <label class="form-label">Copyright Strikes? *</label>
+      <select name="has_strikes" class="form-input" required>
+        <option value="">Select</option><option>yes</option><option>no</option>
+      </select>
+      <div class="muted-text">Have you received any copyright strike from YouTube?</div>
+
+      <label class="form-label">If you use any 3rd-party content, explain (or write NA) *</label>
+      <input type="text" name="strike_reason" class="form-input" required>
+      <div class="muted-text">Mention what kind of 3rd-party content is used or just write "NA".</div>
+
+      <button type="button" class="submit-btn" onclick="prevStep(2)">← Back</button>
+      <button type="submit" class="submit-btn">✅ Submit Channel</button>
+    </div>
+  </form>
+</div>
+
+
+<script>
+  let currentStep = 1;
+
+  function nextStep(step) {
+    const currentFormStep = document.getElementById('step' + currentStep);
+    const requiredFields = currentFormStep.querySelectorAll("[required]");
+    let valid = true;
+    let firstInvalid = null;
+
+    requiredFields.forEach(field => {
+      const isFile = field.type === "file";
+      const isSelect = field.tagName.toLowerCase() === "select";
+      const empty = isFile ? field.files.length === 0 : !field.value.trim();
+
+      if (empty || (isSelect && field.value === "")) {
+        field.style.borderColor = "#dc2626";
+        valid = false;
+        if (!firstInvalid) firstInvalid = field;
+      } else {
+        field.style.borderColor = "#d1d5db";
+      }
+    });
+
+    if (!valid) {
+      alert("⚠️ Please complete all required fields before continuing.");
+      if (firstInvalid) firstInvalid.focus();
+      return;
+    }
+
+    const next = document.getElementById('step' + step);
+    if (!next) return alert("Step not found!");
+
+    document.querySelectorAll('.form-step').forEach(s => s.style.display = 'none');
+    next.style.display = 'block';
+    currentStep = step;
+    updateProgress();
+  }
+
+  function prevStep(step) {
+    const prev = document.getElementById('step' + step);
+    if (!prev) return alert("Step not found!");
+
+    document.querySelectorAll('.form-step').forEach(s => s.style.display = 'none');
+    prev.style.display = 'block';
+    currentStep = step;
+    updateProgress();
+  }
+
+  function updateProgress() {
+    document.querySelectorAll('.step-indicator').forEach((el, i) => {
+      el.classList.toggle('active', i + 1 === currentStep);
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll('.form-step').forEach(s => s.style.display = 'none');
+    const stepDiv = document.getElementById('step' + currentStep);
+    if (stepDiv) stepDiv.style.display = 'block';
+    updateProgress();
+  });
+
+  // ✅ Final Fix for browser validation on hidden required fields
+  document.getElementById("mcnForm").addEventListener("submit", function (e) {
+    e.preventDefault(); // Prevent native submit
+
+    // Step 1: Unhide all steps before validation
+    document.querySelectorAll(".form-step").forEach(s => s.style.display = "block");
+
+    // Step 2: Wait for DOM update, then validate
+    setTimeout(() => {
+      let form = e.target;
+      let valid = true;
+      let firstInvalid = null;
+
+      const requiredFields = form.querySelectorAll("[required]");
+      requiredFields.forEach(field => {
+        const isFile = field.type === "file";
+        const isSelect = field.tagName.toLowerCase() === "select";
+        const empty = isFile ? field.files.length === 0 : !field.value.trim();
+
+        if (empty || (isSelect && field.value === "")) {
+          field.style.borderColor = "#dc2626";
+          valid = false;
+          if (!firstInvalid) firstInvalid = field;
+        } else {
+          field.style.borderColor = "#d1d5db";
+        }
+      });
+
+      if (!valid) {
+        alert("⚠️ Please fill in all required fields.");
+        if (firstInvalid) firstInvalid.focus();
+        return false;
+      }
+
+      console.log("✅ All fields valid. Submitting...");
+      form.submit(); // ✅ Final manual submit after safe validation
+    }, 0);
+  });
+</script>
+

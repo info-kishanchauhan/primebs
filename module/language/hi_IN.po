@@ -1,0 +1,151 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: hi_IN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n==0 || n==1);\n"
+"X-Generator: Poedit 1.8.13\n"
+
+msgid "Dashboard"
+msgstr "डैशबोर्ड"
+
+msgid "Financial"
+msgstr "वित्तीय"
+
+msgid "Activity"
+msgstr "गतिविधि"
+
+msgid "Academic Year Plan"
+msgstr "शैक्षणिक वर्ष योजना"
+
+msgid "Staff"
+msgstr "कर्मचारी"
+
+msgid "Enquiry"
+msgstr "जाँच"
+
+msgid "Students"
+msgstr "छात्र"
+
+msgid "Attendance"
+msgstr "उपस्थिति"
+
+msgid "Online Class"
+msgstr "ऑनलाइन क्लास"
+
+msgid "Timetable"
+msgstr "समय सारणी"
+
+msgid "Announcement"
+msgstr "घोषणा"
+
+msgid "Events"
+msgstr "आयोजन"
+
+msgid "Gallery"
+msgstr "गेलरी"
+
+msgid "Home Work"
+msgstr "घर का पाठ"
+
+msgid "Exam"
+msgstr "परीक्षा"
+
+msgid "Payroll"
+msgstr "पेरोल"
+
+msgid "Accounts"
+msgstr "हिसाब किताब"
+
+msgid "Inventory"
+msgstr "भंडार"
+
+msgid "Transport"
+msgstr "यातायात"
+
+msgid "Report"
+msgstr "प्रतिवेदन"
+
+msgid "Cloud Storage"
+msgstr "घन संग्रहण"
+
+msgid "Complaint"
+msgstr "शिकायत"
+
+msgid "Certificate"
+msgstr "प्रमाण पत्र"
+
+msgid "Billing"
+msgstr "बिलिंग"
+
+msgid "Support"
+msgstr "सहायता"
+
+msgid "Settings"
+msgstr "सेटिंग्स"
+
+msgid "Online Resource"
+msgstr "ऑनलाइन संसाधन"
+
+msgid "File Manager"
+msgstr "फ़ाइल मैनेजर"
+
+msgid "Conference Room"
+msgstr "सम्मेलन कक्ष"
+
+msgid "Exam Timetable"
+msgstr "टाइमटेबल"
+
+msgid "Exam Score"
+msgstr "अंक"
+
+msgid "Tracking"
+msgstr "ट्रैकिंग"
+
+msgid "Primary Lesson Plan"
+msgstr "सबक"
+
+msgid "Lesson Plan"
+msgstr "सबक"
+
+msgid "Leave Request"
+msgstr "छुट्टी का अनुरोध"
+
+msgid "Fees"
+msgstr "शुल्क"
+
+msgid "Vehicle Payment"
+msgstr "भुगतान"
+
+msgid "Holiday"
+msgstr "बंद है"
+
+msgid "Subjects"
+msgstr "विषयों"
+
+msgid "Classes Handling"
+msgstr "कक्षाओं को संभालना"
+
+msgid "School Finance"
+msgstr "स्कूल वित्त"
+
+msgid "Student Attendance"
+msgstr "छात्रों की उपस्थिति"
+
+msgid "Staff Attendance"
+msgstr "कर्मचारियों की उपस्थिति"
+
+msgid "System Log"
+msgstr "तंत्र"
+
+msgid "Notice Board"
+msgstr "नोटिस बोर्ड"
+
+msgid "Recent Students"
+msgstr "हाल ही में छात्रों"

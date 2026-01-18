@@ -1,0 +1,265 @@
+<link rel="stylesheet" type="text/css" href="<?php echo $this->basePath(); ?>/public/css/assets.css">
+<!-- 👇 Drop-in "Gentle Polish" — keeps layout exactly the same, just tidier visuals. Paste after your existing CSS links or just before </body>. -->
+
+<style>
+  /* ===== Gentle Theme Tokens (very safe overrides) ===== */
+  :root{
+    --font: 'Inter', -apple-system, 'SF Pro Text', system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --ink:#111827;          /* text */
+    --muted:#6b7280;        /* secondary text */
+    --line:#e5e7eb;         /* borders */
+    --bg:#f7f7f8;           /* page bg */
+    --card:#ffffff;         /* surfaces */
+    --brand:#5b34c8;        /* primary */
+    --brand-2:#792b97;      /* primary alt */
+    --ok:#16a34a; --warn:#f59e0b; --bad:#ef4444;
+    --r:10px;               /* radius */
+    --shadow:0 8px 24px rgba(2,6,23,.06);
+  }
+
+  /* ===== Global (super low specificity) ===== */
+  html { -webkit-text-size-adjust: 100%; }
+  body { font-family: var(--font) !important; color: var(--ink); background: var(--bg); }
+  h1,h2,h3,h4,h5 { letter-spacing:-.01em; }
+  
+  a { color: var(--brand); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* ===== Cards/Panels (respect existing layout) ===== */
+  .panel, .section-card, .card, .ap-card, .well, .box {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--r); box-shadow: var(--shadow);
+  }
+
+  /* ===== Buttons (keep sizes; soften visuals) ===== */
+  .btn, .btn-primary, .btn-default, .btn-secondary, .btn-danger, .btn-ghostn {
+    font: 600 14px/1 var(--font); border-radius: var(--r) !important;
+    border: 1px solid var(--line); background:#fff; color:#1f2937;
+    transition: box-shadow .2s ease, transform .12s ease, background .2s ease, border-color .2s ease;
+  }
+  .btn:hover { box-shadow: 0 10px 22px rgba(2,6,23,.08); transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+  .btn-primary { background: linear-gradient(90deg, var(--brand), var(--brand-2)); color:#fff; border-color: transparent; }
+  .btn-danger  { background: var(--bad); color:#fff; border-color: var(--bad); }
+  .btn-secondary, .btn-default { background:#f3f4f6; }
+
+  /* ===== Inputs (do not change structure) ===== */
+  input[type="text"], input[type="number"], input[type="email"], input[type="search"], select, textarea {
+    font: 500 14px/1.4 var(--font); color: var(--ink); background:#fff;
+    border:1px solid var(--line); border-radius: var(--r); padding:10px 12px;
+    transition: box-shadow .15s ease, border-color .15s ease;
+  }
+  input:focus, select:focus, textarea:focus { outline:none; border-color:#a78bfa; box-shadow:0 0 0 4px rgba(167,139,250,.18); }
+
+  /* ===== Tables (same markup, clearer look) ===== */
+  .table { background: var(--card); border:1px solid var(--line); border-radius: var(--r); overflow:hidden; box-shadow: var(--shadow); }
+  .table>thead>tr>th { font: 700 12px/1.2 var(--font); text-transform:uppercase; letter-spacing:.04em; color:#475569; background:#f8fafc; }
+  .table>tbody>tr>td { font: 500 13px/1.45 var(--font); color:#1f2937; }
+  .table>tbody>tr:hover>td { background:#fafafa; }
+  .num { text-align:right; font-variant-numeric: tabular-nums; }
+
+  /* ===== Tiny status pills (non-breaking) ===== */
+  .status, .badge { border-radius: 8px; font: 700 11px/1 var(--font); padding:6px 8px; text-transform:uppercase; letter-spacing:.04em; }
+  .status.ok { background:#ecfdf5; color:var(--ok); }
+  .status.warn { background:#fffbeb; color:var(--warn); }
+  .status.bad { background:#fef2f2; color:var(--bad); }
+
+  /* ===== Light utility classes (opt-in) ===== */
+  .muted{ color:var(--muted)!important; } .mono{ font-variant-numeric:tabular-nums; font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .gap-xs{ gap:6px; } .gap-sm{ gap:10px; } .gap-md{ gap:14px; } .gap-lg{ gap:18px; }
+  .rounded{ border-radius:var(--r)!important; }
+
+  /* ===== iPad/Safari focus/zoom fixes ===== */
+  @supports (-webkit-touch-callout: none) { select, input, textarea { font-size:16px; } }
+
+  /* ===== Slim scrollbars (safe) ===== */
+  *::-webkit-scrollbar{ width:10px; height:10px; }
+  *::-webkit-scrollbar-thumb{ background:#d1d5db; border-radius:10px; }
+  *::-webkit-scrollbar-thumb:hover{ background:#9ca3af; }
+</style>
+
+<!-- Optional: sticky header assist only if parent scrolls; harmless if not present -->
+<script>
+  (function(){
+    document.querySelectorAll('.table').forEach(function(tbl){ var p = tbl.parentElement; if(p){ p.style.overflow='auto'; }});
+  })();
+</script>
+
+
+
+
+
+<style>
+      .btn {
+    border-radius: 4px !important;
+    margin: 1px 2px;
+}
+  .form-control, select, textarea {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 14px;
+  transition: border .2s ease, box-shadow .2s ease;
+}
+
+.form-control:focus {
+  border-color: #7d2492;
+  box-shadow: 0 0 0 3px rgba(125, 36, 146, .15);
+}
+
+
+
+</style>
+<div id="easyEntryContent">
+    <!-- header (release title, save button...) -->
+    <div id="easyEntryAssetsHeader" class="clearfix">
+        <h2 style="float: left;"><?php echo $this->Title.' '. $this->SubTitle;?></h2>
+        <div style="float: right;">
+            <button id="btnSave" class="btn btn-large btn-primary nf-btn-submit" href="javascript:;"><i class="icon-ok-circle icon-white"></i> Save</button>
+			<img style="margin: 10px 30px;" src="<?php echo $this->basePath(); ?>/public/img/loader.gif" class="hide nf-loader">
+        </div>
+    </div>
+
+    <!-- message -->
+    <div id="msgBox">
+    </div>
+
+    <!-- tabs -->
+    <ul class="nav nav-tabs" id="ee_tabs">
+        <li ><a class="easyEntryStep" data-page="main" href="<?php echo $this->url('newrelease',array('action' => 'index'));?>?edit=<?php echo $_GET['edit'];?>">Release information</a></li>
+        <li><a class="easyEntryStep" data-page="tracks" href="<?php echo $this->url('newrelease',array('action' => 'track'));?>?edit=<?php echo $_GET['edit'];?>">Tracks</a></li>
+        <li class="active"><a class="easyEntryStep" data-page="releasedate" href="<?php echo $this->url('newrelease',array('action' => 'releasedate'));?>?edit=<?php echo $_GET['edit'];?>">Release date</a></li>
+		<?php
+			if($this->import_flag == '0')
+			{
+		?>
+        <li><a class="easyEntryStep" data-page="submission" href="<?php echo $this->url('newrelease',array('action' => 'submission'));?>?edit=<?php echo $_GET['edit'];?>">Submission</a></li>
+		<?php } ?>
+    </ul>
+
+   
+<div id="mainForm">
+	<form method="post" action="" id="frmForm" class="form-horizontal" role="form">
+	<div class="row">
+		<div class="col-md-6">
+			<div id="release-col1" class=""><div class="form-group form-group-sm"><div class="col-sm-3 control-label"><label class=" input-required behavior-2" id="label-easyEntryEditForm-digitalReleaseDate-0" for="easyEntryEditForm-digitalReleaseDate-0">Choose a main release date</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> *</span> <span class="label-tip"><a href="#" data-html="true" data-placement="top" title="" class="nf-creator-tooltip"  data-toggle="tooltip" data-original-title="<div style=&quot;text-align: left;&quot;>This is referring to the date you want your release to be available for sale on.<br />We recommend you to choose a release date set 4 to 6 weeks after your release's submission date. Once your release is submitted, it will be sent to the downloading services within 48 hours. It will then take them 2 to 6 weeks to make your release available for sale.</div>"><span class="glyphicon glyphicon-question-sign"></span></a></span> </span></div><div class="col-sm-7"><input class="input-large inputDate inputBehavior-2 form-control hasDatepicker datepickerLinker datepickerLinkerHover" id="digitalReleaseDate" autocomplete="off" name="digitalReleaseDate" id="digitalReleaseDate" type="text" value="<?php echo $this->digitalReleaseDate;?>" tabindex="1" data-dplinker-prevval=""><span style="display:none" class="form-input-error help-inline control-label" rel="title"></span></div><div class="col-sm-2 divAppend"></div></div></div>		</div>
+		<div class="col-md-12 ">&nbsp;</div>
+	</div>
+	</form>
+</div>
+    <div id="easyEntryAssetsModal" class="modal fade" aria-hidden="true"></div>
+    <div id="easyEntryAssetsPopover"></div>
+    <div id="easyEntryArtistIdModal" class="modal fade" aria-hidden="true"></div>
+    <div id="focusTrackModal" class="modal fade" aria-hidden="true"></div>
+    <div id="madeForKidsGuidelinesModal" class="modal fade" aria-hidden="true"></div>
+
+</div>
+
+
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+		acl_PRINT=0;
+		strActionMode = "EDIT";
+		
+        $("#btnSave").click(function (e) {
+            e.stopPropagation();
+            $("#frmForm").submit();
+        });
+		
+		var min_date = new Date("<?php echo $this->minDate;?>");
+		$("#digitalReleaseDate").datetimepicker({
+            format: "DD-MM-YYYY",
+			minDate : min_date
+        });
+		
+		$('#digitalReleaseDate').val('<?php echo $this->digitalReleaseDate;?>');
+		function setErrorMsg(field,msg)
+		{
+			$('#'+field).parents('.form-group').find('label').addClass('labelError');
+			$('#'+field).addClass('inputError');
+			$('#'+field).parents('.form-group').find(".form-input-error").text(msg);
+			$('#'+field).parents('.form-group').find(".form-input-error").removeAttr('style');
+			$('#'+field).parents('.form-group').addClass('has-error'); 
+		}
+		function removeErrorMsg()
+		{
+			$('input,select,textarea').parents('.form-group').find('label').removeClass('labelError');
+			$('input,select,textarea').removeClass('inputError');
+			$('input,select,textarea').parents('.form-group').find(".form-input-error").text('');
+			$('input,select,textarea').parents('.form-group').find(".form-input-error").attr('style','display:none;');
+			$('input,select,textarea').parents('.form-group').removeClass('has-error'); 
+		}
+		<?php
+			if(isset($_GET['show_error']))
+			{
+			?>
+				setTimeout(function(){
+					$("#btnSave").trigger('click');
+				},1000)
+				
+			<?php
+			}
+		?>
+		
+        $("#frmForm").validate(
+            {
+                submitHandler: function (form) {
+					
+					removeErrorMsg();
+					<?php
+						if(isset($_GET['show_error']))
+						{
+					?>
+							
+							if ($("#digitalReleaseDate").val() == '') 
+							{
+								
+								setErrorMsg('digitalReleaseDate','This field is required');
+								return;
+							}
+							else
+							{
+								var sel_date = $("#digitalReleaseDate").val();
+								sel_date = sel_date.split('-');
+								sel_date = new Date(sel_date[2], sel_date[1] - 1, sel_date[0]);
+								
+								 var currentDate = new Date();
+								 if (sel_date < currentDate) {
+									setErrorMsg('digitalReleaseDate','Please enter a correct value');
+									return;
+								 }
+							}
+					<?php } ?>
+                   
+                    var $form = $('#frmForm');
+                    var objMasterData = $form.serializeObject();
+                    
+                    $.extend(objMasterData, { MASTER_KEY_ID: "<?php echo $_GET['edit'];?>"});
+                    objMasterData = JSON.stringify(objMasterData);
+                    var objFormData =
+                    {
+                        pAction    : strActionMode,
+                        FORM_DATA: objMasterData
+                    };
+					$('.nf-loader').removeClass('hide');
+					$('#btnSave').addClass('hide');
+                    var objMyPost = AJAX_Post("<?php echo $this->url('newrelease', array('action'=>'releasedatesave'));?>", objFormData);
+                    if (objMyPost.ERR_NO === 0) {
+                        if (objMyPost.DATA.DBStatus === 'OK') {
+                            strActionMode = "EDIT";
+                           mySmallAlert('Save Record', 'Data Saved successfully', 1);
+                            $('.nf-loader').addClass('hide');
+							$('#btnSave').removeClass('hide');
+                        }
+                    }
+                    else {
+                        mySmallAlert('Error...!', 'There was an error', 0);
+                    }
+                }
+            });
+    });
+    
+   
+</script>

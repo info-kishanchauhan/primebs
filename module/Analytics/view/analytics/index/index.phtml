@@ -1,0 +1,516 @@
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css">
+<script src="https://cdn.jsdelivr.net/npm/moment@2.30.1/min/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
+<style>
+  @media (min-width: 564px) {
+    .daterangepicker {
+        width: 750;
+    }
+}
+.panel-heading .help{font-size:22px;color:#0998cd;margin-left:10px;cursor:pointer}
+.dt-toolbar-footer,.dt-toolbar{margin-left:-15px}
+table tr td:nth-child(2){text-align:center}
+.dataTables_info{font-size:18px;padding-bottom:20px}
+.modal table tr td:nth-child(2){text-align:left}
+.bold_number{margin:0px;font-family:"Open Sans",Roboto,Arial,sans-serif;font-weight:600;line-height:24px;letter-spacing:0em;text-decoration:none;color:rgb(31,31,40);font-size:14px}
+.css-iph4ya{position:relative;display:flex;-webkit-box-align:center;align-items:center;-webkit-box-pack:center;justify-content:center;flex-shrink:0;font-family:"Open Sans",Roboto,Aria,sans-serif;font-size:1.25rem;line-height:1;border-radius:4px;overflow:hidden;user-select:none;background-color:rgb(255,245,247);color:rgb(255,63,91);width:22px;height:22px;float:left;margin-right:10px}
+.css-1yls13q.down{user-select:none;width:1em;height:1em;display:inline-block;fill:rgb(255,63,91);flex-shrink:0;font-size:14px;transition:fill 200ms cubic-bezier(0.4,0,0.2,1)}
+.css-v3nhrv{position:relative;display:flex;-webkit-box-align:center;align-items:center;-webkit-box-pack:center;justify-content:center;flex-shrink:0;font-family:"Open Sans",Roboto,Aria,sans-serif;font-size:1.25rem;line-height:1;border-radius:4px;overflow:hidden;user-select:none;background-color:rgb(237,250,242);color:rgb(29,195,95);width:22px;height:22px;float:left;margin-right:10px}
+.css-1yls13q.up{user-select:none;width:1em;height:1em;display:inline-block;fill:rgb(29,195,95);flex-shrink:0;font-size:14px;transition:fill 200ms cubic-bezier(0.4,0,0.2,1)}
+.css-sw5ddh{margin:0px;color:rgb(124,128,140);font-weight:600;line-height:normal;font-size:12px;letter-spacing:0em;text-decoration:none;font-family:system-ui}
+.css-1x5yup0{position:relative;display:flex;-webkit-box-align:center;align-items:center;-webkit-box-pack:center;justify-content:center;flex-shrink:0;font-family:"Open Sans",Roboto,Aria,sans-serif;font-size:1.25rem;line-height:1;border-radius:4px;overflow:hidden;user-select:none;background-color:rgb(246,248,255);color:rgb(145,156,187);width:22px;height:22px}
+.css-1yls13q.null{user-select:none;width:1em;height:1em;display:inline-block;fill:rgb(145,156,187);flex-shrink:0;font-size:14px;transition:fill 200ms cubic-bezier(0.4,0,0.2,1)}
+
+/* —— daterangepicker look (soft glass) —— */
+.daterangepicker{border:1px solid #eef2f7;border-radius:14px;box-shadow:0 12px 30px rgba(15,23,42,.12);font-family:Inter,"Open Sans",Roboto,Arial,sans-serif}
+.daterangepicker .drp-calendar{padding:14px 16px}
+.daterangepicker .calendar-table{border:0}
+.daterangepicker .calendar-table table{border-collapse:separate;border-spacing:6px 8px}
+.daterangepicker td,.daterangepicker th{width:34px;height:34px;line-height:34px;border:0!important;border-radius:8px;color:#334155;font-weight:600}
+.daterangepicker td.available:hover,.daterangepicker th.available:hover{background:#eef4ff;color:#0f172a}
+.daterangepicker td.in-range{background:#eef4ff;color:#0f172a}
+.daterangepicker td.start-date,.daterangepicker td.end-date{background:#3b82f6!important;color:#fff!important}
+.daterangepicker .drp-buttons{border-top:1px solid #eef2f7;padding:10px 12px}
+.daterangepicker .btn{border-radius:10px;font-weight:700;padding:8px 14px}
+.daterangepicker .btn-default{background:#f3f4f6;border:1px solid #e5e7eb;color:#111827}
+.daterangepicker .btn-primary{background:#2563eb;border-color:#2563eb}
+.daterangepicker .ranges{width:180px;border-right:1px solid #eef2f7;padding:10px}
+.daterangepicker .ranges li{border-radius:10px;padding:8px 10px;font-weight:700;color:#475569}
+.daterangepicker .ranges li:hover{background:#eef4ff;color:#0f172a}
+.daterangepicker .ranges li.active{background:#2563eb;color:#fff}
+</style>
+
+<!-- widget grid -->
+<section id="widget-grid" class="page page-ui-tables">
+  <div class="row">
+    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+      <?php include_once("grid.php"); ?>
+      <?php include_once("form.php"); ?>
+    </article>
+  </div>
+</section>
+
+<script type="text/javascript">
+ var allow_access = true;
+
+// ===== DateRange helpers =====
+function setRangeHidden(start, end){
+  var fm = moment(start).startOf('month').format('YYYY-MM-01');
+  var tm = moment(end).startOf('month').format('YYYY-MM-01');
+  $('#from_month').val(fm);
+  $('#to_month').val(tm);
+  if($('#ui_daterange').length){
+    $('#ui_daterange').val(moment(start).format('DD MMM, YYYY') + '  —  ' + moment(end).format('DD MMM, YYYY'));
+  }
+}
+
+// ✅ Always skip 2 months (latest 2 months not available)
+function applyPresetMonths(m){
+  var end   = moment().subtract(2,'months').endOf('month');  // 2-month delay
+  var start = moment(end).subtract(m-1,'months').startOf('month');
+
+  if($('#ui_daterange').length){
+    var drp = $('#ui_daterange').data('daterangepicker');
+    if (drp){ drp.setStartDate(start); drp.setEndDate(end); }
+  }
+  setRangeHidden(start, end);
+}
+
+function setActive(element) {
+  const buttons = document.querySelectorAll('.switch-button');
+  buttons.forEach(btn => btn.classList.remove('active'));
+  element.classList.add('active');
+
+  const label = $('.switch-button.active').text().trim();
+
+  if(label !== 'Custom'){
+    // hide custom input if visible
+    $('#ui_daterange').hide();
+    $('#btnCustom').show();
+
+    if(label === '1M') applyPresetMonths(1);
+    if(label === '2M') applyPresetMonths(2);
+    if(label === '3M') applyPresetMonths(3);
+
+    getTotal();
+    oTable.fnDraw();
+    $('.custom_filter').hide();
+  } else {
+    // 🟣 Custom: hide button & show date input at same place
+    $('#btnCustom').hide();
+    $('#ui_daterange').show().trigger('click');
+  }
+}
+
+$(document).mouseup(function(e) {
+  var container = $(".custom_filter");
+  if (!container.is(e.target) && container.has(e.target).length === 0) {
+    container.hide();
+  }
+});
+
+function getTotal(){
+  var objFormData = {
+    from_month: $('#from_month').val(),
+    to_month  : $('#to_month').val(),
+    search    : $('#search').val(),
+    month     : $('.switch-button.active').html()
+  };
+  var objMyPost = AJAX_Post("<?php echo $this->url('analytics', array('action'=>'getTotal'));?>", objFormData);
+  if (objMyPost.ERR_NO === 0) {
+    if (objMyPost.DATA.DBStatus === 'OK') {
+      $('#tot_creation').html(objMyPost.DATA.tot_creation);
+      $('#tot_view').html(objMyPost.DATA.tot_view);
+      $('#tot_revenue').html(objMyPost.DATA.tot_revenue);
+      $('#tot_stream').html(objMyPost.DATA.tot_stream);
+    }
+  } else {
+    mySmallAlert('Error...!', 'There was an error', 0);
+  }
+}
+
+$(document).ready(function () {
+  acl_PRINT = 0;
+
+  (function initRange(){
+    if(!$('#ui_daterange').length){ return; }
+
+    // Default = show last available month (2-month delay)
+    var defaultEnd   = moment().subtract(2,'months').endOf('month');      
+    var defaultStart = moment(defaultEnd).subtract(1,'months').startOf('month');
+
+    $('#ui_daterange').daterangepicker({
+      startDate: defaultStart,
+      endDate  : defaultEnd,
+      autoUpdateInput: false,
+      opens: 'left',
+      alwaysShowCalendars: true,
+      showDropdowns: true,
+      linkedCalendars: false,
+      locale: { format: 'DD MMM, YYYY', applyLabel:'Set Date', cancelLabel:'Cancel' },
+      ranges: {
+        'Last 30 days'  : [moment().subtract(3,'months').startOf('month'), moment().subtract(2,'months').endOf('month')],
+        'Last 3 months' : [moment().subtract(4,'months').startOf('month'), moment().subtract(2,'months').endOf('month')],
+        'All time'      : [moment('2018-01-01','YYYY-MM-DD'), moment().subtract(2,'months').endOf('month')]
+      }
+    }, function(start, end){ setRangeHidden(start, end); });
+
+    setRangeHidden(defaultStart, defaultEnd);
+
+    $('#ui_daterange').on('apply.daterangepicker', function(ev, picker){
+      setRangeHidden(picker.startDate, picker.endDate);
+      getTotal();
+      if (window.oTable && oTable.fnDraw) oTable.fnDraw();
+    });
+
+    // 🟡 Cancel = hide date input and bring back Custom button
+    $('#ui_daterange').on('cancel.daterangepicker', function(){
+      $('#ui_daterange').hide();
+      $('#btnCustom').show().addClass('active');
+    });
+  })();
+
+
+$('#sel_month').datetimepicker({
+    format: "MMMM YYYY"
+});
+
+    // ======== rest of your existing handlers ========
+    $('#btnSaveStatus').click(function(e){
+      e.stopPropagation();
+      var $form = $('#statusform');
+      var oMyForm = new FormData($form.get(0));
+      oMyForm.append("sel_type", $('#sel_type').val());
+      oMyForm.append("sel_month", $('#sel_month').val());
+      var deferred = $.ajax({
+        url: "<?php echo $this->url('analytics', array('action'=>'saveImport'));?>",
+        type: "POST", processData:false, contentType:false, dataType:'json', data:oMyForm
+      });
+      $('.nf-loader').removeClass('hide');
+      $('#btnSaveStatus').prop('disabled',true);
+      deferred.done(function (result) {
+        $('.nf-loader').addClass('hide');
+        $('#btnSaveStatus').prop('disabled',false);
+        if(result.status == 'OK'){
+          $('#sel_type').select2('val','0'); $('#sel_month').val('');
+          clearForm("statusform");
+          mySmallAlert('Save Record','Saved successfully',1);
+          $('#processmodal').modal('hide');
+          oTable.fnDraw();
+        }else{
+          mySmallAlert('Save Record','There was an error',0);
+        }
+      }).fail(function(){
+        $('.nf-loader').addClass('hide');
+        $('#btnSaveStatus').prop('disabled',false);
+        mySmallAlert('Save Record','There was an error',0);
+      });
+    });
+
+    $('#importpopup').click(function(){
+      $('#importmodal').modal({backdrop:'static', keyboard:false});
+      $("#catelogfile").val('');
+    });
+
+    $('.sort').click(function(){
+      $('.gicon').html('<svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTableSortLabel-icon MuiTableSortLabel-iconDirectionDesc css-jsf2o5" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="UnfoldMoreIcon"><path d="M12 5.83 15.17 9l1.41-1.41L12 3 7.41 7.59 8.83 9zm0 12.34L8.83 15l-1.41 1.41L12 21l4.59-4.59L15.17 15z"></path></svg>');
+      $(this).find('.gicon').html('<svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTableSortLabel-icon MuiTableSortLabel-iconDirectionDesc css-jsf2o5 active" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="SouthIcon"><path d="m19 15-1.41-1.41L13 18.17V2h-2v16.17l-4.59-4.59L5 15l7 7z"></path></svg>');
+    });
+
+    $('#search').on('keydown', function (event) {
+      if (event.key === 'Enter') { getTotal(); oTable.fnDraw(); }
+    });
+
+    $('#btnSearch').click(function(){
+      if($('#from_month').val() == '' || $('#to_month').val() == ''){
+        mySmallAlert('Error','Please select from and to month',0);
+        return;
+      }
+      getTotal(); oTable.fnDraw();
+    });
+
+    // OLD: datetimepicker (removed to avoid conflict)
+    // $('#sel_month,#from_month,#to_month').datetimepicker({ format: "MMMM YYYY" });
+
+    getTotal();
+
+    $("#btnImport").click(function (e) {
+      if($('#sel_type').val() == '0'){ mySmallAlert('Error','Please select type',0); return; }
+      if($('#sel_month').val() == ''){ mySmallAlert('Error','Please select month year',0); return; }
+      if($('#catelogfile').val() == ''){ mySmallAlert('Error','Please select the file',0); return; }
+      $.SmartMessageBox({
+        title:"Alert!", content:"Do you really want to import this ?", buttons:'[Yes][No]'
+      }, function (ButtonPressed) {
+        if (ButtonPressed === "Yes") {
+          $('.nf-loader').removeClass('hide');
+          $('#btnImport').prop('disabled',true);
+          e.stopPropagation();
+          $("#imported_file_name").val('');
+          var this1 = document.getElementById("catelogfile");
+          if (this1.files && this1.files[0]) {
+            var $form = $('#excelform');
+            var oMyForm = new FormData($form.get(0));
+            file = document.getElementById("catelogfile").files[0];
+            if (file && file.size > 0) { oMyForm.append("catelogfile", file); }
+            else { oMyForm.append("catelogfile", 0); }
+            oMyForm.append("sel_type", $('#sel_type').val());
+            oMyForm.append("sel_month", $('#sel_month').val());
+
+            var deferred = $.ajax({
+              url: "<?php echo $this->url('analytics', array('action'=>'import'));?>",
+              type:"POST", processData:false, contentType:false, dataType:'json', data:oMyForm
+            });
+
+            $("#customfileupload").removeClass('hide'); $("#btnSave").addClass('hide');
+
+            deferred.done(function (result) {
+              $('.nf-loader').addClass('hide'); $('#btnImport').prop('disabled',false);
+              $("#customfileupload").addClass('hide'); $("#catelogfile").val('');
+              if(result.status == 'NOT'){ mySmallAlert('Save Record','Allowed only csv file',0); }
+              if(result.status == 'EXIST'){ mySmallAlert('Save Record','Selected month report already imported.',0); }
+              if(result.status == 'OK'){
+                oTable.fnDraw(); $('#importmodal').modal('hide'); $("#catelogfile").val('');
+                $('#importlist').html(result.IMPORT_LIST); $('#ignorelist').html(result.IGNORE_LIST);
+                $("#imported_file_name").val(result.file_name);
+                $('#processmodal').modal({backdrop:'static', keyboard:false});
+                $('#importfilehidden').val(result.file_name);
+                $('#summary_body').html(result.summary);
+              }
+              if(result.status == 'NOT_OK'){ mySmallAlert('Save Record','Imported not successfully',0); }
+            }).fail(function () {
+              $('.nf-loader').addClass('hide'); $('#btnImport').prop('disabled',false);
+              alert("There was an error");
+            });
+          }
+          return false;
+        }
+      });
+    });
+  });
+
+  var pagefunction = function () {
+    var responsiveHelper_dt_basic, responsiveHelper_datatable_fixed_column, responsiveHelper_datatable_col_reorder, responsiveHelper_datatable_tabletools;
+    var breakpointDefinition = { tablet:1024, phone:480 };
+    var deleteact=acl_DELETE;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const page = parseInt(urlParams.get('page')) || 1;
+
+    oTable = $("#tblMasterList").dataTable({
+      "bAutoWidth": false,
+      "bLengthChange": true,
+      "sDom": "<'dt-toolbar'<'col-xs-12 col-sm-6 hidden-xs'i><'col-sm-6 col-xs-12 hidden-xs'<'toolbar'>>r>"+"t"+"l<'dt-toolbar-footer'<><'col-xs-12 col-sm-6'p>>",
+      "bProcessing": true,
+      "bServerSide": true,
+      "order" :  [[ 7, 'desc' ]],
+      "lengthMenu": [[10,25,50,100,-1],[10,25,50,100,"All"]],
+      "autoWidth" : true,
+      "displayStart": (page - 1) * 50,
+      "pageLength": 50,
+      "preDrawCallback" : function() {
+        if (!responsiveHelper_dt_basic) {
+          responsiveHelper_dt_basic = new ResponsiveDatatablesHelper($('#tblMasterList'), breakpointDefinition);
+        }
+      },
+      "rowCallback" : function(nRow) { responsiveHelper_dt_basic.createExpandIcon(nRow); },
+      "drawCallback" : function() { responsiveHelper_dt_basic.respond(); },
+      "fnServerParams": function (aoData) {
+        aoData.push(
+          { "name": "id", "value": "" },
+          { "name": "from_month", "value": $('#from_month').val() },
+          { "name": "to_month", "value": $('#to_month').val() },
+          { "name": "search", "value": $('#search').val() },
+          { "name": "month", "value": $('.switch-button.active').html() }
+        );
+      },
+      "sAjaxSource": "<?php echo $this->url('analytics', array('action'=>'list'));?>",
+      "aoColumns": [
+        { "bSearchable": false, "bVisible": false },
+        { "bSearchable": false, "bSortable": false },
+        { "bSearchable": false, "bSortable": false },
+        { "bSearchable": false, "bSortable": false },
+        null, null,
+        { "bSearchable": false, "bSortable": false },
+        null, null
+      ],
+      "columnDefs": [{ className: "hidden", "targets": [ 0 ] }]
+    });
+
+    $('.dataTables_filter input').attr("placeholder","Search");
+
+    var strUrl = "<?php echo $this->url('analytics', array('action'=>'getrec'));?>";
+
+    $('#delete_release').click(function(){
+      var objFormData = { pAction:'DELETE', KEY_ID: $('#delete_release').attr('release_id') };
+      var objMyPost = AJAX_Post("<?php echo $this->url('releases', array('action'=>'delete'));?>", objFormData);
+      if (objMyPost.ERR_NO === 0) {
+        if (objMyPost.DATA.DBStatus === 'OK') {
+          oTable.fnDraw(); $('#warningConfirmationPopin').modal('hide');
+          mySmallAlert('Success','Deleted successfully',1);
+        } else { mySmallAlert('Error...!','There was an error',0); }
+      }
+    });
+
+    $('#tblMasterList').on('page.dt', function () {
+      const tableApi = $('#tblMasterList').DataTable();
+      const info = tableApi.page.info();
+      const newPage = info.page + 1;
+      const url = new URL(window.location.href);
+      url.searchParams.set('page', newPage);
+      window.history.replaceState(null,'',url);
+    });
+
+    oTable.delegate('a.delete','click', function (e) {
+      e.preventDefault();
+      iActiveID = $(this).attr("row-id");
+      var r_title= $(this).attr("row-title");
+      $('#warningConfirmationPopin').modal('show');
+      $('#delete_release_title').html(r_title);
+      $('.chkConfirm').prop('checked',false);
+      $('#delete_release').attr('style','display:none').attr('release_id',iActiveID);
+    });
+
+    $('.chkConfirm').click(function(){
+      if($(this).prop('checked') == true){ $('#delete_release').attr('style','display:block'); }
+      else { $('#delete_release').attr('style','display:none'); }
+    });
+  };
+</script>
+
+<script>
+  // load Page related plugins
+  loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatables/jquery.dataTables.min.js", function () {
+    loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatables/dataTables.colVis.min.js", function () {
+      loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatables/dataTables.tableTools.min.js", function () {
+        loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatables/dataTables.bootstrap.min.js", function () {
+          loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatable-responsive/datatables.responsive.min.js", pagefunction)
+        });
+      });
+    });
+  });
+
+  // ------------------- populate edit entries-----------------------------------------------------------------------------
+  function cPopulateEditEntries(iID,strURL) {
+    iActiveID = iID;
+    var arrForms=[];
+    var strElementType;
+    var objFormData = { pAction:'GETREC', KEY_ID:iActiveID };
+    var objMyPost = AJAX_Post(strURL, objFormData);
+    if (objMyPost.ERR_NO === 0) {
+      if (objMyPost.DATA.DBStatus === 'OK') {
+        visibleControl('widForm', true);
+        visibleControl('widGrid', false);
+        strActionMode = 'EDIT';
+        arrForms=objMyPost.DATA.data[0];
+        $.each(arrForms, function(key, value){
+          if ($("#"+key).length > 0) {
+            strElementType= $("#"+key).attr("type");
+            if(strElementType == "hidden"){ $("#"+key).val(value); $("#spanRefNo").html(value); }
+            else if(strElementType == "text"){ $("#"+key).val(value); }
+            else if($("#"+key).attr("name") == "descriptions"){ $("textarea#"+key).text(value); }
+            else if(strElementType == "select"){ $("#"+key).select2("val",value); }
+            else if(strElementType == "multiselect"){
+              var arrValues = $.parseJSON(stripslashes(value));
+              $("#"+key).select2("val", arrValues);
+            }
+          }
+        });
+      }
+    } else {
+      mySmallAlert('Error...!','There was an error',0);
+    }
+  }
+</script>
+
+<div id="importmodal" class="modal fade bs-example-modal-lg">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" style="max-height:500px;overflow:auto;">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Import Analytics</h4>
+      </div>
+      <div class="modal-body customsrolling" style="padding-bottom: 40px;min-height:260px">
+        <div class="row">
+          <div class="col-sm-3">
+            <label class="col-md-12"><strong class="txt-color-blue">Select Type</strong></label>
+            <label class="col-md-12">
+              <select type="select" name="sel_type" id="sel_type" class="form-control">
+                <option value="0">Select Type</option>
+                <option value="believe">Backstage</option>
+              </select>
+            </label>
+          </div>
+          <div class="col-sm-4">
+            <label class="col-md-12"><strong class="txt-color-blue">Select Month Year</strong></label>
+            <label class="col-md-12">
+              <input type="text" id="sel_month" name="sel_month" class="form-control">
+              <small></small>
+            </label>
+          </div>
+          <div class="col-sm-5 pull-left catalog-filter-import">
+            <form action="#" method="post" id="excelform">
+              <div class="row">
+                <div class="col-md-9">
+                  <label class="col-md-12"><strong class="txt-color-blue">Select File</strong></label>
+                  <label class="col-md-12">
+                    <input
+  type="file"
+  accept=".csv,text/csv,application/vnd.ms-excel"
+  name="catelogfile"
+  class="form-control"
+  id="catelogfile">
+
+                    <div class="progress hide" style="height:21px;margin-top:10px;" id="customfileupload">
+                      <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar"
+                        aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%;line-height:21px;color:#FFFFFF;font-size:20px">
+                        File Importing
+                      </div>
+                    </div>
+                  </label>
+                </div>
+                <div class="col-md-3" style="margin-top: 20px;">
+                  <a href="javascript:;" class="btn btn-primary pull-left btn-import" id="btnImport">Import</a><br>
+                  <img style="float:left;margin-top:10px;" src="<?php echo $this->basePath(); ?>/public/img/loader.gif" class="hide nf-loader">
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer" style="display: block;">
+        <button class="btn btn-default" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="processmodal" class="modal fade bs-example-modal-lg">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" style="">
+      <div class="modal-header">
+        <h4 class="modal-title">Royalty Amount Info</h4>
+      </div>
+      <div class="modal-body customsrolling" style="max-height:450px;overflow:auto;">
+        <div class="row">
+          <div class="col-sm-12 pull-left catalog-filter-import">
+            <form action="#" method="post" id="statusform">
+              <input type="hidden" name="importfilehidden" id="importfilehidden">
+              <table class="table dataTable no-footer" width="100%">
+                <thead>
+                  <tr><td>Label Name</td><td>Company Name</td><td>Month Year</td><td>Royalty Amount</td><td width="130px">Payment Status</td></tr>
+                </thead>
+                <tbody id="summary_body"></tbody>
+              </table>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer" style="display: block;">
+        <button class="btn btn-default" data-dismiss="modal">Cancel</button>
+        <button href="javascript:;" class="btn btn-primary  pull-right" id="btnSaveStatus">Save</button>
+        <img style="float:left" src="<?php echo $this->basePath(); ?>/public/img/loader.gif" class="hide nf-loader">
+      </div>
+    </div>
+  </div>
+</div>

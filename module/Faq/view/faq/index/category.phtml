@@ -1,0 +1,651 @@
+<?php $this->headTitle("Frequently Asked Questions | Prime Digital Arena"); ?>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="<?php echo $this->basePath(); ?>/public/v1.6.1/js/plugin/ckeditor/ckeditor.js"></script>
+<?php
+$userType = isset($_SESSION['user_type']) ? strtolower(trim($_SESSION['user_type'])) : '';
+$isAdmin = (isset($_SESSION['STAFFUSER']) && $_SESSION['STAFFUSER'] == '1') || (isset($_SESSION['user_id']) && $_SESSION['user_id'] == '0');
+
+$allowedVisibilities = ['all'];
+if ($userType === 'enterprise') {
+    $allowedVisibilities[] = 'enterprise';
+}
+if ($isAdmin) {
+    $allowedVisibilities[] = 'admin';
+}
+
+$categories = array_filter($categories, function($cat) use ($allowedVisibilities) {
+    return in_array(strtolower($cat['visibility']), $allowedVisibilities);
+});
+?>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f4f5fa;
+  margin: 0;
+  padding: 0;
+}
+/* ===== HEADER WITH LOGO + SEARCH ===== */
+.faq-top-header {
+  background: linear-gradient(2deg, #5b46b3, #9f1ac6);
+  padding: 40px 20px 50px;
+  color: white;
+}
+
+.faq-header-inner {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.faq-header-top {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.faq-logo-img {
+  height: 45px;
+  display: block;
+}
+
+.share-icon {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  color: #fff;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.share-icon svg {
+  width: 24px;
+  height: 24px;
+  fill: white;
+  transition: opacity 0.2s;
+}
+
+.share-icon:hover svg {
+  opacity: 0.75;
+}
+
+.faq-search-wrap {
+  width: 100%;
+  max-width: 800px;
+  position: relative;
+  margin: 0 auto; /* ✅ This centers it horizontally */
+}
+
+
+.faq-search {
+  width: 100%;
+  padding: 18px 24px 18px 55px;
+  border: none;
+  border-radius: 14px;
+  font-size: 17px;
+  font-weight: 400;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  backdrop-filter: blur(8px);
+  outline: none;
+  transition: all 0.3s ease;
+  height: 58px;
+}
+
+.faq-search:focus,
+.faq-search.active {
+  background: #ffffff;
+  color: #000;
+}
+
+.faq-search:focus::placeholder,
+.faq-search.active::placeholder {
+  color: #999;
+}
+
+.faq-search::placeholder {
+  color: #e4e4e4;
+}
+
+.search-icon {
+  position: absolute;
+  top: 50%;
+  left: 16px;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: #e0e0e0;
+  transition: color 0.3s ease;
+  pointer-events: none;
+}
+
+.faq-search:focus ~ .search-icon,
+.faq-search.active ~ .search-icon {
+  color: #4b5563;
+}
+
+.faq-search:focus + .faq-search-wrap::before,
+.faq-search.active + .faq-search-wrap::before {
+  color: #4b5563;
+}
+
+/* ===== ARTICLE BOX ===== */
+.faq-article-container {
+  max-width: 760px;
+  
+  background: white;
+  margin: 30px auto;
+  border-radius: 20px;
+  font-family: var(--font-family-secondary);
+}
+
+/* BREADCRUMB INSIDE BOX */
+.faq-breadcrumb-inline {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 10px;
+}
+
+.faq-breadcrumb-inline a {
+  color: #374151;
+  text-decoration: none;
+}
+
+.faq-breadcrumb-inline a:hover {
+  text-decoration: underline;
+}
+
+/* TITLE + DATE */
+.faq-article-container h1 {
+  font-weight: 700;
+  font-size: 28px;
+  color: #181b1e;
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+.updated-date {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 30px;
+  text-align: left;
+}
+
+.question-wrapper {
+  max-width: 820px;
+  margin: 30px auto 60px;
+}
+.faq-form, .question-box {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgb(108 108 108 / 22%);
+  margin-bottom: 30px;
+}
+.faq-form input, .faq-form textarea {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 10px 12px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+.faq-form button {
+  background: #7d2491;
+  color: white;
+  padding: 10px 16px;
+  font-size: 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.question-item {
+  padding: 16px 0;
+  border-bottom: 1px solid #f1f1f1;
+}
+.question-text {
+  font-size: 15px;
+  font-weight: 500;
+  color: #333;
+  cursor: pointer;
+  padding: 10px 14px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+.question-text:hover {
+  background-color: #f3f0ff;
+  box-shadow: 0 2px 8px rgba(125, 36, 145, 0.1);
+  transform: translateY(-1px);
+}
+.admin-controls {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.admin-controls form {
+  display: inline;
+}
+.admin-controls button {
+  padding: 6px 12px;
+  font-size: 13px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.edit-btn { background: #2980b9; color: white; }
+.delete-btn { background: #e74c3c; color: white; }
+.save-btn { background: #2ecc71; color: white; }
+.cancel-btn { background: #999; color: white; }
+.edit-fields { display: none; margin-top: 10px; }
+.edit-fields input, .edit-fields textarea,#addModal input{
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+#noResultsMsg {
+  display: none;
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+  
+    #bs-main-content-container {
+    padding-top: 0px; !important
+    padding-bottom: 30px !important
+}
+  
+  .container-fluid {
+    padding-right: 0px;
+    padding-left: 0px;
+    margin-right: auto;
+    margin-left: auto;
+}
+.help-footer {
+  background: #ffffff;
+  border-top: 1px solid #e5e7eb;
+  margin-top: 60px;
+  padding: 30px 20px;
+  font-family: 'Inter', sans-serif;
+  text-align: center;
+  font-size: 14px;
+  color: #777;
+}
+.help-footer a {
+  color: #7d2491;
+  text-decoration: none;
+  margin: 0 8px;
+  font-weight: 500;
+}
+.help-footer a:hover {
+  text-decoration: underline;
+}
+  .question-box {
+  border: 1px solid #e6e6f0;
+  border-left: 6px solid #b388ff;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+}
+  .question-text::after {
+  content: "↗";
+  float: right;
+  color: #b388ff;
+  transition: transform 0.2s;
+}
+
+.question-text:hover::after {
+  transform: translateX(4px);
+}
+.question-wrapper {
+  margin-bottom: 100px;
+}
+  
+.share-icon {
+  position: relative; /* Ensure dropdown is positioned absolutely to this */
+  z-index: 1000;
+}
+
+.share-dropdown {
+  display: none;
+  position: absolute;
+  top: 36px;
+  right: 0;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  min-width: 160px;
+  z-index: 1001; /* Ensure it's above everything */
+  transition: all 0.2s ease;
+}
+
+.share-dropdown a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  font-size: 14px;
+  color: #333;
+  text-decoration: none;
+  border-bottom: 1px solid #f2f2f2;
+}
+
+.share-dropdown a:last-child {
+  border-bottom: none;
+}
+
+.share-dropdown a:hover {
+  background: #f9f9f9;
+}
+
+.copy-toast {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: #1f2937;
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease, transform 0.3s ease;
+  transform: translateY(20px);
+  z-index: 10000;
+}
+
+.copy-toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.share-dropdown {
+  display: none;
+}
+
+.share-dropdown.open {
+  display: block;
+}
+
+#noResultsMsg {
+  display: none;
+  text-align: center;
+  font-size: 15px;
+  padding: 40px 20px;
+  color: #666;
+  background: #fdfdfd;
+  border-radius: 12px;
+}
+
+</style>
+<!-- HEADER (with logo image & search bar) -->
+<div class="faq-top-header">
+  <div class="faq-header-inner">
+  <div class="faq-header-top">
+    <img src="https://www.primedigitalarena.com/wp-content/themes/PrimeDigitalArena/assets/images/PDA.png" alt="Prime Logo" class="faq-logo-img" />
+
+    <div class="share-icon" id="shareToggle" style="position: relative;" title="Share this page">
+  <i class="fas fa-share-alt" style="font-size: 20px; color: #fff;"></i>
+
+
+  <div id="shareMenu" class="share-dropdown">
+    <a href="#" onclick="copyToClipboard(); return false;">
+      <i class="fas fa-copy" style="width: 16px;"></i> <span>Copy Link</span>
+    </a>
+    <a href="#" id="whatsappShare" target="_blank">
+      <i class="fab fa-whatsapp" style="color: #25D366; width: 16px;"></i> <span>WhatsApp</span>
+    </a>
+    <a href="#" id="emailShare">
+      <i class="fas fa-envelope" style="color: #6b7280; width: 16px;"></i> <span>Email</span>
+    </a>
+  </div>
+</div>
+
+<div id="toast" class="copy-toast">🔗 Link copied!</div>
+
+
+  </div>
+
+  <div class="faq-search-wrap">
+    <input type="text" id="faqSearchInput" class="faq-search" placeholder="Search for articles..." onkeydown="handleFAQSearch(event)" onfocus="this.classList.add('active')" onblur="this.classList.remove('active')">
+    <span class="search-icon">🔍</span>
+  </div>
+</div>
+
+</div>
+<!-- ARTICLE CONTAINER WITH BREADCRUMB -->
+<div class="faq-article-container">
+
+  <!-- Breadcrumb just above title -->
+  <div class="faq-breadcrumb-inline">
+    <a href="/faq">All Collections</a>
+    &nbsp;&rsaquo;&nbsp;
+    <a href="/faq/category/<?php echo $faq['category']; ?>">
+      <?php echo $this->categoryName;; ?>
+    </a>
+  </div>
+  <div class="faq-topbar">
+<br>
+  <h1><?php echo $this->categoryName; ?></h1>
+  <p style="font-size: 14px; font-weight: 500; color: #131313; margin-top: 6px; line-height: 1.6;">
+  Answers to questions we're asked the most often.
+</p>
+<br>
+    <p style="margin-top: -10px; font-size: 14px; color: #5a5a5a;">
+  <strong><?php echo count($faqs); ?></strong> articles
+</p>
+
+</div>
+
+
+<?php if (!empty($accessDenied)): ?>
+  <div style="padding: 30px; text-align: center; color: #a00;">
+    🚫 You do not have permission to view this category.
+  </div>
+<?php else: ?>
+
+<div class="question-wrapper">
+  <?php if ($_SESSION['user_id'] == '0' || $_SESSION['STAFFUSER'] == '1'): ?>
+  <button onclick="document.getElementById('addModal').style.display='block'" style="margin-bottom: 20px; padding: 6px 12px; border: none; background: #ccc; border-radius: 6px; cursor: pointer;">+ Add Question</button>
+
+  <div id="addModal" onclick="closeModal(event)" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.4); z-index:999;">
+    <div style="max-width: 500px; background: white; margin: 100px auto; padding: 20px; border-radius: 12px; position: relative;" onclick="event.stopPropagation();">
+      <form method="post" action="/faq/add" style="margin-top: 30px;">
+        <input type="hidden" name="category_id" value="<?= $categoryId ?>">
+
+        <div style="margin-bottom: 10px;">
+          <label><strong>FAQ Question Title</strong></label><br>
+          <input type="text" name="title" required>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <label><strong>Answer</strong></label><br>
+          <textarea name="answer" id="add_answer" rows="5" required></textarea>
+        </div>
+
+        <div style="display: flex; gap: 10px; justify-content: flex-start; margin-top: 10px;">
+          <button type="submit" style="background-color: #7d2491; color: white; padding: 10px 18px; border: none; border-radius: 6px;">Save FAQ</button>
+          <button type="button" onclick="document.getElementById('addModal').style.display='none';" style="background-color: #ccc; color: #333; padding: 10px 18px; border: none; border-radius: 6px;">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <?php endif; ?>
+
+  <?php if (count($faqs) > 0): ?>
+  
+    <div class="question-box" id="faqList">
+      <?php foreach ($faqs as $row): ?>
+        <div class="question-item" id="faq_<?php echo $row['id']; ?>">
+          <div onclick="window.location.href='/faq/article/<?php echo $row['id']; ?>'" class="question-text"><?php echo $row['question']; ?></div>
+
+          <?php if ($_SESSION['user_id'] == '0' || $_SESSION['STAFFUSER'] == '1'): ?>
+          <div class="admin-controls">
+            <form method="post" action="/faq/delete" onsubmit="event.stopPropagation(); return confirm('Delete this question?');">
+              <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
+              <input type="hidden" name="category" value="<?php echo $this->categoryId; ?>">
+              <button type="submit" class="delete-btn">Delete</button>
+            </form>
+            <button type="button" class="edit-btn" onclick="toggleEdit(<?php echo $row['id']; ?>)">Edit</button>
+          </div>
+
+          <div class="edit-fields" id="edit_<?php echo $row['id']; ?>">
+            <form method="post" action="/faq/save">
+              <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
+
+              <div style="margin-bottom: 10px;">
+                <label><strong>FAQ Title</strong></label><br>
+                <input type="text" name="question" value="<?php echo htmlspecialchars($row['question']); ?>" required>
+              </div>
+
+              <div style="margin-bottom: 10px;">
+                <label><strong>Answer</strong></label><br>
+                <textarea name="answer" id="edit_answer_<?php echo $row['id']; ?>" rows="5" required><?php echo htmlspecialchars($row['answer']); ?></textarea>
+              </div>
+
+              <button type="submit" class="save-btn">Save</button>
+              <button type="button" class="cancel-btn" onclick="cancelEdit(<?php echo $row['id']; ?>)">Cancel</button>
+            </form>
+          </div>
+          <?php endif; ?>
+        </div>
+      <?php endforeach; ?>
+    
+
+    <div id="noResultsMsg">No matching questions found.</div>
+  <?php else: ?>
+    <div class="empty-box">No questions found for this category.</div>
+  <?php endif; ?>
+</div>
+
+<?php endif; ?>
+<div class="help-footer">
+  Prime Digital Arena © <?php echo date('Y'); ?>. All rights reserved.
+  &nbsp;|&nbsp;
+  <a href="https://primedigitalarena.com/privacy" target="_blank">Privacy</a>
+  |
+  <a href="https://primedigitalarena.com/Terms" target="_blank">Terms</a>
+</div>
+<script>
+let openEditId = null;
+
+function toggleEdit(id) {
+  if (openEditId && openEditId !== id) cancelEdit(openEditId);
+  const box = document.getElementById('edit_' + id);
+  box.style.display = 'block';
+  openEditId = id;
+
+  const editorId = 'edit_answer_' + id;
+  if (!CKEDITOR.instances[editorId]) {
+    CKEDITOR.replace(editorId, {
+      uiColor: '#425D8E',
+      toolbarGroups: [
+        { name: "basicstyles", groups: ["basicstyles", "cleanup"] },
+        { name: "paragraph", groups: ["align"] },
+        { name: 'insert', groups: ['Table', 'HorizontalRule', 'Iframe'] },
+        { name: 'styles' },
+        { name: 'links' },
+        { name: 'colors' }
+      ],
+      removeButtons: 'Image',
+      height: 200
+    });
+  }
+}
+
+function cancelEdit(id) {
+  const box = document.getElementById('edit_' + id);
+  if (box) box.style.display = 'none';
+  openEditId = null;
+
+  const editorId = 'edit_answer_' + id;
+  if (CKEDITOR.instances[editorId]) {
+    CKEDITOR.instances[editorId].destroy(true);
+  }
+}
+
+function closeModal(event) {
+  if (event.target.id === "addModal") {
+    document.getElementById('addModal').style.display = 'none';
+  }
+}
+
+CKEDITOR.replace('add_answer', {
+  uiColor: '#425D8E',
+  toolbarGroups: [
+    { name: "basicstyles", groups: ["basicstyles", "cleanup"] },
+    { name: "paragraph", groups: ["align"] },
+    { name: 'insert', groups: ['Table', 'HorizontalRule', 'Iframe'] },
+    { name: 'styles' },
+    { name: 'links' },
+    { name: 'colors' }
+  ],
+  removeButtons: 'Image',
+  height: 200
+});
+
+// FAQ Search
+const searchInput = document.getElementById('faqSearchInput');
+
+if (searchInput && document.querySelector('.question-item')) {
+  searchInput.addEventListener('input', function () {
+    const query = this.value.toLowerCase();
+    let anyVisible = false;
+
+    document.querySelectorAll('.question-item').forEach(item => {
+      const text = item.querySelector('.question-text').textContent.toLowerCase();
+      if (text.includes(query)) {
+        item.style.display = '';
+        anyVisible = true;
+      } else {
+        item.style.display = 'none';
+      }
+    });
+
+    const noResultBox = document.getElementById('noResultsMsg');
+    if (noResultBox) {
+      noResultBox.style.display = anyVisible ? 'none' : 'block';
+    }
+  });
+}
+// Toggle dropdown
+document.getElementById("shareToggle").addEventListener("click", function (e) {
+  e.stopPropagation();
+  const menu = document.getElementById("shareMenu");
+  menu.classList.toggle("open");
+});
+
+
+document.addEventListener("click", function (e) {
+  const toggle = document.getElementById("shareToggle");
+  const menu = document.getElementById("shareMenu");
+  if (!toggle.contains(e.target)) {
+    menu.classList.remove("open");
+  }
+});
+
+
+// Setup share URLs
+const pageURL = window.location.href;
+document.getElementById("whatsappShare").href = `https://wa.me/?text=${encodeURIComponent(pageURL)}`;
+document.getElementById("emailShare").href = `mailto:?subject=Check this out&body=${encodeURIComponent(pageURL)}`;
+
+// Copy link + show toast
+function copyToClipboard() {
+  navigator.clipboard.writeText(pageURL).then(() => {
+    const toast = document.getElementById("toast");
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 2000);
+  });
+}
+
+
+</script>

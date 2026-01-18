@@ -1,0 +1,692 @@
+
+<?php $this->headTitle('Admin | Users & Agreements | Prime Backstage'); ?>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  .pill.status-review {
+  background: #fff7ed;
+  color: #b45309;
+  border: 1px solid #fbbf24;
+}
+
+  :root{
+    --ink:#0f172a; --ink-2:#334155; --muted:#64748b; --line:#e2e8f0; --bg:#f6f7fb;
+    --card:#ffffff; --accent:#ff6a1a; --pill:#eef2ff; --pill-ink:#4f46e5; --shadow:0 6px 24px rgba(2,6,23,.06); --radius:14px;
+  }
+  *{box-sizing:border-box}
+  body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);}
+  a{text-decoration:none;color:inherit}
+
+  .page{display:flex;gap:22px}
+  .sidebar{width:220px;padding:18px 0 18px 12px}
+  .sidebar .nav{display:grid;gap:8px}
+  .nav .item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;color:var(--ink-2)}
+  .nav .item.active{background:#f1f5f9;font-weight:600}
+
+  .content{flex:1;padding:24px}
+  .topbar{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;gap:12px;}
+  .tabs{display:flex;gap:8px;align-items:center;}
+  .tab{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:12px;color:var(--ink-2);
+    font-weight:600;border:1px solid var(--line);background:#fff;user-select:none}
+  .tab.active{background:#f8fafc}
+  .tab .dot{width:8px;height:8px;border-radius:50%;background:#cbd5e1;}
+  .spacer{flex:1}
+  .toolbar{display:flex;align-items:center;gap:10px;}
+  .avatar{display:flex;align-items:center;gap:8px;padding:4px 8px;border:1px solid var(--line);border-radius:999px}
+  .avatar span{font-weight:600}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);}
+  .card-head{display:flex;align-items:center;justify-content:space-between;padding:18px;border-bottom:1px solid var(--line);}
+  .card-title{font-size:20px;font-weight:700;display:flex;align-items:center;gap:10px}
+  .badge{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;border:1px solid #ffe4b5;background:#fff7ed;color:#9a3412;font-size:12px;font-weight:700}
+
+  .actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 12px;font-weight:600;cursor:pointer}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .btn[disabled]{opacity:.6;pointer-events:none}
+
+  .filters{display:flex;gap:8px;flex-wrap:wrap;padding:12px 18px}
+  .input, .select{
+    height:38px;border:1px solid var(--line);border-radius:999px;padding:0 12px;background:#fff;display:flex;align-items:center;gap:8px;color:var(--ink-2);
+  }
+  .input{background:#f8fafc;border-color:#e5e7eb}
+  .input input{border:0;outline:0;height:100%;font-family:inherit;width:260px;background:transparent}
+  .select select{border:0;background:transparent;outline:0;font-family:inherit}
+
+  .stats{display:flex;gap:10px;flex-wrap:wrap;padding:0 18px 12px 18px}
+  .stat{display:flex;align-items:center;gap:8px;padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:#fff;font-weight:700;color:#334155;font-size:12px;cursor:pointer}
+  .stat.active{outline:2px solid #c7d2fe}
+
+  .table-wrap{padding:0 18px 14px 18px; overflow:visible;}
+  table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--line);border-radius:12px;overflow:visible}
+  thead th{background:#fbfdff;text-align:left;font-size:12px;color:#64748b;font-weight:700;padding:12px;border-bottom:1px solid var(--line);white-space:nowrap}
+  tbody td{padding:14px 12px;border-bottom:1px solid #f3f4f6;vertical-align:middle;font-size:13px;color:#334155}
+  tbody tr:hover{background:#fafafa}
+  .name{font-weight:800;color:#0f172a;cursor:pointer}
+  .sub{display:block;color:#94a3b8;font-weight:600;font-size:12px;margin-top:2px}
+  .pill{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:#eef2ff;color:#4f46e5;font-weight:700;font-size:12px;border:1px solid #e0e7ff}
+
+  .status-active{background:#ecfdf5;border-color:#a7f3d0;color:#065f46}
+  .status-suspended{background:#fef2f2;border-color:#fecaca;color:#991b1b}
+  .status-review{background:#fff7ed;border-color:#fed7aa;color:#9a3412}
+  .status-terminated{background:#fee2e2;border-color:#fecaca;color:#7f1d1d}
+
+  /* Floating menus/popovers */
+  .floating-menu, .floating-pop{
+    position:absolute; background:#fff; border:1px solid var(--line); border-radius:12px;
+    box-shadow:var(--shadow); padding:25px; display:none; z-index:1000; min-width:220px;
+  }
+  .floating-menu a, .floating-pop a, .floating-pop label{display:block; padding:8px 10px; border-radius:8px; color:#334155; font-weight:600; font-size:13px}
+  .floating-menu a:hover, .floating-pop a:hover{background:#f8fafc}
+  .floating-pop .row{display:flex;align-items:center;gap:8px;padding:6px 0}
+  .floating-pop .muted{font-size:12px;color:#64748b;margin:6px 0}
+  .floating-pop .btns{display:flex;gap:8px;margin-top:8px}
+</style>
+
+
+
+  <main class="content">
+    <div class="topbar">
+      <div class="tabs">
+        <div class="tab active" data-tab="users"><div class="dot"></div><span>Users</span></div>
+        <div class="tab" data-tab="agreements"><div class="dot"></div><span>User Agreements</span></div>
+      </div>
+      <div class="spacer"></div>
+      <div class="toolbar">
+        <div class="avatar">
+          <div style="width:28px;height:28px;border-radius:999px;background:linear-gradient(180deg,#c7d2fe,#a78bfa);display:grid;place-items:center;font-weight:700;">A</div>
+          <span>Admin</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- USERS CARD -->
+    <div class="card" id="usersCard">
+      <div class="card-head">
+        <div class="card-title">
+          Users
+          <span id="reviewBadge" class="badge">Review: 0</span>
+        </div>
+        <div class="actions">
+          <button class="btn" id="exportUsersBtn">Export Users ▾</button>
+        </div>
+      </div>
+      <div class="filters">
+        <div class="input">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 21l-4.35-4.35" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><circle cx="11" cy="11" r="7" stroke="#94a3b8" stroke-width="2"/></svg>
+          <input id="userSearch" type="text" placeholder="Search user or email">
+        </div>
+        <div class="select">
+          <select id="roleFilter">
+            <option value="">All roles</option>
+            <option>Admin</option><option>Manager</option><option>User</option>
+          </select>
+        </div>
+        <div class="select">
+          <select id="statusFilter">
+            <option value="">All status</option>
+            <option>Active</option>
+            <option>Suspended</option>
+            <option>Review</option>
+            <option>Terminated</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Stats (clickable) -->
+      <div class="stats" id="statsBar"></div>
+
+      <div class="table-wrap">
+        <table id="usersTable">
+          <thead>
+            <tr>
+              <th style="width:42px;"></th>
+<th>User Name</th>
+<th>Company Name</th>
+<th>Email</th>
+<th>User Type</th>
+<th>Country</th>
+<th>Agreements</th>
+<th>Joined</th>
+<th style="width:60px;"></th>
+
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- AGREEMENTS CARD -->
+    <div class="card" id="agreementsCard" style="display:none">
+      <div class="card-head">
+        <div class="card-title" id="agreementsTitle">Agreements</div>
+        <div class="actions">
+          <button class="btn" id="backToUsers">&larr; Back to Users</button>
+          <button class="btn" id="exportCsvBtn">Export ▾</button>
+        </div>
+      </div>
+
+      <div class="filters">
+        <div class="input">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 21l-4.35-4.35" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><circle cx="11" cy="11" r="7" stroke="#94a3b8" stroke-width="2"/></svg>
+          <input id="searchBox" type="text" placeholder="Search Label Name">
+        </div>
+        <div class="select">
+          <select id="statusPreset">
+            <option value="">All submissions</option>
+            <option>Pending Review</option>
+            <option>Approved</option>
+            <option>Rejected</option>
+            <option>Terminated</option>
+            <option>Needs Moderation</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <div id="doc-pop" class="floating-pop"></div>
+        <table id="agreementsTable">
+          <thead>
+            <tr>
+              <th style="width:42px;"></th>
+              <th>LABEL NAME</th>
+              <th>DATE CREATED</th>
+              <th>DATE EXPIRY</th>
+              <th>USER TYPE</th>
+              <th>RIGHTS</th>
+              <th>SERVICES</th>
+              <th>DEAL</th>
+              <th>REVENUE SHARE</th>
+              <th>SUBMISSION STATUS</th>
+              <th>AGREEMENT</th>
+              <th style="width:60px;"></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Floating menus/popovers (singletons) -->
+<div id="rowMenu" class="floating-menu" role="menu"></div>
+<div id="statusPop" class="floating-pop" role="menu"></div>
+<div id="exportUsersPop" class="floating-pop" role="dialog"></div>
+<div id="exportAgmtsPop" class="floating-pop" role="dialog"></div>
+
+<script>
+(function(){
+  const API = '/settings';
+  const DOC_BASE = '/public/uploads/agreements/';
+ // server returns relative path; keep for safety
+
+  // ------------ STATE & HELPERS ------------
+  const state = { userSearch:'', role:'', status:'', selectedUserId:null, users:[] };
+  const $ = (s,r=document)=>r.querySelector(s);
+  const $$ = (s,r=document)=>Array.from(r.querySelectorAll(s));
+  const pill = (t,cls='') => `<span class="pill ${cls}">${t}</span>`;
+  const fmtDate     = d => new Date(d).toLocaleDateString('en-US',{month:'short', day:'2-digit', year:'numeric'});
+  const fmtDateTime = d => new Date(d).toLocaleString('en-US',{month:'short', day:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'});
+
+  // floating menus handling (same UX)
+  ['click','scroll','resize'].forEach(evt=>{
+    const handler = ()=>hideAllMenus();
+    if(evt==='click') document.addEventListener(evt,(e)=>{
+      const ids = ['#rowMenu','#statusPop','#doc-pop','#exportUsersPop','#exportAgmtsPop'];
+      if(!ids.some(id => $(id)?.contains(e.target)) && !e.target.closest('.btn, .doc')) hideAllMenus();
+    });
+    else window.addEventListener(evt, handler, {passive:true});
+  });
+  document.addEventListener('keydown', e=>{ if(e.key==='Escape') hideAllMenus(); });
+
+  function hideAllMenus(){
+    ['#rowMenu','#statusPop','#doc-pop','#exportUsersPop','#exportAgmtsPop'].forEach(sel=>{ const el=$(sel); if(el) el.style.display='none'; });
+    lastExportUsersAnchor = lastExportAgmtsAnchor = currentDocAnchor = lastRowMenuAnchor = lastStatusAnchor = null;
+  }
+  function placeFloating(el, anchor){
+    el.style.visibility='hidden'; el.style.display='block'; el.style.left='-9999px'; el.style.top='-9999px';
+    const r = anchor.getBoundingClientRect(), menuW = el.offsetWidth, pageW = document.documentElement.clientWidth;
+    let left = r.left + window.scrollX - (menuW - r.width);
+    if(left + menuW > pageW - 12) left = pageW - menuW - 12;
+    if(left < 12) left = 12;
+    const top = r.bottom + window.scrollY + 8;
+    el.style.left = left + 'px'; el.style.top = top + 'px'; el.style.visibility='visible';
+  }
+function buildDocUrl(doc){
+  if(!doc) return '';
+  // Already a full URL?
+  if(/^https?:\/\//i.test(doc)) return doc;
+
+  // If it's a filesystem path, cut from "/public/..."
+  const pubIdx = doc.indexOf('/public/');
+  if(pubIdx >= 0){
+    return doc.substring(pubIdx); // begins with /public/...
+  }
+
+  // If starts with "/uploads/agreements", prefix /public
+  if(/^\/?uploads\/agreements\//i.test(doc)){
+    return '/public/' + doc.replace(/^\/+/, '');
+  }
+
+  // If already starts with "/public/...", keep it
+  if(/^\/public\//i.test(doc)) return doc;
+
+  // Otherwise, treat as file name / relative piece
+  return DOC_BASE + doc.replace(/^\/+/, '');
+}
+
+  // ------------ LIVE FETCHERS ------------
+  async function fetchUsers(){
+    const q  = encodeURIComponent(state.userSearch||'');
+    const rl = encodeURIComponent(state.role||'');
+    const st = encodeURIComponent(state.status||'');
+    const res = await fetch(`${API}/admin-users-list?q=${q}&role=${rl}&status=${st}`, {credentials:'same-origin'});
+    const json = await res.json();
+    if(!json.ok){ console.warn('users error', json); return []; }
+    // Normalize for current UI (agreements length only matters for chip)
+  state.users = (json.users || []).map(u => ({
+  id: u.id,
+  name: u.name || '-',
+  company_name: u.company_name || '-',
+  email: u.email || '',
+  user_type: u.user_type || 'User',
+  country: u.country || '-',
+  joined: u.joined || new Date().toISOString().slice(0,10),
+  agreements_count: u.agreements_count || 0,
+  pending_count: u.pending_count || 0,
+  has_new: (u.pending_count || 0) > 0    // <-- correct condition
+}));
+
+
+    renderUsers(); // also rebuilds stats
+  }
+
+  async function fetchAgreementsByUser(userId){
+    const res = await fetch(`${API}/admin-agreements-list?user_id=${userId}`, {credentials:'same-origin'});
+    const json = await res.json();
+    if(!json.ok){ console.warn('agreements error', json); return []; }
+    // rows already contain rights/services arrays & strings for date/expiry per controller mapping
+    // convert to UI shape and Date objects
+    const rows = (json.rows||[]).map(r=>{
+      const fileRel = buildDocUrl(r.document || '');
+
+      // Map DB status -> UI submission label
+      const uiStatus = (function (db) {
+  const k = (db || '').toLowerCase().replace(/\s+/g, '_');
+  if (k === 'approved' || k === 'active') return 'Approved';
+  if (k === 'rejected') return 'Rejected';
+  if (k === 'pending_review') return 'Pending Review';     // <-- correct
+  if (k === 'needs_moderation') return 'Needs Moderation'; // <-- separate
+  if (k === 'terminated') return 'Terminated';    
+  return 'Pending Review';
+})(r.status);
+
+      return {
+        id: r.id,
+        label: r.label,
+        usertype: r.usertype,
+        rights: r.rights||[],
+        services: r.services||[],
+        deal: r.deal,
+        revshare: r.revshare,
+        date: r.date,         // keep ISO/string; formatting below
+        expiry: r.expiry||'',
+        document: r.document ? 'Agreement Document' : 'Agreement Document',
+        fileUrl: fileRel || '',
+        submission: uiStatus
+      };
+    });
+    return rows;
+  }
+
+  async function updateAgreementStatus(id, uiAction){
+    // UI action -> DB status
+    const map = { approve:'active', reject:'rejected', moderate:'pending_review' };
+    const status = map[uiAction];
+    if(!status) return;
+    await fetch(`${API}/agreements-status`, {
+      method:'POST', credentials:'same-origin',
+      headers:{'Content-Type':'application/x-www-form-urlencoded'},
+      body:`id=${encodeURIComponent(id)}&status=${encodeURIComponent(status)}`
+    });
+  }
+
+  // ------------ USERS RENDER (same UI as before) ------------
+  function filteredUsers(){
+  return state.users
+    .filter(u => (u.name + ' ' + u.email + ' ' + (u.company_name||''))
+                 .toLowerCase().includes(state.userSearch.toLowerCase()))
+    .filter(u => (!state.role || (u.user_type||'').toLowerCase() === state.role.toLowerCase()))
+    .filter(u => (state.status==='Review' ? (u.pending_count||0) > 0 : true));
+}
+
+
+  function renderUsers(){
+    const tbody = $('#usersTable tbody');
+    const listAll = state.users;
+    const list = filteredUsers();
+
+    const totals = {
+  total: listAll.length,
+  review: listAll.filter(u => (u.pending_count||0) > 0).length
+};
+$('#reviewBadge').textContent = `Review: ${totals.review}`;
+$('#statsBar').innerHTML = `
+  <div class="stat ${(!state.status ? 'active' : '')}" data-status="">All: ${totals.total}</div>
+  <div class="stat ${state.status==='Review' ? 'active' : ''}" data-status="Review">New/Pending: ${totals.review}</div>
+`;
+$$('.stat').forEach(s => s.addEventListener('click', ()=>{
+  const val = s.dataset.status;
+  state.status = (state.status===val) ? '' : val;
+  renderUsers();
+}));
+
+
+    tbody.innerHTML = list.map(u => `
+  <tr data-id="${u.id}">
+    <td><input type="checkbox"></td>
+    <td>
+  <div class="name js-open">
+    ${u.name}
+    ${u.has_new ? '<span class="pill status-review" style="margin-left:6px;">NEW</span>' : ''}
+  </div>
+  <span class="sub">${String(u.id).padStart(4,'0')}</span>
+</td>
+
+    <td>${u.company_name}</td>
+    <td>${u.email}</td>
+    <td>${pill(u.user_type)}</td>
+    <td>${u.country || '-'}</td>
+    <td>${pill(u.agreements_count)}</td>
+    <td>${fmtDate(u.joined)}</td>
+    <td><button class="btn btn-dot" aria-haspopup="menu">⋯</button></td>
+  </tr>
+`).join('');
+
+    $$('.js-open').forEach(el=> el.addEventListener('click', (e)=>{
+      openAgreementsById(parseInt(e.target.closest('tr').dataset.id,10));
+    }));
+
+    $$('.btn-dot').forEach(btn => {
+      btn.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        const id = parseInt(e.currentTarget.closest('tr').dataset.id,10);
+        toggleRowMenu(e.currentTarget, id);
+      });
+    });
+  }
+
+  let lastRowMenuAnchor=null, lastStatusAnchor=null;
+  function toggleRowMenu(anchor, userId){
+    const menu = $('#rowMenu');
+    if(menu.style.display==='block' && lastRowMenuAnchor===anchor){ hideAllMenus(); return; }
+    hideAllMenus();
+    menu.innerHTML = `
+      <a href="#" data-act="open" data-id="${userId}">Open Agreements</a>
+      
+    `;
+    placeFloating(menu, anchor); menu.style.display='block'; lastRowMenuAnchor=anchor;
+
+    menu.querySelectorAll('a').forEach(a=>a.addEventListener('click', (ev)=>{
+      ev.preventDefault();
+      const act = a.dataset.act; const uid = parseInt(a.dataset.id,10);
+      if(act==='open') { openAgreementsById(uid); hideAllMenus(); }
+      if(act==='status') { toggleStatusPop(anchor, uid); }
+      if(act==='delete'){ /* optional: add server delete if required */ hideAllMenus(); }
+    }));
+  }
+  function toggleStatusPop(anchor, userId){
+    const pop = $('#statusPop');
+    if(pop.style.display==='block' && lastStatusAnchor===anchor){ hideAllMenus(); return; }
+    hideAllMenus();
+    pop.innerHTML = `
+      <a href="#" data-status="Active" data-id="${userId}">Active</a>
+      <a href="#" data-status="Suspended" data-id="${userId}">Suspended</a>
+      <a href="#" data-status="Review" data-id="${userId}">Review</a>
+      <a href="#" data-status="Terminated" data-id="${userId}">Terminated</a>
+    `;
+    placeFloating(pop, anchor); pop.style.display='block'; lastStatusAnchor=anchor;
+    // NOTE: users status change API not defined in backend; keeping client-side only toggle for now.
+    pop.querySelectorAll('a').forEach(a=>a.addEventListener('click', (e)=>{
+      e.preventDefault();
+      const uid = parseInt(a.dataset.id,10);
+      const u = state.users.find(x=>x.id===uid); if(u){ u.status = a.dataset.status; }
+      renderUsers(); hideAllMenus();
+    }));
+  }
+
+  // ------------ AGREEMENTS VIEW (live) ------------
+  let cachedUserAgreements = new Map(); // uid -> rows
+  async function openAgreementsById(id){
+    hideAllMenus();
+    state.selectedUserId = id;
+    const u = state.users.find(x=>x.id===id);
+    $('#usersCard').style.display='none';
+    $('#agreementsCard').style.display='block';
+    $('#agreementsTitle').textContent = `Agreements — ${u ? u.name : '#'+id}`;
+    if(!cachedUserAgreements.has(id)){
+      cachedUserAgreements.set(id, await fetchAgreementsByUser(id));
+    }
+    renderAgreements();
+  }
+  function applyAgmtFilters(list){
+    let out = list.slice();
+    out = out.filter(r => (r.label + ' ' + r.usertype + ' ' + r.deal).toLowerCase().includes($('#searchBox').value.toLowerCase()));
+    const sp = $('#statusPreset').value; 
+    if(sp){
+      out = out.filter(r => r.submission === sp);
+    }
+    return out;
+  }
+
+  let currentDocAnchor = null;
+  function renderAgreements(){
+    const uid = state.selectedUserId;
+    const u = state.users.find(x=>x.id===uid) || {agreements:[]};
+    const rows = cachedUserAgreements.get(uid) || [];
+    const tbody = $('#agreementsTable tbody');
+    const list = applyAgmtFilters(rows);
+    const now = Date.now(), soonMs = 30*24*3600*1000;
+
+    tbody.innerHTML = list.map(r=>{
+      const expSoon = r.expiry ? (new Date(r.expiry).getTime() - now) <= soonMs : false;
+      const subClass = r.submission==='Approved' ? 'status-active' :
+                       r.submission==='Rejected' ? 'status-suspended' :
+                       r.submission==='Needs Moderation' ? 'status-review' : 'status-review';
+      return `<tr data-id="${r.id}">
+        <td></td>
+        <td><div class="name">${r.label}</div><span class="sub">#${String(r.id).padStart(4,'0')}</span></td>
+        <td>${fmtDateTime(r.date)}</td>
+        <td>${r.expiry ? fmtDate(r.expiry) : '-'} ${expSoon?'<span class="pill status-review" style="border-color:#fed7aa">Expiring soon</span>':''}</td>
+        <td>${r.usertype||'-'}</td>
+        <td>${(r.rights||[]).map(x=>`<span class="pill">${x}</span>`).join(' ')}</td>
+        <td>${(r.services||[]).map(x=>`<span class="pill">${x}</span>`).join(' ')}</td>
+        <td><span class="pill">${r.deal||'-'}</span></td>
+        <td>${r.revshare ?? ''}%</td>
+        <td><span class="pill ${subClass}">${r.submission}</span></td>
+        <td><a href="#" class="doc" data-url="${r.fileUrl||''}">Agreement Document</a></td>
+        <td><button class="btn btn-dot">⋯</button></td>
+      </tr>`;
+    }).join('');
+
+    // row actions -> server status update
+    let lastAgRowAnchor=null;
+    $$('#agreementsTable .btn-dot').forEach(btn => {
+      btn.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        const agId = parseInt(e.currentTarget.closest('tr').dataset.id,10);
+        const menu = $('#rowMenu');
+        if(menu.style.display==='block' && lastAgRowAnchor===e.currentTarget){ hideAllMenus(); return; }
+        hideAllMenus();
+        menu.innerHTML = `
+          <a href="#" data-act="approve" data-id="${agId}" style="color:#065f46">Approve</a>
+          <a href="#" data-act="reject" data-id="${agId}" style="color:#b91c1c">Reject</a>
+          <a href="#" data-act="moderate" data-id="${agId}" style="color:#b45309">Need Moderation</a>
+          <a href="#" data-act="delete" data-id="${agId}" style="color:#b91c1c;opacity:.6;pointer-events:none">Delete</a>
+        `;
+        placeFloating(menu, e.currentTarget); menu.style.display='block'; lastAgRowAnchor=e.currentTarget;
+        menu.querySelectorAll('a').forEach(a=>a.addEventListener('click', async (ev)=>{
+          ev.preventDefault();
+          const act = a.dataset.act, id = parseInt(a.dataset.id,10);
+          if(act==='approve'||act==='reject'||act==='moderate'){
+            await updateAgreementStatus(id, act);
+            // refresh cache for this user
+            cachedUserAgreements.set(uid, await fetchAgreementsByUser(uid));
+            renderAgreements();
+          }
+          hideAllMenus();
+        }));
+      });
+    });
+
+    // doc popover
+    $$('.doc').forEach(el=>{
+      el.addEventListener('click', (e)=>{
+        e.preventDefault();
+        const url = el.dataset.url;
+        const pop = $('#doc-pop');
+        if(currentDocAnchor===el && pop.style.display==='block'){ hideAllMenus(); currentDocAnchor=null; return; }
+        currentDocAnchor = el;
+        pop.innerHTML = url ? `<a href="${url}" target="_blank">View</a><a href="${url}" download>Download</a>`
+                            : `<a href="#" style="opacity:.6;pointer-events:none">No file uploaded</a>`;
+        placeFloating(pop, el); pop.style.display='block';
+      });
+    });
+
+    // export (respects current filters)
+    $('#exportCsvBtn').onclick = (e)=>openAgmtsExport(e, { name: u?.name||('user_'+uid), agreements: list });
+  }
+
+  // ------------ EXPORT HELPERS (unchanged UX) ------------
+  let lastExportUsersAnchor=null;
+  $('#exportUsersBtn').addEventListener('click', (e)=>{
+    e.stopPropagation();
+    const pop = $('#exportUsersPop');
+    if(pop.style.display==='block' && lastExportUsersAnchor===e.currentTarget){ hideAllMenus(); return; }
+    hideAllMenus();
+    pop.innerHTML = `
+      <div class="muted">Choose scope & columns (users export)</div>
+      <div class="row">Scope:
+        <label><input type="radio" name="eu-scope" value="current" checked> Current table</label>
+        <label><input type="radio" name="eu-scope" value="all"> All users</label>
+      </div>
+      
+      <div class="row"><label><input type="checkbox" id="eu-allcols" checked> Select all columns</label></div>
+      <div class="row cols">
+    <label><input type="checkbox" class="eu-col" value="name" checked> User Name</label>
+    <label><input type="checkbox" class="eu-col" value="company_name" checked> Company Name</label>
+    <label><input type="checkbox" class="eu-col" value="email" checked> Email</label>
+    <label><input type="checkbox" class="eu-col" value="user_type" checked> User Type</label>
+    <label><input type="checkbox" class="eu-col" value="country" checked> Country</label>
+    <label><input type="checkbox" class="eu-col" value="agreements_count" checked> Agreements</label>
+    <label><input type="checkbox" class="eu-col" value="joined" checked> Joined</label>
+  </div>
+      <div class="row">Format:
+        <label><input type="radio" name="eu-format" value="csv" checked> CSV</label>
+        <label><input type="radio" name="eu-format" value="json"> JSON</label>
+      </div>
+      <div class="btns">
+        <button class="btn primary" id="euDo">Download</button>
+        <button class="btn" id="euCancel">Close</button>
+      </div>
+    `;
+    placeFloating(pop, e.currentTarget); pop.style.display='block'; lastExportUsersAnchor=e.currentTarget;
+
+    $('#eu-allcols').onchange = (ev)=>{
+      const on = ev.target.checked;
+      $$('.eu-col', pop).forEach(c=>{ c.checked = on; });
+    };
+    $('#euCancel').onclick = hideAllMenus;
+    $('#euDo').onclick = ()=>{
+      const scope = pop.querySelector('input[name="eu-scope"]:checked').value;
+      const base = scope==='current' ? filteredUsers()
+                 : state.users; // all
+      const cols = Array.from(pop.querySelectorAll('.eu-col:checked')).map(c=>c.value);
+      const fmt  = pop.querySelector('input[name="eu-format"]:checked').value;
+     const data = base.map(u => ({
+  name: u.name,
+  company_name: u.company_name,
+  email: u.email,
+  user_type: u.user_type,
+  country: u.country,
+  agreements_count: u.agreements_count,
+  joined: fmtDate(u.joined)
+}));
+      downloadData(data, cols, `users_${scope}`, fmt); hideAllMenus();
+    };
+  });
+
+  let lastExportAgmtsAnchor=null;
+  function openAgmtsExport(e, u){
+    e.stopPropagation();
+    const pop = $('#exportAgmtsPop');
+    if(pop.style.display==='block' && lastExportAgmtsAnchor===e.currentTarget){ hideAllMenus(); return; }
+    hideAllMenus();
+    pop.innerHTML = `
+      <div class="muted">Export agreements for this user (respects filters)</div>
+      ${['label','date','expiry','usertype','rights','services','deal','revshare','submission','document']
+        .map(k=>`<div class="row"><label><input type="checkbox" class="ea-col" value="${k}" checked> ${titleCase(k)}</label></div>`).join('')}
+      <div class="row">Format:
+        <label><input type="radio" name="ea-format" value="csv" checked> CSV</label>
+        <label><input type="radio" name="ea-format" value="json"> JSON</label>
+      </div>
+      <div class="btns">
+        <button class="btn primary" id="eaDo">Download</button>
+        <button class="btn" id="eaCancel">Close</button>
+      </div>
+    `;
+    placeFloating(pop, e.currentTarget); pop.style.display='block'; lastExportAgmtsAnchor=e.currentTarget;
+
+    $('#eaCancel').onclick = hideAllMenus;
+    $('#eaDo').onclick = ()=>{
+      const cols = Array.from(pop.querySelectorAll('.ea-col:checked')).map(c=>c.value);
+      const fmt  = pop.querySelector('input[name="ea-format"]:checked').value;
+      const rows = u.agreements.map(a=>({
+        label: a.label,
+        date: fmtDateTime(a.date), expiry: a.expiry ? fmtDate(a.expiry) : '-',
+        usertype: a.usertype, rights: (a.rights||[]).join(' | '), services:(a.services||[]).join(' | '),
+        deal: a.deal, revshare: a.revshare, submission: a.submission, document: a.document
+      }));
+      downloadData(rows, cols, `agreements_${(u.name||'user').replace(/\s+/g,'_').toLowerCase()}`, fmt);
+      hideAllMenus();
+    };
+  }
+
+  function downloadData(rows, cols, filename, fmt){
+    const selected = cols.length ? cols : Object.keys(rows[0]||{});
+    if(fmt==='json'){
+      const json = rows.map(r=>{ const o={}; selected.forEach(k=>o[k]=r[k]); return o; });
+      const blob = new Blob([JSON.stringify(json, null, 2)], {type:'application/json'});
+      triggerDownload(blob, filename + '.json'); return;
+    }
+    const headers = selected.map(k => titleCase(k));
+    const csvRows = [headers].concat(rows.map(r=>selected.map(k=>String(r[k] ?? '').replaceAll('"','""'))));
+    const csv = csvRows.map(arr=>arr.map(s=>`"${s}"`).join(',')).join('\n');
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    triggerDownload(blob, filename + '.csv');
+  }
+  function triggerDownload(blob, name){
+    const url = URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=name; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  }
+  function titleCase(k){
+    return k.replace(/_/g,' ')
+            .replace(/(\b\w)/g, m=>m.toUpperCase())
+            .replace('Sublabels','Sub-labels')
+            .replace('Revshare','Revenue Share');
+  }
+
+  // ------------ FILTER WIRING ------------
+  $('#userSearch').addEventListener('input', e=>{ state.userSearch=e.target.value; fetchUsers(); });
+  $('#roleFilter').addEventListener('change', e=>{ state.role=e.target.value; fetchUsers(); });
+  $('#statusFilter').addEventListener('change', e=>{ state.status=e.target.value; fetchUsers(); });
+  $('#searchBox').addEventListener('input', ()=>renderAgreements());
+  $('#statusPreset').addEventListener('change', ()=>renderAgreements());
+  $('#backToUsers').addEventListener('click', ()=>{ hideAllMenus(); $('#agreementsCard').style.display='none'; $('#usersCard').style.display='block'; });
+
+  // ------------ INIT ------------
+  fetchUsers();
+})();
+</script>

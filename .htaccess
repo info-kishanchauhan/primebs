@@ -1,0 +1,7 @@
+RewriteEngine on
+RewriteBase /
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule !.(js|ico|txt|gif|jpg|png|css)$ index.php
+
+RewriteRule ^admin/login$ /admin/index.php [L]

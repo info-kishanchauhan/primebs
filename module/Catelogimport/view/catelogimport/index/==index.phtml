@@ -1,0 +1,569 @@
+
+<style>
+.panel-heading .help
+{
+	font-size:22px;
+	color:#0998cd;
+	margin-left:10px;
+	cursor:pointer;
+	
+}
+
+.dt-toolbar-footer,.dt-toolbar
+{
+	margin-left: -15px;
+}
+table tr td:nth-child(2) {
+	text-align:center;
+}
+.dataTables_info
+{
+	font-size: 18px;
+    padding-bottom: 20px;
+}
+.modal table tr td:nth-child(2) {
+    text-align: left;
+}
+</style><!-- widget grid -->
+<section id="widget-grid" class="page page-ui-tables">
+    <!-- row -->
+    <div class="row">
+        <!-- NEW WIDGET START -->
+        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <?php include_once("grid.php"); ?>
+            <?php include_once("form.php"); ?>
+        </article>
+        <!-- WIDGET END -->
+    </div>
+    <!-- end row -->
+    <!-- end row -->
+</section>
+<!-- end widget grid -->
+
+
+<script type="text/javascript">
+	
+	var allow_access = true;
+	function bulk_delete_cnt()
+	{
+		var selectedCount = $('.rls_chkbx:checked').length;
+		$('#bulk_delete_cnt').html('('+selectedCount+')');
+	}
+    $(document).ready(function () {
+		acl_PRINT=0;
+		$('table tr td:nth-child(2), table tr th:nth-child(2),colgroup col:nth-child(1),.btn-bull-delete').hide();
+		$('.show_bulk_delete').click(function(){
+			$('table tr td:nth-child(2), table tr th:nth-child(2),colgroup col:nth-child(1),.btn-bull-delete').toggle();
+			var textSpan = $(this).find('.toggle-text');
+			if (textSpan.text().trim() === 'Delete Bulk release') {
+				textSpan.text('Cancel Bulk delete');
+				setTimeout(function(){
+					$('.show_bulk_delete').parents('.dropdown').addClass('open');
+				},100)
+			} else {
+				textSpan.text('Delete Bulk release');
+			}
+		})
+		$('#select_all_chk').on('change', function() {
+			$('.rls_chkbx').prop('checked', $('#select_all_chk').prop('checked'));
+			bulk_delete_cnt();
+		});
+		$(document).on("click", ".rls_chkbx", function () {
+			bulk_delete_cnt();
+		})
+		$('#search_text').on('keypress', function(e) {
+			if (e.which == 13) { // 13 is the Enter key code
+				e.preventDefault(); // Prevent the default action (form submission)
+				
+				$('#btnSearch').click(); // Trigger the button click
+			}
+		});
+				
+		$("#btnSearch").click(function (e) {
+            oTable.fnDraw();
+        });
+		
+		$('#catelogBtn').click(function(){
+			$('#catelogmodal').modal({backdrop: 'static', keyboard: false});
+			$("#catelogfile").val('');
+		});
+		
+		
+		
+		$("#btnImport").click(function (e) { 
+				$('.nf-loader').removeClass('hide');
+				$('#btnImport').prop('disabled',true);
+				e.stopPropagation();
+				$("#imported_file_name").val('');
+				var this1 = document.getElementById("catelogfile");
+				
+				
+				  if (this1.files && this1.files[0]) { 
+				   
+				   //Save img
+				
+				   var $form = $('#excelform');
+				   var oMyForm = new FormData($form.get(0));
+				   //*============================image=====================================
+				   file = document.getElementById("catelogfile").files[0];
+				   if (file && file.size > 0) {
+					var fileInputProfile = document.getElementById("catelogfile");
+					oMyForm.append("catelogfile", file);
+				   } else {
+					oMyForm.append("catelogfile", 0);
+				   }
+			
+				
+				   var deferred;
+				   deferred = $.ajax({
+				
+					url: "<?php echo $this->url('catelogimport', array('action'=>'import'));?>",
+					type: "POST",
+					processData: false,
+					contentType: false,
+					dataType: 'json',
+					data: oMyForm,
+					beforeSend: function () {
+				
+					},
+					success: function () {
+						
+					}
+				
+				   });
+				
+					$("#customfileupload").removeClass('hide');
+					$("#btnSave").addClass('hide');
+					
+				   deferred.done(function (result) {
+					    $('.nf-loader').addClass('hide');
+						$('#btnImport').prop('disabled',false);
+						$("#customfileupload").addClass('hide');
+						$("#catelogfile").val('');
+				   
+				   if(result.status == 'NOT')
+					{
+						 mySmallAlert('Save Record', 'Allowed only csv file', 0);
+					}
+				    if(result.status == 'OK')
+					{
+						//$("#modeldata").html(result.modeldata);
+						$("#customfileupload").addClass('hide');
+						
+						 mySmallAlert('Save Record', 'Imported successfully', 1);
+						 oTable.fnDraw();
+						 
+							$('#catelogmodal').modal('hide');
+						 
+							$("#catelogfile").val('');
+							$('#importlist').html(result.IMPORT_LIST);
+							$('#ignorelist').html(result.IGNORE_LIST);
+							$("#imported_file_name").val(result.file_name);
+							$('#importmodal').modal({backdrop: 'static', keyboard: false});
+					}
+					
+				   }).fail(function (result) {
+					   $('.nf-loader').addClass('hide');
+						$('#btnImport').prop('disabled',false);
+					alert("There was an error");
+				   });
+				  }
+				return false;
+
+		});	  
+
+   });
+   
+    var pagefunction = function () {
+        //console.log("cleared");
+        /* // DOM Position key index //
+         l - Length changing (dropdown)
+         f - Filtering input (search)
+         t - The Table! (datatable)
+         i - Information (records)
+         p - Pagination (paging)
+         r - pRocessing
+         < and > - div elements
+         <"#id" and > - div with an id
+         <"class" and > - div with a class
+         <"#id.class" and > - div with an id and class
+         Also see: http://legacy.datatables.net/usage/features
+         */
+        /* BASIC ;*/
+        var responsiveHelper_dt_basic = undefined;
+        var responsiveHelper_datatable_fixed_column = undefined;
+        var responsiveHelper_datatable_col_reorder = undefined;
+        var responsiveHelper_datatable_tabletools = undefined;
+        var breakpointDefinition = {
+            tablet: 1024,
+            phone: 480
+        };
+		var deleteact=acl_DELETE;
+        /* TABLETOOLS */
+		$('#tblMasterList_wrapper,#tblMasterList').hide();
+        oTable = $("#tblMasterList").dataTable(
+            {
+				
+                "bAutoWidth": false,
+                "bLengthChange": false,
+                "sDom": "<'dt-toolbar'<'col-xs-12 col-sm-6 hidden-xs'i p><'col-sm-6 col-xs-12 hidden-xs'<'toolbar'>>>" +
+                    "t" +
+                    "<'dt-toolbar-footer'<><'col-xs-12 col-sm-6'p>>",
+                "bProcessing": true,
+                "bServerSide": true,
+				
+                "autoWidth" : true,
+				"infoCallback": function(settings, start, end, max, total, pre) {
+					return total + " results found";
+				},
+                "preDrawCallback" : function() {
+                    // Initialize the responsive datatables helper once.
+                    if (!responsiveHelper_dt_basic) {
+                        responsiveHelper_dt_basic = new ResponsiveDatatablesHelper($('#tblMasterList'), breakpointDefinition);
+                    }
+                },
+                "rowCallback" : function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+					
+					var status = aData[9];
+
+					// Add class based on status value
+					if (status === 'inreview') {
+						$(nRow).addClass('warning'); // Replace 'status-draft' with your desired class name
+					} else if (status === 'rejected') {
+						$(nRow).addClass('danger'); // Replace 'status-taken-out' with your desired class name
+					}
+					else if (status === 'delivered') {
+						$(nRow).addClass('success'); // Replace 'status-taken-out' with your desired class name
+					}
+					else if (status === 'taken out') {
+						$(nRow).addClass('activate'); // Replace 'status-taken-out' with your desired class name
+					}
+                    responsiveHelper_dt_basic.createExpandIcon(nRow);
+                },
+                "drawCallback" : function(oSettings) {
+                    responsiveHelper_dt_basic.respond();
+					$('table tr td:nth-child(2), table tr th:nth-child(2),colgroup col:nth-child(1),.btn-bull-delete').hide();
+					if (oSettings.json && oSettings.json.iTotalDisplayRecords == '0') {
+						$('#tblMasterList_wrapper,#tblMasterList').hide(); // Hide the DataTable
+						if (!$('#noRecordsMessage').length) { 
+						
+							$('#tblMasterList_wrapper').parent().append(noRecordsMessage); // Append the message if not already present
+							$('#noRecordsMessage h4').html('No Catalog Imports Found');
+							$('#noRecordsMessage p').html('You haven’t imported any catalogs yet.<br>Start an import to manage your catalog records here.');
+						}
+					} else {
+						$('#tblMasterList_wrapper,#tblMasterList').show();
+						$('#noRecordsMessage').remove(); // Remove the message if data exists
+					}
+                },
+                "fnServerParams": function (aoData) {
+                    aoData.push({ "name": "id", "value": "" },{ "name": "type", "value": "<?php echo $_GET['type']?>" },{ "name": "search", "value": $('#search_text').val() },{ "name": "notification", "value": "<?php echo $_GET['new']?>" });
+                },
+                "sAjaxSource": "<?php echo $this->url('catelogimport', array('action'=>'list'));?>",
+                "aoColumns": [
+                    { "bSearchable": false, "bVisible": false },
+                    
+					{"bSearchable": false, "bSortable": false},
+                    null,
+                    null,
+					null,
+                    null,
+					null,
+                    null,
+					null,
+					null,
+					{"bSearchable": false, "bSortable": false,
+                        "mRender" : function (data, type, full) {
+							
+							if(allow_access)
+							{
+								
+								
+									return '<ul class="list-unstyled page_action_collection" style="text-align:center;"><li class="page_action_collection_element"> <a href="<?php echo $this->url('newrelease',array("action='index'"))?>?edit='+full[0]+'" target="_blank" class="page_action PageActionReleasePendingalbumedit page_action_fa  active obj-PendingAlbum-6859263 enabled jslink action" id="page_action_3" title="Please click here to edit this product" data-confirm-a="" data-confirm-i="" data-confirm-t="normal" data-url="" data-params="" data-callback="1" data-popin="" data-synckey="" onclick="" data-toggle="tooltip" data-placement="bottom"><i style="font-size: 18px; vertical-align:middle;" class="fa fa-pencil"></i></a> </li><li class="page_action_collection_element"><a href="javascript:" class="page_action delete page_action_fa  active obj-PendingAlbum-6859263 enabled jscallback action" row-title="'+full[9]+'" row-id="'+full[0]+'" title="Please click here to delete this product" data-confirm-a="This will delete <strong>title</strong>.Are you sure?" data-confirm-i="This will delete <strong>title</strong>.Are you sure?" data-confirm-t="warning" data-url="" data-params="" data-callback="" data-popin="" data-synckey="" onclick="" data-toggle="tooltip" data-placement="bottom"><i style="font-size: 18px; vertical-align:middle;" class="fa fa-trash"></i></a></li></ul>';
+								
+								
+							}
+							else
+								return '';
+						
+                        }
+                    }
+					
+                    
+                ],
+                "columnDefs": [
+                    { className: "hidden", "targets": [ 0 ] }
+                ]
+            });
+        /* END TABLETOOLS */
+		$('.dataTables_filter input').attr("placeholder", "Search");
+		
+		//$(".dataTables_filter label").addClass('right');
+        //fnEdit("<?php echo $this->url('catelogimport', array('action'=>'getrec'));?>");
+        //fnView("<?php echo $this->url('catelogimport', array('action'=>'getrec'));?>");
+        //fnDelete("<?php echo $this->url('catelogimport', array('action'=>'delete'));?>");
+		
+		//fnDelete("<?php echo $this->url('catelogimport', array('action'=>'delete'));?>");
+        var strUrl = "<?php echo $this->url('catelogimport', array('action'=>'getrec'));?>";
+        //Function Used for Edit
+
+		$('#delete_release').click(function(){
+				
+					var objFormData =
+					{
+						pAction: 'DELETE',
+						KEY_ID : $('#delete_release').attr('release_id')
+					};
+					var objMyPost = AJAX_Post("<?php echo $this->url('releases', array('action'=>'delete'));?>", objFormData);
+					if (objMyPost.ERR_NO === 0) {
+						if (objMyPost.DATA.DBStatus === 'OK') {
+							oTable.fnDraw();
+							$('#warningConfirmationPopin').modal('hide');
+							mySmallAlert('Success', 'Deleted successfully', 1);
+						}
+						
+						else {
+							mySmallAlert('Error...!', 'There was an error', 0);
+						}
+					}
+		});
+		oTable.delegate('a.delete', 'click', function (e) {
+            e.preventDefault();
+            iActiveID = $(this).attr("row-id");
+			var r_title= $(this).attr("row-title");
+			
+			$('#warningConfirmationPopin').modal('show');
+			$('#delete_release_title').html(r_title);
+			$('.chkConfirm').prop('checked',false);
+			$('#delete_release').attr('style','display:none');
+			$('#delete_release').attr('release_id',iActiveID);
+			
+        });
+		$('.btn-bull-delete').click(function(){
+			
+			var rel_checked=false;
+			$('.rls_chkbx').each(function(){
+				if($(this).prop('checked') == true)
+				{
+					rel_checked = true;
+				}
+			});
+
+			if(rel_checked == false)
+			{
+				mySmallAlert('Error...!', 'Please select at least one release', 0);
+				return;
+			}
+			let selectedIds = [];
+			$('.rls_chkbx:checked').each(function() {
+				
+				selectedIds.push($(this).data('id')); // Get data-id attribute
+			});
+			
+			selectedIds = selectedIds.join(","); 
+			
+			$('#warningConfirmationPopin').modal('show');
+			$('#delete_release_title').html('All selected release');
+			$('.chkConfirm').prop('checked',false);
+			$('#delete_release').attr('style','display:none');
+			$('#delete_release').attr('release_id',selectedIds);
+		})
+		$('.chkConfirm').click(function(){
+			if($(this).prop('checked') == true)
+			{
+				$('#delete_release').attr('style','display:block');
+			}
+			else
+				$('#delete_release').attr('style','display:none');
+		})
+		$('.cancel_bulk_delete').click(function(){
+			
+			$('#select_all_chk').trigger('click');
+			$('table tr td:nth-child(2), table tr th:nth-child(2),colgroup col:nth-child(1),.btn-bull-delete').toggle();
+			
+			var textSpan = $('.show_bulk_delete').find('.toggle-text');
+			if (textSpan.text().trim() === 'Delete Bulk release') {
+				textSpan.text('Cancel Bulk delete');
+			} else {
+				textSpan.text('Delete Bulk release');
+			}
+		})
+    };
+</script>
+<script>
+    // load Page related plugins
+                loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatables/jquery.dataTables.min.js", function () {
+                    loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatables/dataTables.colVis.min.js", function () {
+                        loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatables/dataTables.tableTools.min.js", function () {
+                            loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatables/dataTables.bootstrap.min.js", function () {
+                                loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatable-responsive/datatables.responsive.min.js", pagefunction)
+                            });
+                        });
+        });
+    });
+	
+	//------------------- populate edit entries-----------------------------------------------------------------------------
+    function cPopulateEditEntries(iID,strURL) {
+        iActiveID = iID;
+        var arrForms=[]; // Keep Form Values
+        var strElementType; // Keep element type
+        var objFormData =
+        {
+            pAction: 'GETREC',
+            KEY_ID : iActiveID
+        };
+        var objMyPost = AJAX_Post(strURL, objFormData);
+		
+        if (objMyPost.ERR_NO === 0) {
+            if (objMyPost.DATA.DBStatus === 'OK') {
+                visibleControl('widForm', true);
+                visibleControl('widGrid', false);
+                strActionMode = 'EDIT';
+                //populate master Records
+                arrForms=objMyPost.DATA.data[0];
+                $.each( arrForms, function( key, value ) { 
+                    if ($("#"+key).length > 0) {  // check if exists or not
+                        strElementType= $("#"+key).attr("type");
+					
+                        if(strElementType == "hidden") {  // if textbox
+                            $("#" + key).val(value);
+                            $("#spanRefNo").html(value);
+                        }
+                        else  if(strElementType == "text") {  // if textbox
+                            $("#" + key).val(value);
+                        }
+                        else if($("#"+key).attr("name") == "descriptions") {  // if textarea
+                            $("textarea#"+key).text(value);
+                        }
+                        else if(strElementType == "select") {  // if Select Box							
+                            $("#" + key).select2("val",value);
+                        }
+                        else if(strElementType == "multiselect") {  // if Select Box with multi select
+                            var arrValues = $.parseJSON(stripslashes(value));
+                            $("#" + key).select2("val", arrValues);
+                        }
+                    }
+                });
+				
+            }
+        }
+        else {
+            mySmallAlert('Error...!', 'There was an error', 0);
+        }
+    }
+</script>
+<div class="modal bootstrap-dialog type-primary fade size-normal " tabindex="-1" role="dialog" aria-hidden="false" id="warningConfirmationPopin" aria-labelledby="warningConfirmationPopin_title" style="z-index: 1050; display: none; padding-left: 17px;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="bootstrap-dialog-header">
+                    <div class="bootstrap-dialog-close-button" style="display: block;">
+                        <button class="close" data-dismiss="modal">×</button>
+                    </div>
+                    <div class="bootstrap-dialog-title" id="warningConfirmationPopin_title">Information</div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="bootstrap-dialog-body">
+                    <div class="bootstrap-dialog-message">
+                        <div class="confMsg">This will delete <strong id="delete_release_title"></strong>.
+                            <br>Are you sure?</div>
+                        <div class="text-center">
+                            <br>
+                            <input class="chkConfirm" type="checkbox"> Yes I'm sure</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="display: block;">
+                   
+                        <button class="btn btn-default cancel_bulk_delete" data-dismiss="modal">Cancel</button>
+                        <button class="btn btnConfirm btn-primary right" id="delete_release" release_id="" style="display: none;">OK</button>
+                   
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="importmodal" class="modal fade bs-example-modal-lg">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" style="max-height:500px;overflow:auto;">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title">Already Exist UPC List</h4>
+					</div>
+					<input type="hidden" name="imported_file_name" id="imported_file_name">
+					<div class="modal-body customsrolling">	
+					
+						<div class="row">
+								<div class="col-md-12 dataTables_wrapper">
+									<table id="" class="table table-striped table-bordered table-hover responsive-table" width="100%">
+												<thead>
+												<tr>
+													<th><?php echo $this->translate('No.'); ?></th>
+													<th><?php echo $this->translate('Release Title'); ?></th>
+													<th><?php echo $this->translate('Label'); ?></th>
+													<th><?php echo $this->translate('Artist'); ?></th>
+													<th><?php echo $this->translate('#Track'); ?></th>
+													<th><?php echo $this->translate('UPC'); ?> </th>
+												</tr>
+												</thead>
+
+												<tbody  id="ignorelist">
+
+												</tbody>
+
+									</table>
+								</div>
+						</div>
+					
+                     </div>	
+					 
+             </div>
+                     
+		</div>	
+		
+</div>
+
+
+<div id="catelogmodal" class="modal fade bs-example-modal-lg">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" style="max-height:500px;overflow:auto;">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title">Import Catelog</h4>
+					</div>
+					
+					<div class="modal-body customsrolling" style="padding-bottom: 40px;">	
+					
+						<form action="#" method="post" id="excelform">	
+							<div class="row">
+								<div class="col-md-6">
+									<input type="file" accept="application/vnd.openxmlformats-     officedocument.spreadsheetml.sheet" name="catelogfile" class="form-control" id="catelogfile">
+									
+									<div class="progress hide" style="height:21px;margin-top:10px;" id="customfileupload">
+									  <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar"
+									  aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%;line-height:21px;color:#FFFFFF;font-size:20px">
+										File Importing
+									  </div>
+									</div>
+									
+								</div>
+								<div class="col-md-3">
+								
+									<img style="float:left" src="<?php echo $this->basePath(); ?>/public/img/loader.gif" class="hide nf-loader">
+									<a href="javascript:;" class="btn btn-primary btn-sm  btn-import" id="btnImport">Import</a>
+								</div>
+							</div>
+						</form>
+					
+                     </div>	
+					 <div class="modal-footer" style="display: block;">
+                        <button class="btn btn-default" data-dismiss="modal">Cancel</button>
+					</div>
+					 
+             </div>
+                     
+		</div>	
+		
+</div>

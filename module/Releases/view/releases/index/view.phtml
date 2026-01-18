@@ -1,0 +1,2309 @@
+<link rel="stylesheet" type="text/css" href="<?php echo $this->basePath(); ?>/public/css/productView.css">
+
+<style>
+  
+
+  /* Table ke header aur rows ke liye font control */
+.table th, 
+.table td {
+    font-size: 13px;   /* chhota size set karen (default 14-16 hota hai) */
+    line-height: 1.4;  /* spacing control */
+    font-family: 'Roboto', Arial, sans-serif; /* clean font */
+    color: #333;       /* text ka color */
+    vertical-align: middle; /* text alignment improve */
+    padding: 6px 10px; /* thoda compact banane ke liye */
+}
+
+/* Agar sirf title/artist wale column ko chhota karna ho */
+.table td.title-artist {
+    font-size: 12px;
+    font-weight: 500;
+}
+
+  
+  .btn-primary {
+    background-color: #2699FB !important;
+    background: linear-gradient(to right, #792b97, #5b34c8);!important;
+    border-color: #2699FB !important;
+    height: 34px;
+    line-height: 20px;
+    /* min-width: 150px; */
+    letter-spacing: 0.8px;
+    font-size: 12px;
+}
+  
+  .btn-primary.active, .btn-primary.focus, .btn-primary:active, .btn-primary:focus, .btn-primary:hover, .open>.dropdown-toggle.btn-primary {
+    color: #fff;
+        background-color: #6a2589 !important;
+    border-color: #5d2276 !important;
+}
+/* make columns auto-size; allow wrapping */
+.tracklist-volume-panel table { table-layout: auto; width: 100%; }
+
+/* cells can grow in height */
+.tracklist-volume-panel th,
+.tracklist-volume-panel td { vertical-align: middle; }
+
+/* text columns: allow line-wrap */
+.column-track-title,
+.column-artist,
+.column-author,
+.column-composer,
+.column-track-price,
+.column-isrc {
+  /*max-width: 260px;    */        /* adjust if needed */
+  white-space: normal !important;
+  overflow-wrap: anywhere;     /* break long tokens */
+  word-break: break-word;
+  line-height: 1.25;
+}
+
+/* numeric/tiny columns: keep on one line */
+.column-track-number,
+.column-player,
+.column-igt,
+.column-duration,
+.column-preview,
+.column-checkbox {
+  white-space: nowrap;
+}
+
+/* ISRC container should not squash text */
+.isrc-container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 180px;            /* tweak if needed */
+}
+ 
+  
+.status-icon
+{
+	display:flex;
+}
+.special_instruct
+{
+	border: 1px solid #696969;
+    border-radius: 10px !important;
+    font-weight: 600;
+    padding: 10px !important;
+}
+span.dot
+{
+	width: 4px;
+    height: 4px;
+    background: #333;
+    display: inline-block;
+    border-radius: 100%;
+    margin-left: 7px !important;
+	 margin-right: 7px !important;
+}
+.alert
+{
+	display: flex;
+	align-items: center;
+	padding: 9px !important;
+}
+.pull-right
+{
+	position: absolute;
+    right: 30px;
+}
+#cover-container img{
+	width:150px;
+}
+small {
+  color: #FF414E;
+  margin-top: 5px;
+}
+.error {
+  border-color: #FF414E;
+}
+.player-cover .button-playpause{
+	background-color: none;
+	transition-duration:0.2s;
+	line-height: 1em;
+}
+.player-cover .player-without-image .button-playpause{
+	background-color: rgba(0,0,0,0.7);
+	border-radius: 50%;
+}
+
+.player-cover .player-without-image .button-playpause.btn-pause,
+.player-cover .player-without-image .button-playpause:hover{
+	background-color: rgba(224,9,29,1);
+}
+
+.player-cover .button-playpause.btn-pause,
+.player-cover .button-playpause:hover{
+	background-color: rgba(0,0,0,0.7);
+	cursor: pointer;
+}
+.player-cover .player-without-image,
+.player-cover .button-playpause.btn-play::after,
+.player-cover .button-playpause.btn-pause::after,
+.player-cover .button-playpause.btn-play:hover::after{
+	box-sizing: border-box;
+	font-family: FontAwesome;
+	font-size: 60%;
+	color: #fff;
+	position: relative;
+	left: 23%;
+	vertical-align: top;
+	display: block;
+	top: 1px;
+}
+.action-icons a{
+	color: #000;
+}
+
+.player-cover .button-playpause.btn-play:hover::after{
+	content: "\f144";
+	opacity: 1;
+}
+
+.player-cover .button-playpause.btn-play::after{
+	content: "\f144";
+	opacity: 0.7;
+}
+
+.player-cover .button-playpause.btn-pause::after{
+	content: "\f04c";
+	font-weight: 100 !important;
+	font-size: 50%;
+	left: 27%;
+}
+
+.player-playback{
+	text-align: left;
+}
+.updateIsrc,.updateUpc
+{
+	cursor:pointer;
+}
+.info-table .updateUpcForm td
+{
+	vertical-align:middle !important;
+}
+.info-table
+{
+	font-size: 12px;
+    line-height: 18px;
+}
+.info-cell-value
+{
+	width:100%;
+}
+ul.list-unstyled li 
+{
+	margin-top:0px !important;
+}
+#s2id_internal_notes .select2-selection__choice {
+            color: #fff;
+        }
+		
+#s2id_internal_notes {
+    width: calc(100% - 20px) !important;
+}
+#save_special_notes
+{
+	font-size:18px;
+}
+.btn-success,.btn-danger
+{
+	height: 34px;
+    line-height: 19px;
+    letter-spacing: 0.8px;
+    font-size: 12px;
+}
+.highlight {
+    background-color: #772d9c;
+    color: #ffffff;
+    /* padding: 0.2em 0.4em; */
+    border-radius: 0.3em;
+    font-weight: 700;
+    display: inline;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.isrc-container {
+    position: relative;
+    display: inline-block; /* Allows positioning of the icon */
+    cursor: pointer; /* Change cursor to indicate interactivity */
+}
+.copy-isrc-icon
+{
+	display: none; /* Initially hide the icon */
+    position: absolute;
+    right: 5px; /* Position the icon to the right */
+    top: 50%; /* Center vertically */
+    transform: translateY(-50%); /* Adjust for centering */
+    font-size: 16px; /* Adjust icon size */
+}
+.isrc-container:hover .copy-isrc-icon {
+    display: inline; /* Show the icon on hover */
+}
+.bs-alert-danger
+{
+	color: #a94442 !important;
+    background-color: #f2dede!important;
+    border-color: #ebccd1!important;
+	margin: 15px 0px 0;
+	border-radius: 4px!important;
+}
+.bs-alert-message {
+    font-size: 13.5px!important;
+	/*white-space: pre-line;*/
+    font-family: Rubik, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+    font-weight: 450;
+    
+}
+.info-table .form-control[readonly] {
+    background-color: #fff;
+    opacity: 1;
+	color: #838383;
+}
+.internal_notes
+{
+	padding: 15px;
+    background-color: #fff;
+    border-radius: 20px;
+    box-shadow: 0px 4px 8px 8px #afa6a626;
+	display: inline-block;
+    float: right;
+}
+.internal_notes .content_div
+{
+	display:flex;
+	align-items: center;
+}
+.add_note
+{
+	background-color: #2699FB;
+    color: #fff;
+    font-size: 12px;
+    border-radius: 8px;
+}
+.dropdown-menu::before {
+            content: "";
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 0 10px 10px 10px;
+            border-style: solid;
+            border-color: transparent transparent white transparent;
+        }
+ .dropdown-menu {
+			border-radius:8px;
+			left: -10px !important;
+			top: 40px;
+			min-width:185px!important;
+        }
+        .dropdown-menu li a {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            font-size: 14px;
+			font-weight: 600;
+        }
+        .dropdown-menu li a:hover {
+            background-color: #f1f1f1;
+        }
+        .material-icons {
+            margin-right: 8px;
+            font-size: 18px;
+        }
+		
+.inreview_clr
+{
+	background: linear-gradient(145deg, #fff9db, #fceeb5);
+	box-shadow: 3px 3px 9px #e0d9b4, -3px -3px 9px #fffde7;
+	border: 1px solid #f7e8a3;
+	border-radius: 10px;
+}
+  
+  .duration-warning {
+  background-color: #ffe4e4;
+  color: #b20000;
+  font-weight: 600;
+  border-radius: 6px;
+  width: 6%;
+  display: inline-block;
+}
+
+</style>
+
+<!-- === Spotify Link Indicator Helpers === -->
+<style>
+  .artist-chip{display:inline-flex;align-items:center;gap:4px;padding:2px 6px;border-radius:4px;background:#f3f4f6b5;font:500 12px/1.2 Inter,system-ui;-webkit-font-smoothing:antialiased}
+  .artist-chip .sp-dot{width:7px;height:7px;border-radius:50%;display:inline-block}
+  .artist-chip .sp-dot.ok{background:#22c55e}
+  .artist-chip .sp-dot.no{background:#9ca3af}
+  .artist-chip a{color:inherit;text-decoration:none}
+  .sp-badge-new {
+    background: #fff8e1;
+    color: #8d0000;
+    font-size: 10px;
+    font-weight: 700;
+    /* border-radius: 6px; */
+    /* padding: 1px 4px; */
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    display: inline-block;
+}
+</style>
+
+<script>
+(function(){
+  // Split combined artist strings into individual names
+  function splitArtists(raw){
+    var s = String(raw || '').trim();
+    if(!s) return [];
+    var parts = s.split(/\s*(?:,|&|\/|;|\bx\b|\bfeat\.?\b|\bft\.?\b|\bfeaturing\b)\s*/ig)
+                 .map(t=>t.trim()).filter(Boolean);
+    // unique + keep order
+    const seen={}, out=[];
+    for(const n of parts){const k=n.toLowerCase();if(!seen[k]){seen[k]=1;out.push(n);}}
+    return out;
+  }
+
+  async function decorateSplit(nodes){
+    const allNames=[], perNode=[];
+    nodes.forEach(n=>{
+      const raw=(n.textContent||'').trim();
+      const arr=splitArtists(raw);
+      perNode.push(arr);
+      allNames.push(...arr);
+    });
+    const uniq=[...new Set(allNames)];
+    if(!uniq.length) return;
+
+    // 🔹 Fetch artist data
+    const res = await fetch(
+      '<?php echo $this->url("releases", ["action"=>"artistSpotifyMap"]); ?>?'+
+      new URLSearchParams(uniq.map(n=>["names[]",n])),
+      {credentials:"same-origin"}
+    ).then(r=>r.json()).catch(()=>({}));
+
+    // 🔹 Render artist chips
+    nodes.forEach((n,i)=>{
+      const group=document.createElement('span');
+      group.className='artist-chip-group';
+      const arr=perNode[i].length?perNode[i]:[(n.textContent||'').trim()];
+
+      arr.forEach(name=>{
+        const info=res[name]||{has:false,requested:0};
+        const chip=document.createElement('span');
+        chip.className='artist-chip';
+
+        // Dot (green/gray)
+        const dot=document.createElement('span');
+        dot.className='sp-dot '+(info.has?'ok':'no');
+        chip.appendChild(dot);
+
+        // Artist name (link if exists)
+        const text=document.createElement('span');
+        text.textContent=name;
+        if(info.has && info.url){
+          const a=document.createElement('a');
+          a.href=info.url;a.target='_blank';a.rel='noopener';
+          a.title='Open on Spotify';
+          a.appendChild(text);
+          chip.appendChild(a);
+        }else{
+          chip.appendChild(text);
+        }
+
+        // 🟡 Add NEW badge if spotify_requested = 1
+        if(!info.has && Number(info.requested) === 1){
+          const badge=document.createElement('span');
+          badge.textContent='+';
+          badge.className='sp-badge-new';
+          chip.appendChild(badge);
+        }
+
+        group.appendChild(chip);
+      });
+
+      n.innerHTML='';
+      n.appendChild(group);
+      n.dataset.spDecorated='1';
+    });
+  }
+
+  function sweep(){
+    const nodes=[...document.querySelectorAll('.js-artist:not([data-sp-decorated]),[data-artist-name]:not([data-sp-decorated])')];
+    if(nodes.length) decorateSplit(nodes);
+  }
+
+  // styling for gap between chips
+  const style=document.createElement('style');
+  style.textContent='.artist-chip-group{display:inline-flex;flex-wrap:wrap;align-items:center;gap:3px}';
+  document.head.appendChild(style);
+
+  document.addEventListener('DOMContentLoaded',sweep);
+  new MutationObserver(sweep).observe(document.documentElement,{childList:true,subtree:true});
+  window.addEventListener('pda-decorate-artists',sweep);
+})();
+</script>
+
+
+<!-- === /Spotify Link Indicator Helpers === -->
+
+
+<div class="row">
+<div id="bs-main-content" class="col-md-12">
+                        
+<div class="row">
+	<div class="col-xs-9 col-sm-9 col-md-9 col-lg-9 catalog-product-name">
+		<h1 class="album-name">
+			<?php echo $this->INFO['title'].' <small>'.$this->INFO['version'].'</small>';?>
+		</h1>
+		<h2 class="artist-name">
+  <span class="js-artist"><?php echo htmlspecialchars($this->INFO['releaseArtist'], ENT_QUOTES, 'UTF-8'); ?></span>
+</h2>
+	</div>
+	<div class="col-sm-3 col-md-3 col-lg-3">
+		<?php
+			/*if($this->STATUS == 'inreview' && $_SESSION['user_id'] != 0 && $_SESSION['STAFFUSER'] == '0')
+			{
+				?>
+				
+					<div class="internal_notes" style="margin-bottom:10px;">
+					
+						<div style="display:flex;gap: 10px;align-items: center;font-size:14px;"><i class="material-icons">person</i> <b>Review Team - QC</b> </div>
+						<?php
+						$selected_notes = explode(',',$this->INFO['internal_notes']);
+						foreach($this->NOTES as $note) 
+						{
+							if(in_array($note['id'],$selected_notes))
+							{
+								echo '<div style="margin-top: 10px;font-weight:bold;" class="content_div">'.$note['notes'].' <span class="dot"></span><span>'.$this->INFO['note_date_time'].'</span></div>';
+							}
+						}
+						?>
+						
+					</div>
+				
+				<?php
+			}*/
+		?>
+	</div>
+</div>
+  
+  
+  
+<div id="bs-main-alert2" class="bs-alert bs-alert-left bs-alert-danger" style="display:none;">
+	<div class="bs-alert-close"><i class="material-icons">close</i></div>
+	<div class="bs-alert-message"></div>
+</div>
+<div class="alert icons-bar alert-pending clearfix <?php echo ($this->STATUS == 'inreview' && $this->in_process == '0')?'inreview_clr':''; ?> ">
+
+	<?php
+	if($this->INFO['import_flag'] == '1')
+	{
+		?>
+			<div class="status-icon pull-left"><i class="fa"></i></div>
+		<?php
+	}
+	if($this->STATUS == 'delivered')
+	{
+		?>
+			<div class="status-icon pull-left">
+			<i class="fa fa-check">&nbsp;</i> Delivered	</div>
+		<?php
+	}
+	if($this->STATUS == 'inreview')
+	{
+		if($this->in_process == '0' || $_SESSION['user_id'] > 0 || $_SESSION['STAFFUSER'] == '0')
+		{
+			?>
+				<div class="status-icon pull-left">
+				<i class="fa fa-clock-o">&nbsp;</i> Submitted : If there are any issues with the store's rules, we will contact you to fix them.	</div>
+			<?php
+		}
+		else
+		{
+			?>
+				<div class="status-icon pull-left">
+				<i class="fa fa-clock-o">&nbsp;</i> In Process: Submitted to DSPs for approval.	</div>
+			<?php
+		}
+	}
+	if($this->STATUS == 'rejected')
+	{
+		?>
+			<div class="status-icon pull-left">
+			<i class="fa fa-ban">&nbsp;</i> Rejected	</div>
+		<?php
+	}
+	if($this->STATUS == 'draft')
+	{
+		?>
+			<div class="status-icon pull-left">
+			<i class="fa fa-industry">&nbsp; </i>  Draft Saved : You can review and submit whenever you're ready.	</div>
+		<?php
+	}
+	if($this->STATUS == 'taken out')
+	{
+		?>
+			<div class="status-icon pull-left">
+			<i class="fa fa-ban">&nbsp;</i> Taken Down	</div>
+		<?php
+	}
+	
+	?>
+	<img style="margin-left:30px;" src="/public/img/loader.gif" class="nf-loader hide">
+	
+	
+	
+	<?php
+	if($this->STATUS == 'draft' || $_SESSION['user_id'] == '0' || $_SESSION['STAFFUSER'] == '1')
+	{
+		?>
+			<div class="dropdown list-unstyled page_action_collection pull-right">
+			<button class="btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+				More Actions <span class="caret"></span>
+			</button>
+			<ul class="dropdown-menu">
+				
+		<?php
+	}
+	
+	if($this->STATUS == 'draft')
+	{
+		$allow_access = true;
+		if($_SESSION['USER_TYPE'] == 'Limited Access' && $_SESSION["SUBUSER"] == '0' )
+		{
+			if(strtotime('Y-m-d') >= strtotime($_SESSION['USER_START_DATE']) && strtotime('Y-m-d') <= strtotime($_SESSION['USER_END_DATE'])){}
+			else
+			{
+				$allow_access = false;
+			}
+		}
+		if($allow_access)
+		{
+		?>
+		
+		<li><a href="<?php echo $this->url('newrelease',array("action='index'"))?>?edit=<?php echo $_GET['id'];?> " target="_blank"><i class="material-icons">edit</i> Edit</a></li>
+		<li><a href="javascript:;"  id="deleteRelease"><i class="material-icons">delete</i> Delete</a></li>
+		
+		
+		
+		<?php
+		}
+	}
+	if($_SESSION['user_id'] == '0' || $_SESSION['STAFFUSER'] == '1')
+	{
+		if($this->STATUS == 'delivered')
+		{
+			?>
+			<li><a href="<?php echo $this->url('newrelease',array("action='index'"))?>?edit=<?php echo $_GET['id'];?> " target="_blank"><i class="material-icons">edit</i> Edit</a></li>
+             <li>
+  <a href="javascript:;" class="btnCorrectionOpen">
+    <i class="material-icons">build</i> Correction
+  </a>
+</li>
+
+
+			<li><a href="javascript:;"  id="btnTakeDown"><i class="material-icons">gavel</i> Take Down</a></li>
+			<?php
+		}
+		if($this->STATUS == 'inreview')
+		{
+			?>
+			<li><a href="<?php echo $this->url('newrelease',array("action='index'"))?>?edit=<?php echo $_GET['id'];?> " target="_blank"><i class="material-icons">edit</i> Edit</a></li>
+					
+			<?php 
+				if($this->in_process == '0')
+				{
+			?>
+					<li><a href="javascript:;"  id="btnProcessing"><i class="material-icons">sync</i> Move to Processing</a></li>
+			<?php   
+				}
+				else
+				{
+					?>
+					
+					<li><a href="javascript:;"  id="btnApprove"><i class="material-icons">check_circle</i> Approve</a></li>
+					<?php
+				}
+			?>
+					
+					
+				<li><a href="javascript:;"  id="btnReject"><i class="material-icons">cancel</i> Reject</a></li>
+				
+			
+			<?php
+		}
+		if($this->INFO['import_flag'] == '1')
+		{
+			?>
+			
+			<li><a href="<?php echo $this->url('newrelease',array("action='index'"))?>?edit=<?php echo $_GET['id'];?> " target="_blank"><i class="material-icons">edit</i> Edit</a></li>
+			<li><a href="javascript:;"  id="deleteRelease"><i class="material-icons">delete</i> Delete</a></li>
+			<li><a href="javascript:;"  id="btnReject"><i class="material-icons">cancel</i> Reject</a></li>
+		
+			<?php
+		}
+		
+		if($this->STATUS == 'taken out')
+		{
+			?>
+			<li><a href="javascript:;"  id="deleteRelease"><i class="material-icons">delete</i> Delete</a></li>
+			<?php
+		}
+	}
+	else
+	{
+		?>
+		<div class="action-icons pull-right">
+			<ul class="list-unstyled page_action_collection"></ul><div style="clear:left"></div>	
+		</div>
+		<?php
+	}
+
+
+	if($this->STATUS == 'draft' || $_SESSION['user_id'] == '0' || $_SESSION['STAFFUSER'] == '1')
+	{
+		?>
+			</ul>
+			</div>
+		<?php
+	}
+	?>
+	
+	
+</div>
+
+<div class="row album-details">
+	<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+		<div id="cover-container">
+			
+			<!-- COVER -->
+			<a data-lightbox="image-1" href="<?php echo $this->INFO['cover_img'];?>">
+				<img src="<?php echo $this->INFO['cover_img'];?>" class="album-cover img-thumbnail">
+			</a>
+			<?php 
+			if($this->STATUS == 'inreview' || ($this->STATUS == 'draft'  && $this->INFO['rejected_flag'] == '0'))
+			{	
+			?>		
+				<div id="updateCoverContainer">
+					<a id="uploadCoverLink" class="text-center" href="#">
+						<div>
+							<span class="glyphicon glyphicon-upload" aria-hidden="true"></span> UPDATE</div>
+					</a>
+				</div>
+			<?php } ?>
+		</div>
+	</div>
+	<div class=" col-sm-12 col-md-3 col-lg-3">
+					<table class="info-table"><tbody>
+					 <?php if($_SESSION['user_id'] == '0' || $_SESSION['STAFFUSER'] == '1')
+					 {
+						 ?>
+							<tr>
+							<td class="info-cell-label">Company Name</td>
+							<td class="info-cell-value"><?php echo $this->INFO['company_name'];?></td>
+						  </tr>
+					 <?php } ?>
+						   <tr>
+							<td class="info-cell-label">Label</td>
+							<td class="info-cell-value"><?php echo $this->INFO['label_name'];?></td>
+						  </tr>
+					
+					<?php
+// Admin = super admin (user_id == 0) OR staff admin (STAFFUSER == '1')
+$isAdmin = (isset($_SESSION['user_id']) && $_SESSION['user_id'] == 0)
+        || (isset($_SESSION['STAFFUSER']) && $_SESSION['STAFFUSER'] === '1');
+
+if ($isAdmin): ?>
+  <tr>
+    <td class="info-cell-label">Release Management System</td>
+    <td class="info-cell-value highlight">
+      <?= htmlspecialchars($this->INFO['releasing_network_name'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
+    </td>
+  </tr>
+<?php endif; ?>
+
+                      
+						  <tr>
+							<td class="info-cell-label">UPC</td>
+							<td class="info-cell-value"><?php echo $this->INFO['upc'];?></td>
+						  </tr>
+						  <tr>
+							<td class="info-cell-label">Producer catalogue No.</td>
+							<td class="info-cell-value"><?php echo $this->INFO['pcn'];?></td>
+						  </tr>
+						  
+						   <tr>
+							<td class="info-cell-label">Format</td>
+							<td class="info-cell-value"><?php echo $this->INFO['albumFormat'];?></td>
+						  </tr>
+						  <tr>
+							<td class="info-cell-label">Secondary Track Type</td>
+							<td class="info-cell-value"><?php echo $this->INFO['trackType'];?></td>
+						  </tr>
+                      <tr>
+							<td class="info-cell-label">Production Year</td>
+							<td class="info-cell-value"><?php echo $this->INFO['productionYear'];?></td>
+						  </tr>
+						  <?php if($_SESSION['user_id'] == '0' || $_SESSION['STAFFUSER'] == '1'){?>
+						  <tr>
+							<td class="info-cell-label">Instrumental</td>
+							<td class="info-cell-value"><?php echo $this->INFO['idInstrumental'];?></td>
+						  </tr>
+						  <?php } ?>
+						  <tr>
+							<td class="info-cell-label">Explicit Lyrics</td>
+                            <td class="info-cell-value 
+    <?php echo ($this->INFO['explicitContent'] == 'Yes') ? 'yesno-red' : 'yesno-green'; ?>">
+    <?php echo $this->INFO['explicitContent']; ?>
+  </td>
+</tr>
+						
+						 </tbody></table></div>
+				
+				<div class=" col-sm-12 col-md-3 col-lg-3">
+					<table class="info-table"><tbody>
+						<?php if($_SESSION['user_id'] == '0' || $_SESSION['STAFFUSER'] == '1'){?>
+                      
+						  <tr>
+							<td class="info-cell-label">Creation Date</td>
+							<td class="info-cell-value"><?php echo $this->INFO['created_on'] ;?></td>
+						  </tr>
+						  <tr>
+							<td class="info-cell-label">Physical Release Date</td>
+							<td class="info-cell-value"><?php echo $this->INFO['physicalReleaseDate'] ;?></td>
+						  </tr>
+						   <?php } ?>
+                      <tr>
+							<td class="info-cell-label">© line</td>
+							<td class="info-cell-value"><?php echo $this->INFO['cLine'];?></td>
+						  </tr>
+						  <tr>
+							<td class="info-cell-label">℗ line</td>
+							<td class="info-cell-value"><?php echo $this->INFO['pLine'];?></td>
+						  </tr>
+						  <tr>
+							<td class="info-cell-label <?php if($_SESSION['user_id'] == 0 || $_SESSION['STAFFUSER'] == '1'){ echo ''; }?>">Release Date</td>
+							<td class="info-cell-value <?php if($_SESSION['user_id'] == 0 || $_SESSION['STAFFUSER'] == '1'){ echo 'highlight'; }?>"><?php echo $this->INFO['digitalReleaseDate'] ;?></td>
+						  </tr>
+
+						   <tr>
+							<td class="info-cell-label">Lyrics language</td>
+							<td class="info-cell-value"><?php echo $this->INFO['idLyricsSelect'];?></td>
+						  </tr>
+
+						  <tr>
+							<td class="info-cell-label">Genre</td>
+							<td class="info-cell-value"><?php echo $this->INFO['mainGenre'];?></td>
+						  </tr>
+						  <tr>
+							<td class="info-cell-label">Subgenre</td>
+							<td class="info-cell-value"><?php echo $this->INFO['subgenre'];?></td>
+						  </tr>
+                      
+						  </tbody>
+					</table>
+				</div>
+			<div class=" col-sm-12 col-md-4 col-lg-4">
+					<table class="info-table" style="width:100%;margin-top: -20px;">
+						<tbody>
+							
+						 <tr>
+							<td class="info-cell-label" colspan="2">Special instruction for Your Release Approver</td>
+							
+						  </tr>
+						  <?php 
+
+									
+									echo "<tr><br><td class='info-cell-value' colspan='2'><textarea type='text' class='form-control' style='min-height: 100px;margin-top: 7px;' placeholder='IMPORTANT: If you have a Timed Release, Apple Digital Master email address, digital booklet or other operational requests for your Release Approver, include your instructions here.Please note, marketing information should be included in the Project - Marketing Highlights section. Marketing info included here will not be used.'>".$this->INFO['remark']."</textarea></td></tr>";
+								
+							?>
+
+						  
+						<?php
+							if($this->STATUS == 'inreview' && ($_SESSION['user_id'] == 0 || $_SESSION['STAFFUSER'] == '1'))
+							{
+								?>
+								<tr>
+								 <td class="info-cell-label" style="" width='50%'>
+								 <br>
+									<div class="internal_notes">
+									
+										<div style="display:flex;gap: 10px;align-items: center;font-size:14px;"><i class="material-icons">person</i> <b>Review Team - QC </b> <button class="add_note">Add/Change</button></div>
+										
+										<?php
+										$selected_notes = explode(',',$this->INFO['internal_notes']);
+										foreach($this->NOTES as $note) 
+										{
+											if(in_array($note['id'],$selected_notes))
+											{
+												echo '<div style="margin-top: 10px;font-weight:bold;" class="content_div">'.$note['notes'].' <span class="dot"></span><span>'.$this->INFO['note_date_time'].'</span></div>';
+											}
+										}
+										?>
+										
+									</div>
+                                  
+								 </td>
+                                  <td width='50%'></td>
+								 </tr>
+                          
+                          
+	
+								<?php
+							}
+							
+							if($this->STATUS == 'inreview' && $_SESSION['user_id'] != 0 && $_SESSION['STAFFUSER'] == '0')
+			{
+				?>
+				<tr>
+								 <td class="info-cell-label" style="" width='50%'>
+								 <br>
+									<div class="internal_notes">
+					
+					
+						<div style="display:flex;gap: 10px;align-items: center;font-size:14px;"><i class="material-icons">person</i> <b>Review Team - QC</b> </div>
+						<?php
+						$selected_notes = explode(',',$this->INFO['internal_notes']);
+						foreach($this->NOTES as $note) 
+						{
+							if(in_array($note['id'],$selected_notes))
+							{
+								echo '<div style="margin-top: 10px;font-weight:bold;" class="content_div">'.$note['notes'].' <span class="dot"></span><span>'.$this->INFO['note_date_time'].'</span></div>';
+							}
+						}
+                              }
+						?>
+                      </div>
+                       </td>
+                                  <td width='50%'></td>
+								 </tr>
+                      
+                      
+						<?php
+						if($this->STATUS == 'delivered')
+						{
+						?>
+						<tr><td></td><td></td></tr>
+						<tr>
+							<td class="info-cell-label" colspan="2"><a href="<?php echo $this->INFO['trend_link'];?>" target="_blank" style="display: flex;flex-direction: row;font-size:14px;"><i class="material-icons">open_in_new</i> Track Performance Trend</a></td>
+							
+						  </tr>
+						  <?php } ?>
+						</tbody>
+					</table>    
+			
+			</div>
+    </div>
+	<?php
+// ---- Region -> [code => name] ----
+$REGIONS = [
+  // ---------------- Asia ----------------
+  'Asia' => [
+    'af'=>'Afghanistan','am'=>'Armenia','az'=>'Azerbaijan','bh'=>'Bahrain','bd'=>'Bangladesh',
+    'bt'=>'Bhutan','bn'=>'Brunei','kh'=>'Cambodia','cn'=>'China','ge'=>'Georgia','hk'=>'Hong Kong',
+    'in'=>'India','id'=>'Indonesia','ir'=>'Iran','iq'=>'Iraq','il'=>'Israel','jp'=>'Japan','jo'=>'Jordan',
+    'kz'=>'Kazakhstan','kp'=>'North Korea','kr'=>'South Korea','kw'=>'Kuwait','kg'=>'Kyrgyzstan',
+    'la'=>'Laos','lb'=>'Lebanon','mo'=>'Macao','my'=>'Malaysia','mv'=>'Maldives','mn'=>'Mongolia',
+    'mm'=>'Myanmar','np'=>'Nepal','om'=>'Oman','pk'=>'Pakistan','ps'=>'Palestine','ph'=>'Philippines',
+    'qa'=>'Qatar','sa'=>'Saudi Arabia','sg'=>'Singapore','lk'=>'Sri Lanka','sy'=>'Syria','tw'=>'Taiwan',
+    'tj'=>'Tajikistan','th'=>'Thailand','tr'=>'Turkey','tm'=>'Turkmenistan','ae'=>'United Arab Emirates',
+    'uz'=>'Uzbekistan','vn'=>'Vietnam','ye'=>'Yemen'
+  ],
+
+  // ---------------- Europe ----------------
+  'Europe' => [
+    'al'=>'Albania','ad'=>'Andorra','am'=>'Armenia','at'=>'Austria','by'=>'Belarus','be'=>'Belgium',
+    'ba'=>'Bosnia and Herzegovina','bg'=>'Bulgaria','hr'=>'Croatia','cy'=>'Cyprus','cz'=>'Czech Republic',
+    'dk'=>'Denmark','ee'=>'Estonia','fi'=>'Finland','fr'=>'France','de'=>'Germany','gr'=>'Greece',
+    'hu'=>'Hungary','is'=>'Iceland','ie'=>'Ireland','it'=>'Italy','lv'=>'Latvia','li'=>'Liechtenstein',
+    'lt'=>'Lithuania','lu'=>'Luxembourg','mt'=>'Malta','md'=>'Moldova','mc'=>'Monaco','me'=>'Montenegro',
+    'nl'=>'Netherlands','mk'=>'North Macedonia','no'=>'Norway','pl'=>'Poland','pt'=>'Portugal',
+    'ro'=>'Romania','ru'=>'Russia','rs'=>'Serbia','sk'=>'Slovakia','si'=>'Slovenia','es'=>'Spain',
+    'se'=>'Sweden','ch'=>'Switzerland','ua'=>'Ukraine','gb'=>'United Kingdom',
+    'fo'=>'Faroe Islands','gi'=>'Gibraltar','gg'=>'Guernsey','im'=>'Isle of Man','je'=>'Jersey',
+    'sm'=>'San Marino','va'=>'Vatican City','ax'=>'Åland Islands','xk'=>'Kosovo','sj'=>'Svalbard and Jan Mayen'
+  ],
+
+  // ---------------- Africa ----------------
+  'Africa' => [
+    'dz'=>'Algeria','ao'=>'Angola','bj'=>'Benin','bw'=>'Botswana','bf'=>'Burkina Faso','bi'=>'Burundi',
+    'cm'=>'Cameroon','cv'=>'Cabo Verde','cf'=>'Central African Republic','td'=>'Chad','km'=>'Comoros',
+    'cg'=>'Congo','cd'=>'Democratic Republic of the Congo','ci'=>'Côte d’Ivoire','dj'=>'Djibouti','eg'=>'Egypt',
+    'gq'=>'Equatorial Guinea','er'=>'Eritrea','et'=>'Ethiopia','ga'=>'Gabon','gm'=>'Gambia','gh'=>'Ghana',
+    'gn'=>'Guinea','gw'=>'Guinea-Bissau','ke'=>'Kenya','ls'=>'Lesotho','lr'=>'Liberia','ly'=>'Libya',
+    'mg'=>'Madagascar','mw'=>'Malawi','ml'=>'Mali','mr'=>'Mauritania','mu'=>'Mauritius','ma'=>'Morocco',
+    'mz'=>'Mozambique','na'=>'Namibia','ne'=>'Niger','ng'=>'Nigeria','rw'=>'Rwanda','st'=>'São Tomé and Príncipe',
+    'sn'=>'Senegal','sc'=>'Seychelles','sl'=>'Sierra Leone','so'=>'Somalia','za'=>'South Africa',
+    'ss'=>'South Sudan','sd'=>'Sudan','tz'=>'Tanzania','tg'=>'Togo','tn'=>'Tunisia','ug'=>'Uganda',
+    'zm'=>'Zambia','zw'=>'Zimbabwe','eh'=>'Western Sahara','io'=>'British Indian Ocean Territory',
+    're'=>'Réunion','yt'=>'Mayotte','sh'=>'Saint Helena'
+  ],
+
+  // ---------------- Oceania / Australia ----------------
+  'Australia' => [
+    'as'=>'American Samoa','au'=>'Australia','cc'=>'Cocos Islands','cx'=>'Christmas Island',
+    'ck'=>'Cook Islands','fj'=>'Fiji','pf'=>'French Polynesia','gu'=>'Guam','ki'=>'Kiribati',
+    'mh'=>'Marshall Islands','fm'=>'Micronesia','nr'=>'Nauru','nc'=>'New Caledonia','nz'=>'New Zealand',
+    'nu'=>'Niue','nf'=>'Norfolk Island','mp'=>'Northern Mariana Islands','pw'=>'Palau','pg'=>'Papua New Guinea',
+    'pn'=>'Pitcairn Islands','ws'=>'Samoa','sb'=>'Solomon Islands','tk'=>'Tokelau','to'=>'Tonga',
+    'tv'=>'Tuvalu','vu'=>'Vanuatu','wf'=>'Wallis and Futuna'
+  ],
+
+  // ---------------- North America ----------------
+  'North America' => [
+    'ai'=>'Anguilla','ag'=>'Antigua and Barbuda','aw'=>'Aruba','bs'=>'Bahamas','bb'=>'Barbados','bz'=>'Belize',
+    'bm'=>'Bermuda','bq'=>'Bonaire, Sint Eustatius and Saba','vg'=>'British Virgin Islands','ca'=>'Canada',
+    'ky'=>'Cayman Islands','cr'=>'Costa Rica','cu'=>'Cuba','cw'=>'Curaçao','dm'=>'Dominica','do'=>'Dominican Republic',
+    'sv'=>'El Salvador','gl'=>'Greenland','gd'=>'Grenada','gp'=>'Guadeloupe','gt'=>'Guatemala','ht'=>'Haiti',
+    'hn'=>'Honduras','jm'=>'Jamaica','mx'=>'Mexico','mq'=>'Martinique','ms'=>'Montserrat','ni'=>'Nicaragua',
+    'pa'=>'Panama','pr'=>'Puerto Rico','kn'=>'Saint Kitts and Nevis','lc'=>'Saint Lucia',
+    'vc'=>'Saint Vincent and the Grenadines','tt'=>'Trinidad and Tobago','tc'=>'Turks and Caicos Islands',
+    'us'=>'United States','vi'=>'US Virgin Islands','sx'=>'Sint Maarten','mf'=>'Saint Martin','bl'=>'Saint Barthélemy',
+    'pm'=>'Saint Pierre and Miquelon'
+  ],
+
+  // ---------------- South America ----------------
+  'South America' => [
+    'ar'=>'Argentina','bo'=>'Bolivia','br'=>'Brazil','cl'=>'Chile','co'=>'Colombia','ec'=>'Ecuador','fk'=>'Falkland Islands',
+    'gf'=>'French Guiana','gy'=>'Guyana','py'=>'Paraguay','pe'=>'Peru','sr'=>'Suriname','uy'=>'Uruguay','ve'=>'Venezuela',
+    'gs'=>'South Georgia and the South Sandwich Islands'
+  ],
+
+  // ---------------- Antarctica ----------------
+  'Antarctica' => ['aq'=>'Antarctica']
+];
+
+// ---- OPTIONAL: Restrict to specific territories if passed ----
+$restrictCsv = isset($this->TERRITORY_CODES) ? trim((string)$this->TERRITORY_CODES) : '';
+if ($restrictCsv !== '' && strtoupper($restrictCsv) !== 'ALL') {
+  $allow = array_flip(array_map('strtolower', array_filter(array_map('trim', explode(',', $restrictCsv)))));
+  foreach ($REGIONS as $region => $list) {
+    $REGIONS[$region] = array_intersect_key($list, $allow);
+  }
+}
+
+// ---- Release status check (draft vs others) ----
+$releaseStatusRaw = (string)(
+  $this->INFO['status']   ??
+  $this->STATUS           ??
+  $this->release_status   ??
+  ''
+);
+$releaseStatus = strtolower(trim($releaseStatusRaw));
+
+$isDraft = in_array($releaseStatus, [
+  'draft','draft saved','saved as draft','draft_saved','pending_draft'
+]);
+
+// NEW: treat taken-down states as zero-territory too
+$isTakenDown = in_array($releaseStatus, [
+  'taken out','taken_out','takedown','taken down','removed','disabled'
+]);
+
+// Unified flag: when true => show 0 territories
+$isZeroTerr = ($isDraft || $isTakenDown);
+
+
+// ---- Total territories (0 if draft) ----
+$TERRITORY_TOTAL = 0;
+if (!$isZeroTerr) {
+  foreach ($REGIONS as $list) { $TERRITORY_TOTAL += count($list); }
+}
+
+?>
+
+<div role="tabpanel" class="tabs-container">
+  <ul class="nav nav-tabs js-tab-pane-list" role="tablist">
+    <li role="presentation" class="active">
+      <a href="#tracks" aria-controls="tracks" role="tab" data-toggle="tab" id="tab-tracks" aria-expanded="true">
+        Tracks <span class="badge"><?php echo $this->TOTAL_TRACK; ?></span>
+      </a>
+    </li>
+    <li role="presentation">
+      <a href="#territories" aria-controls="territories" role="tab" data-toggle="tab" id="tab-territories">
+        Territories <span class="badge"><?php echo $TERRITORY_TOTAL; ?></span>
+      </a>
+    </li>
+  </ul>
+
+  <div class="tab-content">
+    <div role="tabpanel" class="tab-pane active" id="tracks">
+      <?php echo $this->TRACK_LIST; ?>
+    </div>
+
+    <div role="tabpanel" class="tab-pane" id="territories">
+      <div class="territories-wrapper">
+      <?php if ($isZeroTerr): ?>
+  <div class="territory-header">
+    <strong>0</strong> territories currently eligible for distribution.
+  </div>
+  <div class="territory-draft-note">
+    <?php if ($isTakenDown): ?>
+      This release is taken down, so territories are not available.
+    <?php else: ?>
+      Territories will appear once the release is submitted.
+    <?php endif; ?>
+  </div>
+<?php else: ?>
+
+          
+
+          <?php foreach ($REGIONS as $region => $countries):
+            if (!count($countries)) continue; ?>
+            <h5 class="region-title"><?php echo htmlspecialchars($region); ?></h5>
+            <div class="territories-grid">
+              <?php
+              asort($countries, SORT_NATURAL | SORT_FLAG_CASE);
+              foreach ($countries as $code => $name): ?>
+                <div class="territory-item" title="<?php echo htmlspecialchars($name); ?>">
+                  <img src="https://flagcdn.com/24x18/<?php echo $code; ?>.png" alt="<?php echo htmlspecialchars($name); ?>">
+                  <span class="name"><?php echo htmlspecialchars($name); ?></span>
+                </div>
+              <?php endforeach; ?>
+            </div>
+          <?php endforeach; ?>
+        <?php endif; ?>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .territories-wrapper{margin-top:16px}
+  .territory-header{font:600 14px/1.4 Inter,system-ui;margin-bottom:6px;color:#111827}
+  .territory-draft-note{margin-top:8px;font-size:12px;color:#6b7280}
+  .region-title{
+    margin:18px 0 10px;
+    font:600 12px/1.4 Inter,system-ui;
+    color:#2e2e2e;
+  }
+  .territories-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+    gap:10px;
+  }
+  .territory-item{
+    display:flex;
+    align-items:center;
+    gap:5px;
+    background:#fff;
+    padding:6px 8px;
+    border-radius:8px;
+    box-shadow:0 1px 2px rgba(0,0,0,.06);
+    font-size:11px;
+    color:#111827;
+  }
+  .territory-item img{
+    width:19px;height:13px;border-radius:3px;object-fit:cover;
+  }
+  .territory-item:hover{background:#f9fafb}
+  .territory-item .name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+</style>
+
+
+<div class="modal fade" id="tracklist-modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+        <h4 class="modal-title"></h4>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary hidden disabled js-tracklist-modal-primary-btn"></button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+	</div>
+
+<div class="modal fade" id="generic-modal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog pn-modal-lg">
+	<div class="modal-content">
+	  <div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+		<h4 class="modal-title"></h4>
+	  </div>
+	  <div class="modal-body">
+		
+	  </div>
+	  <div class="modal-footer">
+		<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	  </div>
+	</div>
+  </div>
+</div>
+
+
+					
+</div>
+
+<script>
+		function copyISRC(text) {
+			navigator.clipboard.writeText(text)
+				.then(() => {
+					mySmallAlert('Success', 'ISRC copied to clipboard: ' + text, 1);
+					
+				})
+				.catch(err => {
+					console.error('Error copying text: ', err); // Error handling
+				});
+		}
+	$(document).ready(function(){
+		
+		var reject_reason = <?php echo json_encode($this->REASON); ?>;
+		populateOptionValue('reject_tag','<?php echo $this->url("rejectreason",array("action" => "getrejectreason"));?>','Select Reject Tag'); 
+		
+		function linkify(text) {
+			var urlPattern = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+			return text.replace(urlPattern, '<a href="$1" target="_blank">$1</a>');
+		
+		}
+		
+		
+		<?php
+			if($this->STATUS == 'draft' && $this->INFO['rejected_flag'] == '1')
+			{
+				?> 
+					
+					  var rejectReason = `<?php echo nl2br(addslashes($this->INFO["reject_reason"])); ?>`;
+						$('.bs-alert-message').html(
+							'<i class="fa fa-warning" style="font-size:15px;margin-right:3px;"></i>' + linkify(rejectReason)
+						);
+					$('#bs-main-alert2').addClass('bs-alert-left bs-alert-danger');
+					$('#bs-main-alert2').attr('style','display:block;');
+				<?php
+			}
+		?>
+		
+		$('#reject_tag').change(function(){
+			 
+			var selectedValue = $(this).val();
+			
+			if (selectedValue in reject_reason) {
+				var reason = $('#reason').val();
+				reason += ' '+reject_reason[selectedValue];
+				$('#reason').val(reason);
+			} 
+		});
+		
+		
+		$('#internal_notes').on('change', function() {
+             $('#s2id_internal_notes .select2-choices .select2-search-choice').each(function() {
+                var selectedText = $(this).find('div').text().trim();
+                var color = $('#internal_notes').find('option').filter(function() {
+                    return $(this).text().trim() === selectedText;
+                }).data('color');
+                if (color) {
+                    $(this).css('background-color', color);
+                }
+            });
+        });
+		
+		var selectedValues = "<?php echo $this->INFO['internal_notes'];?>"; // This would come from your database
+
+        // Split the comma-separated values into an array
+        var selectedArray = selectedValues.split(',');
+
+        // Set the values in the select2 dropdown
+        $('#internal_notes').select2("val", selectedArray).trigger('change');
+		
+		$('#btnReject').click(function(){
+			$('#rejectModal').modal('show');
+		});
+		$('.add_note').click(function(){
+			$('#noteModal').modal('show');
+		});
+		function setErrorMsg(field,msg)
+		{
+			$('#'+field).addClass('error');
+			$('#'+field).parent().find("small").text(msg);
+		}
+		
+		$(document).on('click', '.player-playback-playpause', function() {
+			var $this = $(this);
+			var audio_player = $this.parents('.player-cover').find('audio')[0];
+			
+			// Pause all other audio players
+			$('.player-cover').not($this.parents('.player-cover')).each(function() {
+				var other_audio_player = $(this).find('audio')[0];
+				if (other_audio_player) {
+					other_audio_player.pause();
+					$(this).find('.player-playback-playpause').removeClass('btn-pause pause').addClass('btn-play');
+				}
+			});
+			
+			// Toggle play/pause for the clicked audio player
+			if (audio_player) {
+				if ($this.hasClass('btn-play')) {
+					audio_player.play();
+					$this.removeClass('btn-play').addClass('btn-pause pause');
+				} else {
+					audio_player.pause();
+					$this.removeClass('btn-pause pause').addClass('btn-play');
+				}
+			}
+		});
+		$('#rejectRelease').click(function(e){
+			e.stopPropagation();
+			
+			$('#frmForm small').text('');
+			$('#frmForm').find('input,select').removeClass('error');
+			
+			if ($("#reason").val() == '') {
+			   setErrorMsg('reason','This field is required');
+			   return;
+			}
+			$('.nf-loader').removeClass('hide');
+			$(this).prop('disabled',true);
+			var objFormData =
+			{
+				pAction: 'REJECTED',
+				reason : $('#reason').val(),
+				KEY_ID : '<?php echo $_GET['id'];?>'
+			};
+			var objMyPost = AJAX_Post("<?php echo $this->url('releases', array('action'=>'rejected'));?>", objFormData);
+			if (objMyPost.ERR_NO === 0) {
+				$(this).prop('disabled',false);
+				$('.nf-loader').addClass('hide');
+				if (objMyPost.DATA.DBStatus === 'OK') {
+					mySmallAlert('Success', 'Rejected successfully', 1);
+					setTimeout(function(){
+						window.location.href= window.location.href;
+					},1000)
+				}
+				
+				else {
+					mySmallAlert('Error...!', 'There was an error', 0);
+					$('.nf-loader').addClass('hide');
+				}
+			}
+		});
+		$('#btnApprove').click(function(e){
+			e.stopPropagation();
+			
+			$.SmartMessageBox({
+
+					title  : "Alert!",
+		
+					content: "Do you really want to approve this release ?",
+		
+					buttons: '[Yes][No]'
+		
+				}, function (ButtonPressed) {
+		
+					if (ButtonPressed === "Yes") {
+						$('.nf-loader').removeClass('hide');
+						var objFormData =
+						{
+							pAction: 'APPROVED',
+							KEY_ID : '<?php echo $_GET['id'];?>'
+						};
+						$(this).prop('disabled',true);
+						$('.nf-loader').removeClass('hide');
+						var objMyPost = AJAX_Post("<?php echo $this->url('releases', array('action'=>'approved'));?>", objFormData);
+						if (objMyPost.ERR_NO === 0) {
+							$(this).prop('disabled',false);
+							$('.nf-loader').addClass('hide');
+							if (objMyPost.DATA.DBStatus === 'OK') {
+								mySmallAlert('Success', 'Approved successfully', 1);
+								setTimeout(function(){
+									window.location.href= window.location.href;
+								},1000)
+							}
+							
+							else {
+								mySmallAlert('Error...!', 'There was an error', 0);
+								$('.nf-loader').addClass('hide');
+							}
+						}
+								
+					}
+					if (ButtonPressed === "No") {
+		
+					}
+		
+				});
+		});
+		$('#btnProcessing').click(function(e){
+			e.stopPropagation();
+			
+			$.SmartMessageBox({
+
+					title  : "Alert!",
+		
+					content: "Do you really want to move to processing this release ?",
+		
+					buttons: '[Yes][No]'
+		
+				}, function (ButtonPressed) {
+		
+					if (ButtonPressed === "Yes") {
+						$('.nf-loader').removeClass('hide');
+						var objFormData =
+						{
+							pAction: 'Processing',
+							KEY_ID : '<?php echo $_GET['id'];?>'
+						};
+						$(this).prop('disabled',true);
+						$('.nf-loader').removeClass('hide');
+						var objMyPost = AJAX_Post("<?php echo $this->url('releases', array('action'=>'processing'));?>", objFormData);
+						if (objMyPost.ERR_NO === 0) {
+							$(this).prop('disabled',false);
+							$('.nf-loader').addClass('hide');
+							if (objMyPost.DATA.DBStatus === 'OK') {
+								mySmallAlert('Success', 'Moved successfully', 1);
+								setTimeout(function(){
+									window.location.href= window.location.href;
+								},1000)
+							}
+							
+							else {
+								mySmallAlert('Error...!', 'There was an error', 0);
+								$('.nf-loader').addClass('hide');
+							}
+						}
+								
+					}
+					if (ButtonPressed === "No") {
+		
+					}
+		
+				});
+		});
+		$('#save_special_notes').click(function(e){
+			var objFormData =
+			{
+				KEY_ID : '<?php echo $_GET['id'];?>',
+				notes : $('#internal_notes').val()
+			};
+			var objMyPost = AJAX_Post("<?php echo $this->url('releases', array('action'=>'saveNote'));?>", objFormData);
+			if (objMyPost.ERR_NO === 0) {
+				if (objMyPost.DATA.DBStatus === 'OK') {
+					$('.nf-loader').addClass('hide');
+					mySmallAlert('Success', 'Saved successfully', 1);
+					window.location.href=window.location.href;
+					$('#noteModal').modal('hide');
+				}
+				
+				else {
+					mySmallAlert('Error...!', 'There was an error', 0);
+					$('.nf-loader').addClass('hide');
+				}
+			}
+		});
+		$('#deleteRelease').click(function(e){
+			e.stopPropagation();
+			
+			$.SmartMessageBox({
+
+					title  : "Alert!",
+		
+					content: "Do you really want to take down this release ?",
+		
+					buttons: '[Yes][No]'
+		
+				}, function (ButtonPressed) {
+		
+					if (ButtonPressed === "Yes") {
+						$('.nf-loader').removeClass('hide');
+						var objFormData =
+						{
+							pAction: 'DELETE',
+							KEY_ID : '<?php echo $_GET['id'];?>'
+						};
+						var objMyPost = AJAX_Post("<?php echo $this->url('releases', array('action'=>'delete'));?>", objFormData);
+						if (objMyPost.ERR_NO === 0) {
+							if (objMyPost.DATA.DBStatus === 'OK') {
+								$('.nf-loader').addClass('hide');
+								mySmallAlert('Success', 'Deleted successfully', 1);
+								setTimeout(function(){
+										window.location.href='<?php echo $this->url('releases', array('action'=>'index'));?>';
+								},1000)
+							}
+							
+							else {
+								mySmallAlert('Error...!', 'There was an error', 0);
+								$('.nf-loader').addClass('hide');
+							}
+						}
+								
+					}
+					if (ButtonPressed === "No") {
+		
+					}
+		
+				});
+			
+		});
+		$('#btnTakeDown').click(function(e){
+			 e.stopPropagation();
+			
+			 $.SmartMessageBox({
+
+					title  : "Alert!",
+		
+					content: "Do you really want to take down this release ?",
+		
+					buttons: '[Yes][No]'
+		
+				}, function (ButtonPressed) {
+		
+					if (ButtonPressed === "Yes") {
+						$('.nf-loader').removeClass('hide');
+						var objFormData =
+						{
+							pAction: 'TAKEDOWN',
+							KEY_ID : '<?php echo $_GET['id'];?>'
+						};
+						$(this).prop('disabled',true);
+						var objMyPost = AJAX_Post("<?php echo $this->url('releases', array('action'=>'takedown'));?>", objFormData);
+						if (objMyPost.ERR_NO === 0) {
+							$(this).prop('disabled',false);
+							$('.nf-loader').addClass('hide');
+							if (objMyPost.DATA.DBStatus === 'OK') {
+								mySmallAlert('Success', 'Taken Down successfully', 1);
+								setTimeout(function(){
+									window.location.href= window.location.href;
+								},1000)
+							}
+							
+							else {
+								mySmallAlert('Error...!', 'There was an error', 0);
+								$('.nf-loader').addClass('hide');
+							}
+						}
+								
+					}
+					if (ButtonPressed === "No") {
+		
+					}
+		
+				});
+		});
+		
+		bindUploadCover();
+		
+		$('#uploadForm-uploadedFile-0').change(function(){
+			$('#display_preview').prop('disabled',false); 
+		 });
+		 $('#display_preview').click(function(){
+		  // Get the selected file
+		var file = $('#uploadForm-uploadedFile-0')[0].files[0];
+		
+		// Check if a file is selected
+		if (file) {
+			// Check if the selected file is an image
+			if (file.type && file.type.indexOf('image') === -1) {
+				alert('Please select an image file.');
+				return;
+			}
+
+			 // Create a FileReader object to read the file
+			var reader = new FileReader();
+			
+			// Set the onload event handler
+			reader.onload = function(event) {
+				// Create an Image object to get the dimensions of the image
+				var img = new Image();
+				img.src = event.target.result;
+				img.onload = function() {
+					// Check the dimensions of the image
+					var width = this.width;
+					var height = this.height;
+					if ((width !== 1500 || height !== 1500) && (width !== 3000 || height !== 3000)) {
+						alert('The cover file is not correct.');
+						return;
+					}
+					// Display the image preview
+					$('#uploadForm').addClass('hide');
+					$('#display_preview').addClass('hide');
+					$('#previewContainer').html('<img src="' + event.target.result + '" alt="Image preview">');
+					$('#buttonSaveUploadImage').removeClass('hide');
+					
+					$('#buttonSaveUploadImage').click(function(){
+			
+						var formData = new FormData();
+							formData.append('file', file);
+							formData.append('release_id', "<?php echo $_GET['id'];?>");
+							$.ajax({
+								url: '<?php echo $this->url('releases', array('action'=>'uploadimg'));?>', 
+								type: 'POST',
+								data: formData,
+								contentType: false,
+								processData: false,
+								success: function(response) {
+									 response = JSON.parse(response);
+									 $('.album-cover.img-thumbnail').attr('src','../public/uploads/'+response.file_name);
+									  $('.cover-container a').attr('href','../public/uploads/'+response.file_name);
+									 $("#updateCoverModal").modal('hide');
+									
+									 $('#upload_cover_text').html('Upload cover');
+									 $('#deleteCoverLink').addClass('hide');
+								},
+								error: function(xhr, status, errorThrown) {
+									// Handle upload error
+									console.error('Upload error:', status, errorThrown);
+								}
+						});
+					});
+				};
+			};
+			
+			// Read the file as a data URL
+			reader.readAsDataURL(file);
+		}
+		
+		
+	 });
+		function bindUploadCover()
+		{
+			/*
+			* update cover
+			*/
+			$("#uploadCoverLink").click(function(e){
+				e.preventDefault();
+				
+				$('#display_preview').prop('disabled',true);
+				
+				$('#uploadForm').removeClass('hide');
+				$('#display_preview').removeClass('hide');
+				$('#previewContainer').html('');
+				$('#buttonSaveUploadImage').addClass('hide');
+
+				var releaseId = $(this).attr("data-id");
+
+				$("#updateCoverModal").modal();
+				
+				$('.current_cover').attr('src',$('.album-cover.img-thumbnail').attr('src'));
+				$('#um_artist_name').html($('.artist-name').html());
+				$('#um_title').html($('.album-name').html());
+			});
+		}
+	});
+  
+  
+  
+ <?php if ($_SESSION['user_id'] == 0 || $_SESSION['STAFFUSER'] == '1'): ?>
+// Highlight durations under 1 min 15 sec (75 seconds) with tooltip
+$('#tracks table tbody tr').each(function () {
+  const durationCell = $(this).find('td').filter(function () {
+    return $(this).text().trim().match(/^\d{2}:\d{2}:\d{2}$/); // Matches HH:MM:SS
+  }).last();
+
+  const time = durationCell.text().trim();
+  const parts = time.split(':').map(Number);
+  let totalSeconds = 0;
+
+  if (parts.length === 3) {
+    totalSeconds = parts[0] * 3600 + parts[1] * 60 + parts[2];
+  } else if (parts.length === 2) {
+    totalSeconds = parts[0] * 60 + parts[1];
+  }
+
+  if (totalSeconds < 75) {
+    durationCell
+      .addClass('duration-warning')
+      .attr('title', 'Not Allowed: Must be at least 1:15')
+      .tooltip({ placement: 'top' })
+      .append(' ⚠️');
+  }
+});
+<?php endif; ?>
+
+</script>
+
+ <div id="rejectModal" class="modal fade in" aria-hidden="false" style="display: none;">
+<div class="modal-dialog" style="width: 700px;">
+
+<div class="modal-content">
+
+<form method="post" action="javascript:;" id="frmForm" class="form-horizontal" role="form">
+
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+	<h4 class="modal-title">Reject Release</h4>
+</div>
+
+<div class="modal-body">
+	<div id="msgBoxModal"></div>
+	<div id="msgBox"></div>
+
+          <div class="form-group form-group-sm">
+            <div class="col-sm-3 control-label">
+               <label class="col-md-12 control-label"><strong class="txt-color-blue"><?php echo $this->translate('Reject Tag'); ?></strong><span style="color: red;"></span></label>
+            </div>
+            <div class="col-sm-7">
+                <select type="select" id="reject_tag" name="reject_tag" class="select2" >
+				</select>
+				<small></small>
+            </div>
+        </div>
+         <div class="form-group form-group-sm">
+            <div class="col-sm-3 control-label">
+               <label class="col-md-12 control-label"><strong class="txt-color-blue"><?php echo $this->translate('Reject Remark'); ?></strong><span style="color: red;">*</span></label>
+            </div>
+            <div class="col-sm-7">
+                <textarea type="text" id="reason" name="reason" class="form-control " ></textarea>
+				<small></small>
+            </div>
+        </div>
+		
+<div class="modal-footer">
+	<button href="#" class="btn btn-default btn-tracks-close" data-dismiss="modal">Close</button>
+	<button id="rejectRelease" class="btn btn-primary nf-btn-submit"><i class="icon-ok-circle icon-white"></i> Reject</button>
+</div>
+</form>
+
+</div>
+</div>
+
+
+</div>
+   
+</div>
+
+<div id="noteModal" class="modal fade in" aria-hidden="false" style="display: none;">
+<div class="modal-dialog" style="width: 700px;">
+
+<div class="modal-content">
+
+<form method="post" action="javascript:;" id="noteForm" class="form-horizontal" role="form">
+
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+		<h4 class="modal-title">Special Notes</h4>
+	</div>
+
+	<div class="modal-body">
+		<div id="msgBoxModal"></div>
+		<div id="msgBox"></div>
+
+         <div class="form-group form-group-sm" style="margin-bottom:100px">
+            <div class="col-sm-3 control-label">
+               <label class="col-md-12 control-label"><strong class="txt-color-blue"><?php echo $this->translate('Special Notes'); ?></strong><span style="color: red;"></span></label>
+            </div>
+            <div class="col-sm-7">
+                <select name="internal_notes" id="internal_notes" class="select2" type="multiselect" multiple>
+					<?php
+						foreach($this->NOTES as $note)
+						{
+							echo '<option value="'.$note['id'].'"  data-color="'.$note['color_code'].'" >'.$note['notes'].'</option>';
+						}
+					?>
+				</select>
+				<small></small>
+            </div>
+        </div>
+        
+            
+		<div class="modal-footer">
+				<button href="#" class="btn btn-default btn-tracks-close" data-dismiss="modal">Close</button>
+				<button id="save_special_notes" class="btn btn-primary nf-btn-submit"><i class="icon-ok-circle icon-white"></i> Save</button>
+			</div>
+		
+		</div>
+</form>
+
+
+</div>
+
+
+</div>
+   
+</div>
+
+
+
+<div id="updateCoverModal" class="modal fade" aria-hidden="false" style="display: none;">
+
+<div class="modal-dialog modal-lg">
+	<div class="modal-content">
+
+		<div class="modal-header">
+		    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+		    <h4 class="modal-title coverModal-title">Update the cover</h4>
+		</div>
+
+		<div class="modal-body">
+
+			<div class="row">
+
+				<div class="col-md-9" id="rightPart">
+<div id="mainContainer">
+	
+	
+		<form enctype="multipart/form-data" method="post" action="javascript:;" id="uploadForm">
+		
+		<div id="uploadedFile"><input class=" inputFile inputBehavior-1" name="uploadedFile" id="uploadForm-uploadedFile-0" type="file">
+</div>
+	
+	
+		<div id="uploadDescription">
+			<p></p><p>Your cover must be:<br><strong>- Size: <span>1440*1440 or 3000*3000 pixels</span><br>- Format: <span>.jpeg</span></strong></p><p>If your cover does not upload, please click on <https: www.pixlr.com=""></https:> to resize your artwork.</p><p><strong>Warning:</strong> your cover must not contain Internet address, e-mail address, barcode, price, any info related to a physical or digital support, any info limited in time, any info that could mislead a client, or contains outrageous or explicit material.&nbsp;</p><p></p>
+		</div>
+	
+	
+		<input class=" inputInt inputBehavior-1 form-control" name="idPendingAlbum" id="uploadForm-idPendingAlbum-0" type="hidden" value="6965327">
+		<input class=" inputInt inputBehavior-1 form-control" name="startUploadTs" id="uploadForm-startUploadTs-0" type="hidden" value="">
+	</form>
+	
+	<div id="previewContainer"></div>
+	
+	<div class="clearfix"></div><br>
+	
+		
+	
+	
+</div>
+                  
+
+
+
+<style>
+ul.list-unstyled li
+{
+	margin-top: 5px;
+}
+#previewContainer img{
+    width: 70%;
+    margin: 0 auto;
+}
+/*ul.introOptions li a
+{
+	color:  inherit;
+}*/
+
+.modal-header h3
+{
+	margin : 5px inherit;
+}
+
+#rightPart
+{
+	/*padding-left: 30px;*/
+	padding-top : 10px;
+}
+
+#rightPart h2
+{
+	position : absolute;
+	top : -70px;
+}
+
+.leftPart-container
+{
+	overflow-y  : auto;
+	overflow-x  : hidden;
+	/*padding-top : 15px !important;*/
+}
+
+.modal-customHeader
+{
+	margin-bottom : 25px;
+}
+
+.footerButtonsTable
+{
+	width : 100%;
+}
+
+#coverContainer img
+{
+	/*display: inline-block;*/
+	width : 100%;
+}
+.removemultifield
+{
+	position: absolute;
+    right: 20px;
+    margin-top: 8px;
+}
+
+</style>
+
+</div>
+
+				<div class="col-md-3" id="leftPart">
+					<div class="row">
+						<div class="leftPart-container col-md-12">
+							<div id="coverContainer" class="inline-block">
+								
+								<img src="" alt="Cover unavailable" class="img-thumbnail current_cover">
+								<p id="coverDescription" class="text-center">Current cover</p>
+							</div>
+							<br>
+
+							<p>
+								<strong>Artist :</strong><br><span id="um_artist_name"></span></p>
+							<br>
+
+							<p>
+								<strong class="text-bold">Title :</strong><br>
+								<span id="um_title"></span></p>
+
+						</div>
+					</div>
+
+
+				</div>
+
+			</div>
+
+		</div>
+
+		<div class="modal-footer">
+			<table class="footerButtonsTable" width="100%">
+				<tbody><tr>
+					<td class="text-left coverModal-leftButtons"></td>
+					<td class="text-right coverModal-rightButtons"><button class="btn btn-primary" id="display_preview">Display the preview</button></td>
+					<button id="buttonSaveUploadImage" class="btn btn-primary hide">Save</button>
+				</tr>
+			</tbody></table>
+		</div>
+
+	</div> <!-- end modal-content -->
+</div> <!-- end modal-dialog -->
+
+</div>
+                  <div class="modal fade" id="correctionPickerModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" style="width:520px;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+        <h4 class="modal-title">Enable Audio Correction</h4>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label><strong>Select Track</strong></label>
+          <select id="cp-track" class="form-control">
+            <option value="">-- Select track --</option>
+          </select>
+          <small id="cp-track-help" style="display:block;"></small>
+        </div>
+
+        <!-- OPTIONAL: user chooser (agar zarurat ho) -->
+        <div class="form-group">
+          <label><strong>Select User (optional)</strong></label>
+          <input type="text" id="cp-user" class="form-control" placeholder="User ID / Email (optional)">
+          <small id="cp-user-help" style="display:block;"></small>
+        </div>
+
+        <div class="bs-alert bs-alert-danger" id="cp-error" style="display:none;margin-top:10px;">
+          <div class="bs-alert-message"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-default" data-dismiss="modal">Close</button>
+        <button class="btn btn-primary" id="cp-submit">Enable Correction</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+
+$(document).on('click', '.updateIsrc', function(e) {
+        e.preventDefault();
+        $(this).popover({
+		
+		
+				html: true,
+				 placement: 'left',
+				content: function(){
+					
+					var currentValue =  $(this).html();
+					if(currentValue == 'empty')
+						currentValue='';
+					var trackId   = $(this).attr('track_id');
+					
+					
+					// modal body
+					var html = "";
+					
+					html += "<form method='post' style='margin-bottom: 0' class='updateIsrcForm' >"
+					
+					html += "<input type='hidden' name='idTrack' value='"+trackId+"' />";
+					
+					html += "<table><tr><td stye='vertical-align: middle;'>ISRC : &nbsp;</td>";
+					html += "<td stye='vertical-align: middle;'><input type='text' name='isrc' value='"+currentValue+"' class='form-control' style='width:180px;'></td>";
+					html += "<td stye='vertical-align: middle;'>&nbsp;&nbsp;<a onclick='$(\".updateIsrc\").popover(\"hide\"); return false;' href='javascript:;'><span class='glyphicon glyphicon-remove-sign'></span></a>&nbsp;&nbsp;<a onclick='submitFormWithAjax($(this).parents(\".updateIsrcForm\")); return false;' href='javascript:;'><span class='glyphicon glyphicon-ok-sign'></span></a>";
+					html += "&nbsp;</td></tr></table>"; 
+					
+					html += "</form>";
+					return html;
+				}
+			}).popover('show');
+		 });
+		 
+		  function submitFormWithAjax(form) {
+					var $form = form;
+                    var objMasterData = $form.serializeObject();
+                    
+                    $.extend(objMasterData, { MASTER_KEY_ID: iActiveID});
+                    objMasterData = JSON.stringify(objMasterData);
+                    var objFormData =
+                    {
+                        FORM_DATA: objMasterData
+                    };
+					
+					
+                    var objMyPost = AJAX_Post("<?php echo $this->url('releases', array('action'=>'updateIsrc'));?>", objFormData);
+                    if (objMyPost.ERR_NO === 0) {
+                        if (objMyPost.DATA.DBStatus === 'OK') {
+                            
+							window.location.href=window.location.href;
+                        }
+						if (objMyPost.DATA.DBStatus === 'EXIST') {
+                            
+							 mySmallAlert('Duplicate...!', 'Duplicate ISRC', 0);
+                        }
+						
+                    }
+                    else {
+                        mySmallAlert('Error...!', 'There was an error', 0);
+                    }
+			}
+			
+			
+$(document).on('click', '.updateUpc', function(e) {
+        e.preventDefault();
+        $(this).popover({
+		
+		
+				html: true,
+				placement: 'left',
+				content: function(){
+					
+					var currentValue =  $(this).html();
+					if(currentValue == 'empty')
+						currentValue='';
+					var trackId   = $(this).attr('track_id');
+					
+					
+					// modal body
+					var html = "";
+					
+					html += "<form method='post' style='margin-bottom: 0' class='updateUpcForm' >"
+					
+					html += "<input type='hidden' name='idRelease' value='"+trackId+"' />";
+					
+					html += "<table><tr><td stye='vertical-align: middle;'>UPC : &nbsp;</td>";
+					html += "<td stye='vertical-align: middle;'><input type='text' name='upc' value='"+currentValue+"' class='form-control' style='width:180px;'></td>";
+					html += "<td stye='vertical-align: middle;'>&nbsp;&nbsp;<a onclick='$(\".updateUpc\").popover(\"hide\"); return false;' href='javascript:;'><span class='glyphicon glyphicon-remove-sign'></span></a>&nbsp;&nbsp;<a onclick='submitFormUpcWithAjax($(this).parents(\".updateUpcForm\")); return false;' href='javascript:;'><span class='glyphicon glyphicon-ok-sign'></span></a>";
+					html += "&nbsp;</td></tr></table>"; 
+					
+					html += "</form>";
+					return html;
+				}
+			}).popover('show');
+		 });
+		 
+		  function submitFormUpcWithAjax(form) {
+					var $form = form;
+                    var objMasterData = $form.serializeObject();
+                    
+                    $.extend(objMasterData, { MASTER_KEY_ID: iActiveID});
+                    objMasterData = JSON.stringify(objMasterData);
+                    var objFormData =
+                    {
+                        FORM_DATA: objMasterData
+                    };
+					
+					
+                    var objMyPost = AJAX_Post("<?php echo $this->url('releases', array('action'=>'updateUpc'));?>", objFormData);
+                    if (objMyPost.ERR_NO === 0) {
+                        if (objMyPost.DATA.DBStatus === 'OK') {
+                            
+							window.location.href=window.location.href;
+                        }
+						if (objMyPost.DATA.DBStatus === 'EXIST') {
+                            
+							 mySmallAlert('Duplicate...!', 'Duplicate UPC', 0);
+                        }
+                    }
+                    else {
+                        mySmallAlert('Error...!', 'There was an error', 0);
+                    }
+			}
+
+  
+</script>
+  <script>
+(function ($) {
+  "use strict";
+
+  // ---------------------------
+  // 1) Track list collector
+  // ---------------------------
+  function collectTracksFromPage() {
+    const list = [];
+
+    // (A) Row attributes: data-track-id / id me number
+    $('#tracks table tbody tr').each(function () {
+      const $tr = $(this);
+      let id = parseInt($tr.attr('data-track-id'), 10);
+      if (!Number.isInteger(id)) {
+        const m = ($tr.attr('id') || '').match(/(\d+)/);
+        if (m) id = parseInt(m[1], 10);
+      }
+      if (Number.isInteger(id) && id > 0) {
+        let title =
+          $tr.find('.track-title').text().trim() ||
+          ($tr.find('td').eq(1).text() || '').trim() ||
+          ($tr.find('td').eq(0).text() || '').trim() ||
+          ('Track #' + id);
+        list.push({ id, title });
+      }
+    });
+
+    // (B) Elements with track_id attribute (jaise .updateIsrc[track_id])
+    $('#tracks .updateIsrc[track_id]').each(function () {
+      const id = parseInt($(this).attr('track_id'), 10);
+      if (!Number.isInteger(id) || id <= 0) return;
+      const $tr = $(this).closest('tr');
+      let title =
+        $tr.find('.track-title').text().trim() ||
+        ($tr.find('td').eq(1).text() || '').trim() ||
+        ($tr.find('td').eq(0).text() || '').trim() ||
+        ('Track #' + id);
+      list.push({ id, title });
+    });
+
+    // (C) Hidden inputs
+    $('#tracks').find('input[name="idTrack"], input[name="track_id"], input.js-track-id').each(function () {
+      const id = parseInt($(this).val(), 10);
+      if (!Number.isInteger(id) || id <= 0) return;
+      const $tr = $(this).closest('tr');
+      let title =
+        $tr.find('.track-title').text().trim() ||
+        ($tr.find('td').eq(1).text() || '').trim() ||
+        ($tr.find('td').eq(0).text() || '').trim() ||
+        ('Track #' + id);
+      list.push({ id, title });
+    });
+
+    // (D) Buttons/links with data-track-id
+    $('#tracks').find('[data-track-id]').each(function () {
+      const id = parseInt($(this).data('track-id'), 10);
+      if (!Number.isInteger(id) || id <= 0) return;
+      const $tr = $(this).closest('tr');
+      let title =
+        $tr.find('.track-title').text().trim() ||
+        ($tr.find('td').eq(1).text() || '').trim() ||
+        ($tr.find('td').eq(0).text() || '').trim() ||
+        ('Track #' + id);
+      list.push({ id, title });
+    });
+
+    // (E) href/src me id parse (download/play links)
+    $('#tracks a[href], #tracks audio[src]').each(function () {
+      const url = $(this).attr('href') || $(this).attr('src') || '';
+      // ...?id=123 | ...?track_id=123 | ...?track=123 | /track/123
+      let id = NaN;
+      let m = url.match(/(?:^|[?&])(id|track_id|track|tid)=(\d+)(?:[&#]|$)/i);
+      if (m) id = parseInt(m[2], 10);
+      if (!Number.isInteger(id)) {
+        m = url.match(/\/track\/(\d+)(?:[\/?]|$)/i);
+        if (m) id = parseInt(m[1], 10);
+      }
+      if (!Number.isInteger(id) || id <= 0) return;
+
+      const $tr = $(this).closest('tr');
+      let title =
+        $tr.find('.track-title').text().trim() ||
+        ($tr.find('td').eq(1).text() || '').trim() ||
+        ($tr.find('td').eq(0).text() || '').trim() ||
+        ('Track #' + id);
+      list.push({ id, title });
+    });
+
+    // Unique by id
+    const seen = new Set();
+    return list.filter(t => (seen.has(t.id) ? false : seen.add(t.id)));
+  }
+
+  // ---------------------------
+  // 2) Open modal + populate
+  // ---------------------------
+  function openCorrectionPicker() {
+    const tracks = collectTracksFromPage();
+    const $sel = $('#cp-track');
+    $sel.empty().append('<option value="">-- Select track --</option>');
+
+    if (!tracks.length) {
+      $('#cp-error .bs-alert-message').text('Page par track IDs nahi mile. Kripya track rows me data-track-id ya .updateIsrc[track_id] ya hidden idTrack add karein.');
+      $('#cp-error').show();
+    } else {
+      $('#cp-error').hide();
+      tracks.forEach(t => {
+        $sel.append($('<option/>', { value: t.id, text: t.title + ' (ID: ' + t.id + ')' }));
+      });
+    }
+
+    $('#cp-user').val('');
+    $('#cp-track-help').text('');
+    $('#cp-user-help').text('');
+    $('#correctionPickerModal').modal('show');
+  }
+
+  $(document).on('click', '.btnCorrectionOpen', function (e) {
+    e.preventDefault();
+    openCorrectionPicker();
+  });
+
+  // ---------------------------
+  // 3) Submit correction enable
+  // ---------------------------
+  $('#cp-submit').on('click', function () {
+    const trackId = parseInt($('#cp-track').val(), 10);
+    const targetUser = ($('#cp-user').val() || '').trim();
+
+    if (!Number.isInteger(trackId) || trackId <= 0) {
+      $('#cp-track-help').text('Please select a track.');
+      return;
+    }
+    $('#cp-track-help').text('');
+    $('#cp-error').hide();
+
+    $.SmartMessageBox({
+      title: "Confirm",
+      content: "Enable correction for Track ID " + trackId + (targetUser ? (" (User: " + targetUser + ")") : "") + "?",
+      buttons: '[Yes][No]'
+    }, function (btn) {
+      if (btn !== 'Yes') return;
+
+      $('.nf-loader').removeClass('hide');
+      const payload = { KEY_ID: trackId, allow_replace: 1 };
+      if (targetUser) payload.target_user = targetUser; // optional: backend handle kare
+
+      $.ajax({
+        type: "POST",
+        url: "/releases/allowreplace",
+        data: payload,
+        dataType: "json"
+      }).done(function (res) {
+        if (res && res.ERR_NO === 0 && res.DATA && res.DATA.DBStatus === 'OK') {
+          mySmallAlert('Success', 'Correction enabled', 1);
+          $('#correctionPickerModal').modal('hide');
+        } else {
+          mySmallAlert('Error', (res && res.DATA && res.DATA.Message) || 'Something went wrong', 0);
+        }
+      }).fail(function () {
+        mySmallAlert('Error', 'Server error', 0);
+      }).always(function () {
+        $('.nf-loader').addClass('hide');
+      });
+    });
+  });
+
+})(jQuery);
+</script>
+<script>
+function toAbs(url){ try { return new URL(url, location.origin).href; } catch(e){ return url; } }
+
+function doTransfer(id, href, $btn, $msg){
+  $.ajax({
+    url: '/releases/transfertrack',
+    type: 'POST',
+    dataType: 'json',
+    data: { track_id: id, file_url: href },
+    success: function(r){
+      if (r && r.status === 'OK') {
+        $btn.removeClass('btn-primary').addClass('btn-success').text('Transferred');
+        $msg.text('✓ ' + (r.remote_file || 'Done'));
+      } else if (r && r.status === 'NEED_FOLDER') {
+        var val = prompt('Enter Believe folder id (digits only)');
+        if (!val || !/^\d{3,}$/.test(val)) {
+          $btn.prop('disabled', false).text('Transfer');
+          $msg.text('Invalid folder id');
+          return;
+        }
+        $.post('/releases/savebelievefolder',
+               { release_id: r.release_id, believe_folder: val },
+               function(sr){
+                 if (sr && sr.status === 'OK') {
+                   // retry once
+                   doTransfer(id, href, $btn, $msg);
+                 } else {
+                   $btn.prop('disabled', false).text('Transfer');
+                   $msg.text('Save failed');
+                 }
+               }, 'json');
+      } else {
+        $btn.prop('disabled', false).text('Transfer');
+        $msg.text('Failed: ' + (r && r.msg ? r.msg : 'Unknown'));
+      }
+    },
+    error: function(xhr){
+      $btn.prop('disabled', false).text('Transfer');
+      $msg.text('Failed ['+xhr.status+']');
+    }
+  });
+}
+
+$(document).on('click', '.js-transfer-track', function(){
+  var $btn = $(this), id = $btn.data('track-id');
+  var $row = $btn.closest('tr');
+  var $a = $row.find('a[href*="/public/uploads/audio/"]');
+  var href = $a.length ? toAbs($a.attr('href')) : '';
+  if (!href || !/\.wav(\?|#|$)/i.test(href)) { alert('WAV link not found in this row.'); return; }
+  var $msg = $btn.siblings('.transfer-msg');
+  $btn.prop('disabled', true).text('Transferring...'); $msg.text('');
+  doTransfer(id, href, $btn, $msg);
+});
+</script>
+
+<script>
+(function(){
+  function tagTrackTableArtistCells(){
+    var container = document.getElementById('tracks');
+    if(!container) return;
+    var tbl = container.querySelector('table'); if(!tbl) return;
+
+    var idx = -1;
+    var ths = (tbl.tHead && tbl.tHead.rows[0]) ? Array.prototype.slice.call(tbl.tHead.rows[0].cells) : [];
+    if (ths.length){
+      for (var i=0;i<ths.length;i++){
+        var t = (ths[i].textContent||'').trim().toLowerCase();
+        if (t==='artist' || t==='artists' || t==='artist name') { idx = i; break; }
+      }
+    }
+    if (idx < 0){
+      var headRow = tbl.querySelector('tbody tr');
+      if (headRow){
+        var cells = Array.prototype.slice.call(headRow.cells);
+        for (var j=0;j<cells.length;j++){
+          var t = (cells[j].textContent||'').trim().toLowerCase();
+          if (t==='artist' || t==='artists' || t==='artist name'){ idx = j; break; }
+        }
+      }
+    }
+    if (idx < 0) return;
+    var rows = tbl.tBodies.length ? tbl.tBodies[0].rows : [];
+    for (var r=0; r<rows.length; r++){
+      var cell = rows[r].cells[idx];
+      if(!cell || cell.getAttribute('data-sp-decorated')) continue;
+      var nm = (cell.textContent||'').trim();
+      if(!nm) continue;
+      cell.innerHTML = '<span class="js-artist">'+nm.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</span>';
+      cell.setAttribute('data-sp-decorated','1');
+    }
+  }
+  document.addEventListener('DOMContentLoaded', tagTrackTableArtistCells);
+  document.addEventListener('click', function(e){
+    var t=e.target.closest('[data-toggle="tab"],a[href="#tracks"]'); if(t){ setTimeout(tagTrackTableArtistCells,0); }
+  });
+  var el=document.getElementById('tracks');
+  if(el){ new MutationObserver(function(){ tagTrackTableArtistCells(); }).observe(el,{childList:true,subtree:true}); }
+})();
+</script>
+
+
+
+

@@ -1,0 +1,901 @@
+<style>
+.panel-heading .help
+{
+	font-size:22px;
+	color:#0998cd;
+	margin-left:10px;
+	cursor:pointer;
+	
+}
+.dt-toolbar
+{
+	display:none;
+}
+#bs-main-content-container
+{
+	padding-top:20px;
+}
+small {
+  color: #FF414E;
+  margin-top: 5px;
+}
+.error {
+  border-color: #FF414E;
+}
+.info-box p {
+    padding: 15px;
+    margin-bottom: 15px;
+}
+.bg-info {
+    background-color: #d9edf7;
+}
+.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th
+{
+    vertical-align: top !important;
+}
+.form-group
+{
+	margin-bottom: 0px;
+}
+legend
+{
+    font-family: open_sansregular;
+    font-weight: 700;
+    color: #4a4a4a;
+    background-color: #ffffff;
+    font-size: 17px;
+}
+.select2-container-multi .select2-choices .select2-search-choice
+{
+	font-weight:normal;
+}
+.checkbox
+{
+	margin-top:0px;margin-bottom:0px;
+}
+.buttons.flex
+{
+	    align-items: center;
+}
+  .h5, h5 {
+    font-size: 13px;
+}
+  .panel-default {
+    border-color: #ffffff;
+}
+</style><!-- widget grid -->
+<section id="widget-grid" class="page page-ui-tables">
+    <!-- row -->
+    <div class="row">
+        <!-- NEW WIDGET START -->
+        
+            <?php include_once("grid.php"); ?>
+            <?php include_once("form.php"); ?>
+        
+    </div>
+    <!-- end row -->
+    <!-- end row -->
+</section>
+<!-- end widget grid -->
+<script type="text/javascript">
+	  var SUB_USER = false;
+    $(document).ready(function () {
+		
+		
+		acl_PRINT=0;
+		
+		$('#btnNew').show();
+		
+		$('#btnBack2').click(function(){
+			$('#btnBack').trigger('click');
+		})
+		
+		
+		$('.bs-alert-message').html('As an administrator, you have the ability to manage user accounts for people from your organization. When creating a new user, you will define his catalog scope, permission level and access to backstage sections. Once created, the new user will receive an automatic email with his login and password.');
+		$('#bs-main-alert').addClass('bs-alert-left');
+		
+		populateMultipleOptionValue('labels',"<?php echo $this->url('labels',array('action' => 'getlabelswithoutnew'))?>");
+		populateMultipleOptionValue('artist',"<?php echo $this->url('releases',array('action' => 'getArtist'))?>");
+		populateMultipleOptionValue('releasing_network',"<?php echo $this->url('releasingnetwork',array('action' => 'getreleasingnetwork'))?>");
+		
+		function setErrorMsg(field,msg)
+		{
+			$('#'+field).addClass('error');
+			$('#'+field).parent().find("small").text(msg);
+		}
+		
+		$('#user_type,#loginStatus,#accessLevel').change(function(){
+			oTable.fnDraw();
+		});
+		
+		$('#mysearch').on('keyup',function(){
+			oTable.fnDraw();
+		});
+		
+		
+		$('#bs-main-alert').attr('style','display:block;');
+		$('#c_a_all').click(function(){
+			
+			if($('#new_release').prop('checked') == true)
+			{
+				$('input[type="checkbox"]').prop('checked',false);
+			}
+			else
+				$('input[type="checkbox"]').prop('checked',true);
+		});
+		$('#btnNew').click(function(){
+			$('#bs-main-alert').removeAttr('style');
+			$('.releasing_network,.main_user_div').removeClass('hide');
+			SUB_USER = false;
+		});
+		$('#btnBack').click(function(){
+			$('#bs-main-alert').attr('style','display:block;');
+		});
+        $("#btnSave").click(function (e) {
+            e.stopPropagation();
+            $("#frmForm").submit();
+        });
+		$("#start_date,#end_date").datetimepicker({
+            format: "DD-MM-YYYY"
+        });
+		$('input[name=user_type]').change(function(){
+			if($('#user_type1').prop('checked') == true)
+				$('.normal_user_dates').removeClass('hide');
+			else
+			{
+				$('.normal_user_dates').addClass('hide');
+				$('#start_date,#end_date').val('');
+			}
+				
+		})
+		$('#label_select_all').click(function(){
+			 $('#labels option').prop('selected', true).trigger('change');
+		});
+       
+		$('#label_remove_all').click(function(){
+			 $('#labels option').prop('selected', false).trigger('change');
+			 
+		});
+		$('#artist_select_all').click(function(){
+			 $('#artist option').prop('selected', true).trigger('change');
+		});
+       
+		$('#artist_remove_all').click(function(){
+			 $('#artist option').prop('selected', false).trigger('change');
+			 
+		});
+		$('#net_select_all').click(function(){
+			 $('#releasing_network option').prop('selected', true).trigger('change');
+		});
+       
+		$('#net_remove_all').click(function(){
+			 $('#releasing_network option').prop('selected', false).trigger('change');
+			 
+		});
+		
+		$('#viewSubuser').click(function(){
+			$('#main_user').val($(this).attr('user'));
+			oTable2.fnDraw();
+			$('#subusermodal').modal({backdrop: 'static', keyboard: false});
+		})
+        $("#frmForm").validate(
+        {
+                submitHandler: function (form) {
+					var required = false;
+					$('#frmForm small').text('');
+					$('#frmForm').find('input,select').removeClass('error');
+				
+                    if ($("#login_name").val() == '') {
+                       required = true;
+					   setErrorMsg('login_name','This field is required');
+                    }
+					if ($("#email").val() == '') {
+                        required = true;
+						setErrorMsg('email','This field is required');
+                    }
+					
+					if( $("#password").length > 0)
+					{
+						if ($("#password").val() == '') {
+							required = true;
+							setErrorMsg('password','This field is required');
+						}
+						if ($("#confm_password").val() == '') {
+							required = true;
+							setErrorMsg('confm_password','This field is required');
+						}
+						else
+						{
+							if($("#password").val()  != $("#confm_password").val())
+							{
+								required = true;
+								setErrorMsg('confm_password','Password and Confirm Password not matched');
+							}
+						}
+						
+						if(!SUB_USER)
+						{
+							if ($("#releasing_network option:selected").length == '0') {
+								required = true;
+								setErrorMsg('releasing_network','This field is required');
+							}
+						}
+					}
+					if($('#user_type1').prop('checked') == true && $("#start_date").length > 0)
+					{
+						if(!SUB_USER)
+						{
+							if($("#start_date").val()  == '')
+							{
+								required = true;
+								setErrorMsg('start_date','This field is required');
+							}
+							if($("#end_date").val()  == '')
+							{
+								required = true;
+								setErrorMsg('end_date','This field is required');
+							}
+						}
+					}
+					if ($("#labels option:selected").length == '0') {
+                        required = true;
+						setErrorMsg('labels','This field is required');
+                    }
+					
+					
+					if ($("#company_name").val() == '') {
+                       required = true;
+					   setErrorMsg('company_name','This field is required');
+                    }
+					if ($("#first_name").val() == '') {
+                       required = true;
+					   setErrorMsg('first_name','This field is required');
+                    }
+					if ($("#last_name").val() == '') {
+                       required = true;
+					   setErrorMsg('last_name','This field is required');
+                    }
+					if ($("#address").val() == '') {
+                       required = true;
+					   setErrorMsg('address','This field is required');
+                    }
+					if ($("#city").val() == '') {
+                       required = true;
+					   setErrorMsg('city','This field is required');
+                    }
+					if ($("#isoCountry").val() == '0') {
+                       required = true;
+					   setErrorMsg('isoCountry','This field is required');
+                    }
+                    if(strActionMode=="ADD") {
+                        //Validate  duplicate
+                       
+						var isDuplicate = fn_validate_duplicate($("#login_name").val(), "tbl_staff", "login_name", "<?php echo $this->url('user', array('action'=>'validateduplicate'));?>");
+                        if (isDuplicate) {
+							required = true;
+							setErrorMsg('login_name','Login name already exist');
+                        }
+						var isDuplicate = fn_validate_duplicate($("#email").val(), "tbl_staff", "email", "<?php echo $this->url('user', array('action'=>'validateduplicate'));?>");
+                        if (isDuplicate) {
+                           required = true;
+						  setErrorMsg('email','Email already exist.');
+                        }
+                    }
+					
+					if(required)
+						return;
+					
+					$('.nf-loader').removeClass('hide');
+					$('#btnSave').prop('disabled',true);
+                    
+                    var $form = $('#frmForm');
+                    var objMasterData = $form.serializeObject();
+                    if (strActionMode == 'ADD')
+                        $.extend(objMasterData, { MASTER_KEY_ID: 0});
+                    else
+                        $.extend(objMasterData, { MASTER_KEY_ID: iActiveID});
+                    objMasterData = JSON.stringify(objMasterData);
+                    var objFormData =
+                    {
+                        pAction    : strActionMode,
+                        FORM_DATA: objMasterData
+                    };
+                    var objMyPost = AJAX_Post("<?php echo $this->url('user', array('action'=>'save'));?>", objFormData);
+                    if (objMyPost.ERR_NO === 0) {
+                        if (objMyPost.DATA.DBStatus === 'OK') {
+							$('#btnSave').prop('disabled',false);
+							$('.nf-loader').addClass('hide');
+                            strActionMode = "EDIT";
+                            mySmallAlert('Save Record', 'User Saved successfully', 1);
+                            iActiveID = objMyPost.DATA.MY_ID;
+                            visibleControl('widForm', false);
+                            visibleControl('widGrid', true);
+							$('#bs-main-alert').attr('style','display:block;');
+                            oTable.fnDraw(false);
+                        }
+                    }
+                    else {
+                        mySmallAlert('Error...!', 'There was an error', 0);
+						$('#btnSave').prop('disabled',false);
+						$('.nf-loader').addClass('hide');
+                    }
+                }
+            });
+    });
+   
+    var pagefunction = function () {
+        
+        var responsiveHelper_dt_basic = undefined;
+		var responsiveHelper_dt_basic2 = undefined;
+        var responsiveHelper_datatable_fixed_column = undefined;
+        var responsiveHelper_datatable_col_reorder = undefined;
+        var responsiveHelper_datatable_tabletools = undefined;
+        var breakpointDefinition = {
+            tablet: 1024,
+            phone: 480
+        };
+		var deleteact=acl_DELETE;
+        /* TABLETOOLS */
+        oTable = $("#tblMasterList").dataTable(
+            {
+                "bAutoWidth": false,
+                "bLengthChange": false,
+                
+              
+                "sDom": "<'dt-toolbar'<'col-xs-12 col-sm-6 hidden-xs'f><'col-sm-6 col-xs-12 hidden-xs'<'toolbar'>>r>" +
+                    "t" +
+                    "<'dt-toolbar-footer'<''p>>",
+                "bProcessing": true,
+                "bServerSide": true,
+                "autoWidth" : true,
+                "preDrawCallback" : function() {
+                    // Initialize the responsive datatables helper once.
+                    if (!responsiveHelper_dt_basic) {
+                        responsiveHelper_dt_basic = new ResponsiveDatatablesHelper($('#tblMasterList'), breakpointDefinition);
+                    }
+					//$('#tblMasterList_wrapper').parent().append(skeletonDiv);
+					//$("#tblMasterListLoader").show();
+					//$("#tblMasterList_wrapper").hide(); // hide datatable wrapper
+                },
+                "rowCallback" : function(nRow) {
+                    responsiveHelper_dt_basic.createExpandIcon(nRow);
+                },
+                "drawCallback" : function(oSettings) {
+    responsiveHelper_dt_basic.respond();
+    //$('#tblMasterList_wrapper,#tblMasterList').show();
+    //$('#tblMasterListLoader').remove();
+
+    let totalRecords = oSettings.fnRecordsDisplay();
+    if (totalRecords === 0) {
+        $('#noUsersMessage').show();
+    } else {
+        $('#noUsersMessage').hide();
+    }
+},
+                "fnServerParams": function (aoData) {
+                    aoData.push({ "name": "id", "value": "" },{ "name": "mysearch", "value": $('#mysearch').val() },{ "name": "loginStatus", "value": $('#loginStatus').val() },{ "name": "accessLevel", "value": $('#accessLevel').val() },{ "name": "user_type", "value": $('#user_type').val() });
+                },
+                "sAjaxSource": "<?php echo $this->url('user', array('action'=>'list'));?>",
+                "aoColumns": [
+                    { "bSearchable": false, "bVisible": false },
+                    
+					
+                    null,
+                    null,
+					null,
+                    null,
+					
+					{"bSearchable": false, "bSortable": true,
+                        "mRender" : function (data, type, full) {
+							
+							var user_status='Disable';
+							if(full[5] == '1')
+								user_status='Enable';
+							
+							var substatus='';
+							if(full[6] == '1')
+							{
+								substatus='disabled';
+								user_status='Enable';
+							}
+							
+							var resend_button= '';
+							
+							if(full[3] == '<b>Pending Connection</b><br>&nbsp;')
+							{
+								resend_button= '<button type="button" class="btn btn-default btn-xs btn-list resend" row-id="'+full[0]+'"><span class="glyphicon glyphicon-send"></span>Resend</button>';
+							}
+							
+							
+							var action_button = '<div style="white-space:nowrap;"><button type="button" class="btn btn-default btn-xs btn-list edit" row-id="'+full[0]+'"><span class="glyphicon glyphicon-pencil"></span>Edit</button><button type="button" class="btn btn-default btn-xs btn-list delete" row-id="'+full[0]+'"><span class="glyphicon glyphicon-trash"></span>Delete</button><button type="button" class="btn btn-default btn-xs btn-list  '+substatus+' '+user_status+'_user" row-id="'+full[0]+'"><span class="glyphicon glyphicon-off"></span>'+user_status+'</button>'+resend_button+'</div>';
+                            return action_button;
+                        }
+                    }
+					
+                    
+                ],
+                "columnDefs": [
+                    { className: "hidden", "targets": [ 0 ] }
+                ]
+            });
+       
+
+
+		 oTable2 = $("#tblMasterList2").dataTable(
+            {
+                "bAutoWidth": false,
+                "bLengthChange": false,
+                
+              
+                "sDom": "<'dt-toolbar'<'col-xs-12 col-sm-6 hidden-xs'f><'col-sm-6 col-xs-12 hidden-xs'<'toolbar'>>r>" +
+                    "t" +
+                    "<'dt-toolbar-footer'<''p>>",
+                "bProcessing": true,
+                "bServerSide": true,
+                "autoWidth" : true,
+                "preDrawCallback" : function() {
+                    // Initialize the responsive datatables helper once.
+                    if (!responsiveHelper_dt_basic2) {
+                        responsiveHelper_dt_basic2 = new ResponsiveDatatablesHelper($('#tblMasterList2'), breakpointDefinition);
+                    }
+					$('#tblMasterList2_wrapper').parent().append(skeletonDiv);
+					$("#tblMasterListLoader").show();
+					$("#tblMasterList2_wrapper").hide(); // hide datatable wrapper
+                },
+                "rowCallback" : function(nRow) {
+                    responsiveHelper_dt_basic2.createExpandIcon(nRow);
+                },
+                "drawCallback" : function(oSettings) {
+                    responsiveHelper_dt_basic2.respond();
+					$('#tblMasterList2_wrapper,#tblMasterList2').show();
+					$('#tblMasterListLoader').remove();
+                },
+                "fnServerParams": function (aoData) {
+                    aoData.push({ "name": "id", "value": "" },{ "name": "main_user", "value": $('#main_user').val() });
+                },
+                "sAjaxSource": "<?php echo $this->url('user', array('action'=>'list2'));?>",
+                "aoColumns": [
+                    { "bSearchable": false, "bVisible": false },
+                    
+					
+                    null,
+                    null,
+					null,
+                    null,
+					
+					{"bSearchable": false, "bSortable": true,
+                        "mRender" : function (data, type, full) {
+							
+							var user_status='Disable';
+							if(full[5] == '1')
+								user_status='Enable';
+							
+							
+							var action_button = '<div style="white-space:nowrap;"><button type="button" class="btn btn-default btn-xs btn-list '+user_status+'_user" row-id="'+full[0]+'"><span class="glyphicon glyphicon-off"></span>'+user_status+'</button></div>';
+                            return action_button;
+                        }
+                    }
+					
+                    
+                ],
+                "columnDefs": [
+                    { className: "hidden", "targets": [ 0 ] }
+                ]
+            });
+       
+
+
+	   /* END TABLETOOLS */
+		$('.dataTables_filter input').attr("placeholder", "Search");
+		
+		//$(".dataTables_filter label").addClass('right');
+        //fnEdit("<?php echo $this->url('user', array('action'=>'getrec'));?>");
+        //fnView("<?php echo $this->url('user', array('action'=>'getrec'));?>");
+        //fnDelete("<?php echo $this->url('user', array('action'=>'delete'));?>");
+		
+		//fnDelete("<?php echo $this->url('user', array('action'=>'delete'));?>");
+        var strUrl = "<?php echo $this->url('user', array('action'=>'getrec'));?>";
+        //Function Used for Edit
+        oTable.delegate('button.edit', 'click', function (e) {
+            e.preventDefault();
+            //objMyDetailRecords.length = 0;
+            //tblDetailsListBody.html('');
+            /*
+             var nRow = $(this).parents('tr')[0];
+             var aData = oTable.fnGetData(nRow);
+             iActiveID = parseInt(aData[0]);
+             */
+            iActiveID = $(this).attr("row-id");
+			
+            //empty the form fields
+            clearForm("frmForm");
+            cPopulateEditEntries(iActiveID, strUrl);
+            glbControlEnable(true);
+        });
+        //Function Used for View
+        oTable.delegate('button.Enable_user', 'click', function (e) {
+            e.preventDefault();
+            iActiveID = $(this).attr("row-id");
+			$.SmartMessageBox({
+				title  : "Alert!",
+				content: "Are you sure you want to enable this account?",
+				buttons: '[Yes][No]'
+			}, function (ButtonPressed) {
+				if (ButtonPressed === "Yes") {
+					var objFormData =
+					{
+						pAction: 'ENABLE',
+						KEY_ID : iActiveID
+					};
+					var objMyPost = AJAX_Post("<?php echo $this->url('user', array('action'=>'enable'));?>", objFormData);
+					if (objMyPost.ERR_NO === 0) {
+						if (objMyPost.DATA.DBStatus === 'OK') {
+							oTable.fnDraw(false);
+							mySmallAlert('Success', 'User Enabled successfully', 1);
+						}
+						
+						else {
+							mySmallAlert('Error...!', 'There was an error', 0);
+						}
+					}
+				}
+				if (ButtonPressed === "No") {
+				}
+			});
+			
+        });
+		 oTable2.delegate('button.Enable_user', 'click', function (e) {
+            e.preventDefault();
+            var KEY_ID = $(this).attr("row-id");
+			$.SmartMessageBox({
+				title  : "Alert!",
+				content: "Are you sure you want to enable this account?",
+				buttons: '[Yes][No]'
+			}, function (ButtonPressed) {
+				if (ButtonPressed === "Yes") {
+					var objFormData =
+					{
+						pAction: 'ENABLE',
+						KEY_ID : KEY_ID
+					};
+					var objMyPost = AJAX_Post("<?php echo $this->url('user', array('action'=>'enable2'));?>", objFormData);
+					if (objMyPost.ERR_NO === 0) {
+						if (objMyPost.DATA.DBStatus === 'OK') {
+							oTable2.fnDraw(false);
+							mySmallAlert('Success', 'User Enabled successfully', 1);
+						}
+						
+						else {
+							mySmallAlert('Error...!', 'There was an error', 0);
+						}
+					}
+				}
+				if (ButtonPressed === "No") {
+				}
+			});
+			
+        });
+		oTable.delegate('button.resend', 'click', function (e) {
+            e.preventDefault();
+            iActiveID = $(this).attr("row-id");
+			
+			var objFormData =
+			{
+				KEY_ID : iActiveID
+			};
+			var objMyPost = AJAX_Post("<?php echo $this->url('user', array('action'=>'resend'));?>", objFormData);
+			if (objMyPost.ERR_NO === 0) {
+				if (objMyPost.DATA.DBStatus === 'OK') {
+					//oTable.fnDraw();
+					mySmallAlert('Success', 'User Login info resend successfully', 1);
+				}
+				
+				else {
+					mySmallAlert('Error...!', 'There was an error', 0);
+				}
+			}
+        });
+		
+		oTable.delegate('button.Disable_user', 'click', function (e) {
+            e.preventDefault();
+            iActiveID = $(this).attr("row-id");
+			$.SmartMessageBox({
+				title  : "Alert!",
+				content: "Are you sure you want to disable this account?",
+				buttons: '[Yes][No]'
+			}, function (ButtonPressed) {
+				if (ButtonPressed === "Yes") {
+					var objFormData =
+					{
+						pAction: 'DISABLE',
+						KEY_ID : iActiveID
+					};
+					var objMyPost = AJAX_Post("<?php echo $this->url('user', array('action'=>'disable'));?>", objFormData);
+					if (objMyPost.ERR_NO === 0) {
+						if (objMyPost.DATA.DBStatus === 'OK') {
+							oTable.fnDraw(false);
+							mySmallAlert('Success', 'User Disabled successfully', 1);
+						}
+						
+						else {
+							mySmallAlert('Error...!', 'There was an error', 0);
+						}
+					}
+				}
+				if (ButtonPressed === "No") {
+				}
+			});
+          
+        });
+		oTable2.delegate('button.Disable_user', 'click', function (e) {
+            e.preventDefault();
+            var KEY_ID = $(this).attr("row-id");
+			$.SmartMessageBox({
+				title  : "Alert!",
+				content: "Are you sure you want to disable this account?",
+				buttons: '[Yes][No]'
+			}, function (ButtonPressed) {
+				if (ButtonPressed === "Yes") {
+					var objFormData =
+					{
+						pAction: 'DISABLE',
+						KEY_ID : KEY_ID
+					};
+					var objMyPost = AJAX_Post("<?php echo $this->url('user', array('action'=>'disable2'));?>", objFormData);
+					if (objMyPost.ERR_NO === 0) {
+						if (objMyPost.DATA.DBStatus === 'OK') {
+							oTable2.fnDraw(false);
+							mySmallAlert('Success', 'User Disabled successfully', 1);
+						}
+						
+						else {
+							mySmallAlert('Error...!', 'There was an error', 0);
+						}
+					}
+				}
+				if (ButtonPressed === "No") {
+				}
+			});
+          
+        });
+		 oTable.delegate('button.delete', 'click', function (e) {
+            e.preventDefault();
+            iActiveID = $(this).attr("row-id");
+			$.SmartMessageBox({
+				title  : "Alert!",
+				content: "Are you sure you want to delete this user?",
+				buttons: '[Yes][No]'
+			}, function (ButtonPressed) {
+				if (ButtonPressed === "Yes") {
+					var objFormData =
+					{
+						pAction: 'DELETE',
+						KEY_ID : iActiveID
+					};
+					var objMyPost = AJAX_Post("<?php echo $this->url('user', array('action'=>'delete'));?>", objFormData);
+					if (objMyPost.ERR_NO === 0) {
+						if (objMyPost.DATA.DBStatus === 'OK') {
+							oTable.fnDraw(false);
+							mySmallAlert('Success', 'User Deleted successfully', 1);
+						}
+						
+						else {
+							mySmallAlert('Error...!', 'There was an error', 0);
+						}
+					}
+				}
+				if (ButtonPressed === "No") {
+				}
+			});
+        });
+    };
+</script>
+<script>
+    // load Page related plugins
+                loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatables/jquery.dataTables.min.js", function () {
+                    loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatables/dataTables.colVis.min.js", function () {
+                        loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatables/dataTables.tableTools.min.js", function () {
+                            loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatables/dataTables.bootstrap.min.js", function () {
+                                loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatable-responsive/datatables.responsive.min.js", pagefunction)
+                            });
+                        });
+        });
+    });
+	
+	//------------------- populate edit entries-----------------------------------------------------------------------------
+    function cPopulateEditEntries(iID,strURL) {
+        iActiveID = iID;
+        var arrForms=[]; // Keep Form Values
+        var strElementType; // Keep element type
+        var objFormData =
+        {
+            pAction: 'GETREC',
+            KEY_ID : iActiveID
+        };
+        var objMyPost = AJAX_Post(strURL, objFormData);
+		
+        if (objMyPost.ERR_NO === 0) {
+            if (objMyPost.DATA.DBStatus === 'OK') {
+                visibleControl('widForm', true);
+                visibleControl('widGrid', false);
+				$('#bs-main-alert').removeAttr('style');
+                strActionMode = 'EDIT';
+                //populate master Records
+                arrForms=objMyPost.DATA.data[0];
+				
+				var subusercnt= arrForms['subusercnt'];
+				$('#viewSubuser').attr('user',iActiveID);
+				if(subusercnt > 0)
+				{
+					$('#viewSubuser').show();
+					$('#subusercnt').html('('+subusercnt+')');
+					
+				}
+				else
+				{
+					$('#viewSubuser').hide();
+				}
+				
+				
+				if(arrForms['subuser'] == 1)
+				{
+					SUB_USER = true;
+					$('.normal_user_dates,.releasing_network,.main_user_div').addClass('hide');
+				}
+				else
+				{
+					
+					$('.releasing_network,.main_user_div').removeClass('hide');
+					SUB_USER = false;
+				}
+				
+                $.each( arrForms, function( key, value ) { 
+				
+					if (key === 'user_access') {
+  // Convert string to array if needed
+  if (typeof value === 'string') {
+    value = value.split(',');
+  }
+
+  value.forEach(val => {
+    val = val.trim(); // clean spaces
+    const map = {
+      'New Release': 'new_release',
+      'All Releases': 'all_releases',
+      'Drafts': 'drafts',
+      'Inreview': 'inreview',
+      'Statements': 'statements',
+      'Payment': 'payment',
+      'Analytics': 'analytics',
+      'Promotion': 'promotion',
+      'Royalty Rate': 'royalty_rate',
+      'FAQ': 'faq',
+      'Tickets & History': 'tickets',
+      'Rights Manager': 'support'
+    };
+    if (map[val]) {
+      $('#' + map[val]).prop('checked', true);
+    }
+  });
+}
+					if (key == 'user_type') {
+    $('#user_type1').val(value).trigger('change');
+
+    if (value === 'Limited Access') {
+        $('.normal_user_dates').removeClass('hide');
+    } else {
+        $('.normal_user_dates').addClass('hide');
+    }
+}
+					if(key == 'payment_system')
+					{
+						if(value == 'Monthly')
+						{
+							$('#payment_system1').prop('checked',true);
+							
+						}
+						else
+						{
+							$('#payment_system2').prop('checked',true);
+						
+						}
+					}
+                    if ($("#"+key).length > 0) {  // check if exists or not
+                        strElementType= $("#"+key).attr("type");
+					
+                        if(strElementType == "hidden") {  // if textbox
+                            $("#" + key).val(value);
+                            $("#spanRefNo").html(value);
+                        }
+                        else  if(strElementType == "text") {  // if textbox
+                            $("#" + key).val(value);
+                        }
+						else  if(strElementType == "number") {  // if textbox
+                            $("#" + key).val(value);
+                        }
+						else  if(strElementType == "password") {  // if textbox
+                            $("#" + key).val(value);
+                        }
+                        else if($("#"+key).attr("name") == "descriptions") {  // if textarea
+                            $("textarea#"+key).text(value);
+                        }
+                        else if(strElementType == "select") {  // if Select Box							
+                            $("#" + key).select2("val",value);
+                        }
+                        else if(strElementType == "multiselect") {  // if Select Box with multi select
+                            var arrValues = $.parseJSON(stripslashes(value));
+                            $("#" + key).select2("val", arrValues);
+                        }
+                    }
+                });
+				
+            }
+        }
+        else {
+            mySmallAlert('Error...!', 'There was an error', 0);
+        }
+    }
+  $('#user_type1').on('change', function () {
+    var selected = $(this).val();
+    if (selected === 'Limited Access') {
+        $('.normal_user_dates').removeClass('hide');
+    } else {
+        $('.normal_user_dates').addClass('hide');
+        $('#start_date, #end_date').val('');
+    }
+});
+  
+  
+</script>
+
+<div id="subusermodal" class="modal fade bs-example-modal-lg">
+        <div class="modal-dialog" style="width:100%;max-width:1260px;">
+            <div class="modal-content" style="">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title">Sub Users</h4>
+					</div>
+					
+					<div class="modal-body customsrolling" style="max-height:450px;overflow:auto;">	
+						
+							<div class="row">
+								<input type="hidden" id="main_user">
+								<div class="col-sm-12 pull-left catalog-filter-import">
+									 <div class="dataTables_wrapper no-footer">
+
+										<table id="tblMasterList2" class="table  table-bordered dataTable table-hover responsive-table" width="100%">
+											<col width="20%">
+											<col width="20%">
+											<col width="17%">
+											<col width="30%">
+											<col width="13%">
+
+											<thead>
+											<tr class="active">
+												<th>ID</th>
+												<th> <?php echo $this->translate('Login'); ?></th>
+												<th>  <?php echo $this->translate('Email'); ?></th>
+												<th><?php echo $this->translate('Account Status'); ?></th>
+												<th><?php echo $this->translate('This user has access to'); ?></th>
+												<th><?php echo $this->translate('Action'); ?> </th>
+											</tr>
+
+											</thead>
+
+											<tbody>
+											</tbody>
+										</table>
+									</div>
+		
+								  </div>
+							</div>
+							
+						
+                     </div>	
+					 
+					
+             </div>
+                     
+		</div>	
+		
+</div>

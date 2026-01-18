@@ -1,0 +1,165 @@
+<style>
+.mt-5{margin-top:20px;}
+</style>
+	<div class="flex justify-center">
+        <div class="max-w-sm mx-6">
+            <div class="mx-16 mt-12">
+				<a href="#">
+					<img alt="Company Logo" id="logo" class="" src="public/img/backstage-logo.png">
+				</a>
+            </div>
+            <div id="api" data-name="Unified" class="mt-5">
+      <form id="localAccountForm" action="JavaScript:void(0);" class="localAccount" aria-label="Sign in with your sign in name">
+        <div class="intro text-left h-2">
+          <h1 aria-level="1" style="">
+            Sign In
+          </h1>
+        </div>
+        <div class="error pageLevel mt-4 h-6 text-sm text-red-700" aria-hidden="true" role="alert" style="display: none;">
+          <p></p>
+        </div>
+        <div class="entry mt-8">
+          <div class="entry-item relative mb-6">
+            <label for="signInName" class="cursor-text absolute hidden left-11 top-2 text-xs text-gray-dark" style="pointer-events: none;">Username</label>
+            <div class="error itemLevel hidden" aria-hidden="true" role="alert" style="display: none;">
+              <p></p>
+            </div>
+            <div id="inputwrapper" class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="mr-2" width="24" height="24" fill="none" viewBox="0 0 24 24"><path fill="#C4C4C4" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path></svg><input type="text" id="login_name" name="login_name"  placeholder="Username" aria-label="Sign in name" maxlength="64" class="border-b-2 w-full px-4 cursor-text text-sm text-gray-dark pt-4 pb-2 border-gray-border"></div><div id="errorInput" class="h-4 mt-1 ml-8"><div class="hidden text-xs text-red-700"></div></div><div id="errorInput" class="h-4 mt-1 ml-8"><div class="hidden text-xs text-red-700"></div></div>
+          </div>
+            <div class="entry-item relative mb-6">
+              <div class="password-label">
+                <label for="password" class="cursor-text absolute hidden left-11 top-2 text-xs text-gray-dark" style="pointer-events: none;">Password</label>
+                   
+                              </div>
+              <div class="error itemLevel hidden" aria-hidden="true" style="display: none;">
+                <p role="alert"></p>
+              </div>
+              <div id="inputwrapper" class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="mr-2" width="24" height="24" fill="none" viewBox="0 0 24 24"><path fill="#C4C4C4" d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6h1.9c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm0 12H6V10h12v10z"></path></svg><input type="password" id="login_password" name="login_password" placeholder="Password" aria-label="Password" autocomplete="current-password" aria-required="true" class="border-b-2 w-full px-4 cursor-text text-sm text-gray-dark pt-4 pb-2 border-gray-border"></div><div id="errorInput" class="h-4 mt-1 ml-8"><div class="hidden text-xs text-red-700"></div></div>
+                          </div>
+          <div class="working"></div>
+
+
+          <div class="buttons flex mt-10 justify-center">
+            <button id="login_btn" type="submit" form="localAccountForm" class="" disabled>Login</button>
+          </div>
+        </div>
+              <div class="divider">
+                <h2 style="display: none;">OR</h2>
+              </div>
+             
+      </form><div id="postStep1" class="mt-8 text-xs">
+                    <a class="text-blue-link underline cursor-pointer" href="<?php echo $this->url("forgotpwd",array('action' => 'index'))?>">Forgot your password?</a>
+                </div>
+  </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+	
+
+    $(document).ready(function () {
+		
+			// Events
+			$('input[type="text"],input[type="password"]').focus(function() {
+				$(this).closest('.entry-item').find('label').removeClass("text-gray-dark text-red-700 hidden").addClass("text-blue-500");
+				$(this).attr("placeholder", "");
+				$(this).removeClass("pt-4 pb-4 border-gray-border border-red-700").addClass("pt-6 pb-2 border-blue-500");
+			});
+			$('input[type="text"],input[type="password"]').focusout(function() {
+				$(this).closest('.entry-item').find('label').removeClass("text-blue-500").addClass("text-gray-dark");
+				$(this).removeClass("border-blue-500").addClass("border-gray-border");
+				if($(this).val() == '')
+				{
+					$(this).closest('.entry-item').find('label').addClass("text-gray-dark text-red-700 hidden").removeClass("text-blue-500");
+					$(this).attr("placeholder", $(this).closest('.entry-item').find('label').text());
+					$(this).addClass("pt-4 pb-4 border-gray-border border-red-700").removeClass("pt-6 pb-2 border-blue-500");
+					
+					if($('#login_name').val() == '' || $('#login_password').val() == '')
+					{
+						$('#login_btn').removeClass('-enabled');
+						$('#login_btn').attr('disabled',true);
+					}
+				}
+			});
+		
+			$('#login_name,#login_password').on('keyup input change', function() {
+				if($('#login_name').val() != '' && $('#login_password').val() != '')
+				{
+					$('#login_btn').addClass('-enabled');
+					$('#login_btn').removeAttr('disabled');
+				}
+				else
+				{
+					$('#login_btn').removeClass('-enabled');
+					$('#login_btn').attr('disabled',true);
+				}
+			
+			});
+		
+		
+    //Form Submission
+	
+	$('#title').html("<?php echo $this->TITLE;?>");
+	
+	var storage = window.localStorage;
+	var MASTER_CODE = storage.getItem('MASTER_CODE');
+	
+	var nameString=window.location.pathname;
+	var filename = nameString.split("/").pop();
+	
+	if(MASTER_CODE == null && filename !='landing')
+	{
+		//window.location.href = 'http://mspeducare.com/app/login/landing';
+	}
+	
+	
+    $("#localAccountForm").validate(
+    {
+		submitHandler: function (form) {
+		if ($("#login_name").val() == '') {
+			$('.error.pageLevel').html('The Username is required').show();
+			//mySmallAlert('Error...!', 'Login Name is Required', 0);
+			return;
+		}
+		if ($("#login_password").val() == '') {
+			$('.error.pageLevel').html('The Passord is required').show();
+			//mySmallAlert('Error...!', 'The Password is Required', 0);
+			return;
+		}
+        var $form = $('#localAccountForm');
+		var objMasterData = $form.serializeObject();
+		
+		if (strActionMode == 'ADD')
+			$.extend(objMasterData, { MASTER_KEY_ID: 0});
+		else
+			$.extend(objMasterData, { MASTER_KEY_ID: iActiveID});
+		
+		objMasterData = JSON.stringify(objMasterData);
+		var objFormData =
+		{
+			pAction    : strActionMode,
+			FORM_DATA: objMasterData
+		};
+                        
+    var objMyPost = AJAX_Post("<?php echo $this->url('login', array('action'=>'checkLogindetails'));?>", objFormData);
+    if (objMyPost.ERR_NO === 0) {
+    if (objMyPost.DATA.DBStatus === 'OK')
+		{ //strActionMode = "EDIT";//
+			//mySmallAlert('Success...', 'Login successfully', 1);
+			$("#login_name").val('');
+			$("#login_password").val('');
+			window.location.href=objMyPost.DATA.dashboard;
+		
+		}
+		if (objMyPost.DATA.DBStatus === 'ERR')
+		{ 
+			$('.error.pageLevel').html('The username or password provided in the request are invalid.').show();
+		}
+    
+    }
+    else {
+		mySmallAlert('Error...!', 'There was an error', 0);
+    }
+    }
+    });
+    });
+    </script>

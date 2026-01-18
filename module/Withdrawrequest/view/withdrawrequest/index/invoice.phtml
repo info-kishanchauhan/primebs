@@ -1,0 +1,45 @@
+<?php
+ 
+require_once($_SERVER['DOCUMENT_ROOT'].$this->basePath().'/public/html2pdf/config/lang/eng.php');
+require_once($_SERVER['DOCUMENT_ROOT'].$this->basePath().'/public/html2pdf/tcpdf.php');
+
+
+
+		$pdf = new TCPDF('P', 'mm', 'A4', true, 'UTF-8', false);
+
+		// Set document properties
+		$pdf->SetCreator('TCPDF');
+		$pdf->SetAuthor('Prime Digital Arena');
+		$pdf->SetTitle('Invoice');
+		$pdf->SetSubject('Invoice Document');
+
+		// Remove default header/footer
+		$pdf->setPrintHeader(false);
+		$pdf->setPrintFooter(false);
+
+		// Set margins
+		$pdf->SetMargins(10, 10, 10);
+		$pdf->SetAutoPageBreak(TRUE, 10);
+
+		// Add a page
+		$pdf->AddPage();
+
+		// Set font
+		$pdf->SetFont('helvetica', '', 12);
+		
+		$template .= $this->printDetails;
+
+		$FILE_NAME = $this->FILE_NAME;
+
+		$pdf->writeHTML($template, true, false, false, false, '');
+		$pdf->writeHTMLCell(0, 0,0,-14, $footertext, 'B', 0, false,true, "L", true);
+		// -----------------------------------------------------------------------------
+
+		//Close and output PDF document
+		$pdf->Output($FILE_NAME.'.pdf', 'I');
+
+
+
+//============================================================+
+// END OF FILE                                                
+//============================================================+ 

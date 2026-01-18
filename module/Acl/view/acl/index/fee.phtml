@@ -1,0 +1,536 @@
+<style ="text/css">
+
+	.widget-body{
+
+		padding-left:22px;
+
+		padding-right:22px;
+
+	}
+
+	.columnappliedstl
+
+	{
+
+		padding-top:15px;
+
+		padding-bottom:20px;
+
+		border:1px solid #CCCCCC;
+
+		
+
+	}
+
+	.rowappliedstl
+
+	{
+
+		max-width:100%;
+
+		margin-bottom:20px;
+
+				
+
+	}
+
+	.liappliedsizestl
+
+	{
+
+		font-size:55px;
+
+	}
+
+	.ulappliedstl
+
+	{
+
+		text-align:center;
+
+	}
+
+	.list_heading{
+
+		width:100px;
+
+		font-size:15px;
+
+		font-weight:bold;
+
+		text-transform:uppercase;
+
+		
+
+		
+
+	}
+
+	
+
+</style>
+
+<!-- widget grid -->
+
+<section id="widget-grid" class="page page-ui-tables">
+
+<div class="page-wrap">
+
+    <!-- row -->
+
+    <div class="row">
+
+
+
+        <!-- NEW WIDGET START -->
+
+        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+
+
+
+
+
+
+
+            <!-- Widget ID (each widget will need unique ID)-->
+
+<div class="jarviswidget jarviswidget-color-blueDark panel panel-lined  panel-hovered mb20 data-table " id="widGrid" data-widget-editbutton="false"
+
+     data-widget-colorbutton="false"
+
+     data-widget-editbutton="false"
+
+     data-widget-togglebutton="false"
+
+     data-widget-deletebutton="false"
+
+     data-widget-fullscreenbutton="false"
+
+     data-widget-custombutton="false"
+
+     role="widget" style=""
+
+
+
+    >
+
+    <!-- widget options:
+
+                    usage: <div class="jarviswidget" id="wid-id-0" data-widget-editbutton="false">
+
+
+
+                    data-widget-colorbutton="false"
+
+                    data-widget-editbutton="false"
+
+                    data-widget-togglebutton="false"
+
+                    data-widget-deletebutton="false"
+
+                    data-widget-fullscreenbutton="false"
+
+                    data-widget-custombutton="false"
+
+                    data-widget-collapsed="true"
+
+                    data-widget-sortable="false"
+
+
+
+                    -->
+
+                    
+
+                    
+
+                    <div class="panel-heading clearfix">
+
+                    
+
+              <?php echo $this->translate('Fees') ?>
+
+                    <div class="widget-toolbar">
+
+
+
+            
+
+        </div>
+
+                     </div>
+
+                    
+
+   
+
+    <!-- widget div-->
+
+
+
+        <!-- widget edit box -->
+
+        <div class="jarviswidget-editbox">
+
+            <!-- This area used as dropdown edit box -->
+
+
+
+        </div>
+
+        <!-- end widget edit box -->
+
+
+
+        <!-- widget content -->
+
+        <di class="dataTables_wrapper no-footer">
+
+
+
+			<div class="widget-body">
+
+				
+
+				<div class="row rowappliedstl">
+				<div class="col-md-2">
+
+						<div class="columnappliedstl">
+
+						<?php
+
+							if($_SESSION["ROLE_ID"] == 0 || (is_array($_SESSION['ALLOWED_MODULES_LIST']) && in_array('64',$_SESSION['ALLOWED_MODULES_LIST']))) {
+
+						?>
+
+						<a href="<?php echo $this->url('feesetup', array('action' => 'index')); ?>">
+
+						<ul class="list-unstyled ulappliedstl">
+
+							<li>
+
+								<i class="ion ion-ios-paper-outline liappliedsizestl"></i>
+
+							</li>
+
+							<li>
+
+								<span>Fee Type Setup</span>				
+
+							</li>
+
+						</ul>
+
+						</a>
+
+						<?php } ?>
+
+						</div>
+
+					</div>
+					
+					<div class="col-md-2">
+
+						<div class="columnappliedstl">
+
+						<?php
+
+							if($_SESSION["ROLE_ID"] == 0 || (is_array($_SESSION['ALLOWED_MODULES_LIST']) && in_array('66',$_SESSION['ALLOWED_MODULES_LIST']))) {
+
+						?>
+
+						<a href="<?php echo $this->url('feestructure', array('action' => 'index')); ?>">
+
+						<ul class="list-unstyled ulappliedstl">
+
+							<li>
+
+								<i class="ion ion-ios-barcode liappliedsizestl iconcolorpurple"></i>
+
+							</li>
+
+							<li>
+
+								<span>Fee Structure</span>				
+
+							</li>
+
+						</ul>
+
+						</a>
+
+						<?php } ?>
+
+						</div>
+
+					</div>
+					<div class="col-md-2">
+
+						<div class="columnappliedstl">
+
+						<?php
+
+							if($_SESSION["ROLE_ID"] == 0 || (is_array($_SESSION['ALLOWED_MODULES_LIST']) && in_array('68',$_SESSION['ALLOWED_MODULES_LIST']))) {
+
+						?>
+
+						<a href="<?php echo $this->url('feedemand', array('action' => 'index')); ?>">
+
+						<ul class="list-unstyled ulappliedstl">
+
+							<li>
+
+								<i class="ion ion-cash liappliedsizestl iconcolorgreen"></i>
+
+							</li>
+
+							<li>
+
+								<span>Fee Demand</span>				
+
+							</li>
+
+						</ul>
+
+						</a>
+
+						<?php } ?>
+
+						</div>
+
+					</div>
+					<div class="col-md-2">
+
+						<div class="columnappliedstl">
+
+						<?php
+
+							if($_SESSION["ROLE_ID"] == 0 || (is_array($_SESSION['ALLOWED_MODULES_LIST']) && in_array('69',$_SESSION['ALLOWED_MODULES_LIST']))) {
+
+						?>
+
+						<a href="<?php echo $this->url('payment', array('action' => 'index')); ?>">
+
+						<ul class="list-unstyled ulappliedstl">
+
+							<li>
+
+								<i class="ion ion-card liappliedsizestl iconcolororange"></i>
+
+							</li>
+
+							<li>
+
+								<span>Apply Payment</span>				
+
+							</li>
+
+						</ul>
+
+						</a>
+
+						<?php } ?>
+
+						</div>
+
+					</div>
+					
+					</div>
+				
+
+				
+
+			 </div>
+
+               
+
+        <!-- end widget content -->
+
+
+
+
+
+    </div>
+
+    <!-- end widget div -->
+
+
+
+</div>
+
+<!-- end widget -->
+
+
+
+            
+
+			
+
+			<div class="jarviswidget hide panel panel-default panel-hovered panel-stacked mb30" id="widForm"
+
+     data-widget-colorbutton="false"
+
+     data-widget-editbutton="false"
+
+     data-widget-togglebutton="false"
+
+     data-widget-deletebutton="false"
+
+     data-widget-fullscreenbutton="false"
+
+     data-widget-custombutton="false"
+
+     role="widget" style=""
+
+     xmlns="http://www.w3.org/1999/html">
+
+
+
+    <header>
+
+
+
+        <span class="widget-icon"> <i class="glyphicon glyphicon-stats txt-color-darken"></i> </span>
+
+
+
+        <h2>Role Info :</h2>
+
+
+
+        <div class="widget-toolbar" style="">
+
+
+
+        </div>
+
+
+
+    </header>
+
+
+
+    <!-- widget div-->
+
+    <div class="no-padding">
+
+        <!-- widget edit box -->
+
+        <div class="jarviswidget-editbox">
+
+            Username
+
+        </div>
+
+        <!-- end widget edit box -->
+
+
+
+        <div class="widget-body">
+
+
+
+            <!-- content -->
+
+
+
+
+
+
+
+
+
+            
+
+            
+
+
+
+            
+
+            <!-- end general tab pane -->
+
+
+
+        </div>
+
+
+
+        <!-- Start All tab pane -->
+
+
+
+        <!-- End All tab pane -->
+
+
+
+        <!-- end content -->
+
+    </div>
+
+
+
+</div>
+
+
+
+
+
+        </article>
+
+        <!-- WIDGET END -->
+
+
+
+    </div>
+
+
+
+    <!-- end row -->
+
+
+
+    <!-- end row -->
+
+ </div>
+
+</section>
+
+<!-- end widget grid -->
+
+
+
+
+
+
+
+<script>
+
+    // load Page related plugins
+
+
+
+
+
+                loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatables/jquery.dataTables.min.js", function () {
+
+                    loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatables/dataTables.colVis.min.js", function () {
+
+                        loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatables/dataTables.tableTools.min.js", function () {
+
+                            loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatables/dataTables.bootstrap.min.js", function () {
+
+                                loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatable-responsive/datatables.responsive.min.js", pagefunction)
+
+                            });
+
+                        });
+
+        });
+
+    });
+
+
+
+</script>
+

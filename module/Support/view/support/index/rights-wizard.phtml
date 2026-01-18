@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enhanced Rights Manager Wizard</title>
+  <link rel="stylesheet" href="/public/css/assets.css">
+  
+<?php if ($_SESSION['user_id'] != 0 && $_SESSION['STAFFUSER'] == '0'): ?>
+  <!-- 📢 Notice Bar -->
+  <div style="background: #ffebeb; border: 1px solid #feaaaa; padding: 14px 20px; border-radius: 8px; max-width: 1150px; margin: 30px auto 10px; font-size: 14px; line-height: 1.6; 
+      color: #920e0e; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
+    <strong>📢 Important:</strong> For all Requests, your <strong>YouTube Content ID</strong> must be enabled first before sending requests here. 
+    <a href="/faq/article/81" style="color: #2258b3; font-weight: 600; text-decoration: underline;">How to Enable Content ID</a>
+  </div>
+<?php endif; ?>
+
+
+<style>
+  body {
+    background-color: #f3f4f6;
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #1f2937;
+  }
+  .wizard-container {
+    max-width: 1150px;
+    margin: 50px auto;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 15px 45px rgba(0 0 0 / 14%);
+    display: flex;
+    overflow: hidden;
+  }
+  .wizard-sidebar {
+    width: 300px;
+    background: #f9fafb;
+    border-right: 1px solid #e5e7eb;
+    padding: 40px 24px;
+  }
+  .wizard-sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .wizard-sidebar ul li {
+    margin: 24px 0;
+    font-size: 15px;
+    color: #6b7280;
+    position: relative;
+    padding-left: 24px;
+  }
+  .wizard-sidebar ul li.active {
+    font-weight: 700;
+    color: #111827;
+  }
+  .wizard-sidebar ul li.completed::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: #22c55e;
+    font-weight: bold;
+    font-size: 16px;
+  }
+  .wizard-step-content {
+    flex-grow: 1;
+    padding: 50px 60px;
+  }
+  .step-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 36px;
+  }
+  .card-box {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+    padding: 30px;
+    margin-bottom: 40px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+  }
+  .card-box label {
+    font-weight: 600;
+    font-family: "Open Sans", Roboto, Arial, sans-serif;
+    font-size: 14px;
+    color: rgb(84, 88, 97);
+    margin-bottom: 14px;
+    display: block;
+  }
+  .bottom-nav {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 32px;
+  }
+  .btn-step {
+    background: linear-gradient(to right, #915375, #8b5cf6);
+    color: white;
+    padding: 12px 28px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 12px;
+    border: none;
+    transition: background 0.2s;
+  }
+  .btn-step:hover { background: linear-gradient(to right, #4f46e5, #7c3aed); }
+  .btn-step[disabled] {
+    background-color: #d1d5db;
+    cursor: not-allowed;
+  }
+  .step { display: none; }
+  .step.active { display: block; }
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.4);
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+  }
+  .modal-box {
+    background: white;
+    border-radius: 20px;
+    width: 560px;
+    padding: 36px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+  }
+  .modal-box h3 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 22px;
+  }
+  .release-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    border: 1px solid #e5e7eb;
+    margin-bottom: 14px;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .release-item:hover { background: #f3f4f6; }
+  .release-item img {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    object-fit: cover;
+  }
+  #releaseDisplay img {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    margin-right: 10px;
+    vertical-align: middle;
+  }
+#validationSummary {
+  padding: 15px;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+#validationSummary li {
+  margin-bottom: 12px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: #374151;
+  padding-left: 20px;
+  position: relative;
+}
+
+#validationSummary li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-size: 16px;
+  color: #f59e0b;
+}
+
+#validationSummary li strong {
+  font-weight: 700;
+  color: #111827;
+}
+  
+</style>
+</head>
+<body>
+
+
+<div class="wizard-container">
+  <div class="wizard-sidebar">
+    <ul id="step-indicator">
+      <li class="active" data-step="1">Platform selection</li>
+      <li data-step="2">Request type</li>
+      <li data-step="3">Enter Release Info</li>
+      <li data-step="4">Content to claim (URL)</li>
+      <li data-step="5">Validation</li>
+    </ul>
+  </div>
+
+  <div class="wizard-step-content">
+    <div class="step-title">Request form</div>
+    <div class="step active" data-step="1">
+      <div class="card-box">
+        <label>Platform selection</label>
+        <div style="margin-top: 8px;">
+  <label style="display:block; margin-bottom: 10px;">
+    <input type="radio" name="platform" value="YouTube" checked> YouTube
+  </label>
+  <?php if ($_SESSION['user_id'] == 0 || $_SESSION['STAFFUSER'] == '1'): ?>
+    <label style="display:block; margin-bottom: 10px;">
+      <input type="radio" name="platform" value="Spotify"> Spotify
+    </label>
+    <label style="display:block; margin-bottom: 10px;">
+      <input type="radio" name="platform" value="Via Email"> Via Email
+    </label>
+  <?php endif; ?>
+</div>
+
+      </div>
+    </div>
+    <div class="step" data-step="2">
+      <div class="card-box">
+        <label>Request type</label>
+        <div style="margin-top: 8px;">
+  <?php if ($_SESSION['user_id'] != 0 && $_SESSION['STAFFUSER'] == '0'): ?>
+    <label style="display:block; margin-bottom: 10px;">
+      <input type="radio" name="req_type" value="monetize"> Claim UGC video : Manual Claim
+    </label>
+    <label style="display:block; margin-bottom: 10px;">
+      <input type="radio" name="req_type" value="block"> Claim UGC video : Block
+    </label>
+    <label style="display:block; margin-bottom: 10px;">
+      <input type="radio" name="req_type" value="takedown"> Takedown Video
+    </label>
+    <label style="display:block; margin-bottom: 10px;">
+      <input type="radio" name="req_type" value="release"> Release claim
+    </label>
+  <?php else: ?>
+    <label style="display:block; margin-bottom: 10px;">
+      <input type="radio" name="req_type" value="infringement" checked> Copyright Infringement
+    </label>
+  <?php endif; ?>
+</div>
+      </div>
+    </div>
+    <div class="step" data-step="3">
+  <div class="card-box">
+    <label>Search your Track</label>
+    
+<!-- Enhanced Selected Release Display -->
+<div style="display: flex; justify-content: space-between; align-items: center; background: #f9fafb; border: 1px solid #e5e7eb; padding: 12px 16px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 0px; transition: background 0.3s ease;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+        <div style="font-size: 24px;">🔘</div>
+        <span id="releaseDisplay" style="font-weight: 700; color: #374151;">No release selected</span>
+    </div>
+    <button id="releaseSelectBtn"
+        style="background-color: rgb(79, 70, 229); color: #fff; padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer; transition: background 0.3s ease;"
+        onmouseover="this.style.backgroundColor='#4338ca'"
+        onmouseout="this.style.backgroundColor='#4f46e5'"
+        onclick="toggleSearchBox()">
+  Select
+</button>
+
+</div>
+
+<!-- Search Box (Initially Hidden) -->
+<div id="searchContainer" style="display: none; margin-top: 10px; text-align: center;">
+    <input type="text" id="searchRelease" placeholder="  Search release..." 
+        style="width: 95%; padding:10px; border-radius:8px; 
+               box-shadow: 0 2px 8px rgba(0 0 0 / 22%);
+               margin: 0 auto; display: inline-block;" 
+        oninput="searchReleases()">
+</div>
+
+
+<!-- Search Results Container -->
+<div id="releaseResults" style="max-height: 480px; overflow-y: auto;  padding: 30px; border-radius: 8px; margin-top: 10px;"></div>
+<button id="loadMoreBtn" style="display: none; margin-top: 10px; padding: 8px 12px; background: #4f46e5; color: #fff; border: none; border-radius: 8px; cursor: pointer;" onclick="loadMoreReleases()">Load More</button>
+
+
+    <!-- Manual Entry Divider -->
+    <hr style="margin:20px 0;">
+
+    <!-- Manual Entry Form -->
+    <div id="manualEntry">
+      <h4 style="font-size:14px;margin-bottom:10px;">⚠️ Click on "Select" to find the your track.</h4>
+    </div>
+  </div>
+</div>
+    <div class="step" data-step="4">
+  <div class="card-box">
+    <?php if ($_SESSION['user_id'] == 0 || $_SESSION['STAFFUSER'] == '1'): ?>
+      <label style="font-size:16px; font-weight:600; margin-bottom:10px;">Information about the claimant</label>
+    <?php else: ?>
+      <label style="font-size:16px; font-weight:600; margin-bottom:10px;">YouTube Links 🔗</label>
+    <?php endif; ?>
+    
+    <textarea id="youtubeLinks"
+  style="width:100%;
+         padding:12px 14px;
+         border-radius:10px;
+         border:1px solid #d1d5db;
+         font-size:15px;
+         font-family: 'Inter', sans-serif;
+         line-height:1.6;
+         background-color:#f9fafb;
+         resize:none;
+         overflow:hidden;
+         height:60px;"
+  placeholder="Paste relevant YouTube links here..."></textarea>
+
+  </div>
+</div>
+    <div class="step" data-step="5">
+      <div class="card-box">
+        <label>⚠️ Please check before validation</label>
+        <ul id="validationSummary"></ul>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <button class="btn-step" id="prevBtn" disabled>Previous</button>
+      <button class="btn-step" id="nextBtn">Next</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="releaseModal">
+  <div class="modal-box">
+    <h3>Select a release</h3>
+    <input type="text" id="searchRelease" placeholder="Search..." style="width:100%;padding:10px;">
+    <div id="releaseResults"></div>
+    <button onclick="closeModal()" class="btn-step" style="float:right;margin-top:10px">Close</button>
+  </div>
+</div>
+<div id="toast" style="
+  display: none;
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background-color: #1f2937; /* dark gray background */
+  color: #fcfffe;             /* green accent text */
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+  z-index: 9999;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  transition: all 0.4s ease;
+"></div>
+
+  <div id="confirmationModal" class="modal-overlay">
+  <div class="modal-box" style="max-width: 500px; text-align: center;">
+    <h3 style="font-size: 20px; margin-bottom: 16px;">Confirm Submission</h3>
+    <p style="font-size: 15px; color: #4b5563; margin-bottom: 24px;">
+      Are you sure you want to submit this request?<br>Please verify all details before continuing.
+    </p>
+    <div style="display: flex; justify-content: center; gap: 16px;">
+      <button onclick="closeConfirmation()" style="background: #e5e7eb; color: #374151; padding: 10px 20px; border: none; border-radius: 8px;">Cancel</button>
+      <button onclick="submitConfirmedRequest()" style="background: #4f46e5; color: white; padding: 10px 20px; border: none; border-radius: 8px;">Submit</button>
+    </div>
+  </div>
+</div>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+<script>
+  let selectedTrack = ''; // already used in your code, declare it explicitly
+function updateSelectBtnLabel() {
+  const btn = document.getElementById('releaseSelectBtn');
+  if (!btn) return;
+  // Agar koi track select ho chuka hai, label "Change" dikhao, warna "Select"
+  const hasSelection = (selectedTrack && selectedTrack.trim()) || (selectedRelease && selectedRelease.trim());
+  btn.textContent = hasSelection ? 'Change' : 'Select';
+}
+
+let currentStep = 1;
+let selectedRelease = '', releaseImage = '', releaseArtist = '', releaseUPC = '';
+const totalSteps = 5;
+
+function updateWizardSteps() {
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.querySelector(`.step[data-step="${currentStep}"]`).classList.add('active');
+  document.getElementById('prevBtn').disabled = currentStep === 1;
+  document.getElementById('nextBtn').innerText = currentStep === totalSteps ? 'Confirm' : 'Next';
+
+  document.querySelectorAll('#step-indicator li').forEach((li, idx) => {
+    li.classList.remove('active', 'completed');
+    if (idx < currentStep - 1) li.classList.add('completed');
+    if (idx === currentStep - 1) li.classList.add('active');
+  });
+
+  if (currentStep === 5) {
+    const links = document.getElementById('youtubeLinks').value
+      .split('\n')
+      .filter(line => line.trim() !== '')
+      .map(l => `<li>${l}</li>`)
+      .join('');
+
+    const platform = document.querySelector('input[name="platform"]:checked')?.value || 'N/A';
+    const requestType = document.querySelector('input[name="req_type"]:checked')?.value || 'N/A';
+    const coverImageHtml = releaseImage ? `<img src="${releaseImage}" width="40" style="vertical-align:middle;margin-right:8px;border-radius:8px;">` : '';
+
+    document.getElementById('validationSummary').innerHTML = `
+  <li style="text-align:center; margin-bottom: 24px;">
+    ${releaseImage ? `<img src="${releaseImage}" width="80" style="border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.1);">` : ''}
+  </li>
+  <li><strong>Platform:</strong> ${platform}</li>
+  <li><strong>Request Type:</strong> ${requestType}</li>
+  <li><strong>Asset Title:</strong> ${selectedRelease}</li>
+  <li><strong>Album Track Title:</strong> ${selectedTrack}</li>         <!-- ✅ now correct -->
+  <li><strong>Artist Name:</strong> ${releaseArtist}</li>
+  <li><strong>UPC:</strong> ${releaseUPC || 'N/A'}</li>
+  <li><strong>YouTube Links:</strong><ul>${links}</ul></li>
+`;
+
+
+  }
+}
+
+document.getElementById('nextBtn').onclick = function () {
+  if (currentStep === 1 && !document.querySelector('input[name="platform"]:checked')) return alert('Select platform');
+  if (currentStep === 2 && !document.querySelector('input[name="req_type"]:checked')) return alert('Select request type');
+  if (currentStep === 3 && !selectedRelease) return alert('Select a release');
+  if (currentStep === 4 && !document.getElementById('youtubeLinks').value.trim()) return alert('Paste YouTube Video links');
+
+  if (currentStep < totalSteps) {
+    currentStep++;
+    updateWizardSteps();
+  } else {
+    // ✅ Open custom confirmation modal instead of default confirm()
+    document.getElementById('confirmationModal').style.display = 'flex';
+  }
+};
+
+    
+
+document.getElementById('prevBtn').onclick = function () {
+  if (currentStep > 1) {
+    currentStep--;
+    updateWizardSteps();
+  }
+};
+
+function openModal() {
+  document.getElementById('releaseModal').style.display = 'flex';
+}
+
+function closeModal() {
+  document.getElementById('releaseModal').style.display = 'none';
+}
+
+document.getElementById('searchRelease').oninput = function () {
+  const q = this.value.trim();
+  if (q.length < 2) {
+    document.getElementById('releaseResults').innerHTML = '';
+    return;
+  }
+
+  fetch(`/support/fetchReleases?q=${encodeURIComponent(q)}`)
+    .then(res => res.json())
+    .then(data => {
+      const html = data.map(d => {
+        const releaseId = `release_${d.upc.replace(/[^a-zA-Z0-9]/g, '')}`;
+        const trackListId = `tracks_${releaseId}`;
+
+        return `
+          <div class="release-item"
+               onclick="expandRelease('${trackListId}', '${d.cover}', '${d.title}', '${d.artist}', '${d.upc}', ${JSON.stringify(d.album_tracks).replace(/"/g, '&quot;')})"
+               style="cursor:pointer; background:#f9fafb; border:1px solid #e5e7eb; border-radius:14px; padding:14px; margin-bottom:15px;">
+            <div style="display: flex; align-items: center;">
+              <img src="${d.cover}" style="width:48px;height:48px;border-radius:8px;margin-right:12px;">
+              <div>
+                <div style="font-weight:600;font-size:15px;color:#111827;">${d.title}</div>
+                <div style="font-size:13px;color:#6b7280;">${d.artist} - ${d.upc}</div>
+              </div>
+            </div>
+          </div>
+          <div class="album-track-list" id="${trackListId}" style="display: none; margin-left: 60px; margin-top: 12px; border-left: 2px solid #e5e7eb; padding-left: 16px;"></div>
+        `;
+      }).join('');
+
+      document.getElementById('releaseResults').innerHTML = html;
+    })
+    .catch(() => {
+      document.getElementById('releaseResults').innerHTML = '<p style="color:red;">Error loading releases</p>';
+    });
+};
+
+
+function selectRelease(title, cover, upc, artist, album) {
+  selectedRelease = title;
+  releaseImage = cover;
+  releaseUPC = upc;
+  releaseArtist = artist;
+  albumTitle = album; // ✅ Add this line
+
+  document.getElementById('releaseDisplay').innerHTML = `<img src="${cover}" width="36" style="border-radius:6px;margin-right:8px;"> ${title} - ${upc}`;
+  document.getElementById('releaseResults').innerHTML = '';
+  document.getElementById('searchRelease').value = '';
+  updateSelectBtnLabel();
+
+}
+
+
+function toggleSearchBox() {
+  const searchContainer = document.getElementById('searchContainer');
+  const releaseResults = document.getElementById('releaseResults');
+  const loadMoreBtn = document.getElementById('loadMoreBtn');
+  const searchInput = document.getElementById('searchRelease');
+
+  if (searchContainer.style.display === 'none' || searchContainer.style.display === '') {
+    // Show search bar and clear previous state
+    searchContainer.style.display = 'block';
+    releaseResults.innerHTML = '';       // ❌ Hide previous results
+    loadMoreBtn.style.display = 'none';  // ❌ Hide Load More button
+    searchInput.value = '';              // 🧽 Optional: clear input
+    searchInput.focus();                 // 🧲 Optional: auto-focus
+  } else {
+    // Hide everything if already open
+    searchContainer.style.display = 'none';
+    releaseResults.innerHTML = '';
+    loadMoreBtn.style.display = 'none';
+  }
+}
+updateSelectBtnLabel();
+
+
+let currentPage = 1;
+let currentQuery = '';
+
+function searchReleases() {
+  currentPage = 1;
+  currentQuery = document.getElementById('searchRelease').value.trim();
+  document.getElementById('releaseResults').innerHTML = '';
+  loadMoreReleases();
+}
+
+function loadMoreReleases() {
+  fetch(`/support/fetchReleases?q=${encodeURIComponent(currentQuery)}&page=${currentPage}`)
+    .then(response => response.json())
+    .then(data => {
+      const resultsContainer = document.getElementById('releaseResults');
+      if (data.length > 0) {
+        data.forEach(release => {
+          const releaseItem = document.createElement('div');
+          releaseItem.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+              <img src="${release.cover}" alt="Cover" width="40" height="40" style="border-radius: 4px;">
+              <div>
+                <strong>${release.title}</strong><br>
+                <small>${release.artist} - ${release.upc}</small>
+              </div>
+            </div>
+          `;
+          resultsContainer.appendChild(releaseItem);
+        });
+        currentPage++;
+        document.getElementById('loadMoreBtn').style.display = 'block';
+      } else {
+        document.getElementById('loadMoreBtn').style.display = 'none';
+        if (currentPage === 1) {
+          resultsContainer.innerHTML = '<p>No results found.</p>';
+        }
+      }
+    });
+}
+  
+  function showToast(message) {
+  const toast = document.getElementById('toast');
+  toast.innerText = message;
+  toast.style.display = 'block';
+  setTimeout(() => {
+    toast.style.opacity = '1';
+    toast.style.transform = 'translateY(0)';
+  }, 100);
+
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(20px)';
+    setTimeout(() => toast.style.display = 'none', 500);
+  }, 3500);
+}
+function closeConfirmation() {
+  document.getElementById('confirmationModal').style.display = 'none';
+}
+
+function submitConfirmedRequest() {
+  closeConfirmation();
+  const nextBtn = document.getElementById('nextBtn');
+  nextBtn.disabled = true;
+  nextBtn.innerText = 'Submitting...';
+
+  const postData = new URLSearchParams({
+  platform: document.querySelector('input[name="platform"]:checked').value,
+  request_type: document.querySelector('input[name="req_type"]:checked').value,
+  release_title: albumTitle,     // ✅ release_title = actual track title
+  album: selectedRelease,        // ✅ album = album name
+  release_image: releaseImage,
+  release_upc: releaseUPC,
+  release_artist: releaseArtist,
+  youtube_links: document.getElementById('youtubeLinks').value
+});
+
+
+
+  fetch('/support/saverequest', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: postData
+  })
+  .then(res => res.json())
+  .then(res => {
+    if (res.status === 'success') {
+      const isAdmin = <?= (int)($_SESSION['user_id'] ?? -1) === 0 ? 'true' : 'false' ?>;
+      if (isAdmin) {
+        fetch('/support/addadminrightentry', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({
+            upc: releaseUPC,
+            title: selectedRelease,
+            artist: releaseArtist
+          })
+        });
+      }
+      showToast('Request submitted successfully!');
+      setTimeout(() => {
+        window.location.href = '/support#rights';
+      }, 2000);
+    } else {
+      throw new Error(res.error || 'Server returned failure');
+    }
+  })
+  .catch(err => {
+    console.error('Submission error:', err);
+    alert('❌ Error submitting: ' + err.message);
+    nextBtn.disabled = false;
+    nextBtn.innerText = 'Confirm';
+  });
+}
+  
+  
+function expandRelease(trackListId, cover, albumTitleFromData, artist, upc, albumTracks) {
+  const container = document.getElementById(trackListId);
+
+  // 🔄 Toggle collapse if already expanded
+  if (container.style.display === 'block') {
+    container.style.display = 'none';
+    container.innerHTML = '';
+    return;
+  }
+
+  // 🔒 Collapse all others
+  document.querySelectorAll('.album-track-list').forEach(el => {
+    el.style.display = 'none';
+    el.innerHTML = '';
+  });
+
+  // 👇 Assign album and release info
+  albumTitle = albumTitleFromData;
+  releaseImage = cover;
+  releaseArtist = artist;
+  releaseUPC = upc;
+
+  let html = albumTracks.map((t, idx) => {
+    const value = `${t.title}||${t.isrc}||${cover}||${artist}||${upc}||${albumTitle}`;
+    return `
+      <div class="track-option" style="margin-bottom: 12px;">
+        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+          <input type="radio" name="track_selection" 
+                 value="${value}"
+                 onclick="selectTrack(this.value)"
+                 style="accent-color:#4f46e5;" ${idx === 0 ? 'checked' : ''}>
+          <span>
+            <strong style="font-size: 15px; color: #1f2937;">${t.title}</strong><br>
+            <small style="color: #6b7280;">ISRC: ${t.isrc}</small>
+          </span>
+        </label>
+      </div>
+    `;
+  }).join('');
+
+  container.innerHTML = html;
+  container.style.display = 'block';
+
+  // ✅ Auto-select first track
+  if (albumTracks.length > 0) {
+    const first = albumTracks[0];
+    const defaultVal = `${first.title}||${first.isrc}||${cover}||${artist}||${upc}||${albumTitle}`;
+    selectTrack(defaultVal);
+  }
+}
+
+
+
+let albumTitle = '';
+function selectTrack(value) {
+  const [trackTitle, isrc, cover, artist, upc, album] = value.split('||');
+
+  selectedTrack = trackTitle;
+albumTitle = trackTitle;         // <- Track title store ho raha
+selectedRelease = album;          // ✅ Album title stored
+  releaseImage = cover;
+  releaseArtist = artist;
+  releaseUPC = upc;
+
+  document.getElementById('releaseDisplay').innerHTML = `
+  <div style="display: flex; align-items: center;">
+    <img src="${cover}" width="48" height="48" style="border-radius:10px; margin-right:12px;">
+    <div>
+      <div style="font-weight:600; font-size:14px; color:#111827;">
+        ${album} <span style="font-weight:400; color:#6b7280;">• ${artist}</span> <span style="font-weight:400; color:#9ca3af;">• ${upc}</span>
+      </div>
+      <div style="font-size:12px; color:#6b7280;">
+        Album Title:${trackTitle}<span style="color:#d1d5db;">•</span>${isrc}
+      </div>
+    </div>
+  </div>
+`;
+  document.getElementById('searchContainer').style.display = 'none';
+  updateSelectBtnLabel();
+
+}
+const ytLinks = document.getElementById('youtubeLinks');
+
+function autoResize(el) {
+  el.style.height = 'auto'; // pehle reset
+  el.style.height = (el.scrollHeight) + 'px'; // content jitna
+}
+
+ytLinks.addEventListener('input', function() {
+  autoResize(this);
+});
+
+// Page load par agar already value hai to adjust
+window.addEventListener('load', () => autoResize(ytLinks));
+
+
+
+</script>

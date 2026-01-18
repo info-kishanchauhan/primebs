@@ -1,0 +1,3466 @@
+<!-- Fisrt Section -->
+
+<?php
+
+/** @var \Zend\View\Renderer\PhpRenderer $this */
+$this->headTitle('Creative Editor • Story');
+
+/* Base path */
+$base = $this->basePath();
+
+/* Controller inputs */
+$poster  = $this->poster  ?? [];
+$release = $this->release ?? [];
+
+$posterId = (int)($poster['id'] ?? ($_GET['id'] ?? $_GET['poster_id'] ?? 0));
+$tpl      = (string)($poster['tpl'] ?? ($_GET['tpl'] ?? 'launch_story'));
+
+$poTitle  = (string)($poster['title']  ?? ($_GET['title']  ?? ($release['title']  ?? 'Untitled')));
+$poArtist = (string)($poster['artist'] ?? ($_GET['artist'] ?? ($release['artist'] ?? 'Unknown Artist')));
+$poCover  = (string)($poster['cover']  ?? ($_GET['cover']  ?? ($release['cover']  ?? '')));
+
+/* Poster image URL */
+$imgUrl = (string)($poster['image_url'] ?? ($_GET['image'] ?? ''));
+if ($imgUrl === '') {
+  $renderBase = $base . '/analytics/render';
+  $q = http_build_query([
+    'tpl'    => $tpl,
+    'title'  => $poTitle,
+    'artist' => $poArtist,
+    'cover'  => $poCover,
+    'id'     => $posterId ?: null
+  ]);
+  $imgUrl = $renderBase . '?' . $q;
+}
+
+/* Audio source */
+$audioFromPoster  = (string)($poster['audio_url'] ?? '');
+$audioFromPoster2 = (string)($poster['audio_fallback_url'] ?? '');
+$audioFromRelease = (string)($release['audio_url_preview'] ?? ($release['audio_url'] ?? ''));
+$audioFromGet     = (string)($_GET['audio'] ?? '');
+$audioUrl         = $audioFromPoster ?: ($audioFromRelease ?: ($audioFromPoster2 ?: $audioFromGet));
+
+/* ---- Template-specific aspect ratio and radius ---- */
+$tplAspect = '9/16';
+$tplRadius = '12px';
+if (strpos($tpl, 'post_') === 0 || strpos($tpl, 'card') !== false) {
+  $tplAspect = '1/1';
+  $tplRadius = '0px';
+}
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;600;700&family=Roboto:wght@400;500;700&family=Montserrat:wght@400;600;700&family=Oswald:wght@400;600&display=swap" rel="stylesheet"/>
+
+
+</head>
+<body>
+
+<div class="ce-shell">
+
+  <!-- main app top row -->
+  <header class="ce-topapp">
+    <div class="ce-left">
+      <a class="ce-brand-dot" href="<?= $base ?>/analytics/poster<?= $posterId ? '/'.(int)$posterId : '' ?>">
+        <svg class="ico" viewBox="0 0 24 24"><path fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M14 7l-5 5 5 5"/></svg>
+      </a>
+      <div class="ce-page-meta">
+        <div class="ce-page-title">Promo Editor</div>
+        <div class="ce-page-sub"><?= htmlspecialchars($poTitle) ?> • <?= htmlspecialchars($poArtist) ?></div>
+      </div>
+    </div>
+
+    <div class="ce-right">
+      <!-- audio chip (hidden until audio picked) -->
+      <div id="audioChip" class="audio-chip">
+        <img id="chipCover" class="chip-cover" src="<?= $this->escapeHtmlAttr($poCover) ?>" alt="">
+        <div class="chip-meta">
+          <div class="chip-title" id="chipTitle"><?= htmlspecialchars($poTitle) ?></div>
+          <div class="chip-sub" id="chipArtist"><?= htmlspecialchars($poArtist) ?></div>
+        </div>
+        <span class="x" id="chipRemove" title="Remove audio">✕</span>
+      </div>
+
+      <button class="act-btn" id="btnAddAudio">
+        <svg class="ico" viewBox="0 0 24 24"><path fill="currentColor" d="M14 3a1 1 0 0 1 1 1v8.126A4.002 4.002 0 0 1 13 20a4 4 0 0 1-3.874-5h1.708A2.3 2.3 0 1 0 13 14.3V6.118l5-1.429V14a1 1 0 1 0 2 0V4.59a1 1 0 0 0-1.265-.965l-6 1.714A1 1 0 0 0 12 6v8.3a.3.3 0 1 1-.6 0V4a1 1 0 0 1 1-1z"/></svg>
+        Add audio
+      </button>
+
+      <button class="act-btn primary" id="btnDownload">
+        <svg class="ico" viewBox="0 0 24 24"><path fill="currentColor" d="M12 3a1 1 0 0 1 1 1v8.586l2.293-2.293 1.414 1.414L12 16.414 7.293 11.707l1.414-1.414L11 12.586V4a1 1 0 0 1 1-1z"/><path fill="currentColor" d="M5 18a1 1 0 0 1 1-1h12a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1z"/></svg>
+        Download
+      </button>
+    </div>
+  </header>
+
+  <!-- toolbar row -->
+  <div class="editor-toolbar-wrap">
+    <div class="editor-toolbar" id="editorToolbar">
+
+      <!-- this block is ALWAYS visible: only Add text -->
+      <div class="tb-addonly">
+        <button class="act-btn" id="btnAddText">
+          <svg class="ico" viewBox="0 0 24 24"><path fill="currentColor" d="M4 4h16v2H13v14h-2V6H4zM19 13h-2v2h-2v2h2v2h2v-2h2v-2h-2z"/></svg>
+          Add text
+        </button>
+      </div>
+
+      <!-- everything else starts hidden until first Add text -->
+      <div class="tb-guts" id="tbGuts">
+
+        <!-- group 1 : undo/redo/dup/delete -->
+        <div class="tb-group">
+          <button class="tb-icon-btn" id="btnUndo" title="Undo">
+            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M20 20v-5a8 8 0 0 0-8-8H4"/></svg>
+          </button>
+          <button class="tb-icon-btn" id="btnRedo" title="Redo">
+            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 10l5 5-5 5"/><path d="M4 4v5a8 8 0 0 0 8 8h8"/></svg>
+          </button>
+          <button class="tb-icon-btn" id="btnDuplicate" title="Duplicate layer">
+            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          </button>
+          <button class="tb-icon-btn" id="deleteLayerBtn" title="Delete">
+            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+          </button>
+        </div>
+
+        <!-- group 2 : font family + font size -->
+        <div class="tb-group">
+          <!-- font family -->
+          <div class="tb-dd-shell" title="Font family">
+            <span class="val" id="fontFamilyVal">Inter</span>
+            <svg class="caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            <select id="fontFamilySelect">
+              <option value="'Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif">Inter</option>
+              <option value="'Poppins',sans-serif">Poppins</option>
+              <option value="'Roboto',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif">Roboto</option>
+              <option value="'Montserrat',sans-serif">Montserrat</option>
+              <option value="'Oswald',sans-serif">Oswald</option>
+              <option value="Arkipelago">Arkipelago</option>
+              <option value="Georgia, 'Times New Roman', Times, serif">Serif</option>
+              <option value="ui-monospace, SFMono-Regular, Consolas, 'Liberation Mono', monospace">Mono</option>
+            </select>
+          </div>
+
+          <!-- font size -->
+          <div class="tb-dd-shell" title="Font size">
+            <span class="val" id="fontSizeVal">32</span>
+            <svg class="caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            <select id="fontSizeSelect">
+              <option>24</option>
+              <option selected>32</option>
+              <option>40</option>
+              <option>48</option>
+              <option>56</option>
+              <option>64</option>
+              <option>72</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- group fx : Shadow toggle + Opacity -->
+        <div class="tb-group" id="fxGroup">
+          <button class="tb-btn" id="btnShadowToggle" title="Shadow on/off">
+            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2v4"/>
+              <path d="M12 18v4"/>
+              <path d="M4.93 4.93l2.83 2.83"/>
+              <path d="M16.24 16.24l2.83 2.83"/>
+              <path d="M2 12h4"/>
+              <path d="M18 12h4"/>
+              <path d="M4.93 19.07l2.83-2.83"/>
+              <path d="M16.24 7.76l2.83-2.83"/>
+              <circle cx="12" cy="12" r="4" fill="currentColor" stroke="none"/>
+            </svg>
+            <span style="margin-left:4px;">Shadow</span>
+          </button>
+
+          <div class="tb-opacity-wrap" title="Text opacity">
+            <span>Opacity</span>
+            <input type="range" id="opacityRange" min="10" max="100" step="1" value="100">
+            <span id="opacityVal">100%</span>
+          </div>
+        </div>
+
+        <!-- group 3 : bold / italic / underline / color / align -->
+<div class="tb-group">
+  <button class="tb-btn" data-act="bold" title="Bold">
+    <span style="font-weight:700;">B</span>
+  </button>
+
+  <button class="tb-btn" data-act="italic" title="Italic">
+    <span style="font-style:italic;">I</span>
+  </button>
+
+  <button class="tb-btn" data-act="underline" title="Underline">
+    <span style="text-decoration:underline;">U</span>
+  </button>
+
+  <button class="tb-btn" id="btnColorPick" title="Text color">
+    <span class="color-chip" id="colorChip" style="background:#ffffff;"></span>
+  </button>
+
+  <button class="tb-btn" data-act="align-left" title="Align left">
+    <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+      <line x1="3" y1="6" x2="15" y2="6"></line>
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="18" x2="15" y2="18"></line>
+    </svg>
+  </button>
+
+  <button class="tb-btn" data-act="align-center" title="Align center">
+    <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+      <line x1="6" y1="6"  x2="18" y2="6"></line>
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="6" y1="18" x2="18" y2="18"></line>
+    </svg>
+  </button>
+
+  <button class="tb-btn" data-act="align-right" title="Align right">
+    <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+      <line x1="9"  y1="6" x2="21" y2="6"></line>
+      <line x1="3"  y1="12" x2="21" y2="12"></line>
+      <line x1="9"  y1="18" x2="21" y2="18"></line>
+    </svg>
+  </button>
+</div>
+
+
+        <!-- group 4 : placeholder Animation button if you still want it visible -->
+        <div class="tb-group">
+          <button class="tb-btn" title="Animation">
+            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 2v6h6"/><path d="M19 22v-6h-6"/><path d="M5 10a9 9 0 0 1 9-9"/><path d="M19 14a9 9 0 0 1-9 9"/></svg>
+            <span style="margin-left:4px;">Animation</span>
+          </button>
+        </div>
+<div class="tb-group tb-shortcuts-group" style="border-right:none;margin-right:0;padding-right:0;">
+  <button class="tb-btn" id="btnShortcuts" title="Keyboard shortcuts">
+    <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+      stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"></circle>
+      <path d="M12 8h.01"></path>
+      <path d="M11 12h1v4h1"></path>
+    </svg>
+    <span style="margin-left:4px;">Keys</span>
+  </button>
+</div>
+<div class="pop" id="shortcutsPop">
+  <h4 style="margin-bottom:8px;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+      stroke-linecap="round" stroke-linejoin="round"
+      style="width:14px;height:14px;color:#334155;flex-shrink:0;">
+      <circle cx="12" cy="12" r="10"></circle>
+      <path d="M12 8h.01"></path>
+      <path d="M11 12h1v4h1"></path>
+    </svg>
+    Keyboard shortcuts
+  </h4>
+
+  <div class="sc-list">
+    <div class="sc-row"><span class="sc-k">Delete / Backspace</span><span class="sc-desc">active text layer हटेगा</span></div>
+    <div class="sc-row"><span class="sc-k">Esc</span><span class="sc-desc">deselect (blue outline हटेगी)</span></div>
+    <div class="sc-row"><span class="sc-k">Ctrl/Cmd + C</span><span class="sc-desc">copy (internal)</span></div>
+    <div class="sc-row"><span class="sc-k">Ctrl/Cmd + V</span><span class="sc-desc">paste duplicate (थोड़ा offset)</span></div>
+    <div class="sc-row"><span class="sc-k">Ctrl/Cmd + D</span><span class="sc-desc">quick duplicate</span></div>
+    <div class="sc-row"><span class="sc-k">Ctrl/Cmd + Z</span><span class="sc-desc">undo</span></div>
+    <div class="sc-row"><span class="sc-k">Shift+Ctrl/Cmd+Z<br/>या Ctrl/Cmd+Y</span><span class="sc-desc">redo</span></div>
+    <div class="sc-row"><span class="sc-k">Arrow keys</span><span class="sc-desc">nudge layer (Shift = faster)</span></div>
+  </div>
+</div>
+
+      </div><!-- /tb-guts -->
+
+    </div>
+  </div>
+
+  <!-- Color picker popover -->
+  <div id="colorPopover" style="
+    display:none;
+    visibility:hidden;
+    position:fixed;
+    z-index:4000;
+    left:0;
+    top:0;
+  ">
+    <div class="cp-panel">
+      <div class="cp-sv-wrap">
+        <canvas id="cpSV" width="150" height="100"></canvas>
+        <div id="cpSVMarker"></div>
+      </div>
+      <div class="cp-h-wrap">
+        <canvas id="cpH" width="150" height="12"></canvas>
+        <div id="cpHMarker"></div>
+      </div>
+
+      <div class="cp-row">
+        <div class="cp-preview" id="cpPreview"></div>
+        <input id="cpHex" class="cp-hex" maxlength="7" />
+        <button id="cpDone" class="cp-btn">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- working canvas / player / zoom -->
+  <main class="ce-body">
+    <section class="stage-shell" id="stageShell">
+      <div class="ce-canvas-bg"></div>
+
+      <div class="poster-wrap" id="posterFrame">
+        <div class="poster-stage" id="posterStage">
+          <img id="posterImg" src="<?= $this->escapeHtmlAttr($imgUrl) ?>" alt="Poster">
+          <!-- text layers injected here -->
+        </div>
+      </div>
+
+      <!-- PLAYER BAR -->
+      <div class="playerbar hidden" id="playerBar">
+        <div class="playerbar-top">
+          <button class="player-btn" id="playBtn">
+            <svg class="ico" viewBox="0 0 24 24">
+              <path id="pp" fill="currentColor" d="M8 5v14l11-7z"/>
+            </svg>
+            <span class="lbl">Play</span>
+          </button>
+
+          <button class="player-btn stop" id="stopBtn" title="Stop / Reset">
+            <svg class="ico" viewBox="0 0 24 24"><path fill="currentColor" d="M6 6h12v12H6z"/></svg>
+          </button>
+
+          <div class="time-pair">
+            <span class="time-cur" id="timeNow">0.0s</span>
+            <span class="time-window" id="timeWindowLabel">0.0s → 30.0s</span>
+          </div>
+        </div>
+
+        <div class="playerbar-bottom">
+          <div class="scrub-row">
+            <div class="scrub-time" id="scrubStart">0.0</div>
+            <input id="scrubber" class="scrub-rail" type="range" min="0" max="30" step="0.01" value="0">
+            <div class="scrub-time" id="scrubEnd">30.0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- zoom cluster -->
+      <div class="zoom-cluster">
+        <button class="btn-icon" id="btnFit"><svg class="ico" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" stroke="#334155" stroke-width="2" fill="none" stroke-linecap="round"/></svg></button>
+        <button class="btn-icon" id="btnMinus"><svg class="ico" viewBox="0 0 24 24"><path d="M5 12h14" stroke="#334155" stroke-width="2" fill="none" stroke-linecap="round"/></svg></button>
+        <input id="zoomRange" class="zoom-range" type="range" min="80" max="140" value="100"/>
+        <button class="btn-icon" id="btnPlus"><svg class="ico" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="#334155" stroke-width="2" fill="none" stroke-linecap="round"/></svg></button>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- AUDIO POP -->
+<div class="pop" id="audioPop">
+  <h4>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5a3 3 0 0 1 3-3v0a3 3 0 0 1 3 3v9"/><circle cx="9" cy="19" r="2"/><circle cx="15" cy="14" r="2"/></svg>
+    Audio Preview Settings
+  </h4>
+
+  <div class="track-card">
+    <div class="track-left-art">
+      <img id="popupCover" src="<?= $this->escapeHtmlAttr($poCover) ?>" alt="">
+    </div>
+
+    <div class="track-main">
+      <div class="track-title" id="popupTitle"><?= htmlspecialchars($poTitle) ?></div>
+      <div class="track-artist" id="popupArtist"><?= htmlspecialchars($poArtist) ?></div>
+
+      <div class="track-line">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"></circle>
+          <path d="M12 7v5l3 3"></path>
+        </svg>
+        <span id="trackLenLabel">--:--</span>
+        <span class="dim" id="trackLenDetail">( --.-s total )</span>
+      </div>
+
+      <div class="track-line preview">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 12h2M7 8v8M11 4v16M15 8v8M19 12h2"/>
+        </svg>
+        <span id="windowDetail">Preview: 0.0s → 30.0s (30s)</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="rowblk">
+    <div class="row-head">
+      <span>Start preview at</span>
+      <span class="tag">inside full song</span>
+    </div>
+
+    <div class="time-inputs">
+      <div class="time-field">
+        <input id="startMin" type="number" min="0" step="1" value="0">
+        <span>min</span>
+      </div>
+      <div class="time-field">
+        <input id="startSec" type="number" min="0" step="0.1" value="0.0">
+        <span>sec</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="help-text">
+    Example: 1 min / 12.5 sec = starts at 72.5s. We export 30s from there.
+  </div>
+</div>
+
+<!-- DOWNLOAD POP -->
+<div class="pop" id="dlPop">
+  <h4>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    Download your Story
+  </h4>
+
+  <div class="row-download" id="rowVideo">
+    <label>
+      <input type="radio" name="dlType" value="video" id="radioVideo">
+      <span>Video (MP4, 30s)</span>
+    </label>
+    <div class="helper-note">
+      Get your Insta Story video & start promoting your track!
+    </div>
+  </div>
+
+  <div class="row-download" id="rowImage">
+    <label>
+      <input type="radio" name="dlType" value="image" id="radioImage">
+      <span>Promo image (JPG)</span>
+    </label>
+    <div class="helper-note">
+      Download Music Promotion Poster for Instagram Story & Track Promo
+    </div>
+  </div>
+
+  <div id="dlStatus">
+    <div id="dlStatusMsg">Preparing…</div>
+    <div id="dlStatusTrack"><div id="dlStatusBar"></div></div>
+  </div>
+
+  <button class="act-btn primary" id="goDownload" style="width:100%;justify-content:center;margin-top:8px;">
+    Download
+  </button>
+</div>
+
+<audio id="player" preload="none"></audio>
+  
+  
+<!-- Second Section -->
+
+  
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+<script>
+/* ===== bootstrap data from PHP ===== */
+const TPL_ASPECT = <?= json_encode($tplAspect) ?>;
+const TPL_RADIUS = <?= json_encode($tplRadius) ?>;
+
+const ORIGIN         = window.location.origin;
+const IMG_SRC_INIT   = <?= json_encode($imgUrl) ?>;
+const AUDIO_SRC_INIT = <?= json_encode($audioUrl) ?>;
+const POSTER_ID      = <?= (int)$posterId ?>;
+const BASE           = <?= json_encode($base) ?>;
+const TITLE_LABEL    = <?= json_encode($poTitle) ?>;
+const COVER_URL      = <?= json_encode($poCover) ?>;
+const ARTIST_LABEL   = <?= json_encode($poArtist) ?>;
+
+/* tiny dom helper */
+const $ = s => document.querySelector(s);
+
+/* init poster frame ratio/radius */
+(function initTemplateLayout(){
+  const wrap  = $('#posterFrame');
+  const stage = $('#posterStage');
+  const imgEl = $('#posterImg');
+  wrap.style.aspectRatio   = TPL_ASPECT;
+  stage.style.borderRadius = TPL_RADIUS;
+  imgEl.style.borderRadius = TPL_RADIUS;
+})();
+
+/* popup util */
+function toggle(el,on){el.classList[on?'add':'remove']('open');}
+
+/* time format helpers */
+function fmtClipTime(secFloat){
+  if(!isFinite(secFloat)) return '0:00';
+  const total = Math.floor(secFloat);
+  const m = Math.floor(total/60);
+  const s = total % 60;
+  return m.toString()+':' + s.toString().padStart(2,'0');
+}
+function fmtMMSS(sec){
+  if(!isFinite(sec)) return '--:--';
+  const total = Math.floor(sec);
+  const mm = Math.floor(total/60);
+  const ss = total%60;
+  return mm.toString().padStart(1,'0')+':'+ss.toString().padStart(2,'0');
+}
+
+/* refs */
+const audioPop       = $('#audioPop');
+const dlPop          = $('#dlPop');
+const chipEl         = $('#audioChip');
+const chipRemove     = $('#chipRemove');
+const btnAddAudio    = $('#btnAddAudio');
+const btnDownload    = $('#btnDownload');
+const startMin       = $('#startMin');
+const startSec       = $('#startSec');
+
+const trackLenLabel  = $('#trackLenLabel');
+const trackLenDetail = $('#trackLenDetail');
+const windowDetail   = $('#windowDetail');
+
+const popupCover     = $('#popupCover');
+const popupTitle     = $('#popupTitle');
+const popupArtist    = $('#popupArtist');
+
+const posterStage    = $('#posterStage');
+const posterImg      = $('#posterImg');
+
+/* popups open / close */
+btnAddAudio.addEventListener('click',()=>{
+  // पहले बाकी popups बंद करो ताकि overlap ना हो
+  toggle(dlPop,false);
+  toggle(shortcutsPop,false);
+
+  toggle(audioPop,true);
+});
+
+btnDownload.addEventListener('click',()=>{
+  // बाकी popups बंद
+  toggle(audioPop,false);
+  toggle(shortcutsPop,false);
+
+  toggle(dlPop,true);
+});
+
+chipEl.addEventListener('click',e=>{
+  if(e.target === chipRemove) return;
+
+  // बाकी popups बंद
+  toggle(dlPop,false);
+  toggle(shortcutsPop,false);
+
+  toggle(audioPop,true);
+});
+
+/* ====== NEW: Keys / Shortcuts button ====== */
+btnShortcuts.addEventListener('click', (e)=>{
+  e.stopPropagation();
+
+  // अगर पहले से खुला है → बंद करो और return
+  if(shortcutsPop.classList.contains('open')){
+    toggle(shortcutsPop,false);
+    return;
+  }
+
+  // open करने से पहले बाकी popups बंद
+  toggle(audioPop,false);
+  toggle(dlPop,false);
+
+  // popover को button के नीचे position करना
+  const r = btnShortcuts.getBoundingClientRect();
+  const POP_W = 280; // same width जैसा CSS में रखा है (shortcutsPop .pop { width:280px; })
+ shortcutsPop.style.position = 'fixed';
+shortcutsPop.style.left = '1280.12px';
+shortcutsPop.style.top  = '123px';
+    // 8px नीचे gap
+
+  toggle(shortcutsPop,true);
+});
+
+
+/* ====== GLOBAL CLICK CLOSE LOGIC (तीनों popups के लिए) ====== */
+document.addEventListener('click',e=>{
+
+  // AUDIO POP बंद करने का rule
+  if(!audioPop.contains(e.target)
+     && e.target!==btnAddAudio
+     && !chipEl.contains(e.target)) {
+    toggle(audioPop,false);
+  }
+
+  // DOWNLOAD POP बंद करने का rule
+  if(!dlPop.contains(e.target)
+     && e.target!==btnDownload
+     && !dlPop.contains(e.target)) {
+    toggle(dlPop,false);
+  }
+
+  // SHORTCUTS POP बंद करने का rule
+  if(!shortcutsPop.contains(e.target)
+     && e.target!==btnShortcuts
+     && !btnShortcuts.contains(e.target)) {
+    toggle(shortcutsPop,false);
+  }
+});
+
+
+/* zoom controls */
+(()=>{
+  const frame=$('#posterFrame'),
+        range=$('#zoomRange');
+  let s=1;
+  const apply=()=>frame.style.transform=`scale(${s})`;
+  range.addEventListener('input',()=>{s=range.value/100;apply()});
+  $('#btnPlus').onclick =()=>{s=Math.min(1.4,s+.05);apply()};
+  $('#btnMinus').onclick=()=>{s=Math.max(.8,s-.05);apply()};
+  $('#btnFit').onclick  =()=>{s=1;apply()};
+  apply();
+})();
+
+/* ===== PLAYER LOGIC ===== */
+(()=>{
+  const p        = $('#player');
+  const playBtn  = $('#playBtn');
+  const stopBtn  = $('#stopBtn');
+  const ppPath   = $('#pp');
+  const lblPlay  = playBtn.querySelector('.lbl');
+
+  const timeNow  = $('#timeNow');
+  const timeWindowLabel = $('#timeWindowLabel');
+  const scrub    = $('#scrubber');
+  const scrubA   = $('#scrubStart');
+  const scrubB   = $('#scrubEnd');
+
+  const playerBar     = $('#playerBar');
+  const rowVideo      = $('#rowVideo');
+  const radioVideo    = $('#radioVideo');
+  const radioImage    = $('#radioImage');
+
+  let audioReady = false;
+  let chosenDbUrl = null;
+
+  const PREVIEW_LEN = 30;
+  let previewStart  = 0;
+  let trackDuration = 0;
+
+  window.__getPreviewStart = ()=>previewStart;
+  window.__getPreviewLen   = ()=>PREVIEW_LEN;
+
+  function updateTimeNowDisplay(curAbs){
+    const rel = curAbs - previewStart;
+    const relClamped = Math.max(0, Math.min(PREVIEW_LEN, rel));
+    const curNice = fmtClipTime(relClamped);
+    const endNice = fmtClipTime(PREVIEW_LEN);
+    timeNow.textContent = `${curNice} / ${endNice}`;
+  }
+
+  window.__applyPreviewStart = function(newStart){
+    previewStart = Math.max(0, Number(newStart)||0);
+    try { p.currentTime = previewStart; } catch(_){}
+    const winStartAbs = previewStart.toFixed(1);
+    const winEndAbs   = (previewStart+PREVIEW_LEN).toFixed(1);
+
+    scrub.min   = 0;
+    scrub.max   = PREVIEW_LEN;
+    scrub.value = "0";
+
+    updateTimeNowDisplay(previewStart);
+
+    timeWindowLabel.textContent = `${winStartAbs}s → ${winEndAbs}s`;
+
+    scrubA.textContent = fmtClipTime(0);
+    scrubB.textContent = fmtClipTime(PREVIEW_LEN);
+
+    trackLenLabel.textContent  = fmtMMSS(trackDuration);
+    trackLenDetail.textContent = `(${(trackDuration||0).toFixed(1)}s total)`;
+    windowDetail.textContent   =
+      `Preview: ${winStartAbs}s → ${winEndAbs}s (${PREVIEW_LEN}s)`;
+
+    const mins = Math.floor(previewStart/60);
+    const secs = previewStart - mins*60;
+    startMin.value = mins.toString();
+    startSec.value = secs.toFixed(1);
+  };
+
+  function clampAndSync(){
+    const lo = previewStart;
+    const hi = previewStart + PREVIEW_LEN;
+    let cur  = p.currentTime || lo;
+
+    if(cur < lo) cur = lo;
+    if(cur > hi){
+      p.pause();
+      lblPlay.textContent='Play';
+      ppPath?.setAttribute('d','M8 5v14l11-7z');
+      cur = hi;
+      p.currentTime = hi;
+    }
+
+    updateTimeNowDisplay(cur);
+
+    timeWindowLabel.textContent =
+      `${previewStart.toFixed(1)}s → ${(previewStart+PREVIEW_LEN).toFixed(1)}s`;
+
+    const rel = cur - previewStart;
+    scrub.value = rel.toString();
+
+    scrubA.textContent = fmtClipTime(0);
+    scrubB.textContent = fmtClipTime(PREVIEW_LEN);
+
+    windowDetail.textContent =
+      `Preview: ${previewStart.toFixed(1)}s → ${(previewStart+PREVIEW_LEN).toFixed(1)}s (${PREVIEW_LEN}s)`;
+  }
+
+  p.addEventListener('timeupdate', clampAndSync);
+
+  p.addEventListener('loadedmetadata', ()=>{
+    if(isFinite(p.duration)){
+      trackDuration = p.duration;
+      window.__applyPreviewStart(previewStart);
+    }
+  });
+
+  playBtn.onclick = ()=>{
+    if(p.paused){
+      if(p.currentTime < previewStart || p.currentTime > previewStart+PREVIEW_LEN){
+        p.currentTime = previewStart;
+      }
+      p.play().catch(()=>{});
+      lblPlay.textContent='Pause';
+      ppPath?.setAttribute('d','M6 4h4v16H6zM14 4h4v16h-4z');
+    } else {
+      p.pause();
+      lblPlay.textContent='Play';
+      ppPath?.setAttribute('d','M8 5v14l11-7z');
+    }
+  };
+
+  stopBtn.onclick = ()=>{
+    p.pause();
+    p.currentTime = previewStart;
+    lblPlay.textContent='Play';
+    ppPath?.setAttribute('d','M8 5v14l11-7z');
+    clampAndSync();
+  };
+
+  scrub.addEventListener('input', ()=>{
+    const relVal = Number(scrub.value||0);
+    const absVal = previewStart + relVal;
+    try { p.currentTime = absVal; } catch(_){}
+    clampAndSync();
+  });
+  scrub.addEventListener('change', ()=>{
+    const relVal = Number(scrub.value||0);
+    const absVal = previewStart + relVal;
+    try { p.currentTime = absVal; } catch(_){}
+    clampAndSync();
+  });
+
+  function showChip(){
+    $('#chipCover').src = COVER_URL || $('#chipCover').src;
+    $('#chipTitle').textContent  = TITLE_LABEL || 'Untitled';
+    $('#chipArtist').textContent = ARTIST_LABEL || '';
+    popupCover.src   = COVER_URL || popupCover.src;
+    popupTitle.textContent  = TITLE_LABEL || 'Untitled';
+    popupArtist.textContent = ARTIST_LABEL || '';
+    chipEl.style.display='inline-flex';
+    btnAddAudio.style.display='none';
+  }
+  function hideChip(){
+    chipEl.style.display='none';
+    btnAddAudio.style.display='';
+  }
+
+  function refreshAudioState(){
+    if(audioReady){
+      rowVideo.classList.remove('disabled');
+      radioVideo.disabled = false;
+      if(!radioVideo.checked && !radioImage.checked){
+        radioVideo.checked = true;
+      }
+      playerBar.classList.remove('hidden');
+    } else {
+      rowVideo.classList.add('disabled');
+      radioVideo.disabled = true;
+      radioVideo.checked  = false;
+      radioImage.checked  = true;
+      playerBar.classList.add('hidden');
+    }
+  }
+
+  function applyStartFromInputs(){
+    const m = Math.max(0, Number(startMin.value||0));
+    const s = Math.max(0, Number(startSec.value||0));
+    const newStart = m*60 + s;
+    window.__applyPreviewStart(newStart);
+  }
+  startMin.addEventListener('input', applyStartFromInputs);
+  startSec.addEventListener('input', applyStartFromInputs);
+
+  btnAddAudio.addEventListener('click', async ()=>{
+    try{
+      if(!POSTER_ID) throw new Error('Poster ID missing.');
+      const res = await fetch(`${BASE}/analytics/release-audio?id=${POSTER_ID}`, {credentials:'same-origin'});
+      const j   = await res.json();
+      if(!j.ok || !j.url) throw new Error(j.error || 'Audio not found in DB');
+      let chosen = j.url;
+      if (chosen.startsWith('/')) { chosen = window.location.origin + chosen; }
+      chosenDbUrl = chosen;
+
+      p.src = chosenDbUrl;
+      p.load();
+      audioReady = true;
+
+      showChip();
+      refreshAudioState();
+      applyStartFromInputs();
+    }catch(e){
+      alert(e.message || 'Failed to load audio');
+    }
+  });
+
+  // preload from backend on load
+  if (AUDIO_SRC_INIT){
+    let chosen = AUDIO_SRC_INIT;
+    if (chosen.startsWith('/')) { chosen = window.location.origin + chosen; }
+    chosenDbUrl = chosen;
+    p.src = chosenDbUrl;
+    p.load();
+    audioReady = true;
+    showChip();
+  }
+  refreshAudioState();
+
+  chipRemove.addEventListener('click', ev=>{
+    ev.stopPropagation();
+    p.removeAttribute('src');
+    p.load();
+    chosenDbUrl=null;
+    audioReady=false;
+    hideChip();
+    refreshAudioState();
+  });
+
+  /* download flow UI */
+  const dlStatus     = $('#dlStatus');
+  const dlStatusMsg  = $('#dlStatusMsg');
+  const dlStatusBar  = $('#dlStatusBar');
+  const goDownloadBtn= $('#goDownload');
+
+  function showRender(msg,pct){
+    toggle(dlPop,true);
+    dlStatus.style.display='block';
+    dlStatusMsg.textContent=msg;
+    dlStatusBar.style.width=(pct||0)+'%';
+    goDownloadBtn.disabled=true;
+    goDownloadBtn.style.opacity=.6;
+    goDownloadBtn.style.pointerEvents='none';
+    if(radioVideo){ radioVideo.disabled=true; }
+    if(radioImage){ radioImage.disabled=true; }
+  }
+  function updateRender(msg,pct){
+    dlStatusMsg.textContent=msg;
+    dlStatusBar.style.width=(pct||0)+'%';
+  }
+  function hideRender(){
+    dlStatus.style.display='none';
+    goDownloadBtn.disabled=false;
+    goDownloadBtn.style.opacity='';
+    goDownloadBtn.style.pointerEvents='';
+    refreshAudioState();
+    toggle(dlPop,false);
+  }
+
+// Pixel-perfect export: cancels DPR, clears ancestor transforms, locks %→px, no crop
+async function compositePosterAndText(){
+  const stageNode   = posterStage;
+  const posterImgEl = posterImg;
+
+  // ====== MANUAL TWEAK KNOBS (adjust here) ======
+  // Preview vs export ko line-up karne ke liye:
+  const EXPORT_TWEAK = {
+    fontScale: 0.950,  // <1 = export thoda chhota; >1 = bada
+    yShiftPx:  -3,     // -ve = upar, +ve = neeche
+    xShiftPx:   0
+  };
+
+  // 0) ensure fonts are fully loaded
+  if (document.fonts && document.fonts.ready) {
+    try { await document.fonts.ready; } catch(_) {}
+  }
+
+  // 1) compute sizes
+  const naturalW = posterImgEl.naturalWidth  || 1080;
+  const naturalH = posterImgEl.naturalHeight || 1920;
+
+  const stageRect = stageNode.getBoundingClientRect();
+  const stageW = Math.max(1, Math.round(stageRect.width));
+  const stageH = Math.max(1, Math.round(stageRect.height));
+
+  // DPR-safe scale so preview == export
+  const SCALE = naturalW / stageW;
+
+  // 2) temporarily neutralize ancestor transforms
+  const transformedAncestors = [];
+  let a = stageNode.parentElement;
+  while (a && a !== document.body) {
+    const cs = getComputedStyle(a);
+    if (cs.transform && cs.transform !== 'none') {
+      transformedAncestors.push({ el:a, prev:a.style.transform });
+      a.style.transform = 'none';
+    }
+    a = a.parentElement;
+  }
+
+  // helper: center coords of el within stage
+  const centerInStage = (el) => {
+    const r = el.getBoundingClientRect();
+    const cx = (r.left - stageRect.left) + (r.width  / 2);
+    const cy = (r.top  - stageRect.top)  + (r.height / 2);
+    return { cx, cy, w: r.width, h: r.height };
+  };
+
+  // 3) normalize all text layers so preview == export
+  const editedLayers = [];
+  stageNode.querySelectorAll('.text-layer').forEach(el=>{
+    const cs = getComputedStyle(el);
+    const snapshot = {
+      el,
+      prevStyle: el.getAttribute('style') || '',
+      prevCE: el.getAttribute('contenteditable')
+    };
+    editedLayers.push(snapshot);
+
+    // remove editor chrome
+    el.classList.remove('active');
+    el.removeAttribute('contenteditable');
+    el.querySelectorAll('.resize-handle').forEach(h=>h.style.display='none');
+    el.style.border  = 'none';
+    el.style.outline = 'none';
+
+    // flow stable
+    el.style.overflow  = 'visible';
+    el.style.height    = 'auto';
+    el.style.maxHeight = 'none';
+
+    // compute current box
+    const { cx, cy, w } = centerInStage(el);
+
+    // ✅ 3a) lock width FIRST to freeze wrapping
+    if (w) {
+      el.style.width       = `${Math.round(w)}px`;
+      el.style.maxWidth    = 'none';
+      el.style.whiteSpace  = 'pre-wrap';
+      el.style.wordBreak   = 'break-word';
+    }
+
+    // ✅ 3b) then font tweak (so wrapping doesn’t change)
+    const fsNow = parseFloat(cs.fontSize) || 32;
+    const fsAdj = Math.max(6, fsNow * (EXPORT_TWEAK.fontScale || 1));
+    el.style.fontSize = fsAdj + 'px';
+
+    // ✅ 3c) lock position (px) + apply nudges
+    const nudgeX = +EXPORT_TWEAK.xShiftPx || 0;
+    const nudgeY = +EXPORT_TWEAK.yShiftPx || 0;
+    el.style.left = `${Math.round(cx + nudgeX)}px`;
+    el.style.top  = `${Math.round(cy + nudgeY)}px`;
+
+    // ✅ 3d) keep only translate(-50%,-50%) + rotate(..)
+    const t = el.style.transform || cs.transform || '';
+    let rotPart = '';
+    if (t && t !== 'none') {
+      const m = t.match(/rotate\([^)]+\)/);
+      rotPart = m ? m[0] : '';
+    }
+    el.style.transform = `translate(-50%,-50%) ${rotPart}`.trim();
+    el.style.transformOrigin = '50% 50%';
+  });
+
+  // 4) stage/image visuals consistent for capture
+  const keepStageBR = stageNode.style.borderRadius;
+  const keepImgBR   = posterImgEl.style.borderRadius;
+  const keepShadow  = posterImgEl.style.boxShadow;
+
+  const tplRadius = (typeof TPL_RADIUS !== 'undefined' && TPL_RADIUS)
+    ? TPL_RADIUS
+    : getComputedStyle(stageNode).borderRadius;
+
+  stageNode.style.borderRadius   = tplRadius;
+  posterImgEl.style.borderRadius = tplRadius;
+  posterImgEl.style.boxShadow    = 'none';
+  posterImgEl.crossOrigin        = 'anonymous';
+
+  // 5) render the stage itself
+  const canvas = await html2canvas(stageNode, {
+    backgroundColor: null,
+    useCORS: true,
+    scale: SCALE,
+    width:  stageW,
+    height: stageH,
+    scrollX: 0,
+    scrollY: 0,
+    removeContainer: true
+  });
+
+  // 6) restore everything
+  editedLayers.forEach(s=>{
+    s.el.setAttribute('style', s.prevStyle);
+    if (s.prevCE != null) s.el.setAttribute('contenteditable', s.prevCE);
+    s.el.querySelectorAll('.resize-handle').forEach(h=>h.style.display='');
+  });
+  stageNode.style.borderRadius   = keepStageBR;
+  posterImgEl.style.borderRadius = keepImgBR;
+  posterImgEl.style.boxShadow    = keepShadow;
+
+  transformedAncestors.forEach(({el, prev})=>{ el.style.transform = prev; });
+
+  // 7) output
+  return {
+    canvas,
+    dataUrl: canvas.toDataURL('image/jpeg', 0.92)
+  };
+}
+
+
+
+  async function renderClipServer(compositedPosterDataUrl){
+    try{
+      showRender('Exporting video…',40);
+
+      const clipStart = previewStart;
+      const clipLen   = PREVIEW_LEN;
+
+      let posterAbs = IMG_SRC_INIT;
+      if (posterAbs.startsWith('/')) posterAbs = window.location.origin + posterAbs;
+
+      let audioAbs = chosenDbUrl || AUDIO_SRC_INIT || '';
+      if (audioAbs && audioAbs.startsWith('/')) audioAbs = window.location.origin + audioAbs;
+
+      const payload = {
+        poster: posterAbs,
+        poster_with_text: compositedPosterDataUrl,
+        audio: audioAbs,
+        start: clipStart,
+        len: clipLen,
+        poster_id: POSTER_ID
+      };
+
+      const res = await fetch(`${BASE}/analytics/render-video`, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(payload),
+        credentials:'same-origin'
+      });
+
+      if(!res.ok){
+        const txt = await res.text();
+        updateRender('Server render failed',100);
+        alert('Server render failed:\n'+txt);
+        hideRender();
+        return;
+      }
+
+      updateRender('Packaging download…',70);
+      const blob = await res.blob();
+
+      updateRender('Downloading…',90);
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `poster-${POSTER_ID}-30s.mp4`;
+      a.click();
+
+      updateRender('Done!',100);
+      setTimeout(()=>{hideRender();},600);
+
+    }catch(e){
+      updateRender('Render crashed',100);
+      alert('Server render crashed: '+(e.message||e));
+      hideRender();
+    }
+  }
+
+  async function downloadPosterJpg(){
+    const {dataUrl} = await compositePosterAndText();
+    const a=document.createElement('a');
+    a.download=`poster-${POSTER_ID}.jpg`;
+    a.href=dataUrl;
+    a.click();
+  }
+
+  $('#goDownload').addEventListener('click', async ()=>{
+    const checked = document.querySelector('input[name="dlType"]:checked');
+    const type = checked ? checked.value : 'image';
+
+    if(type==='video'){
+      if(!audioReady){
+        alert('Please select audio first to generate video.');
+        return;
+      }
+      const {dataUrl} = await compositePosterAndText();
+      await renderClipServer(dataUrl);
+    } else {
+      toggle(dlPop,false);
+      await downloadPosterJpg();
+    }
+  });
+
+  window.__applyPreviewStart(0);
+})();
+
+/* ===== TEXT LAYER + TOOLBAR + HISTORY (undo/redo) + COLOR PICKER + SHADOW/OPACITY ===== */
+(()=>{
+  const stage            = $('#posterStage');
+
+  // toolbar refs
+  const toolbar          = $('#editorToolbar');
+  const tbGuts           = $('#tbGuts');           // <-- hidden first
+  const fontSizeSelect   = $('#fontSizeSelect');
+  const fontSizeVal      = $('#fontSizeVal');
+  const fontFamilySelect = $('#fontFamilySelect');
+  const fontFamilyVal    = $('#fontFamilyVal');
+  const colorChip        = $('#colorChip');
+  const btnColorPick     = $('#btnColorPick');
+  const btnUndo          = $('#btnUndo');
+  const btnRedo          = $('#btnRedo');
+  const btnDuplicate     = $('#btnDuplicate');
+  const btnDelete        = $('#deleteLayerBtn');
+  const btnAddTextTop    = $('#btnAddText');
+
+  // shadow + opacity refs
+  const btnShadowToggle  = $('#btnShadowToggle');
+  const opacityRange     = $('#opacityRange');
+  const opacityValEl     = $('#opacityVal');
+  
+    // formatting button refs for active highlight (blue .is-active)
+  const btnBold        = toolbar.querySelector('[data-act="bold"]');
+  const btnItalic      = toolbar.querySelector('[data-act="italic"]');
+  const btnUnderline   = toolbar.querySelector('[data-act="underline"]');
+  const btnAlignLeft   = toolbar.querySelector('[data-act="align-left"]');
+  const btnAlignCenter = toolbar.querySelector('[data-act="align-center"]');
+  const btnAlignRight  = toolbar.querySelector('[data-act="align-right"]');
+
+
+  /* COLOR POPOVER refs */
+  const popEl      = $('#colorPopover');
+  const svCanvas   = $('#cpSV');
+  const hCanvas    = $('#cpH');
+  const svMarker   = $('#cpSVMarker');
+  const hMarker    = $('#cpHMarker');
+  const cpPreview  = $('#cpPreview');
+  const cpHex      = $('#cpHex');
+  const cpDone     = $('#cpDone');
+
+  const svCtx = svCanvas.getContext('2d');
+  const hCtx  = hCanvas.getContext('2d');
+
+  /* drag / edit / resize state */
+  let activeLayer   = null;
+
+  let draggingMove  = false;
+  let dragStartX    = 0;
+  let dragStartY    = 0;
+  let dragOffsetX   = 0;
+  let dragOffsetY   = 0;
+  let dragHasMoved  = false;
+
+  let isEditing     = false;
+
+  let resizing      = false;
+  let resizeCorner  = null;
+  let resizeStartX  = 0;
+  let resizeStartY  = 0;
+
+  // original box metrics / refs for resize
+  let startW        = 0;
+  let startH        = 0;
+  let startBoxLeftPx = 0;
+  let startBoxTopPx  = 0;
+  let stageRectCache = null;
+
+  // fallback % center
+  let startCenterXPct = 50;
+  let startCenterYPct = 50;
+
+  let currentColor  = '#ffffff';
+
+  /* colorpicker hsv state */
+  let curH = 0;  // 0-360
+  let curS = 1;  // 0-1
+  let curV = 1;  // 0-1
+  let pickingSV = false;
+  let pickingH  = false;
+
+  /* --- HISTORY STACK (undo / redo) --- */
+  const historyStack = [];
+  let historyIndex = -1;
+
+  function snapshotState(){
+    const layersData = [...stage.querySelectorAll('.text-layer')].map(el=>{
+      return {
+        html:   el.innerText,
+        style:  el.getAttribute('style') || '',
+      };
+    });
+    return JSON.stringify(layersData);
+  }
+
+  function pushHistory(){
+    historyStack.splice(historyIndex+1);
+    historyStack.push(snapshotState());
+    historyIndex = historyStack.length - 1;
+  }
+
+  function restoreFrom(dataStr){
+    stage.querySelectorAll('.text-layer').forEach(n=>n.remove());
+    const arr = JSON.parse(dataStr || '[]');
+    arr.forEach(item=>{
+      const el = document.createElement('div');
+      el.className = 'text-layer';
+      el.innerText = item.html;
+      el.setAttribute('style', item.style);
+
+      if(!el.style.border) {
+        el.style.border = "1px dashed rgba(255,255,255,.4)";
+      }
+      if(!el.style.minWidth)  el.style.minWidth  = "80px";
+      if(!el.style.minHeight) el.style.minHeight = "32px";
+      if(!el.style.padding)   el.style.padding   = "4px 8px";
+
+      createResizeHandles(el);
+      attachLayerEvents(el);
+      stage.appendChild(el);
+    });
+    activeLayer = null;
+  }
+
+  function undo(){
+    if(historyIndex <= 0) return;
+    historyIndex--;
+    restoreFrom(historyStack[historyIndex]);
+  }
+  function redo(){
+    if(historyIndex >= historyStack.length-1) return;
+    historyIndex++;
+    restoreFrom(historyStack[historyIndex]);
+  }
+  btnUndo.addEventListener('click', undo);
+  btnRedo.addEventListener('click', redo);
+
+  /* helpers */
+  function rgbToHex(rgb){
+    const m = rgb.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i);
+    if(!m) return null;
+    const r = Number(m[1]).toString(16).padStart(2,'0');
+    const g = Number(m[2]).toString(16).padStart(2,'0');
+    const b = Number(m[3]).toString(16).padStart(2,'0');
+    return "#"+r+g+b;
+  }
+  function rgbToHexObj(r,g,b){
+    const toHex=v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0');
+    return '#'+toHex(r)+toHex(g)+toHex(b);
+  }
+  function hexToRgb(hex){
+    if(!hex) return {r:255,g:255,b:255};
+    let h = hex.replace('#','').trim();
+    if(h.length===3){
+      h = h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+    }
+    if(h.length!==6) return {r:255,g:255,b:255};
+    return {
+      r:parseInt(h.slice(0,2),16),
+      g:parseInt(h.slice(2,4),16),
+      b:parseInt(h.slice(4,6),16),
+    };
+  }
+  function hsvToRgb(h,s,v){
+    const c=v*s;
+    const x=c*(1-Math.abs(((h/60)%2)-1));
+    const m=v-c;
+    let rp=0,gp=0,bp=0;
+    if(h<60){rp=c;gp=x;bp=0;}
+    else if(h<120){rp=x;gp=c;bp=0;}
+    else if(h<180){rp=0;gp=c;bp=x;}
+    else if(h<240){rp=0;gp=x;bp=c;}
+    else if(h<300){rp=x;gp=0;bp=c;}
+    else {rp=c;gp=0;bp=x;}
+    return {
+      r:Math.round((rp+m)*255),
+      g:Math.round((gp+m)*255),
+      b:Math.round((bp+m)*255)
+    };
+  }
+  function rgbToHsv(r,g,b){
+    r/=255; g/=255; b/=255;
+    const max=Math.max(r,g,b), min=Math.min(r,g,b);
+    const d=max-min;
+    let h=0;
+    if(d===0) h=0;
+    else if(max===r) h=60*(((g-b)/d)%6);
+    else if(max===g) h=60*(((b-r)/d)+2);
+    else h=60*(((r-g)/d)+4);
+    if(h<0) h+=360;
+    const s = max===0?0:d/max;
+    const v = max;
+    return {h,s,v};
+  }
+  function hsvToHex(h,s,v){
+    const {r,g,b}=hsvToRgb(h,s,v);
+    return rgbToHexObj(r,g,b);
+  }
+
+  // shadow helpers
+  function hasShadow(el){
+    const ts = el.style.textShadow || window.getComputedStyle(el).textShadow || '';
+    return ts && ts !== 'none';
+  }
+  function applyShadow(el,on){
+    if(on){
+      el.style.textShadow = "0 2px 8px rgba(0,0,0,.6)";
+    } else {
+      el.style.textShadow = "none";
+    }
+  }
+
+  // opacity helper
+  function setLayerOpacityFromSlider(){
+    if(!activeLayer) return;
+    const pct = parseInt(opacityRange.value,10);
+    const norm = Math.max(0.1, Math.min(1, pct/100));
+    activeLayer.style.opacity = norm.toString();
+    opacityValEl.textContent = pct + '%';
+  }
+
+  function setActiveLayer(el){
+    stage.querySelectorAll('.text-layer.active').forEach(n=>n.classList.remove('active'));
+    activeLayer = el || null;
+    if(activeLayer){
+      activeLayer.classList.add('active');
+      syncToolbarFromLayer(activeLayer);
+    }
+  }
+
+  function syncToolbarFromLayer(layer){
+  if(!layer) return;
+  const cs = window.getComputedStyle(layer);
+
+  // --- font size sync ---
+  const fs = parseFloat(cs.fontSize);
+  fontSizeVal.textContent = Math.round(fs);
+  let foundOpt = false;
+  [...fontSizeSelect.options].forEach(o=>{
+    if(parseInt(o.value,10) === Math.round(fs)){
+      o.selected = true;
+      foundOpt = true;
+    } else {
+      o.selected = false;
+    }
+  });
+  if(!foundOpt){
+    fontSizeSelect.options[0].textContent = Math.round(fs);
+    fontSizeSelect.options[0].value      = Math.round(fs);
+    fontSizeSelect.options[0].selected   = true;
+  }
+
+  // --- font family sync ---
+  const fam = cs.fontFamily.replace(/"/g,'');
+  fontFamilyVal.textContent = fam.split(',')[0] || 'Inter';
+
+  // --- color sync ---
+  const clr = rgbToHex(cs.color) || '#ffffff';
+  currentColor = clr;
+  colorChip.style.background = clr;
+
+  // --- shadow sync ---
+  if(hasShadow(layer)){
+    btnShadowToggle.classList.add('is-active');
+  } else {
+    btnShadowToggle.classList.remove('is-active');
+  }
+
+  // --- opacity sync ---
+  let op = layer.style.opacity || cs.opacity;
+  if(op === '' || op === undefined) { op = 1; }
+  const opPct = Math.round(parseFloat(op)*100);
+  opacityRange.value = opPct;
+  opacityValEl.textContent = opPct + '%';
+
+  // --- text style states (bold / italic / underline) ---
+  const fw  = cs.fontWeight;
+  const fst = cs.fontStyle;
+  const td  = cs.textDecorationLine || cs.textDecoration || '';
+
+  // bold
+  if(fw === '700' || fw === '800' || fw === '900'){
+    btnBold.classList.add('is-active');
+  } else {
+    btnBold.classList.remove('is-active');
+  }
+
+  // italic
+  if(fst === 'italic' || fst === 'oblique'){
+    btnItalic.classList.add('is-active');
+  } else {
+    btnItalic.classList.remove('is-active');
+  }
+
+  // underline
+  if(td.includes('underline')){
+    btnUnderline.classList.add('is-active');
+  } else {
+    btnUnderline.classList.remove('is-active');
+  }
+
+  // --- alignment state (left / center / right) ---
+  const ta = cs.textAlign;
+  btnAlignLeft.classList.toggle('is-active',   ta === 'left');
+  btnAlignCenter.classList.toggle('is-active', ta === 'center');
+  btnAlignRight.classList.toggle('is-active',  ta === 'right');
+}
+
+
+  /* RESIZE HANDLES */
+ function createResizeHandles(layer){
+  // saare purane handles हटा दो
+  layer.querySelectorAll('.resize-handle').forEach(h=>h.remove());
+
+  // 8 handles config
+  const cornersAndEdges = [
+    {cls:'tl', cursor:'nwse-resize'},     // top-left
+    {cls:'tr', cursor:'nesw-resize'},     // top-right
+    {cls:'bl', cursor:'nesw-resize'},     // bottom-left
+    {cls:'br', cursor:'nwse-resize'},     // bottom-right
+    {cls:'tc', cursor:'ns-resize'},       // top-center
+    {cls:'bc', cursor:'ns-resize'},       // bottom-center
+    {cls:'ml', cursor:'ew-resize'},       // middle-left
+    {cls:'mr', cursor:'ew-resize'}        // middle-right
+  ];
+
+  cornersAndEdges.forEach(c=>{
+    const h = document.createElement('div');
+    h.className = 'resize-handle ' + c.cls;
+    h.style.cursor = c.cursor;
+
+    // position each handle with CSS here:
+    if(c.cls==='tl'){ h.style.left='-8px';  h.style.top='-8px'; }
+    if(c.cls==='tr'){ h.style.right='-8px'; h.style.top='-8px'; }
+    if(c.cls==='bl'){ h.style.left='-8px';  h.style.bottom='-8px'; }
+    if(c.cls==='br'){ h.style.right='-8px'; h.style.bottom='-8px'; }
+
+    if(c.cls==='tc'){
+      h.style.left='50%';
+      h.style.top='-8px';
+      h.style.transform='translateX(-50%)';
+    }
+    if(c.cls==='bc'){
+      h.style.left='50%';
+      h.style.bottom='-8px';
+      h.style.transform='translateX(-50%)';
+    }
+    if(c.cls==='ml'){
+      h.style.left='-8px';
+      h.style.top='50%';
+      h.style.transform='translateY(-50%)';
+    }
+    if(c.cls==='mr'){
+      h.style.right='-8px';
+      h.style.top='50%';
+      h.style.transform='translateY(-50%)';
+    }
+
+    // mouse
+    h.addEventListener('mousedown', e=>{
+      e.stopPropagation();
+      setActiveLayer(layer);
+      startResize(e.clientX, e.clientY, c.cls);
+    });
+
+    // touch
+    h.addEventListener('touchstart', e=>{
+      e.stopPropagation();
+      const t=e.touches[0];
+      setActiveLayer(layer);
+      startResize(t.clientX, t.clientY, c.cls);
+    }, {passive:false});
+
+    layer.appendChild(h);
+  });
+}
+
+
+    // ==== REPLACE your startResize/applyResize/endResize with this ====
+
+function startResize(clientX, clientY, corner){
+  if(!activeLayer) return;
+  resizing = true;
+  resizeCorner = corner;
+  draggingMove = false;
+
+  const rect = activeLayer.getBoundingClientRect();
+  const stageRect = stage.getBoundingClientRect();
+
+  resizeStartX = clientX;
+  resizeStartY = clientY;
+
+  startW = rect.width;
+  startH = rect.height;
+
+  startBoxWidthPx  = rect.width;
+  startBoxHeightPx = rect.height;
+
+  startBoxLeftPx = rect.left - stageRect.left;
+  startBoxTopPx  = rect.top  - stageRect.top;
+
+  stageRectCache = stageRect;
+
+  startFontSize = parseFloat(
+    window.getComputedStyle(activeLayer).fontSize
+  ) || 32;
+
+  // we store original center in % so we can reposition after resize
+  const centerX = startBoxLeftPx + rect.width/2;
+  const centerY = startBoxTopPx  + rect.height/2;
+  startCenterXPct = (centerX / stageRect.width)*100;
+  startCenterYPct = (centerY / stageRect.height)*100;
+}
+
+function applyResize(clientX, clientY){
+  if (!resizing || !activeLayer) return;
+
+  const dx = clientX - resizeStartX;
+  const dy = clientY - resizeStartY;
+
+  let newW = startW;
+  let newH = startH;
+
+  // depending on which handle we grabbed
+  switch(resizeCorner){
+    case 'br':
+      newW = startW + dx;
+      newH = startH + dy;
+      break;
+    case 'bl':
+      newW = startW - dx;
+      newH = startH + dy;
+      break;
+    case 'tr':
+      newW = startW + dx;
+      newH = startH - dy;
+      break;
+    case 'tl':
+      newW = startW - dx;
+      newH = startH - dy;
+      break;
+    case 'tc':
+      // top-center = only vertical stretch
+      newH = startH - dy;
+      break;
+    case 'bc':
+      // bottom-center = only vertical stretch
+      newH = startH + dy;
+      break;
+    case 'ml':
+      // middle-left = only horizontal stretch
+      newW = startW - dx;
+      break;
+    case 'mr':
+      // middle-right = only horizontal stretch
+      newW = startW + dx;
+      break;
+  }
+
+  // minimum size so it doesn't flip
+  newW = Math.max(40, newW);
+  newH = Math.max(20, newH);
+
+  const isCorner = (
+    resizeCorner === 'tl' ||
+    resizeCorner === 'tr' ||
+    resizeCorner === 'bl' ||
+    resizeCorner === 'br'
+  );
+
+  if(isCorner){
+    // ===== CORNER DRAG = uniform scale (font-size changes) =====
+    const startDiag = Math.sqrt(startW*startW + startH*startH);
+    const newDiag   = Math.sqrt(newW*newW + newH*newH);
+    const scale     = newDiag / startDiag;
+
+    const newFs = Math.max(8, startFontSize * scale);
+    activeLayer.style.fontSize = newFs + 'px';
+
+    // update width based on scale
+    const scaledW = startBoxWidthPx * scale;
+    activeLayer.style.width    = scaledW + 'px';
+    activeLayer.style.maxWidth = 'none';
+
+    // height auto (text wraps naturally)
+    activeLayer.style.height   = 'auto';
+
+  } else {
+    // ===== EDGE DRAG = axis stretch (font-size stays same) =====
+
+    // vertical edges only change height, but we simulate that
+    // by giving a fixed width and letting text wrap more/less:
+    if(resizeCorner === 'tc' || resizeCorner === 'bc'){
+      // keep same width, but allow more lines by forcing width same
+      activeLayer.style.width    = startBoxWidthPx + 'px';
+      activeLayer.style.maxWidth = 'none';
+      // no fixed height: let it grow/shrink naturally
+      activeLayer.style.height   = 'auto';
+
+      // trick: if user squashes vertically smaller than content,
+      // real DOM can't "compress text height" unless font-size changes.
+      // So visually min height will be content height. That's normal.
+
+    } else if(resizeCorner === 'ml' || resizeCorner === 'mr'){
+      // horizontal edge drag → change width only
+      activeLayer.style.width    = newW + 'px';
+      activeLayer.style.maxWidth = 'none';
+      activeLayer.style.height   = 'auto';
+    }
+  }
+
+  // keep box inside stage and recalc center for left/top %
+  const stageBox = stageRectCache;
+  const rectNow  = activeLayer.getBoundingClientRect();
+
+  let newLeftPx = rectNow.left - stageBox.left;
+  let newTopPx  = rectNow.top  - stageBox.top;
+
+  if (newLeftPx < 0) newLeftPx = 0;
+  if (newTopPx  < 0) newTopPx  = 0;
+  if (newLeftPx + rectNow.width > stageBox.width){
+    newLeftPx = stageBox.width - rectNow.width;
+  }
+  if (newTopPx + rectNow.height > stageBox.height){
+    newTopPx = stageBox.height - rectNow.height;
+  }
+
+  const centerX = newLeftPx + rectNow.width  / 2;
+  const centerY = newTopPx  + rectNow.height / 2;
+
+  const pctLeft = (centerX / stageBox.width ) * 100;
+  const pctTop  = (centerY / stageBox.height) * 100;
+
+  activeLayer.style.left = pctLeft + '%';
+  activeLayer.style.top  = pctTop  + '%';
+
+  // preserve rotation
+  const curTr = activeLayer.style.transform || '';
+  const rotMatch = curTr.match(/rotate\([^)]+\)/);
+  const rotPart  = rotMatch ? rotMatch[0] : '';
+  activeLayer.style.transform = `translate(-50%,-50%) ${rotPart}`.trim();
+}
+
+function endResize(){
+  if (!resizing) return;
+  resizing = false;
+  resizeCorner = null;
+  stageRectCache = null;
+  pushHistory();
+}
+
+
+function cloneActiveLayer(offsetPx = 10){
+  if(!activeLayer) return null;
+  const clone = activeLayer.cloneNode(true);
+
+  // shift thoda sa
+  const topPct  = parseFloat(activeLayer.style.top)  || 50;
+  const leftPct = parseFloat(activeLayer.style.left) || 50;
+
+  // posterStage size chahiye for px->%
+  const stageBox = stage.getBoundingClientRect();
+  // px offset ko % me convert karte hain so clone visibly nudge ho
+  const dxPct = (offsetPx / stageBox.width)  * 100;
+  const dyPct = (offsetPx / stageBox.height) * 100;
+
+  clone.style.top  = (topPct  + dyPct).toFixed(3) + '%';
+  clone.style.left = (leftPct + dxPct).toFixed(3) + '%';
+
+  // cleanup selection junk
+  clone.classList.remove('active');
+
+  // handles/events दुबारा attach
+  createResizeHandles(clone);
+  attachLayerEvents(clone);
+
+  stage.appendChild(clone);
+  return clone;
+}
+
+
+  /* DRAG MOVE */
+  function startDragMove(el, clientX, clientY){
+    if(resizing || isEditing) return;
+    setActiveLayer(el);
+    draggingMove = true;
+    dragHasMoved = false;
+
+    const box = el.getBoundingClientRect();
+    dragStartX = clientX;
+    dragStartY = clientY;
+    dragOffsetX = clientX - box.left;
+    dragOffsetY = clientY - box.top;
+  }
+
+  function moveDrag(clientX, clientY){
+    if(!draggingMove || !activeLayer || isEditing || resizing) return;
+
+    const dist = Math.sqrt(
+      Math.pow(clientX - dragStartX,2) +
+      Math.pow(clientY - dragStartY,2)
+    );
+    if(dist <= 3){
+      return;
+    }
+    dragHasMoved = true;
+
+    const stageBox = stage.getBoundingClientRect();
+
+    let newLeft = clientX - stageBox.left - dragOffsetX;
+    let newTop  = clientY - stageBox.top  - dragOffsetY;
+
+    const maxLeft = stageBox.width  - activeLayer.offsetWidth;
+    const maxTop  = stageBox.height - activeLayer.offsetHeight;
+    if(newLeft < 0) newLeft = 0;
+    if(newTop  < 0) newTop  = 0;
+    if(newLeft > maxLeft) newLeft = maxLeft;
+    if(newTop  > maxTop)  newTop  = maxTop;
+
+    const centerX = newLeft + activeLayer.offsetWidth  / 2;
+    const centerY = newTop  + activeLayer.offsetHeight / 2;
+
+    const pctLeft = (centerX / stageBox.width)*100;
+    const pctTop  = (centerY / stageBox.height)*100;
+
+    activeLayer.style.left = pctLeft+"%";
+    activeLayer.style.top  = pctTop+"%";
+
+    const curTr = activeLayer.style.transform || '';
+    const rotMatch = curTr.match(/rotate\([^)]+\)/);
+    const rotPart  = rotMatch ? rotMatch[0] : '';
+    activeLayer.style.transform = `translate(-50%,-50%) ${rotPart}`.trim();
+  }
+
+  function endDragMove(){
+    if(draggingMove){
+      draggingMove = false;
+      if(dragHasMoved){
+        pushHistory();
+      }
+    }
+  }
+
+  /* attach per-layer events */
+  function attachLayerEvents(el){
+    el.addEventListener('mousedown', e=>{
+      if(e.target.classList.contains('resize-handle')) return;
+      if(isEditing) return;
+      startDragMove(el, e.clientX, e.clientY);
+    });
+
+    el.addEventListener('touchstart', e=>{
+      if(e.target.classList.contains('resize-handle')) return;
+      if(isEditing) return;
+      const t=e.touches[0];
+      startDragMove(el, t.clientX, t.clientY);
+    }, {passive:false});
+
+    el.addEventListener('click', e=>{
+      if(dragHasMoved) return;
+      setActiveLayer(el);
+      e.stopPropagation();
+    });
+
+   el.addEventListener('dblclick', ()=>{
+  if(isEditing) return;
+  isEditing = true;
+  el.setAttribute('contenteditable','true');
+  el.focus();
+
+  const finish = ()=>{
+    el.removeAttribute('contenteditable');
+    el.removeEventListener('blur',finish);
+    isEditing = false;
+
+    // === AUTO RESIZE FIX START ===
+    // 1. height ko auto pe lao so it hugs new text
+    el.style.height = 'auto';
+
+    // 2. agar box ko pehle humne corner-resize karke font-scale किया था,
+    //    to width manually set ho sakti है (e.g. "247px").
+    //    Problem: kabhi wo width bahut बड़ी रह जाती है.
+    //
+    //    If text is now fewer chars / narrower,
+    //    hum chahte hain box shrink kar sake.
+    //
+    //    Strategy:
+    //    - अगर user ने side-resize नहीं किया था (sirf corner scale / default),
+    //      to width ko 'fit-content' या 'auto' कर दो.
+    //
+    //    हम ek heuristic use karenge:
+    //    अगर width < stage width ka 90% नहीं है तो chhod do,
+    //    वरना allow shrink.
+    //
+    const stageBox = stage.getBoundingClientRect();
+    const boxNow   = el.getBoundingClientRect();
+    const ninetyPctPx = stageBox.width * 0.9;
+
+    // अगर abhi width bahut बड़ी नहीं है, to simply auto कर सकते हैं:
+    if (boxNow.width < ninetyPctPx) {
+      el.style.width = 'auto';
+      el.style.maxWidth = '90%'; // safety same as initial
+    }
+
+    // always remove any fixed minHeight leftover junk
+    el.style.minHeight = '32px'; // keep baseline
+    // === AUTO RESIZE FIX END ===
+
+    pushHistory();
+  };
+
+  el.addEventListener('blur',finish,{once:true});
+});
+
+  }
+
+  // click empty space = deselect
+  stage.addEventListener('click', e=>{
+    if(!e.target.classList.contains('text-layer') &&
+       !e.target.classList.contains('resize-handle')){
+      setActiveLayer(null);
+    }
+  });
+
+
+  /* reveal toolbar guts once we actually add text */
+  let toolbarShown = false;
+  function revealToolbarGuts(){
+    if (toolbarShown) return;
+    toolbarShown = true;
+    tbGuts.style.display = 'flex';
+  }
+  
+  /* ADD TEXT */
+  btnAddTextTop.addEventListener('click', ()=>{
+    // show the rest of toolbar on first use
+    revealToolbarGuts();
+
+    const el = document.createElement('div');
+    el.className = 'text-layer';
+    el.innerText = TITLE_LABEL || 'Your Text';
+
+    el.style.top  = "50%";
+    el.style.left = "50%";
+    el.style.transform = "translate(-50%,-50%)";
+    el.style.fontFamily = "'Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif,Arkipelago";
+    el.style.fontWeight = "700";
+    el.style.letterSpacing = '0.04em';  
+    el.style.fontSize   = "32px";
+    el.style.textAlign  = "center";
+    
+    el.style.color      = "#fff";
+
+    // default fx
+    el.style.textShadow = "0 2px 8px rgba(0,0,0,.6)";
+    el.style.opacity    = "1";
+
+    el.style.padding    = "4px 8px";
+    el.style.minWidth   = "80px";
+    el.style.minHeight  = "32px";
+    el.style.border     = "1px dashed rgba(255,255,255,.4)";
+    el.style.borderRadius = "4px";
+    el.style.cursor     = "move";
+    el.style.userSelect = "text";
+    el.style.wordBreak  = "break-word";
+
+    el.style.width      = "200px";
+    el.style.height     = "auto";
+    el.style.boxSizing  = "border-box";
+    el.style.maxWidth   = "90%";
+    el.style.maxHeight  = "90%";
+
+    createResizeHandles(el);
+    attachLayerEvents(el);
+    stage.appendChild(el);
+    setActiveLayer(el);
+   syncToolbarFromLayer(el);
+
+    pushHistory();
+  });
+
+  /* DUPLICATE */
+  btnDuplicate.addEventListener('click', ()=>{
+    if(!activeLayer) return;
+    const clone = activeLayer.cloneNode(true);
+
+    const topPct  = parseFloat(activeLayer.style.top)  || 50;
+    const leftPct = parseFloat(activeLayer.style.left) || 50;
+    clone.style.top  = (topPct + 2) + '%';
+    clone.style.left = (leftPct + 2) + '%';
+
+    createResizeHandles(clone);
+    attachLayerEvents(clone);
+
+    stage.appendChild(clone);
+    setActiveLayer(clone);
+    pushHistory();
+  });
+
+  /* DELETE */
+  btnDelete.addEventListener('click', ()=>{
+    if(!activeLayer) return;
+    activeLayer.remove();
+    activeLayer=null;
+    pushHistory();
+  });
+
+  /* FONT SIZE */
+  fontSizeSelect.addEventListener('change', ()=>{
+    if(!activeLayer) return;
+    const val = parseInt(fontSizeSelect.value,10);
+    if(!isNaN(val)){
+      activeLayer.style.fontSize = val+'px';
+      fontSizeVal.textContent = val;
+      pushHistory();
+    }
+  });
+
+  /* FONT FAMILY */
+  fontFamilySelect.addEventListener('change', ()=>{
+    if(!activeLayer) return;
+    const fam = fontFamilySelect.value;
+    activeLayer.style.fontFamily = fam;
+    fontFamilyVal.textContent = fam.replace(/['"]/g,'').split(',')[0];
+    pushHistory();
+  });
+
+  /* COLOR PICKER DRAW / LOGIC */
+  function drawHue(){
+    const w=hCanvas.width, h=hCanvas.height;
+    const grad = hCtx.createLinearGradient(0,0,w,0);
+    for(let i=0;i<=360;i+=10){
+      grad.addColorStop(i/360, hsvToHex(i,1,1));
+    }
+    hCtx.fillStyle=grad;
+    hCtx.fillRect(0,0,w,h);
+  }
+  function drawSV(){
+    const w=svCanvas.width, h=svCanvas.height;
+    const baseHex = hsvToHex(curH,1,1);
+    svCtx.fillStyle=baseHex;
+    svCtx.fillRect(0,0,w,h);
+
+    const gradWhite = svCtx.createLinearGradient(0,0,w,0);
+    gradWhite.addColorStop(0,'#fff');
+    gradWhite.addColorStop(1,'rgba(255,255,255,0)');
+    svCtx.fillStyle=gradWhite;
+    svCtx.fillRect(0,0,w,h);
+
+    const gradBlack = svCtx.createLinearGradient(0,0,0,h);
+    gradBlack.addColorStop(0,'rgba(0,0,0,0)');
+    gradBlack.addColorStop(1,'#000');
+    svCtx.fillStyle=gradBlack;
+    svCtx.fillRect(0,0,w,h);
+  }
+  function refreshUIFromHSV(){
+    const svW=svCanvas.width, svH=svCanvas.height;
+    svMarker.style.left = (curS*svW)+'px';
+    svMarker.style.top  = ((1-curV)*svH)+'px';
+
+    const hueX = (curH/360)*hCanvas.width;
+    hMarker.style.left = hueX+'px';
+
+    const {r,g,b}=hsvToRgb(curH,curS,curV);
+    const hex = rgbToHexObj(r,g,b);
+    cpPreview.style.background = hex;
+    cpHex.value = hex;
+
+    currentColor = hex;
+    colorChip.style.background = hex;
+    if(activeLayer){
+      activeLayer.style.color = hex;
+    }
+  }
+
+  function pickHue(clientX){
+    const rect = hCanvas.getBoundingClientRect();
+    let x = clientX - rect.left;
+    if(x<0)x=0;
+    if(x>rect.width)x=rect.width;
+    curH = (x/rect.width)*360;
+    drawSV();
+    refreshUIFromHSV();
+  }
+  function pickSV(clientX,clientY){
+    const rect = svCanvas.getBoundingClientRect();
+    let x = clientX - rect.left;
+    let y = clientY - rect.top;
+    if(x<0)x=0;
+    if(x>rect.width)x=rect.width;
+    if(y<0)y=0;
+    if(y>rect.height)y=rect.height;
+    curS = x/rect.width;
+    curV = 1-(y/rect.height);
+    refreshUIFromHSV();
+  }
+
+  function openColorPopover(){
+    const {r,g,b} = hexToRgb(currentColor || '#ffffff');
+    const {h,s,v} = rgbToHsv(r,g,b);
+    curH=h;curS=s;curV=v;
+
+    drawHue();
+    drawSV();
+    refreshUIFromHSV();
+
+    const btnRect = btnColorPick.getBoundingClientRect();
+
+    let desiredLeft = btnRect.left;
+    let desiredTop  = btnRect.bottom + 6;
+
+    const POPOVER_W = 190;
+    const POPOVER_H = 150;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+
+    if(desiredLeft + POPOVER_W + 8 > vw){
+      desiredLeft = vw - POPOVER_W - 8;
+    }
+    if(desiredLeft < 8){
+      desiredLeft = 8;
+    }
+    if(desiredTop + POPOVER_H + 8 > vh){
+      desiredTop = btnRect.top - POPOVER_H - 8;
+      if(desiredTop < 8) desiredTop = 8;
+    }
+
+    popEl.style.left = desiredLeft + 'px';
+    popEl.style.top  = desiredTop + 'px';
+    popEl.style.display='block';
+    popEl.style.visibility='visible';
+  }
+
+  function closeColorPopover(commit=true){
+    popEl.style.display='none';
+    popEl.style.visibility='hidden';
+    if(commit && activeLayer){
+      pushHistory();
+    }
+  }
+
+  btnColorPick.addEventListener('click', e=>{
+    e.stopPropagation();
+    if(popEl.style.display==='block'){
+      closeColorPopover(false);
+    } else {
+      openColorPopover();
+    }
+  });
+
+  // hue drag
+  hCanvas.addEventListener('mousedown', e=>{
+    pickingH=true;
+    pickHue(e.clientX);
+  });
+  document.addEventListener('mousemove', e=>{
+    if(pickingH){
+      pickHue(e.clientX);
+    }
+  });
+  document.addEventListener('mouseup', ()=>{
+    if(pickingH){
+      pickingH=false;
+    }
+  });
+
+  hCanvas.addEventListener('touchstart', e=>{
+    pickingH=true;
+    pickHue(e.touches[0].clientX);
+  },{passive:false});
+  document.addEventListener('touchmove', e=>{
+    if(pickingH){
+      pickHue(e.touches[0].clientX);
+    }
+  },{passive:false});
+  document.addEventListener('touchend', ()=>{
+    if(pickingH){
+      pickingH=false;
+    }
+  });
+
+  // sv drag
+  svCanvas.addEventListener('mousedown', e=>{
+    pickingSV=true;
+    pickSV(e.clientX,e.clientY);
+  });
+  document.addEventListener('mousemove', e=>{
+    if(pickingSV){
+      pickSV(e.clientX,e.clientY);
+    }
+  });
+  document.addEventListener('mouseup', ()=>{
+    if(pickingSV){
+      pickingSV=false;
+    }
+  });
+
+  svCanvas.addEventListener('touchstart', e=>{
+    pickingSV=true;
+    const t=e.touches[0];
+    pickSV(t.clientX,t.clientY);
+  },{passive:false});
+  document.addEventListener('touchmove', e=>{
+    if(pickingSV){
+      const t=e.touches[0];
+      pickSV(t.clientX,t.clientY);
+    }
+  },{passive:false});
+  document.addEventListener('touchend', ()=>{
+    if(pickingSV){
+      pickingSV=false;
+    }
+  });
+
+  // manual hex typing
+  cpHex.addEventListener('input', ()=>{
+    const val = cpHex.value.trim();
+    if(/^#?[0-9a-fA-F]{3,6}$/.test(val)){
+      const hex = val.startsWith('#')?val:'#'+val;
+      const {r,g,b} = hexToRgb(hex);
+      const hsv = rgbToHsv(r,g,b);
+      curH=hsv.h;curS=hsv.s;curV=hsv.v;
+      drawSV();
+      refreshUIFromHSV();
+    }
+  });
+
+  // OK btn
+  cpDone.addEventListener('click', ()=>{
+    closeColorPopover(true);
+  });
+
+  // click outside closes
+  document.addEventListener('click', e=>{
+    if(popEl.style.display==='block'){
+      if(!popEl.contains(e.target) &&
+         e.target!==btnColorPick &&
+         !btnColorPick.contains(e.target)){
+        closeColorPopover(true);
+      }
+    }
+  });
+
+  /* TEXT STYLE BUTTONS (bold / underline / align...) */
+  toolbar.addEventListener('click', e=>{
+  const btn = e.target.closest('[data-act]');
+  if(!btn || !activeLayer) return;
+
+  const act = btn.getAttribute('data-act');
+  const cs  = window.getComputedStyle(activeLayer);
+  let changed = false;
+
+  if(act === 'bold'){
+    const isBold = (cs.fontWeight === '700' || cs.fontWeight === '800' || cs.fontWeight === '900');
+    activeLayer.style.fontWeight = isBold ? '400' : '700';
+    changed = true;
+  }
+
+  if(act === 'italic'){
+    const isItalic = (cs.fontStyle === 'italic' || cs.fontStyle === 'oblique');
+    activeLayer.style.fontStyle = isItalic ? 'normal' : 'italic';
+    changed = true;
+  }
+
+  if(act === 'underline'){
+    const hasU = cs.textDecoration.includes('underline') ||
+                 (cs.textDecorationLine && cs.textDecorationLine.includes('underline'));
+    activeLayer.style.textDecoration = hasU ? 'none' : 'underline';
+    changed = true;
+  }
+
+  if(act === 'align-left'){
+    activeLayer.style.textAlign = 'left';
+    changed = true;
+  }
+
+  if(act === 'align-center'){
+    activeLayer.style.textAlign = 'center';
+    changed = true;
+  }
+
+  if(act === 'align-right'){
+    activeLayer.style.textAlign = 'right';
+    changed = true;
+  }
+
+  if(changed){
+    pushHistory();
+    // important: refresh button highlight immediately
+    syncToolbarFromLayer(activeLayer);
+  }
+});
+
+
+  /* SHADOW TOGGLE button */
+  btnShadowToggle.addEventListener('click', ()=>{
+    if(!activeLayer) return;
+    const newOn = !hasShadow(activeLayer);
+    applyShadow(activeLayer,newOn);
+
+    if(newOn){
+      btnShadowToggle.classList.add('is-active');
+    } else {
+      btnShadowToggle.classList.remove('is-active');
+    }
+
+    pushHistory();
+  });
+
+  /* OPACITY SLIDER */
+  opacityRange.addEventListener('input', ()=>{
+    setLayerOpacityFromSlider();
+  });
+  opacityRange.addEventListener('change', ()=>{
+    if(!activeLayer) return;
+    pushHistory();
+  });
+
+  /* global pointer move (drag / resize) */
+  document.addEventListener('mousemove', e=>{
+    if(resizing){
+      e.preventDefault();
+      applyResize(e.clientX, e.clientY);
+      return;
+    }
+    if(draggingMove){
+      e.preventDefault();
+      moveDrag(e.clientX, e.clientY);
+    }
+  });
+
+  document.addEventListener('touchmove', e=>{
+    if(resizing || draggingMove){
+      const t=e.touches[0];
+      if(resizing){
+        applyResize(t.clientX, t.clientY);
+      }else{
+        moveDrag(t.clientX, t.clientY);
+      }
+    }
+  }, {passive:false});
+
+  document.addEventListener('mouseup', ()=>{
+    endResize();
+    endDragMove();
+  });
+  document.addEventListener('touchend', ()=>{
+    endResize();
+    endDragMove();
+  });
+document.addEventListener('keydown', (e)=>{
+  // अगर user currently text edit कर रहा है (contenteditable mode),
+  // तो normal typing ko block नहीं करेंगे, except ESC to finish.
+  if(isEditing){
+    if(e.key === 'Escape'){ 
+      // force end edit mode
+      if(activeLayer){
+        activeLayer.blur(); // blur triggers pushHistory() via finish()
+      }
+    }
+    return; 
+  }
+
+  // अगर कोई popup (color picker / download / audio) में यूज़र टाइप कर रहा हो,
+  // और focus किसी <input>, <textarea>, <select> पर है,
+  // तो भी shortcuts मत तोड़ो.
+  const tag = (document.activeElement && document.activeElement.tagName) || '';
+  if(tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT'){
+    return;
+  }
+
+  // 1) DELETE / BACKSPACE → activeLayer remove
+  if((e.key === 'Delete' || e.key === 'Backspace')){
+    if(activeLayer){
+      e.preventDefault();
+      activeLayer.remove();
+      activeLayer = null;
+      pushHistory();
+    }
+    return;
+  }
+
+  // 2) ESC → deselect layer
+  if(e.key === 'Escape'){
+    if(activeLayer){
+      setActiveLayer(null);
+      e.preventDefault();
+    }
+    return;
+  }
+
+  // 3) CTRL/CMD + C → copy (we'll just store reference in memory)
+  //    CTRL/CMD + V → paste (actually clone)
+  // simple internal clipboard for layers
+  if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c'){
+    if(activeLayer){
+      e.preventDefault();
+      window.__clipboardLayerData = {
+        html: activeLayer.innerText,
+        style: activeLayer.getAttribute('style') || ''
+      };
+    }
+    return;
+  }
+
+  if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'v'){
+    if(window.__clipboardLayerData){
+      e.preventDefault();
+      // create new layer from clipboard data
+      const data = window.__clipboardLayerData;
+      const el = document.createElement('div');
+      el.className = 'text-layer';
+      el.innerText = data.html;
+      el.setAttribute('style', data.style);
+
+      // safety defaults if missing
+      if(!el.style.border) el.style.border = "1px dashed rgba(255,255,255,.4)";
+      if(!el.style.minWidth)  el.style.minWidth  = "80px";
+      if(!el.style.minHeight) el.style.minHeight = "32px";
+      if(!el.style.padding)   el.style.padding   = "4px 8px";
+
+      // nudge position a little
+      const topPct  = parseFloat(el.style.top)  || 50;
+      const leftPct = parseFloat(el.style.left) || 50;
+      el.style.top  = (topPct  + 1) + '%';
+      el.style.left = (leftPct + 1) + '%';
+
+      createResizeHandles(el);
+      attachLayerEvents(el);
+      stage.appendChild(el);
+
+      setActiveLayer(el);
+      pushHistory();
+    }
+    return;
+  }
+
+  // 4) CTRL/CMD + D → duplicate quick (like our duplicate button)
+  if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'd'){
+    if(activeLayer){
+      e.preventDefault();
+      const clone = cloneActiveLayer(10);
+      if(clone){
+        setActiveLayer(clone);
+        pushHistory();
+      }
+    }
+    return;
+  }
+
+  // 5) CTRL/CMD + Z = undo, SHIFT+CTRL/CMD+Z or CTRL/CMD+Y = redo
+  if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z'){
+    e.preventDefault();
+    if(e.shiftKey){
+      // redo
+      redo();
+    } else {
+      // undo
+      undo();
+    }
+    return;
+  }
+  if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y'){
+    e.preventDefault();
+    redo();
+    return;
+  }
+
+  // 6) Arrow keys to nudge position (1px or 5px with Shift)
+  // We'll convert px movement into % so layout stays percent-based.
+  if(activeLayer && (
+      e.key === 'ArrowUp'   ||
+      e.key === 'ArrowDown' ||
+      e.key === 'ArrowLeft' ||
+      e.key === 'ArrowRight'
+  )){
+    e.preventDefault();
+
+    const stepPx = e.shiftKey ? 5 : 1; // shift = bigger nudge
+    const stageBox = stage.getBoundingClientRect();
+    const box      = activeLayer.getBoundingClientRect();
+
+    // current top/left in px from stage
+    let curLeftPx = box.left - stageBox.left;
+    let curTopPx  = box.top  - stageBox.top;
+
+    if(e.key === 'ArrowUp')    curTopPx  -= stepPx;
+    if(e.key === 'ArrowDown')  curTopPx  += stepPx;
+    if(e.key === 'ArrowLeft')  curLeftPx -= stepPx;
+    if(e.key === 'ArrowRight') curLeftPx += stepPx;
+
+    // clamp inside stage
+    const maxLeftPx = stageBox.width  - box.width;
+    const maxTopPx  = stageBox.height - box.height;
+    if(curLeftPx < 0) curLeftPx = 0;
+    if(curTopPx  < 0) curTopPx  = 0;
+    if(curLeftPx > maxLeftPx) curLeftPx = maxLeftPx;
+    if(curTopPx  > maxTopPx)  curTopPx  = maxTopPx;
+
+    // convert to center %
+    const centerX = curLeftPx + box.width/2;
+    const centerY = curTopPx  + box.height/2;
+    const pctLeft = (centerX / stageBox.width ) * 100;
+    const pctTop  = (centerY / stageBox.height) * 100;
+
+    activeLayer.style.left = pctLeft + '%';
+    activeLayer.style.top  = pctTop  + '%';
+
+    // keep translate(-50%,-50%) + rotate(...)
+    const curTr = activeLayer.style.transform || '';
+    const rotMatch = curTr.match(/rotate\([^)]+\)/);
+    const rotPart  = rotMatch ? rotMatch[0] : '';
+    activeLayer.style.transform = `translate(-50%,-50%) ${rotPart}`.trim();
+
+    // we don't pushHistory() on every tap because that'll spam.
+    // BUT we'll push once on keyup (below)
+    window.__nudging = true;
+    return;
+  }
+});
+
+  // first snapshot so undo works
+  pushHistory();
+})();
+  
+</script>
+  
+  <!-- Third Section -->
+  
+  
+<style>
+  /* ===== Force Hide Global Dashboard Layout ===== */
+#sidebar, 
+.sidebar, 
+.app-sidebar, 
+.nav-left, 
+.layout-sidebar,
+.page-sidebar, 
+#header, 
+.header, 
+.topbar, 
+.dashboard-header, 
+.app-header, 
+.main-header {
+  display: none !important;
+}
+
+#content, 
+.main-content, 
+.wrapper, 
+.page-wrapper, 
+.layout-body {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 100vh !important;
+  background: #f6f8fb !important;
+}
+
+/* Make creative editor truly fullscreen */
+.ce-shell {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  width: 100vw;
+  height: 100vh;
+  background: #f6f8fb;
+}
+@font-face {
+  font-family: 'Arkipelago';
+  src: url('https://www.primebackstage.in/public/fonts/Arkipelago.otf') format('opentype'),
+       url('https://www.primebackstage.in/public/fonts/Arkipelago.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root{
+  --bg:#f6f8fb;
+  --panel:#fff;
+  --ink:#0f172a;
+  --muted:#64748b;
+  --line:#e9eef5;
+  --chip:#f2f4f8;
+  --focus:#dfe8ff;
+  --shadow:0 10px 30px rgba(2,6,23,.08);
+
+  --surfaceTrack:#f9fafb;
+  --surfaceBorder:#e5e7eb;
+  --surfaceShadow:0 8px 24px rgba(15,23,42,.08);
+}
+
+/* EDITOR BODY: allow scroll (fix crop) */
+.ce-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  justify-content: center;
+  padding: 0 16px 16px;
+  background: #ffffff;
+  overflow: auto;            /* was: hidden */
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  background:var(--bg);
+  font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ====== APP LAYOUT WRAPPER ====== */
+.ce-shell{
+  display:flex;
+  flex-direction:column;
+  height:100vh;
+  width:100%;
+  min-height:0;
+}
+
+/* ====== TOP APP BAR ====== */
+.ce-topapp {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  background: var(--panel);
+  /* border-bottom: 1px solid var(--line); */
+  /* box-shadow: 0 6px 20px rgba(15, 23, 42, .04); */
+}
+.ce-left{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.ce-brand-dot{
+  width:28px;
+  height:28px;
+  border-radius:8px;
+  display:grid;
+  place-items:center;
+  background:var(--panel);
+  border:1px solid var(--line);
+  text-decoration:none;
+  color:#64748b;
+  box-shadow:0 4px 16px rgba(0,0,0,.04);
+}
+.ce-page-meta{
+  display:flex;
+  flex-direction:column;
+  line-height:1.2;
+}
+.ce-page-title{
+  font-size:13px;
+  font-weight:600;
+  color:#0f172a;
+}
+.ce-page-sub{
+  font-size:11px;
+  font-weight:500;
+  color:#64748b;
+}
+.ce-right{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+/* audio chip */
+.audio-chip{
+  display:none;
+  align-items:center;
+  gap:8px;
+  background:#e7f2ff;
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:1px 7px;
+  cursor:pointer;
+  box-shadow:0 8px 20px rgba(30,64,175,.12);
+}
+.audio-chip .x{
+  cursor:pointer;
+  display:grid;
+  place-items:center;
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  background:#fff;
+  border:1px solid var(--line)
+}
+.chip-cover{
+  width:30px;
+  height:30px;
+  border-radius:50px;
+  object-fit:cover;
+  border:1px solid var(--line);
+  box-shadow:0 4px 10px rgba(0,0,0,.08);
+}
+.chip-meta{
+  display:flex;
+  flex-direction:column;
+  line-height:1.05;
+  max-width:140px;
+}
+.chip-title{
+  font-weight:600;
+  font-size:12px;
+  color:#0f172a;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  overflow:hidden;
+}
+.chip-sub{
+  font-size:11px;
+  color:#6b7280;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  overflow:hidden;
+}
+
+/* generic pill buttons  */
+.act-btn {
+  height: 30px;
+  padding: 10px 13px;
+  border-radius: 20px;
+  font-weight: 800;
+  font-size: 12px;
+  /* border: 1px solid var(--line); */
+  background: #ebeffb;
+  color: #0f172a;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(2, 6, 23, .05);
+}
+.act-btn.primary{
+  background:#3b82f6;
+  border-color:#3b82f6;
+  color:#fff;
+  box-shadow:0 6px 20px rgba(59,130,246,.25);
+}
+.act-btn .ico{width:16px;height:16px;color:currentColor}
+
+/* ====== SECOND ROW TOOLBAR ====== */
+.editor-toolbar-wrap{
+  flex-shrink:0;
+  background:#ffffff;
+  padding:12px 16px;
+}
+.editor-toolbar {
+  width: 100%;
+  max-width: 1850px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  background: #f8f9fc;
+  /* border: 1px solid var(--line); */
+  border-radius: 8px;
+  /* box-shadow: 0 12px 28px rgba(2, 6, 23, .08); */
+  padding: 8px 12px;
+  font-size: 12px;
+  line-height: 1;
+  color: #0f172a;
+}
+
+/* we split toolbar */
+.tb-addonly{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:8px;
+  padding-right:12px;
+  margin-right:12px;
+  border-right:1px solid var(--line);
+}
+.tb-guts{
+  display:none;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:12px;
+}
+
+/* inside guts groups */
+.tb-group{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:8px;
+  padding-right:12px;
+  margin-right:12px;
+  border-right:1px solid var(--line);
+}
+.tb-group:last-child{
+  border-right:none;
+  margin-right:0;
+  padding-right:0;
+}
+
+/* buttons & selects */
+.tb-icon-btn,
+.tb-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  height:28px;
+  border-radius:6px;
+  border:1px solid var(--line);
+  background:#fff;
+  font-size:12px;
+  font-weight:500;
+  line-height:1;
+  color:#0f172a;
+  cursor:pointer;
+  padding:0 8px;
+  box-shadow:0 4px 12px rgba(0,0,0,.04);
+}
+.tb-icon-btn{ width:28px; padding:0; }
+.tb-icon-btn .ico,
+.tb-btn .ico{
+  width:14px; height:14px; color:#0f172a;
+}
+
+/* custom dropdown shells */
+.tb-dd-shell{
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  height:28px;
+  border-radius:6px;
+  border:1px solid var(--line);
+  background:#fff;
+  font-size:12px;
+  font-weight:500;
+  line-height:1;
+  color:#0f172a;
+  padding:0 6px 0 8px;
+  box-shadow:0 4px 12px rgba(0,0,0,.04);
+  cursor:pointer;
+}
+.tb-dd-shell .val{
+  min-width:40px;
+  font-feature-settings:"tnum";
+  white-space:nowrap;
+}
+.tb-dd-shell .caret{
+  width:12px;
+  height:12px;
+  color:#475569;
+  margin-left:4px;
+  flex-shrink:0;
+}
+.tb-dd-shell select{
+  position:absolute;
+  left:0;top:0;
+  width:100%; height:100%;
+  opacity:0; cursor:pointer;
+}
+
+/* color chip square */
+.color-chip{
+  width:20px;
+  height:20px;
+  border-radius:4px;
+  background:#ffffff;
+  border:1px solid var(--line);
+  box-shadow:0 4px 10px rgba(0,0,0,.08);
+}
+
+/* ====== BODY / CANVAS AREA ====== */
+
+/* Stage container: don't clip; anchor to top */
+.stage-shell{
+  position: relative;
+  flex: 1;
+  max-width: 1850px;
+  background: var(--panel);
+  border-radius: 12px;
+  height: 100%;
+  overflow: visible;
+  display: flex; justify-content: center; align-items: center;
+}
+
+/* nice radial bg */
+.ce-canvas-bg{
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(1100px 520px at 50% 40%,
+      rgba(225,231,240,.35) 0%,
+      rgba(245,247,251,.6) 35%,
+      rgba(246,248,251,1) 70%),
+    #fbfcff;
+  pointer-events:none;
+}
+
+/* poster frame */
+.poster-wrap{
+  position: relative;
+  width: clamp(260px, 28vw, 420px);
+  aspect-ratio: 9 / 16;
+  height: auto;
+  max-height: min(92vh, 1200px);
+  transition: transform .2s ease;
+  display: block;
+  margin: auto;
+  flex: 0 0 auto;           /* ⬅️ avoid flex re-calc jump */
+  contain: layout size;      /* ⬅️ isolate sizing during reflow */
+}
+
+/* export ke waqt koi animation/transition nahi */
+.poster-wrap.freeze,
+.poster-stage.freeze {
+  transition: none !important;
+}
+
+/* download pop/other UI se reflow na ho */
+body.no-scroll { overflow: hidden !important; }
+
+/* text-layer ko predictable render ke liye */
+.text-layer{
+  will-change: auto;        /* was: (none) — avoid “will-change” jumps */
+  backface-visibility: hidden;
+}
+/* stage fills frame; don't crop while editing */
+.poster-stage{
+  position:relative;
+  width:100%;
+  height:100%;
+  overflow:visible;                       /* was: hidden */
+  background:#000;
+}
+
+#posterImg{
+  position:absolute;
+  left:0; top:0;
+  width:100%; height:100%;
+  object-fit:cover;
+  background:#000;
+  pointer-events:none;
+  display:block;
+  box-shadow:0 18px 50px rgba(0,0,0,.12);
+}
+
+.text-layer {
+  position: absolute;
+  top: 40%;
+  left: 40%;
+  transform: translate(-50%,-50%);              /* anchor top-left, not center */
+  min-width: 80px;
+  min-height: 32px;
+  width: 200px;                  /* fixed default width */
+  height: auto;
+  padding: 4px 8px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 32px;
+  line-height: 1.2;
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(0,0,0,.6);
+  border: 1px dashed rgba(255,255,255,.4);
+  border-radius: 4px;
+  cursor: move;
+  user-select: text;
+  overflow: hidden;              /* prevent auto expand */
+  resize: none;                  /* user cannot auto-resize */
+}
+.text-layer.active {
+  outline: 2px solid #3b82f6;
+  border-color: #3b82f6;
+}
+
+/* resize handles */
+.text-layer .resize-handle{
+  position:absolute;
+  width:14px;
+  height:14px;
+  border:2px solid #3b82f6;
+  background:#fff;
+  border-radius:3px;
+  box-shadow:0 4px 8px rgba(0,0,0,.2);
+  cursor:nwse-resize;
+  z-index:10;
+}
+.text-layer .resize-handle.tl{ left:-8px;  top:-8px;    cursor:nwse-resize; }
+.text-layer .resize-handle.tr{ right:-8px; top:-8px;    cursor:nesw-resize; }
+.text-layer .resize-handle.bl{ left:-8px;  bottom:-8px; cursor:nesw-resize; }
+.text-layer .resize-handle.br{ right:-8px; bottom:-8px; cursor:nwse-resize; }
+
+/* PLAYER BAR */
+.playerbar{
+  position:absolute;
+  right:14px;
+  bottom:80px;
+  min-width:340px;
+  max-width:350px;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  padding:10px 12px 12px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:16px;
+  box-shadow:var(--shadow);
+  font-size:12px;
+}
+.playerbar.hidden{display:none;}
+.playerbar-top{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.player-btn{
+  height:30px;
+  min-width:64px;
+  padding:0 10px;
+  border-radius:10px;
+  font-weight:600;
+  font-size:12px;
+  background:#fff;
+  color:#0f172a;
+  border:1px solid var(--line);
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  cursor:pointer;
+  box-shadow:0 4px 16px rgba(2,6,23,.04);
+}
+.player-btn.stop{ min-width:auto; padding:0 8px; }
+.player-btn .ico{width:14px;height:14px}
+.time-pair{
+  margin-left:auto;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  font-weight:600;
+  line-height:1.2;
+  gap:2px;
+  color:var(--muted);
+  min-width:110px;
+}
+.time-cur{
+  color:#0f172a;
+  font-feature-settings:"tnum";
+  font-size:12px;
+  line-height:1;
+}
+.time-window{
+  color:#64748b;
+  font-size:10px;
+  font-weight:500;
+  line-height:1.2;
+  font-feature-settings:"tnum";
+}
+.playerbar-bottom{display:flex;flex-direction:column;gap:4px}
+.scrub-row{display:flex;align-items:center;gap:8px}
+.scrub-time{
+  width:44px;
+  text-align:right;
+  font-size:10px;
+  line-height:1;
+  color:#475569;
+  font-weight:600;
+  font-feature-settings:"tnum";
+}
+.scrub-rail{
+  flex:1;
+  -webkit-appearance:none;
+  appearance:none;
+  height:4px;
+  border-radius:999px;
+  background:#e2e8f0;
+  cursor:pointer;
+  outline:none;
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.04);
+}
+.scrub-rail::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  appearance:none;
+  width:14px;
+  height:14px;
+  border-radius:999px;
+  background:#3b82f6;
+  border:2px solid #fff;
+  box-shadow:0 4px 12px rgba(59,130,246,.4);
+  cursor:pointer;
+}
+.scrub-rail::-moz-range-thumb{
+  width:14px;
+  height:14px;
+  border-radius:999px;
+  background:#3b82f6;
+  border:2px solid #fff;
+  box-shadow:0 4px 12px rgba(59,130,246,.4);
+  cursor:pointer;
+}
+
+/* opacity slider in toolbar */
+.tb-opacity-wrap{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:11px;
+  font-weight:500;
+  color:#475569;
+}
+.tb-opacity-wrap input[type="range"]{
+  width:70px;
+  height:4px;
+  border-radius:999px;
+  background:#e2e8f0;
+  -webkit-appearance:none;
+  appearance:none;
+  cursor:pointer;
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.04);
+}
+.tb-opacity-wrap input[type="range"]::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  appearance:none;
+  width:14px;
+  height:14px;
+  border-radius:999px;
+  background:#3b82f6;
+  border:2px solid #fff;
+  box-shadow:0 4px 12px rgba(59,130,246,.4);
+}
+.tb-opacity-wrap input[type="range"]::-moz-range-thumb{
+  width:14px;
+  height:14px;
+  border-radius:999px;
+  background:#3b82f6;
+  border:2px solid #fff;
+  box-shadow:0 4px 12px rgba(59,130,246,.4);
+}
+
+/* ZOOM */
+.zoom-cluster{
+  position:absolute;
+  right:14px;
+  bottom:30px;
+  display:flex;
+  align-items:center;
+  gap:8px
+}
+.btn-icon{
+  width:34px;
+  height:34px;
+  border-radius:10px;
+  border:1px solid var(--line);
+  background:#fff;
+  display:grid;
+  place-items:center;
+  box-shadow:var(--shadow);
+  cursor:pointer
+}
+.btn-icon .ico{width:16px;height:16px;color:#334155}
+.zoom-range{width:120px;accent-color:#3b82f6}
+
+/* POPUPS */
+.pop{
+  position:fixed;
+  top:80px;
+  right:16px;
+  width:280px;
+  background:#fff;
+  border:1px solid var(--line);
+  box-shadow:var(--shadow);
+  border-radius:10px;
+  padding:12px;
+  display:none;
+  z-index:2000;
+  font-size:12px;
+  line-height:1.4;
+  color:#0f172a;
+}
+.pop.open{display:block}
+.pop h4{
+  margin:0 0 10px 0;
+  font-size:12px;
+  color:#334155;
+  font-weight:600;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.pop h4 svg{
+  width:14px;
+  height:14px;
+  color:#334155;
+  flex-shrink:0;
+}
+
+/* TRACK CARD (audio popup) */
+.track-card{
+  background:#e8f2ff;
+  border:1px solid var(--surfaceBorder);
+  border-radius:10px;
+  box-shadow:var(--surfaceShadow);
+  padding:10px;
+  display:flex;
+  gap:8px;
+  align-items:flex-start;
+}
+.track-left-art{
+  width:44px;
+  height:44px;
+  border-radius:8px;
+  background:#fff;
+  border:1px solid var(--line);
+  flex-shrink:0;
+  overflow:hidden;
+  box-shadow:0 6px 14px rgba(0,0,0,.06);
+  display:grid;
+  place-items:center;
+}
+.track-left-art img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  border-radius:8px;
+}
+.track-main{
+  flex:1;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  line-height:1.3;
+}
+.track-title{
+  font-size:12px;
+  font-weight:600;
+  color:#0f172a;
+  max-width:180px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.track-artist{
+  font-size:11px;
+  font-weight:500;
+  color:#6b7280;
+  max-width:180px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.track-line{
+  font-size:11px;
+  color:#475569;
+  font-weight:500;
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:4px;
+}
+.track-line .ico{
+  width:12px;
+  height:12px;
+  color:#475569;
+  flex-shrink:0;
+}
+.track-line .dim{
+  color:#6b7280;
+  font-weight:400;
+}
+.track-line.preview{
+  font-size:10px;
+  color:#475569;
+  font-weight:500;
+}
+.rowblk{margin-top:12px;margin-bottom:12px}
+.row-head{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  font-size:11px;
+  color:#374151;
+  font-weight:600;
+  line-height:1.4;
+  margin-bottom:6px;
+}
+.row-head .tag{
+  font-size:10px;
+  font-weight:500;
+  color:#6b7280;
+  line-height:1.2;
+}
+.time-inputs{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.time-field{
+  display:flex;
+  align-items:center;
+  gap:4px;
+  font-size:11px;
+  color:#374151;
+  font-weight:500;
+}
+.time-field input{
+  width:56px;
+  height:32px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:0 6px;
+  font-size:12px;
+  font-weight:600;
+  color:#0f172a;
+  background:#fff;
+  box-shadow:0 2px 4px rgba(0,0,0,.02);
+  font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+}
+.help-text{
+  font-size:10px;
+  color:#6b7280;
+  line-height:1.4;
+  margin-top:8px;
+  border-top:1px solid var(--line);
+  padding-top:8px;
+}
+
+/* DOWNLOAD POP rows */
+.helper-note{
+  font-size:10px;
+  color:#6b7280;
+  line-height:1.4;
+  margin-top:4px;
+}
+.row-download{
+  margin-top:12px;
+  margin-bottom:12px;
+}
+.row-download label{
+  font-size:12px;
+  font-weight:500;
+  color:#0f172a;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+#dlStatus{
+  display:none;
+  margin-top:12px;
+  padding:10px;
+  border-radius:8px;
+  background:#f8fafc;
+  border:1px solid var(--line);
+  font-size:12px;
+  color:#334155;
+  line-height:1.4;
+  box-shadow:0 4px 12px rgba(0,0,0,.04);
+}
+#dlStatusMsg{font-weight:600;font-size:12px;color:#0f172a;margin-bottom:8px;}
+#dlStatusTrack{width:100%;height:6px;background:#e2e8f0;border-radius:4px;overflow:hidden;}
+#dlStatusBar{width:0;height:100%;background:#3b82f6;transition:width .3s;}
+
+/* --- toolbar hover / active feedback --- */
+.tb-btn:hover,
+.tb-icon-btn:hover {
+  background:#eef4ff;
+  border-color:#93c5fd;
+  box-shadow:0 4px 12px rgba(59,130,246,.2);
+}
+.tb-btn.is-active,
+.tb-icon-btn.is-active {
+  background:#dbeafe;
+  border-color:#3b82f6;
+  box-shadow:0 4px 12px rgba(59,130,246,.35);
+  color:#1e3a8a;
+}
+.tb-btn.is-active .ico,
+.tb-icon-btn.is-active .ico { color:#1e3a8a; }
+.tb-dd-shell:hover { background:#eef4ff; border-color:#93c5fd; box-shadow:0 4px 12px rgba(59,130,246,.2); }
+.tb-dd-shell.is-active { background:#dbeafe; border-color:#3b82f6; box-shadow:0 4px 12px rgba(59,130,246,.35); color:#1e3a8a; }
+.tb-dd-shell.is-active .caret{ color:#1e3a8a; }
+.tb-dd-shell:hover .caret { color:#1e3a8a; }
+.tb-btn:hover .ico,
+.tb-icon-btn:hover .ico { color:#1e3a8a; }
+
+/* color picker popover */
+#colorPopover .cp-panel{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:8px;
+  box-shadow:0 16px 40px rgba(0,0,0,.18);
+  padding:10px;
+  font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  width:190px;
+}
+.cp-sv-wrap{
+  position:relative;
+  width:150px;
+  height:100px;
+  border-radius:4px;
+  overflow:hidden;
+  cursor:crosshair;
+  border:1px solid #cbd5e1;
+  box-shadow:inset 0 0 4px rgba(0,0,0,.15);
+}
+#cpSV{ display:block; width:150px; height:100px; }
+#cpSVMarker{
+  position:absolute;
+  width:12px;
+  height:12px;
+  border:2px solid #fff;
+  border-radius:50%;
+  box-shadow:0 0 2px rgba(0,0,0,.8);
+  pointer-events:none;
+  left:0;top:0;
+  transform:translate(-6px,-6px);
+}
+
+.cp-h-wrap{
+  position:relative;
+  width:150px;
+  height:12px;
+  margin-top:8px;
+  border-radius:4px;
+  overflow:hidden;
+  cursor:ew-resize;
+  border:1px solid #cbd5e1;
+  box-shadow:inset 0 0 4px rgba(0,0,0,.15);
+}
+#cpH{ display:block; width:150px; height:12px; }
+#cpHMarker{
+  position:absolute;
+  top:50%;
+  width:10px;
+  height:16px;
+  border:2px solid #fff;
+  border-radius:2px;
+  box-shadow:0 0 2px rgba(0,0,0,.8);
+  pointer-events:none;
+  left:0;
+  transform:translate(-5px,-50%);
+}
+
+.cp-row{
+  margin-top:10px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:11px;
+  line-height:1.2;
+}
+.cp-preview{
+  width:24px;
+  height:24px;
+  border-radius:4px;
+  border:1px solid #cbd5e1;
+  box-shadow:0 2px 4px rgba(0,0,0,.15);
+  flex-shrink:0;
+}
+.cp-hex{
+  width:68px;
+  height:28px;
+  border-radius:6px;
+  border:1px solid #cbd5e1;
+  font-size:12px;
+  font-weight:500;
+  font-family:inherit;
+  padding:0 6px;
+  line-height:28px;
+  color:#0f172a;
+  box-shadow:0 2px 4px rgba(0,0,0,.04);
+}
+.cp-btn{
+  height:28px;
+  padding:0 10px;
+  border-radius:6px;
+  border:1px solid var(--line);
+  background:#fff;
+  font-size:12px;
+  font-weight:600;
+  color:#0f172a;
+  cursor:pointer;
+  box-shadow:0 4px 12px rgba(0,0,0,.05);
+}
+.cp-btn:hover{
+  background:#eef4ff;
+  border-color:#93c5fd;
+  box-shadow:0 4px 12px rgba(59,130,246,.2);
+  color:#1e3a8a;
+}
+
+/* shortcut pop rows */
+.sc-list{
+  font-size:11px;
+  line-height:1.4;
+  color:#0f172a;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.sc-row{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:8px;
+}
+.sc-k{
+  font-weight:600;
+  color:#111827;
+  font-size:11px;
+  line-height:1.3;
+  min-width:110px;
+  white-space:nowrap;
+}
+.sc-desc{
+  font-size:11px;
+  font-weight:400;
+  color:#475569;
+  line-height:1.3;
+  text-align:right;
+  flex:1;
+}
+@media (max-width:480px){
+  .sc-row{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+  .sc-desc{
+    text-align:left;
+  }
+}
+/* Preview == Export fidelity */
+.text-layer, .poster-stage, body {
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+#posterFrame {
+  transform: none !important;
+}
+.text-layer .resize-handle { display: none; }
+.text-layer.active .resize-handle { display: block; }
+</style>
+
+</body>
+</html>

@@ -1,0 +1,150 @@
+<link rel="stylesheet" type="text/css" href="<?php echo $this->basePath(); ?>/public/css/index.min.css">
+<style lang="scss">.header__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.header__topLeft {
+  display: flex;
+  align-items: center;
+}
+.header__title {
+  display: inline;
+  vertical-align: middle;
+}
+
+.header__top.-skeleton .header__topLeft {
+  width: 100%;
+}
+
+/* Desktop */
+@media (min-width: 992px) {
+  .header__date {
+    display: inline;
+    vertical-align: middle;
+  }
+  .header__seeMore {
+    display: block;
+  }
+
+  .hideOnDesktop {
+    display: none;
+  }
+}
+.a-button:not(.-isDisabled).-Tertiary.svelte-1ilua7d {
+    border-color: transparent;
+    --tw-text-opacity: 1;
+    color: rgba(38,153,251,1);
+}
+.a-button.svelte-1ilua7d {
+    border-width: 1px;
+    word-break: break-all;
+    font-size: var(--blvds-text-button);
+    font-family: var(--blvds-fontFamily-sans);
+    line-height: var(--blvds-lineHeight-base);
+    letter-spacing: var(--blvds-letterSpacing-button);
+    font-weight: 400;
+    max-width: 100%;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+
+</style>
+
+ <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<div class="row">
+    <div id="bs-main-content" class="col-md-12">
+		<div class="row row-full" style="">
+			<div style="width: 100%;">
+
+<div class="blvds-custom-grid" style="padding-bottom: 1.75rem;">
+    <div class="audioStreams blvds-custom-grid-col-12 blvds-bg-white" style="padding: 0px 10vw;">
+        <div class="audioStream" data-testid="as-container" style="margin-top: 20px;">
+            <h1 style="font-size: 2.4rem; font-weight: bold; padding-bottom: 20px; flex-grow: 0;">Your streaming performance</h1>
+            <div class="header__top svelte-ucrmon">
+                <div class="header__topLeft svelte-ucrmon">
+                    <div class="header__title blvds-format-h6 blvds-text-gray-700 svelte-ucrmon">Audio streams</div>
+                    <div class="header__date blvds-format-t4 blvds-text-gray-700 svelte-ucrmon">| Last 7 days</div>
+                </div>
+                <div class="header__seeMore svelte-ucrmon"><a href="javascript:;" class="a-button -Tertiary -interactive -isRounded -noPadding svelte-1ilua7d" aria-disabled="false">See more</a></div>
+            </div>
+            <canvas id="myChart" width="400" height="200"></canvas>
+	   </div>
+    </div>
+</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+        var ctx = document.getElementById('myChart').getContext('2d');
+
+        // Create gradient
+        var gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(54, 162, 235, 0.2)');
+        gradient.addColorStop(1, 'rgba(54, 162, 235, 0)');
+
+        var data = {
+            labels: ['May 25', 'May 26', 'May 27', 'May 28', 'May 29', 'May 30', 'May 31'],
+            datasets: [{
+                label: 'Audio Streams',
+                data: [6042, 5789, 6065, 6351, 6403, 6807, 7172],
+                backgroundColor: gradient,
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 3,
+                pointBackgroundColor: 'rgba(54, 162, 235, 1)',
+                fill: true,
+                tension: 0.4
+            }]
+        };
+
+        var options = {
+            plugins: {
+                legend: {
+                    display: false // Hide the legend
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    min: 5673,
+                    max: 7857,
+                    ticks: {
+                        stepSize: 500,
+                        color: '#888'
+                    },
+                    grid: {
+                        color: '#e0e0e0'
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: '#888'
+                    },
+                    grid: {
+                        display: false
+                    }
+                }
+            },
+            elements: {
+                line: {
+                    tension: 0.4 // smoothes the line
+                },
+                point: {
+                    radius: 3, // size of the data point circles
+                    hitRadius: 10,
+                    hoverRadius: 5
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: true
+        };
+
+        var myChart = new Chart(ctx, {
+            type: 'line',
+            data: data,
+            options: options
+        });
+    </script>

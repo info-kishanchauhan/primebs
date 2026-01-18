@@ -1,0 +1,600 @@
+
+<style>
+.panel-heading .help
+{
+	font-size:22px;
+	color:#0998cd;
+	margin-left:10px;
+	cursor:pointer;
+	
+}
+
+.dt-toolbar-footer,.dt-toolbar
+{
+	margin-left: -15px;
+}
+table tr td:nth-child(2) {
+	text-align:center;
+}
+.dataTables_info
+{
+	font-size: 18px;
+    padding-bottom: 20px;
+}
+.modal table tr td:nth-child(2) {
+    text-align: left;
+}
+.bold_number
+{
+	margin: 0px;
+    font-family: "Open Sans", Roboto, Arial, sans-serif;
+    font-weight: 600;
+    line-height: 24px;
+    letter-spacing: 0em;
+    text-decoration: none;
+    color: rgb(31, 31, 40);
+    font-size: 14px;
+}
+.css-iph4ya {
+    position: relative;
+    display: flex;
+    -webkit-box-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-family: "Open Sans", Roboto, Aria, sans-serif;
+    font-size: 1.25rem;
+    line-height: 1;
+    border-radius: 4px;
+    overflow: hidden;
+    user-select: none;
+    background-color: rgb(255, 245, 247);
+    color: rgb(255, 63, 91);
+    width: 22px;
+    height: 22px;
+	float: left;
+    margin-right: 10px;
+}
+.css-1yls13q.down {
+    user-select: none;
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    fill: rgb(255, 63, 91);
+    flex-shrink: 0;
+    font-size: 14px;
+    transition: fill 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.css-v3nhrv
+{
+	position: relative;
+    display: flex;
+    -webkit-box-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-family: "Open Sans", Roboto, Aria, sans-serif;
+    font-size: 1.25rem;
+    line-height: 1;
+    border-radius: 4px;
+    overflow: hidden;
+    user-select: none;
+    background-color: rgb(237, 250, 242);
+    color: rgb(29, 195, 95);
+    width: 22px;
+    height: 22px;
+	float: left;
+    margin-right: 10px;
+}
+.css-1yls13q.up {
+    user-select: none;
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    fill: rgb(29, 195, 95);
+    flex-shrink: 0;
+    font-size: 14px;
+    transition: fill 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.css-sw5ddh
+{
+	margin: 0px;
+    color: rgb(124, 128, 140);
+    font-weight: 600;
+    line-height: normal;
+    font-size: 12px;
+    letter-spacing: 0em;
+    text-decoration: none;
+	font-family: system-ui;
+}
+.css-1x5yup0 {
+    position: relative;
+    display: flex;
+    -webkit-box-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-family: "Open Sans", Roboto, Aria, sans-serif;
+    font-size: 1.25rem;
+    line-height: 1;
+    border-radius: 4px;
+    overflow: hidden;
+    user-select: none;
+    background-color: rgb(246, 248, 255);
+    color: rgb(145, 156, 187);
+    width: 22px;
+    height: 22px;
+}
+.css-1yls13q.null {
+    user-select: none;
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    fill: rgb(145, 156, 187);
+    flex-shrink: 0;
+    font-size: 14px;
+    transition: fill 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+</style><!-- widget grid -->
+<section id="widget-grid" class="page page-ui-tables">
+    <!-- row -->
+    <div class="row">
+        <!-- NEW WIDGET START -->
+        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <?php include_once("grid.php"); ?>
+            <?php include_once("form.php"); ?>
+        </article>
+        <!-- WIDGET END -->
+    </div>
+    <!-- end row -->
+    <!-- end row -->
+</section>
+<!-- end widget grid -->
+
+
+<script type="text/javascript">
+	
+	var allow_access = true;
+    $(document).ready(function () {
+		acl_PRINT=0;
+		
+		$('#importpopup').click(function(){
+			$('#importmodal').modal({backdrop: 'static', keyboard: false});
+			$("#catelogfile").val('');
+		});
+		
+		$('.sort').click(function(){
+			$('.gicon').html('<svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTableSortLabel-icon MuiTableSortLabel-iconDirectionDesc css-jsf2o5" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="UnfoldMoreIcon"><path d="M12 5.83 15.17 9l1.41-1.41L12 3 7.41 7.59 8.83 9zm0 12.34L8.83 15l-1.41 1.41L12 21l4.59-4.59L15.17 15z"></path></svg>');
+			
+			$(this).find('.gicon').html('<svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiTableSortLabel-icon MuiTableSortLabel-iconDirectionDesc css-jsf2o5 active" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="SouthIcon"><path d="m19 15-1.41-1.41L13 18.17V2h-2v16.17l-4.59-4.59L5 15l7 7z"></path></svg>');
+		})
+		function getTotal()
+		{
+			var objFormData =
+			{
+				from_month    : $('#from_month').val(),
+				to_month: $('#to_month').val(),
+				search : $('#search').val(),
+			};
+			var objMyPost = AJAX_Post("<?php echo $this->url('analytics', array('action'=>'getTotal'));?>", objFormData);
+			if (objMyPost.ERR_NO === 0) {
+				if (objMyPost.DATA.DBStatus === 'OK') {
+					$('#tot_creation').html(objMyPost.DATA.tot_creation);
+					$('#tot_revenue').html(objMyPost.DATA.tot_revenue);
+					$('#tot_stream').html(objMyPost.DATA.tot_stream);
+				}
+			}
+			else {
+				mySmallAlert('Error...!', 'There was an error', 0);
+			}
+		}
+		$('#search').on('keydown', function (event) {
+			if (event.key === 'Enter') {
+				getTotal();
+				oTable.fnDraw();
+			}
+		});
+		
+		$('#btnSearch').click(function(){
+			if($('#from_month').val() == '' || $('#to_month').val() == '')
+			{
+				mySmallAlert('Error', 'Please select from and to month', 0);
+				return;
+			}
+			
+			getTotal();
+			oTable.fnDraw();
+		});
+		$('#sel_month,#from_month,#to_month').datetimepicker({
+			format: "MMMM YYYY"
+		});
+		getTotal();
+		$("#btnImport").click(function (e) { 
+		
+				if($('#sel_type').val() == '0')
+				{
+					mySmallAlert('Error', 'Please select type', 0);
+					return;
+				}
+				if($('#sel_month').val() == '')
+				{
+					mySmallAlert('Error', 'Please select month year', 0);
+					return;
+				}
+				if($('#catelogfile').val() == '')
+				{
+					mySmallAlert('Error', 'Please select the file', 0);
+					return;
+				}
+				
+				$.SmartMessageBox({
+
+					title  : "Alert!",
+		
+					content: "Do you really want to import this ?",
+		
+					buttons: '[Yes][No]'
+		
+				}, function (ButtonPressed) {
+		
+					if (ButtonPressed === "Yes") {
+						
+						$('.nf-loader').removeClass('hide');
+						$('#btnImport').prop('disabled',true);
+						e.stopPropagation();
+						$("#imported_file_name").val('');
+						var this1 = document.getElementById("catelogfile");
+						
+						
+						  if (this1.files && this1.files[0]) { 
+						   
+						   //Save img
+						
+						   var $form = $('#excelform');
+						   var oMyForm = new FormData($form.get(0));
+						   //*============================image=====================================
+						   file = document.getElementById("catelogfile").files[0];
+						   if (file && file.size > 0) {
+							var fileInputProfile = document.getElementById("catelogfile");
+							oMyForm.append("catelogfile", file);
+						   } else {
+							oMyForm.append("catelogfile", 0);
+						   }
+							oMyForm.append("sel_type", $('#sel_type').val());
+							oMyForm.append("sel_month", $('#sel_month').val());
+						
+						   var deferred;
+						   deferred = $.ajax({
+						
+							url: "<?php echo $this->url('analytics', array('action'=>'import'));?>",
+							type: "POST",
+							processData: false,
+							contentType: false,
+							dataType: 'json',
+							data: oMyForm,
+							beforeSend: function () {
+						
+							},
+							success: function () {
+								
+							}
+						
+						   });
+						
+							$("#customfileupload").removeClass('hide');
+							$("#btnSave").addClass('hide');
+							
+						   deferred.done(function (result) {
+							   $('.nf-loader').addClass('hide');
+								$('#btnImport').prop('disabled',false);
+							 $("#customfileupload").addClass('hide');
+								$("#catelogfile").val('');
+						   
+						   if(result.status == 'NOT')
+							{
+								 mySmallAlert('Save Record', 'Allowed only csv file', 0);
+							}
+						    if(result.status == 'OK')
+							{
+								//$("#modeldata").html(result.modeldata);
+								$("#customfileupload").addClass('hide');
+								
+								 mySmallAlert('Save Record', 'Imported successfully', 1);
+								 oTable.fnDraw();
+									$('#importmodal').modal('hide');
+									$("#catelogfile").val('');
+									$('#importlist').html(result.IMPORT_LIST);
+									$('#ignorelist').html(result.IGNORE_LIST);
+									$("#imported_file_name").val(result.file_name);
+									//$('#importmodal').modal({backdrop: 'static', keyboard: false});
+									$('#sel_type').select2('val','0');
+									$('#sel_month').val('');
+							}
+							if(result.status == 'NOT_OK')
+							{
+								mySmallAlert('Save Record', 'Imported not successfully', 0);
+							}
+							
+						   }).fail(function (result) {
+							   $('.nf-loader').addClass('hide');
+								$('#btnImport').prop('disabled',false);
+							alert("There was an error");
+						   });
+						  }
+						return false;		
+					}
+					if (ButtonPressed === "No") {
+		
+					}
+		
+				});
+				
+				
+
+		});	  
+
+   });
+   
+    var pagefunction = function () {
+        //console.log("cleared");
+        /* // DOM Position key index //
+         l - Length changing (dropdown)
+         f - Filtering input (search)
+         t - The Table! (datatable)
+         i - Information (records)
+         p - Pagination (paging)
+         r - pRocessing
+         < and > - div elements
+         <"#id" and > - div with an id
+         <"class" and > - div with a class
+         <"#id.class" and > - div with an id and class
+         Also see: http://legacy.datatables.net/usage/features
+         */
+        /* BASIC ;*/
+        var responsiveHelper_dt_basic = undefined;
+        var responsiveHelper_datatable_fixed_column = undefined;
+        var responsiveHelper_datatable_col_reorder = undefined;
+        var responsiveHelper_datatable_tabletools = undefined;
+        var breakpointDefinition = {
+            tablet: 1024,
+            phone: 480
+        };
+		var deleteact=acl_DELETE;
+        /* TABLETOOLS */
+        oTable = $("#tblMasterList").dataTable(
+            {
+                "bAutoWidth": false,
+                "bLengthChange": true,
+                "sDom": "<'dt-toolbar'<'col-xs-12 col-sm-6 hidden-xs'i><'col-sm-6 col-xs-12 hidden-xs'<'toolbar'>>r>" +
+                    "t" +
+                    "l<'dt-toolbar-footer'<><'col-xs-12 col-sm-6'p>>",
+                "bProcessing": true,
+                "bServerSide": true,
+				"order" :  [[ 6, 'desc' ]],
+				"lengthMenu": [[10, 25, 50,100, -1], [10, 25, 50,100, "All"]],
+                "autoWidth" : true,
+				"pageLength": 50, // Sets the default records per page to 50
+				"infoCallback": function(settings, start, end, max, total, pre) {
+					//return total + " results found";
+				},
+                "preDrawCallback" : function() {
+                    // Initialize the responsive datatables helper once.
+                    if (!responsiveHelper_dt_basic) {
+                        responsiveHelper_dt_basic = new ResponsiveDatatablesHelper($('#tblMasterList'), breakpointDefinition);
+                    }
+                },
+                "rowCallback" : function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+					
+					
+                    responsiveHelper_dt_basic.createExpandIcon(nRow);
+                },
+                "drawCallback" : function(oSettings) {
+                    responsiveHelper_dt_basic.respond();
+                },
+                "fnServerParams": function (aoData) {
+                    aoData.push({ "name": "id", "value": "" },{ "name": "from_month", "value":$('#from_month').val() },{ "name": "to_month", "value": $('#to_month').val() },{ "name": "search", "value": $('#search').val() });
+                },
+                "sAjaxSource": "<?php echo $this->url('analytics', array('action'=>'list'));?>",
+                "aoColumns": [
+                    { "bSearchable": false, "bVisible": false },
+                    
+                    { "bSearchable": false, "bSortable": false },
+                    { "bSearchable": false, "bSortable": false },
+					{ "bSearchable": false, "bSortable": false },
+                    null,
+					{ "bSearchable": false, "bSortable": false },
+                    null,
+					null,
+                    
+                ],
+                "columnDefs": [
+                    { className: "hidden", "targets": [ 0 ] }
+                ]
+            });
+        /* END TABLETOOLS */
+		$('.dataTables_filter input').attr("placeholder", "Search");
+		
+		//$(".dataTables_filter label").addClass('right');
+        //fnEdit("<?php echo $this->url('analytics', array('action'=>'getrec'));?>");
+        //fnView("<?php echo $this->url('analytics', array('action'=>'getrec'));?>");
+        //fnDelete("<?php echo $this->url('analytics', array('action'=>'delete'));?>");
+		
+		//fnDelete("<?php echo $this->url('analytics', array('action'=>'delete'));?>");
+        var strUrl = "<?php echo $this->url('analytics', array('action'=>'getrec'));?>";
+        //Function Used for Edit
+
+		$('#delete_release').click(function(){
+				
+					var objFormData =
+					{
+						pAction: 'DELETE',
+						KEY_ID : $('#delete_release').attr('release_id')
+					};
+					var objMyPost = AJAX_Post("<?php echo $this->url('releases', array('action'=>'delete'));?>", objFormData);
+					if (objMyPost.ERR_NO === 0) {
+						if (objMyPost.DATA.DBStatus === 'OK') {
+							oTable.fnDraw();
+							$('#warningConfirmationPopin').modal('hide');
+							mySmallAlert('Success', 'Deleted successfully', 1);
+						}
+						
+						else {
+							mySmallAlert('Error...!', 'There was an error', 0);
+						}
+					}
+		});
+		oTable.delegate('a.delete', 'click', function (e) {
+            e.preventDefault();
+            iActiveID = $(this).attr("row-id");
+			var r_title= $(this).attr("row-title");
+			
+			$('#warningConfirmationPopin').modal('show');
+			$('#delete_release_title').html(r_title);
+			$('.chkConfirm').prop('checked',false);
+			$('#delete_release').attr('style','display:none');
+			$('#delete_release').attr('release_id',iActiveID);
+			
+        });
+		$('.chkConfirm').click(function(){
+			if($(this).prop('checked') == true)
+			{
+				$('#delete_release').attr('style','display:block');
+			}
+			else
+				$('#delete_release').attr('style','display:none');
+		})
+    };
+</script>
+<script>
+    // load Page related plugins
+                loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatables/jquery.dataTables.min.js", function () {
+                    loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatables/dataTables.colVis.min.js", function () {
+                        loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatables/dataTables.tableTools.min.js", function () {
+                            loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatables/dataTables.bootstrap.min.js", function () {
+                                loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatable-responsive/datatables.responsive.min.js", pagefunction)
+                            });
+                        });
+        });
+    });
+	
+	//------------------- populate edit entries-----------------------------------------------------------------------------
+    function cPopulateEditEntries(iID,strURL) {
+        iActiveID = iID;
+        var arrForms=[]; // Keep Form Values
+        var strElementType; // Keep element type
+        var objFormData =
+        {
+            pAction: 'GETREC',
+            KEY_ID : iActiveID
+        };
+        var objMyPost = AJAX_Post(strURL, objFormData);
+		
+        if (objMyPost.ERR_NO === 0) {
+            if (objMyPost.DATA.DBStatus === 'OK') {
+                visibleControl('widForm', true);
+                visibleControl('widGrid', false);
+                strActionMode = 'EDIT';
+                //populate master Records
+                arrForms=objMyPost.DATA.data[0];
+                $.each( arrForms, function( key, value ) { 
+                    if ($("#"+key).length > 0) {  // check if exists or not
+                        strElementType= $("#"+key).attr("type");
+					
+                        if(strElementType == "hidden") {  // if textbox
+                            $("#" + key).val(value);
+                            $("#spanRefNo").html(value);
+                        }
+                        else  if(strElementType == "text") {  // if textbox
+                            $("#" + key).val(value);
+                        }
+                        else if($("#"+key).attr("name") == "descriptions") {  // if textarea
+                            $("textarea#"+key).text(value);
+                        }
+                        else if(strElementType == "select") {  // if Select Box							
+                            $("#" + key).select2("val",value);
+                        }
+                        else if(strElementType == "multiselect") {  // if Select Box with multi select
+                            var arrValues = $.parseJSON(stripslashes(value));
+                            $("#" + key).select2("val", arrValues);
+                        }
+                    }
+                });
+				
+            }
+        }
+        else {
+            mySmallAlert('Error...!', 'There was an error', 0);
+        }
+    }
+</script>
+
+
+<div id="importmodal" class="modal fade bs-example-modal-lg">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" style="max-height:500px;overflow:auto;">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title">Import Analytics</h4>
+					</div>
+					
+					<div class="modal-body customsrolling" style="padding-bottom: 40px;min-height:260px">	
+					
+						
+							<div class="row">
+								<div class="col-sm-3">
+									<label class="col-md-12"><strong class="txt-color-blue">Select Type</strong></label>
+									<label class="col-md-12"> 
+										<select type="select" name="sel_type" id="sel_type" class="form-control">
+										<option value="0">Select Type</option>
+										<option value="believe">Backstage</option>
+										<option value="orchard">Orchard</option>
+										</select>
+									</label>
+								</div>
+								<div class="col-sm-4">
+									<label class="col-md-12"><strong class="txt-color-blue">Select Month Year</strong></label>
+									<label class="col-md-12"> 
+										<input type="text" id="sel_month" name="sel_month" class="form-control">
+										<small></small>
+									</label>
+								  </div>
+								<div class="col-sm-5 pull-left catalog-filter-import">
+											<form action="#" method="post" id="excelform">	
+												<div class="row">
+													<div class="col-md-9">
+														
+														<label class="col-md-12"><strong class="txt-color-blue">Select File</strong></label>
+														<label class="col-md-12">
+														
+														<input type="file" accept="application/vnd.openxmlformats-     officedocument.spreadsheetml.sheet" name="catelogfile" class="form-control" id="catelogfile">
+														<div class="progress hide" style="height:21px;margin-top:10px;" id="customfileupload">
+														  <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar"
+														  aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%;line-height:21px;color:#FFFFFF;font-size:20px">
+															File Importing
+														  </div>
+														</div>
+														</label>
+													</div>
+													<div class="col-md-3" style="margin-top: 20px;">
+														
+														<a href="javascript:;" class="btn btn-primary btn-sm pull-left btn-import" id="btnImport">Import</a>
+														<img style="float:left" src="<?php echo $this->basePath(); ?>/public/img/loader.gif" class="hide nf-loader">
+													</div>
+												</div>
+											</form>
+								  </div>
+							</div>
+						
+                     </div>	
+					 <div class="modal-footer" style="display: block;">
+                        <button class="btn btn-default" data-dismiss="modal">Cancel</button>
+					</div>
+					 
+             </div>
+                     
+		</div>	
+		
+</div>

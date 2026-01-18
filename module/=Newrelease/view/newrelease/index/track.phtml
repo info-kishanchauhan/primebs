@@ -1,0 +1,3078 @@
+<link rel="stylesheet" type="text/css" href="<?php echo $this->basePath(); ?>/public/css/assets.css">
+
+<!-- 👇 Drop-in "Gentle Polish" — keeps layout exactly the same, just tidier visuals. Paste after your existing CSS links or just before </body>. -->
+
+<style>
+  /* ===== Gentle Theme Tokens (very safe overrides) ===== */
+  :root{
+    --font: 'Inter', -apple-system, 'SF Pro Text', system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --ink:#111827;          /* text */
+    --muted:#6b7280;        /* secondary text */
+    --line:#e5e7eb;         /* borders */
+    --bg:#f7f7f8;           /* page bg */
+    --card:#ffffff;         /* surfaces */
+    --brand:#5b34c8;        /* primary */
+    --brand-2:#792b97;      /* primary alt */
+    --ok:#16a34a; --warn:#f59e0b; --bad:#ef4444;
+    --r:10px;               /* radius */
+    --shadow:0 8px 24px rgba(2,6,23,.06);
+  }
+
+  /* ===== Global (super low specificity) ===== */
+  html { -webkit-text-size-adjust: 100%; }
+  body { font-family: var(--font) !important; color: var(--ink); background: var(--bg); }
+  h1,h2,h3,h4,h5 { letter-spacing:-.01em; }
+ 
+  a { color: var(--brand); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* ===== Cards/Panels (respect existing layout) ===== */
+  .panel, .section-card, .card, .ap-card, .well, .box {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--r); box-shadow: var(--shadow);
+  }
+
+  /* ===== Buttons (keep sizes; soften visuals) ===== */
+  .btn, .btn-primary, .btn-default, .btn-secondary, .btn-danger, .btn-ghostn {
+    font: 600 14px/1 var(--font); border-radius: var(--r) !important;
+    border: 1px solid var(--line); background:#fff; color:#1f2937;
+    transition: box-shadow .2s ease, transform .12s ease, background .2s ease, border-color .2s ease;
+  }
+  .btn:hover { box-shadow: 0 10px 22px rgba(2,6,23,.08); transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+  .btn-primary { background: linear-gradient(90deg, var(--brand), var(--brand-2)); color:#fff; border-color: transparent; }
+  .btn-danger  { background: var(--bad); color:#fff; border-color: var(--bad); }
+  .btn-secondary, .btn-default { background:#f3f4f6; }
+
+  /* ===== Inputs (do not change structure) ===== */
+  input[type="text"], input[type="number"], input[type="email"], input[type="search"], select, textarea {
+    font: 500 14px/1.4 var(--font); color: var(--ink); background:#fff;
+    border:1px solid var(--line); border-radius: var(--r); padding:10px 12px;
+    transition: box-shadow .15s ease, border-color .15s ease;
+  }
+  input:focus, select:focus, textarea:focus { outline:none; border-color:#a78bfa; box-shadow:0 0 0 4px rgba(167,139,250,.18); }
+
+  /* ===== Tables (same markup, clearer look) ===== */
+  .table { background: var(--card); border:1px solid var(--line); border-radius: var(--r); overflow:hidden; box-shadow: var(--shadow); }
+  .table>thead>tr>th { font: 700 12px/1.2 var(--font); text-transform:uppercase; letter-spacing:.04em; color:#475569; background:#f8fafc; }
+  .table>tbody>tr>td { font: 500 13px/1.45 var(--font); color:#1f2937; }
+  .table>tbody>tr:hover>td { background:#fafafa; }
+  .num { text-align:right; font-variant-numeric: tabular-nums; }
+
+  /* ===== Tiny status pills (non-breaking) ===== */
+  .status, .badge { border-radius: 8px; font: 700 11px/1 var(--font); padding:6px 8px; text-transform:uppercase; letter-spacing:.04em; }
+  .status.ok { background:#ecfdf5; color:var(--ok); }
+  .status.warn { background:#fffbeb; color:var(--warn); }
+  .status.bad { background:#fef2f2; color:var(--bad); }
+
+  /* ===== Light utility classes (opt-in) ===== */
+  .muted{ color:var(--muted)!important; } .mono{ font-variant-numeric:tabular-nums; font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .gap-xs{ gap:6px; } .gap-sm{ gap:10px; } .gap-md{ gap:14px; } .gap-lg{ gap:18px; }
+  .rounded{ border-radius:var(--r)!important; }
+
+  /* ===== iPad/Safari focus/zoom fixes ===== */
+  @supports (-webkit-touch-callout: none) { select, input, textarea { font-size:16px; } }
+
+  /* ===== Slim scrollbars (safe) ===== */
+  *::-webkit-scrollbar{ width:10px; height:10px; }
+  *::-webkit-scrollbar-thumb{ background:#d1d5db; border-radius:10px; }
+  *::-webkit-scrollbar-thumb:hover{ background:#9ca3af; }
+</style>
+
+<!-- Optional: sticky header assist only if parent scrolls; harmless if not present -->
+<script>
+  (function(){
+    document.querySelectorAll('.table').forEach(function(tbl){ var p = tbl.parentElement; if(p){ p.style.overflow='auto'; }});
+  })();
+</script>
+
+
+
+<!-- ================================ -->
+<!-- PURE LOOK POLISH ONLY (no new features, no JS) -->
+<!-- Scope it to the track page to avoid global impact: wrap your page with <div class="pda-track"> ... -->
+
+<style>
+  /* ===== Scope ===== */
+  .pda-track{ --font:'Inter', -apple-system, 'SF Pro Text', system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; --ink:#111827; --muted:#6b7280; --line:#e5e7eb; --bg:#f7f7f8; --card:#ffffff; --brand:#5b34c8; --brand-2:#792b97; --ok:#16a34a; --warn:#f59e0b; --bad:#ef4444; --r:10px; --shadow:0 8px 24px rgba(2,6,23,.06); }
+
+  /* ===== Global feel (scoped) ===== */
+  .pda-track, .pda-track *{ font-family:var(--font) !important; }
+  .pda-track{ color:var(--ink); background:var(--bg); }
+  .pda-track a{ color:var(--brand); text-decoration:none; }
+  .pda-track a:hover{ text-decoration:underline; }
+
+  /* ===== Panels/Cards ===== */
+  .pda-track .panel, .pda-track .section-card, .pda-track .card, .pda-track .ap-card, .pda-track .well, .pda-track .box{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--shadow);
+  }
+
+  /* ===== Buttons (sizes stay same) ===== */
+  .pda-track .btn, .pda-track .btn-primary, .pda-track .btn-default, .pda-track .btn-secondary, .pda-track .btn-danger{
+    border-radius:var(--r) !important; border:1px solid var(--line); background:#fff; color:#1f2937;
+    transition:box-shadow .2s ease, background .15s ease, border-color .15s ease; 
+  }
+  .pda-track .btn:hover{ box-shadow:0 10px 22px rgba(2,6,23,.08); }
+  .pda-track .btn-primary{ background:linear-gradient(90deg, var(--brand), var(--brand-2)); color:#fff; border-color:transparent; }
+  .pda-track .btn-danger{ background:var(--bad); color:#fff; border-color:var(--bad); }
+  .pda-track .btn-default, .pda-track .btn-secondary{ background:#f3f4f6; }
+
+  /* ===== Inputs (no layout change) ===== */
+  .pda-track input[type="text"], .pda-track input[type="number"], .pda-track input[type="email"], .pda-track input[type="search"], .pda-track select, .pda-track textarea{
+    background:#fff; color:var(--ink); border:1px solid var(--line); border-radius:var(--r); padding:10px 12px; 
+    transition:border-color .15s ease, box-shadow .15s ease;
+  }
+  .pda-track input:focus, .pda-track select:focus, .pda-track textarea:focus{ outline:none; border-color:#a78bfa; box-shadow:0 0 0 4px rgba(167,139,250,.18); }
+
+  /* ===== Tables (same markup) ===== */
+  .pda-track .table{ background:var(--card); border:1px solid var(--line); border-radius:var(--r); overflow:hidden; box-shadow:var(--shadow); }
+  .pda-track .table>thead>tr>th{ background:#f8fafc; color:#475569; font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:.04em; }
+  .pda-track .table>tbody>tr>td{ color:#1f2937; font-weight:500; font-size:13px; }
+  .pda-track .table>tbody>tr:hover>td{ background:#fafafa; }
+
+  /* ===== Badges/Statuses (reuse existing classes if any) ===== */
+  .pda-track .status, .pda-track .badge{ border-radius:8px; font-weight:700; font-size:11px; text-transform:uppercase; letter-spacing:.04em; padding:6px 8px; }
+  .pda-track .status.ok{ background:#ecfdf5; color:var(--ok); }
+  .pda-track .status.warn{ background:#fffbeb; color:var(--warn); }
+  .pda-track .status.bad{ background:#fef2f2; color:var(--bad); }
+
+  /* ===== Chips/Tags (optional, if present) ===== */
+  .pda-track .chip{ background:#eef2ff; color:#4f46e5; border-radius:999px; padding:6px 10px; font-weight:600; font-size:12px; }
+
+  /* ===== Modals (visual only) ===== */
+  .pda-track .modal-content{ border-radius:14px; border:1px solid var(--line); box-shadow:0 20px 60px rgba(2,6,23,.22); }
+  .pda-track .modal-header{ background:#f8fafc; border-bottom:1px solid var(--line); }
+
+  /* ===== Small utilities (opt-in) ===== */
+  .pda-track .muted{ color:var(--muted)!important; }
+  .pda-track .rounded{ border-radius:var(--r)!important; }
+  .pda-track .mono{ font-variant-numeric:tabular-nums; font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+
+  /* ===== iPad/Safari font zoom fix ===== */
+  @supports (-webkit-touch-callout: none){ .pda-track select, .pda-track input, .pda-track textarea{ font-size:16px; } }
+
+  /* ===== Slim scrollbars (safe) ===== */
+  .pda-track *::-webkit-scrollbar{ width:10px; height:10px; }
+  .pda-track *::-webkit-scrollbar-thumb{ background:#d1d5db; border-radius:10px; }
+  .pda-track *::-webkit-scrollbar-thumb:hover{ background:#9ca3af; }
+</style>
+
+
+<style>
+      .btn {
+    border-radius: 4px !important;
+    margin: 1px 2px;
+}
+
+
+    /* Table ke header aur rows ke liye font control */
+.table th, 
+.table td {
+    font-size: 13px;   /* chhota size set karen (default 14-16 hota hai) */
+    line-height: 1.4;  /* spacing control */
+    font-family: 'Roboto', Arial, sans-serif; /* clean font */
+    color: #333;       /* text ka color */
+    vertical-align: middle; /* text alignment improve */
+    padding: 6px 10px; /* thoda compact banane ke liye */
+}
+
+/* Agar sirf title/artist wale column ko chhota karna ho */
+.table td.title-artist {
+    font-size: 12px;
+    font-weight: 500;
+}
+  
+.upload-list td p{ margin:4px 0 0 }
+
+/* suggestion list ke right me jo + button hai */
+.suggestion-list .ap-right .ap-linker{
+  background: transparent !important;
+  border: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  line-height: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  cursor: pointer;
+}
+.suggestion-list .ap-right .ap-linker img{
+  display:block; width:18px; height:18px;
+}
+
+/* input ke andar right-ico wale + button ke liye */
+#artist-fields .ap-inp-ico .ap-open{
+  background: transparent !important;
+  border: 0 !important;
+  padding: 0 !important;
+  line-height: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+}
+
+ 
+       /* Right-aligned dropdown shell */
+.ap-pop--dropdown{
+  position:absolute;
+  width:400px; 
+      height: 420px;/* zarurat ho to 420–560 ke beech adjust */
+  max-width:min(520px, 94vw);
+top: 430px !important;
+    left: 785.5px !important;
+
+  background:#fff;
+  border:1px solid #e5e7eb;
+  border-radius:10px;
+  box-shadow:0 12px 40px rgba(0,0,0,.12);
+  z-index:2000;
+}
+.ap-pop.hidden{ display:none; }
+.ap-pop-head{ display:flex; justify-content:space-between; align-items:center; padding:10px 12px; border-bottom:1px solid #f1f2f5 }
+.ap-pop-close{ background:transparent; border:0; font-size:14px; line-height:1; cursor:pointer }
+.ap-pop-body{ padding:12px; display:flex; flex-direction:column; gap:10px }
+
+.ap-results{ list-style:none; margin:0; padding:0; max-height:290px; overflow:auto; border:1px solid #eee; border-radius:8px }
+.ap-results li{ display:flex; align-items:center; gap:10px; padding:8px 10px; border-bottom:1px solid #f7f7f7 }
+.ap-results li:last-child{ border-bottom:0 }
+.ap-results img{ width:36px; height:36px; object-fit:cover; border-radius:50% }
+.ap-row-lab{ display:flex; align-items:center; gap:10px; flex:1; cursor:pointer }
+.ap-actions{ display:flex; justify-content:flex-end; gap:10px; padding-top:6px; border-top:1px solid #f1f2f5 }
+
+/* Input icon wrap (agar pehle se nahi hai) */
+.ap-inp-wrap{ position:relative }
+.ap-inp-ico{ position:absolute; right:10px; top:50%; transform:translateY(-50%); display:inline-flex }
+.ap-ic{ width:18px; height:18px }
+.ap-ic.plus circle{ opacity:.25 }
+.ap-ic.linked path{ fill:#1DB954 }
+
+  /* ===== Primary artist input: right icon & sizing ===== */
+#artist-fields .ap-inp-wrap{
+  position: relative;
+  display: block;
+  width: 100%;
+}
+#artist-fields .ap-inp-wrap .form-control{
+  /* apne form-control ki height agar 44/48 px hai to sahi lagega */
+  padding-right: 44px;          /* text icon se na takraye */
+                /* optional: match your UI */
+  line-height: 44px;            /* optional: crisp vertical centering */
+}
+
+#artist-fields .ap-inp-ico{
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  pointer-events: auto;         /* button clickable */
+  z-index: 2;
+}
+#artist-fields .ap-inp-ico a,
+#artist-fields .ap-inp-ico .ap-btn{
+  display: inline-flex;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+#artist-fields .ap-inp-ico .ap-ic{ width: 18px; height: 18px; }
+#artist-fields .ap-inp-ico .ap-ic.plus circle{ opacity: .25; }
+#artist-fields .ap-inp-ico .ap-ic.linked path{ fill:#1DB954; }
+
+/* ===== Suggestion list should align with input width ===== */
+#artist-fields .suggestion-list {
+    position: absolute;
+    left: auto;
+    /* right: 0; */
+    top: calc(100% - 1px);
+   width: 360px; 
+    z-index: 2000;
+    border-radius: 0 0 10px 10px;
+    border-top: none;
+}
+#artist-fields .suggestion-item{
+  display:flex; align-items:center; gap:8px;
+}
+#artist-fields .suggestion-item .ap-right{
+  margin-left:auto; display:inline-flex; align-items:center; gap:6px;
+}
+/* dropdown rows */
+.suggestion-list .suggestion-item{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.suggestion-list .suggestion-item > a,
+.suggestion-list .suggestion-item > div{
+  flex:1 1 auto; /* title takes remaining space */
+  min-width:0;
+}
+.suggestion-list .ap-right{
+  margin-left:auto;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+}
+.suggestion-list .ap-right .ap-btn{
+  border:0;
+  background:transparent;
+  cursor:pointer;
+}
+.suggestion-list .ap-right .ap-ic{ width:18px; height:18px; } /* svg size */
+.suggestion-list .ap-mini-spotify{ display:inline-flex; }
+  
+.ap-suggest{position:absolute;z-index:50;background:#fff;border:1px solid #e5e7eb;max-height:280px;overflow:auto;width:420px;display:none;}
+.ap-suggest li{padding:8px 10px;cursor:pointer;display:flex;align-items:center;gap:8px;}
+.ap-suggest li:hover{background:#f3f4f6;}
+.ap-selected{margin-top:8px;display:flex;flex-wrap:wrap;gap:6px}
+.ap-chip{display:inline-flex;align-items:center;gap:6px;background:#f3f4f6;border-radius:999px;padding:6px 9px}
+.ap-chip .ap-name{font-weight:600}
+.ap-chip .ap-sp{display:inline-flex;align-items:center}
+.ap-chip .ap-sp a{display:inline-flex}
+.ap-chip .ap-sp .ap-btn{border:none;background:transparent;cursor:pointer;display:inline-flex}
+.ap-ic{width:18px;height:18px}
+.ap-ic.plus circle{opacity:.25} /* dull green */
+.ap-ic.plus text{font-weight:700;font-size:14px}
+.ap-ic.linked path{fill:#1DB954}
+
+
+  .btn-primary {
+    
+    font-size: 15px!important;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.control-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.form-control, select, textarea {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 14px;
+  transition: border .2s ease, box-shadow .2s ease;
+}
+.form-control:focus {
+  border-color: #7d2492;
+  box-shadow: 0 0 0 3px rgba(125, 36, 146, .15);
+}
+.removemultifield{
+       position: absolute;
+    top: 7px;
+    right: -26px;
+}
+.progress-bar {
+   
+	background-color: #337ab7!important;
+	
+}
+.table-bordered>tbody>tr>td>.glyphicon.glyphicon-ok {
+    color: #5cb85c;
+	font-size: 20px;
+}
+.table-bordered>tbody>tr>td>.glyphicon.glyphicon-remove {
+    color: #d9534f;
+	font-size: 20px;
+}
+.suggestion-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 5px 0 0;
+    border: 1px solid #ccc;
+    border-top: none;
+    max-height: 200px;
+    overflow-y: auto;
+    position: absolute;
+    background: #f8f6f6;
+    z-index: 1000;
+    border-radius: 0 0 5px 5px;
+    width: calc(100% - 30px);
+	top: 27px;
+}
+
+/* Individual Suggestion Item */
+.suggestion-item {
+    padding: 10px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.suggestion-item:hover {
+    background: #f0f0f0;
+}
+/* =====================
+   BELIEVE STYLE UPLOADER
+===================== */
+.believe-uploader {
+  font-family: 'Inter', sans-serif;
+  color: #1f2937;
+}
+
+/* --- Upload guide block --- */
+.believe-uploader .guide {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+}
+
+.believe-uploader .guide-title {
+  font-weight: 600;
+  font-size: 15px;
+  margin-bottom: 8px;
+  color: #111827;
+}
+
+.believe-uploader .guide-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.believe-uploader .guide-item {
+  font-size: 13px;
+  line-height: 1.4;
+  color: #4b5563;
+}
+
+/* --- Dropzone --- */
+.believe-dropzone {
+  border: 2px dashed #d1d5db;
+  border-radius: 12px;
+  background: #ffffff;
+  padding: 30px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s ease-in-out;
+}
+
+.believe-dropzone:hover {
+  border-color: #6366f1;
+  background: #f9fafb;
+}
+
+.believe-dropzone .dz-icon {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+
+.believe-dropzone .dz-title {
+  font-weight: 500;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.believe-dropzone .dz-title a {
+  color: #4f46e5;
+  text-decoration: underline;
+}
+
+.believe-dropzone .dz-accept {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* --- OR line --- */
+.orline {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 500;
+  color: #9ca3af;
+  margin: 12px 0;
+  position: relative;
+}
+
+.orline::before,
+.orline::after {
+  content: "";
+  display: inline-block;
+  width: 40%;
+  height: 1px;
+  background: #e5e7eb;
+  vertical-align: middle;
+  margin: 0 8px;
+}
+
+/* --- Progress bar fix inside table --- */
+#tableContainer .progress {
+  margin-bottom: 0;
+}
+
+#tableContainer .progress-bar {
+  font-size: 13px;
+}
+
+/* --- Upload note --- */
+.believe-uploader .mini-note {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 12px;
+}
+
+/* --- Table spacing --- */
+#tableContainer th,
+#tableContainer td {
+  vertical-align: middle !important;
+}
+
+#tableContainer .btn {
+  padding: 4px 8px;
+  font-size: 12px;
+}
+.fileinput-button {
+  display: none !important;
+}
+
+.guide {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 20px;
+}
+
+.guide-title {
+  font-size: 15px;
+  font-weight: 700;
+  
+  margin-bottom: 12px;
+}
+
+.guide-list {
+  display: flex;
+ 
+  gap: 10px; /* list items ke beech ka gap */
+}
+
+.guide-item {
+  font-size: 12px;
+  line-height: 1.6;
+  color: #374151;
+}
+
+.guide-item svg {
+  flex-shrink: 0;
+}
+.guide-item b {
+  display: flex;
+  align-items: center;
+  }
+  
+  .notice-bar{ 
+  
+  font-family:var(--font); 
+}
+
+.notice-bar .nb-wrap{
+  display:flex; align-items:flex-start; gap:10px;
+  padding:15px 12px;
+  border:1px solid var(--line);
+  background:#0b1220; color:#e5e7eb;
+  box-shadow:0 4px 14px rgba(15,23,42,.06);
+  border-radius:3px; /* same as cards */
+}
+
+/* Color variants (set via data-type="info|warn|ok") */
+.notice-bar[data-type="info"] .nb-wrap{
+  background: linear-gradient(180deg, #3b88e6, #3a89e7);
+}
+.notice-bar[data-type="warn"] .nb-wrap{
+  background:#2a1412; color:#fce7e7; border-color:#7f1d1d;
+}
+.notice-bar[data-type="ok"] .nb-wrap{
+  background:#0f1f14; color:#dcfce7; border-color:#14532d;
+}
+
+/* Icon, text, close */
+.nb-ico{ 
+  flex:0 0 auto; width:18px; height:18px; 
+  margin-top:2px; opacity:.9; 
+}
+.nb-text{
+  font:600 12.5px/1.55 var(--font); 
+  letter-spacing:.2px;
+}
+.nb-text b{ color:#fff; font-weight:800; }
+
+.nb-close{
+  margin-left:auto; 
+  background:transparent; border:0; 
+  color:#cbd5e1; font-weight:700;
+  line-height:1; font-size:16px; 
+  cursor:pointer; 
+  padding:2px 6px; border-radius:4px;
+  transition:background .18s ease, color .18s ease, transform .18s ease;
+}
+.nb-close:hover{ background:rgba(255,255,255,.06); color:#fff; }
+.nb-close:active{ transform:scale(.96); }
+</style>
+
+<div id="easyEntryContent">
+   
+    <div id="easyEntryAssetsHeader" class="clearfix">
+       
+    
+        <h2 style="float: left;"><?php echo $this->INFO['title'].' '.$this->INFO['version_head'];?></h2>
+        <div style="float: right;">
+          
+			<!--<img style="margin: 10px 30px;" src="<?php echo $this->basePath(); ?>/public/img/loader.gif" class="hide nf-loader"> -->
+        </div>
+    </div>
+
+    <!-- message -->
+    <div id="msgBox">
+    </div>
+  
+
+
+    <!-- tabs -->
+    <ul class="nav nav-tabs" id="ee_tabs">
+        <li ><a class="easyEntryStep" data-page="main" href="<?php echo $this->url('newrelease',array('action' => 'index'));?>?edit=<?php echo $_GET['edit'];?>">Release information</a></li>
+        <li class="active"><a class="easyEntryStep" data-page="tracks" href="<?php echo $this->url('newrelease',array('action' => 'track'));?>?edit=<?php echo $_GET['edit'];?>">Tracks</a></li>
+        <li><a class="easyEntryStep" data-page="releasedate" href="<?php echo $this->url('newrelease',array('action' => 'releasedate'));?>?edit=<?php echo $_GET['edit'];?>">Release date</a></li>
+		<?php
+			if($this->INFO['import_flag'] == '0')
+			{
+		?>
+        <li><a class="easyEntryStep" data-page="submission" href="<?php echo $this->url('newrelease',array('action' => 'submission'));?>?edit=<?php echo $_GET['edit'];?>">Submission</a></li>
+		<?php } ?>
+    </ul>
+
+   
+	<div class="bloc-volume">
+	
+			<?php echo $this->TRACK_DATA?>
+					<?php 	/*<div class="volume-header clearfix" rel="1">
+							<h4 style="float: left;">Volume 1</h4>
+							<div style="float: left; margin-left: 30px; margin-top: 5px;">
+							<a class="btn btn-sm btn-default addTrackLink addNewTrackLink" volume="1"  href="javascript:;">
+							<span class="glyphicon glyphicon-plus"></span> Add track</a></div>
+						</div>			
+							<ul id="release-tracks-volume-1" class="volume ui-sortable"  data-volume="1">									
+						
+								<li class="track" id="track_1">
+										<div class="row">	
+											<div class="col-md-1">
+												<span class="glyphicon glyphicon-move handle"></span>&nbsp;&nbsp;&nbsp;&nbsp;
+												<span class="glyphicon glyphicon-music"></span>&nbsp;&nbsp;&nbsp;&nbsp;
+											</div>
+											<div class="col-md-3">
+												<span class="trackNumber">1</span>.&nbsp;<span class="trackName">New track</span>
+												<div class="trackIsrc text-muted" style="display:block"></div>
+											</div>
+											<div class="col-md-2"></div>
+											<div class="col-md-6" style="text-align: right;">
+													<a track_id="" onclick="return false;" class="btn btn-sm btn-default editTrackLink">
+													<span class="glyphicon glyphicon-pencil"></span>&nbsp;Edit								</a>&nbsp;
+												<a track_id="" class="btn btn-sm btn-default deleteTrackLink" onclick="return false;"  style="display: none;">
+													<span class="glyphicon glyphicon-remove"></span>&nbsp;Delete								</a>
+												<a track_id="" class="btn btn-sm btn-default moveTrackLink" onclick="return false;" data-placement="left" href="#" data-original-title="" title="">
+													<span class="glyphicon glyphicon-arrow-right"></span>&nbsp;Move to another volume								</a>
+											</div>
+										</div>
+								</li>
+							</ul>
+	
+				*/ ?>
+	</div>
+    <div id="easyEntryAssetsModal" class="modal fade in" aria-hidden="false" style="display: none;">
+<div class="modal-dialog" style="width: 700px;">
+
+<div class="modal-content">
+
+<form method="post" action="javascript:;" id="easyEntryEditForm" class="form-horizontal" role="form">
+	<input type="hidden" name="track_id" id="track_id" value="">
+	<input type="hidden" name="audio_hidden" id="audio_hidden" value="">
+	<input type="hidden" name="audio_format_info" id="audio_format_info" value="">
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+	<h4 class="modal-title">Assets metadata</h4>
+</div>
+
+<div class="modal-body">
+	<div id="msgBoxModal"></div>
+	<div id="msgBox">
+			</div>
+
+	<div id="trackForm">
+   
+    <div id="track-col1" class="">
+        
+        <div class="form-group form-group-sm">
+            <div class="col-sm-3 control-label">
+                <label class=" input-required behavior-2" id="label-easyEntryEditForm-primaryTrackType-0" for="primaryTrackType">Primary track type</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> *</span> <span class="label-tip"><a href="#" data-html="true" data-placement="right" title="" class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip" data-original-title="<div style=&quot;text-align: left;&quot;>Use this option if the track requires classical metadata information</div>"><span class="glyphicon glyphicon-question-sign"></span></a>
+                </span>
+                </span>
+            </div>
+            <div class="col-sm-7">
+                <label class="radio-inline">
+                    <input type="radio" class="input-primaryTrackType inputString inputBehavior-2" name="primaryTrackType" id="primaryTrackType" checked="checked" value="Music" tabindex="3"> Music</label>
+            </div>
+            <div class="col-sm-2 divAppend"></div>
+        </div>
+        <div class="form-group form-group-sm">
+            <div class="col-sm-3 control-label">
+                <label class=" input-required behavior-2" id="label-easyEntryEditForm-trackType-0" for="easyEntryEditForm-trackType-0">Secondary Track Type</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> *</span> </span>
+            </div>
+            <div class="col-sm-7">
+                <label class="radio-inline">
+                    <input type="radio" class="input-secondaryTrackType inputString inputBehavior-2" name="trackType" id="trackType-0" value="original track" tabindex="4"> Original</label>
+                <label class="radio-inline">
+                    <input type="radio" class="input-secondaryTrackType inputString inputBehavior-2" name="trackType" id="trackType-1" value="karaoke" tabindex="5"> Karaoke</label>
+                <label class="radio-inline">
+                    <input type="radio" class="input-secondaryTrackType inputString inputBehavior-2" name="trackType" id="trackType-2" value="medley" tabindex="6"> Medley</label>
+                <label class="radio-inline">
+                    <input type="radio" class="input-secondaryTrackType inputString inputBehavior-2" name="trackType" id="trackType-3" value="cover" tabindex="7"> Cover</label>
+                <label class="radio-inline">
+                    <input type="radio" class="input-secondaryTrackType inputString inputBehavior-2" name="trackType" id="trackType-4" value="cover by cover band" tabindex="8"> Cover by cover band</label>
+            </div>
+            <div class="col-sm-2 divAppend"></div>
+        </div>
+        <div class="form-group form-group-sm">
+            <div class="col-sm-3 control-label">
+                <label class=" behavior-2" id="label-easyEntryEditForm-idInstrumental-0" for="easyEntryEditForm-idInstrumental-0">Instrumental</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> *</span> </span>
+            </div>
+            <div class="col-sm-7">
+                <label class="radio-inline">
+                    <input type="radio" class="input-large inputInt inputBehavior-2" name="idInstrumental" id="idInstrumental-0" value="-1" tabindex="9"> Yes</label>
+                <label class="radio-inline">
+                    <input type="radio" class="input-large inputInt inputBehavior-2" name="idInstrumental" id="idInstrumental-1" value="0" tabindex="10" checked="checked"> No</label>
+            </div>
+            <div class="col-sm-2 divAppend"></div>
+        </div>
+        <div class="form-group form-group-sm">
+            <div class="col-sm-3 control-label">
+                <label class=" input-required behavior-2" id="label-easyEntryEditForm-songName-0" for="songName">Title</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> *</span> <span class="label-tip"><a href="#" data-html="true" data-placement="right" title="" class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip" data-original-title="<div style=&quot;text-align: left;&quot;>Please enter a title for this release:<br /><br /> eg.: <font color=&quot;#ff0000&quot;><em>Ya Ilahi Har Jagah Teri</em></font>, <font color=&quot;#ff0000&quot;><em>Mustafa Jaan-e-Rehmat Pe Lakhon Salaam</em></font>, <font color=&quot;#ff0000&quot;><em>Mera Koi Nahi Hai Tere Siwa</em></font>, etc...<br /><br />Please use the version field if you need to enter further information for the release.<br /><br />eg.: <font color=&quot;#ff0000&quot;><em>Radio Edit</em></font>, <font color=&quot;#ff0000&quot;><em>Ramzan Special Version</em></font>, <font color=&quot;#ff0000&quot;><em>Live Mehfil Cut</em></font>, <font color=&quot;#000000&quot;><em><font color=&quot;#ff0000&quot;>Bonus Track</font></em></font>, etc...</div>"><span class="glyphicon glyphicon-question-sign"></span></a></span></span>
+
+            </div>
+            <div class="col-sm-7">
+                <input id="songName" class="input-large input-trackName inputString inputBehavior-2 form-control" name="songName" type="text" value="" tabindex="11"><span style="display:none" class="form-input-error help-inline control-label" rel="input-trackName-standard"></span></div>
+            <div class="col-sm-2 divAppend"></div>
+        </div>
+        <div class="form-group form-group-sm">
+            <div class="col-sm-3 control-label">
+                <label class=" behavior-2" id="label-easyEntryEditForm-version-0" for="version">Version/Subtitle</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="visibility: hidden;"> *</span> <span class="label-tip"><a href="#" data-html="true" data-placement="right" title="" class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip" data-original-title="<div style=&quot;text-align: left;&quot;>Please use this field if you want to add further details to your release.<br /><br />eg.: <font color=&quot;#ff0000&quot;><em>Ramzan Special</em></font>, <font color=&quot;#ff0000&quot;><em>Live Mehfil Version</em></font>, <font color=&quot;#ff0000&quot;><em>Qawwali Reprise</em></font>, <font color=&quot;#000000&quot;><em><font color=&quot;#ff0000&quot;>Bonus Track</font></em></font>, etc...</div>"><span class="glyphicon glyphicon-question-sign"></span></a></span></span>
+
+            </div>
+            <div class="col-sm-7">
+                <input class="input-large input-version inputString inputBehavior-2 form-control" name="version" id="version" type="text" value="" tabindex="12"><span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-version-0"></span></div>
+            <div class="col-sm-2 divAppend"></div>
+        </div>
+        <div class="form-group form-group-sm">
+            <div class="col-sm-3 control-label">
+                <label class=" input-required behavior-2" id="label-easyEntryEditForm-trackArtist-0" for="trackArtist">Primary artist</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> *</span> <span class="label-tip"><a href="#" data-html="true" data-placement="right" title="" class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip" data-original-title="<div style=&quot;text-align: left;&quot;>Please enter the name of the band or artist for the release.<br /><br />Please enter the <strong>full first-name</strong>, no initials.<br /><br />eg.: <font color=&quot;#ff0000&quot;><em>Junaid Jamshed</em></font>, <font color=&quot;#ff0000&quot;><em>Amjad Sabri</em></font>, <font color=&quot;#ff0000&quot;><em>Rahat Fateh Ali Khan</em></font><br /><br />Please only <strong>enter one name per field.</strong><br /><br />For example, don't enter <font color=&quot;#ff0000&quot;>Hafiz Rizwan &amp; Qari Noman</font> in the Artist Name field, but <font color=&quot;#ff0000&quot;>Hafiz Rizwan</font> <strong>in the first field</strong> and <font color=&quot;#ff0000&quot;>Qari Noman</font> <strong>in a separate field.</strong> To add an additional artist, click <em>Add new artist.</em><br /><br />If your release is a compilation, you do not need to indicate all artists individually: just click the appropriate box.<strong><br /></strong></div>"><span class="glyphicon glyphicon-question-sign"></span></a></span></span>
+
+            </div>
+			<?php 
+			if($this->user_artist_cnt == '1')
+			{
+				?>
+				<div class="col-sm-7" >
+						<div  id="artist-fields">
+							<div style="display:flex">
+								
+							
+								<input data-tags="true" class="input-large input-trackArtist input-multiple inputString inputBehavior-2 form-control" name="trackArtist[]" id="f_track_artist" type="text" value="<?php echo $this->user_artist_name;?>" tabindex="3" autocomplete="off" readonly>
+							</div>
+							<span style="display:none" class="form-input-error help-inline control-label" rel="releaseArtist"></span>
+						</div>
+					</div>
+					<div class="col-sm-2 divAppend">
+					<span class="append-input">
+						
+							<span class="glyphicon glyphicon-lock" style="color:#4CAF50"></span>
+						
+					</span>
+				</div>
+				<?php
+			}
+			else
+			{
+				?>
+						<div class="col-sm-7" >
+							<div  id="artist-fields">
+								<div style="display:flex">
+									<input data-tags="true" class="input-large input-trackArtist input-multiple inputString inputBehavior-2 form-control" name="trackArtist[]" id="f_track_artist" type="text" value="<?php echo $this->user_artist_name;?>" tabindex="3" autocomplete="off">
+								</div>
+								<span style="display:none" class="form-input-error help-inline control-label" rel="trackArtist"></span>
+							</div>
+						</div>
+						<div class="col-sm-2 divAppend">
+							<span class="append-input">
+								<a href="javascript:;" class="addFieldLink" data-selector="input-trackArtist">
+									<span class="glyphicon glyphicon-plus-sign" onclick="addTrackArtist()"></span>
+								</a>
+							</span>
+						</div>
+		  <?php } ?>
+        </div>
+        <div class="form-group form-group-sm">
+            <div class="col-sm-3 control-label">
+                <label class=" behavior-2" id="label-easyEntryEditForm-featuring-0" for="easyEntryEditForm-featuring-0">Featuring</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="visibility: hidden;"> *</span> </span>
+            </div>
+            <div class="col-sm-7" >
+							<div  id="featuring-fields">
+								<div style="display:flex">
+									<input data-tags="true" class="input-large input-featuring input-multiple inputString inputBehavior-2 form-control" name="featuring[]"  id="f_featuring" type="text" value="" tabindex="3" autocomplete="off">
+									<span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-featuring-0"></span>
+									
+								</div>
+							</div>
+						</div>
+						<div class="col-sm-2 divAppend">
+							<span class="append-input">
+								<a href="javascript:;" class="addFieldLink" data-selector="input-featuring">
+									<span class="glyphicon glyphicon-plus-sign" onclick="addFieldFeaturing()"></span>
+								</a>
+							</span>
+						</div>
+        </div>
+		<div class="form-group form-group-sm">
+			<div class="col-sm-3 control-label">
+				<label class=" input-required behavior-2" id="easyEntryEditForm-remixer" for="easyEntryEditForm-remixer-0">Remixer</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> </span> <span class="label-tip"><a href="#" data-html="true" data-placement="right" title="" class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip" data-original-title=""></a>
+				</span>
+				</span>
+			</div>
+			<div class="col-sm-7">
+				<input class="input-large inputString inputBehavior-2 form-control" name="remixer" id="remixer" type="text" value="" tabindex="20"><span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-remixer-0"></span></div>
+			<div class="col-sm-2 divAppend"></div>
+		</div>
+        <div class="form-group form-group-sm">
+            <div class="col-sm-3 control-label">
+                <label class=" input-required behavior-2" id="label-easyEntryEditForm-author-0" for="author">Author</label><span style="position: absolute; white-space: nowrap; z-index: 100; visibility: visible;"><span style="color: red;"> *</span> <span class="label-tip"><a href="#" data-html="true" data-placement="top" title="" class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip" data-original-title="<div style=&quot;text-align: left;&quot;>Author and Composer fields must be filled with a <strong class=&quot;text-light&quot;>full and complete name</strong> including <strong class=&quot;text-light&quot;>first name and last (family) name.</strong><br><br />Please only <strong>enter one name per field.</strong><br /><br />For example, don't enter <font color=&quot;#ff0000&quot;>Hafiz Rizwan &amp; Qari Noman</font> in the Author (or Composer) field, but <font color=&quot;#ff0000&quot;>Hafiz Rizwan</font> <strong>in the first field</strong> and <font color=&quot;#ff0000&quot;>Qari Noman</font> <strong>in a separate field.</strong> To add an additional Author (or Composer), click <em>Add a new author.</em><br /><br /><span class=&quot;small&quot;>Incomplete data (&quot;M. Khan&quot; instead of &quot;Mohammad Khan&quot;) or simplified information such as &quot;Rights Reserved&quot; or &quot;Public domain&quot; (as well as RR, PD, etc.) will no longer be accepted by stores.</span></div>"><span class="glyphicon glyphicon-question-sign"></span></a></span></span>
+
+        </div>
+		<div class="col-sm-7" >
+							<div  id="author-fields">
+								<div style="">
+									<input data-tags="true" class="input-large input-author input-multiple inputString inputBehavior-2 form-control" name="author[]"  id="f_author" type="text" value="" tabindex="3" autocomplete="off">
+									<span style="" class="form-input-error help-inline control-label" rel="easyEntryEditForm-author-0"><span>Digital Music Stores require full first and last (family) name</span></span>
+									
+								</div>
+							</div>
+						</div>
+						<div class="col-sm-2 divAppend">
+							<span class="append-input">
+								<a href="javascript:;" class="addFieldLink" data-selector="input-author">
+									<span class="glyphicon glyphicon-plus-sign" onclick="addauthor()"></span>
+								</a>
+							</span>
+						</div>
+       
+    </div>
+    <div class="form-group form-group-sm">
+        <div class="col-sm-3 control-label">
+            <label class=" input-required behavior-2" id="label-easyEntryEditForm-composer-0" for="composer">Composer</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> *</span> <span class="label-tip"><a href="#" data-html="true" data-placement="right" title="" class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip" data-original-title="<div style=&quot;text-align: left;&quot;>Author and Composer fields must be filled with a <strong class=&quot;text-light&quot;>full and complete name</strong> including <strong class=&quot;text-light&quot;>first name and last (family) name.</strong><br><br />Please only <strong>enter one name per field.</strong><br /><br />For example, don't enter <font color=&quot;#ff0000&quot;>Ustad Shafqat &amp; Haji Imran</font> in the Author (or Composer) field, but <font color=&quot;#ff0000&quot;>Ustad Shafqat</font> <strong>in the first field</strong> and <font color=&quot;#ff0000&quot;>Haji Imran</font> <strong>in a separate field.</strong> To add an additional Author (or Composer), click <em>Add a new author.</em><br /><br /><span class=&quot;small&quot;>Incomplete data (&quot;M. Raza&quot; instead of &quot;Mohammad Raza&quot;) or simplified information such as &quot;Rights Reserved&quot; or &quot;Public domain&quot; (as well as RR, PD, etc.) will no longer be accepted by stores.</span></div>"><span class="glyphicon glyphicon-question-sign"></span></a></span></span>
+
+    </div>
+	<div class="col-sm-7" >
+							<div  id="composer-fields">
+								<div style="">
+									<input data-tags="true" class="input-large input-composer input-multiple inputString inputBehavior-2 form-control" name="composer[]"  id="f_composer" type="text" value="" tabindex="3" autocomplete="off">
+									<span style="" class="form-input-error help-inline control-label" rel="easyEntryEditForm-composer-0"><span>Digital Music Stores require full first and last (family) name</span></span>
+									
+								</div>
+							</div>
+						</div>
+						<div class="col-sm-2 divAppend">
+							<span class="append-input">
+								<a href="javascript:;" class="addFieldLink" data-selector="input-composer">
+									<span class="glyphicon glyphicon-plus-sign" onclick="addcomposer()"></span>
+								</a>
+							</span>
+						</div>
+    
+</div>
+
+<div class="form-group form-group-sm">
+    <div class="col-sm-3 control-label">
+        <label class=" behavior-2" id="label-easyEntryEditForm-produceBy-0" for="produceBy">Producer</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="visibility: hidden;"> *</span> </span>
+    </div>
+	<div class="col-sm-7" >
+							<div  id="produceby-fields">
+								<div style="display:flex">
+									<input data-tags="true" class="input-large input-produceBy input-multiple inputString inputBehavior-2 form-control" name="produceBy[]"  id="f_produceby" type="text" value="" tabindex="3" autocomplete="off">
+									<span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-produceBy-0"></span>
+									
+								</div>
+							</div>
+						</div>
+						<div class="col-sm-2 divAppend">
+							<span class="append-input">
+								<a href="javascript:;" class="addFieldLink" data-selector="input-produceBy">
+									<span class="glyphicon glyphicon-plus-sign" onclick="addproduceBy()"></span>
+								</a>
+							</span>
+						</div>
+   
+</div>
+
+<div class="form-group form-group-sm">
+    <div class="col-sm-3 control-label">
+        <label class=" input-required behavior-2" id="easyEntryEditForm-pLine" for="easyEntryEditForm-pLine-0">℗ Pline</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> *</span> <span class="label-tip"><a href="#" data-html="true" data-placement="right" title="" class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip" data-original-title="<div style=&quot;text-align: left;&quot;>The first owner of this track, i.e. the first label or company to have financed its recording.</div>"><span class="glyphicon glyphicon-question-sign"></span></a>
+        </span>
+        </span>
+    </div>
+    <div class="col-sm-7">
+        <input class="input-large inputString inputBehavior-2 form-control" name="pLine" id="pLine" type="text" value="" tabindex="20"><span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-pLine-0"></span></div>
+    <div class="col-sm-2 divAppend"></div>
+</div>
+<div class="form-group form-group-sm">
+    <div class="col-sm-3 control-label">
+        <label class=" input-required behavior-2" id="label-easyEntryEditForm-productionYear-0" for="productionYear">Production Year</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> *</span> <span class="label-tip"><a href="#" data-html="true" data-placement="right" title="" class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip" data-original-title="<div style=&quot;text-align: left;&quot;>The year in which the track has been produced and recorded. If more than one, please indicate the final year of production.</div>"><span class="glyphicon glyphicon-question-sign"></span></a>
+        </span>
+        </span>
+    </div>
+    <div class="col-sm-7">
+        <select type="select" class="select2" name="productionYear" id="productionYear" tabindex="21">
+            <option value="0">- Select a year -</option>
+            <?php
+				for($i=(date('Y')+1);$i>=1900;$i--)
+				{
+					echo '<option value="'.$i.'">'.$i.'</option>';
+				}
+			?>
+           
+        </select><span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-productionYear-0"></span></div>
+    <div class="col-sm-2 divAppend"></div>
+</div>
+      
+       <div class="form-group form-group-sm">
+  <div class="col-sm-3 control-label">
+    <label class="behavior-2" id="label-easyEntryEditForm-trackPrice-0">
+      Track Price
+      <span class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip" data-placement="right" title=""
+            data-original-title="Select the price tier for this track. 'Default' lets stores decide standard price.">
+        <a class="help tooltips" href="javascript:;" tabindex="-1">
+          <span class="glyphicon glyphicon-question-sign"></span>
+        </a>
+      </span>
+    </label>
+  </div>
+  <div class="col-sm-7">
+    <select type="select" class="select2" name="trackPrice" id="trackPrice" tabindex="22">
+  <option value="0">- Please select -</option>
+  <option value="Front : 15₹ / 1.29$ / 1.48Sg$">Front : 15₹ / 1.29$ / 1.48Sg$</option>
+  <option value="Mid : 2₹ / 0.99$ / 1.28Sg$">Mid : 2₹ / 0.99$ / 1.28Sg$</option>
+  <option value="Back : 9₹ / 0.69$ / 0.98Sg$">Back : 9₹ / 0.69$ / 0.98Sg$</option>
+</select>
+<span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-trackPrice-0"></span>
+
+  </div>
+  <div class="col-sm-2 divAppend"></div>
+</div>
+      
+<div class="form-group form-group-sm">
+    <div class="col-sm-3 control-label">
+        <label class=" behavior-2" id="label-easyEntryEditForm-editor-0" for="editor">Publisher</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="visibility: hidden;"> *</span> </span>
+    </div>
+    <div class="col-sm-7">
+        <input class="input-large inputString inputBehavior-2 form-control" name="editor" id="editor" type="text" value="" tabindex="22"><span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-editor-0"></span></div>
+    <div class="col-sm-2 divAppend"></div>
+</div>
+<div class="form-group form-group-sm isrc_div">
+    <div class="col-sm-3 control-label">
+        <label class=" behavior-2" id="label-easyEntryEditForm-module_isrc-isrc-0" for="isrc">ISRC</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> *</span> <span class="label-tip"><a href="#" data-html="true" data-placement="right" title="" class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip" data-original-title="<div style=&quot;text-align: left;&quot;>Please indicate the ISRC code of this track as detailed below:
+i.e.: GB-6V8-12-12340. 
+
+An ISRC code is composed like this:
+GB : registrant country code
+6V8 : registrant code
+12 : year of registration
+1234 : 4 digits identifying the recording
+0 : &quot;0&quot; for audio, &quot;1&quot; for video
+
+This ISRC code is unique to a recording. When an ISRC code is generated for a track, it cannot be modified later.
+Failure to provide the correct unique ISRC to collective societies, can lead to the impossibility to match your songs and to collect revenue.</div>"><span class="glyphicon glyphicon-question-sign"></span></a>
+        </span>
+        </span>
+    </div>
+    <div class="col-sm-7">
+        <input type="text" class="input-large isrcModuleElement isrcModuleElement-isrc inputIsrc inputBehavior-2 form-control" name="isrc" id="isrc" placeholder="XX-0X0-00-00000" value="" tabindex="23"><span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-module_isrc-isrc-0"></span></div>
+    <div class="col-sm-2 divAppend"></div>
+</div>
+<div class="form-group form-group-sm">
+    <div class="col-sm-3 control-label">
+        <label class=" behavior-2" id="label-easyEntryEditForm-module_isrc-generateIsrc-0" for="generate_isrc">Ask to generate an ISRC</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="visibility: hidden;"> *</span> <span class="label-tip"><a href="#" data-html="true" data-placement="right" title="" class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip" data-original-title="<div style=&quot;text-align: left;&quot;>Prime backstage Digital can generate an ISRC code for this track if it doesn't have a code yet.
+
+You will have to use this code as the track's unique reference code. You will not be able to modify it or replace it later.
+
+By answering &quot;Yes&quot; to this request, you acknowledge that no ISRC codes currently exist for this track, and you request Prime backstage Digital to provide you with its unique ISRC code. You also accept that this is the code which you will register to collective societies if necessary.</div>"><span class="glyphicon glyphicon-question-sign"></span></a>
+        </span>
+        </span>
+    </div>
+    <div class="col-sm-7">
+        <label class="radio-inline">
+            <input type="radio" class="input-large generateByPrimeBackstage isrcModuleElement isrcModuleElement-generateIsrc inputInt inputBehavior-2" name="generate_isrc" id="generate_isrc-0" value="1" tabindex="24"> Yes</label>
+        <label class="radio-inline">
+            <input type="radio" class="input-large generateByPrimeBackstage isrcModuleElement isrcModuleElement-generateIsrc inputInt inputBehavior-2" name="generate_isrc" id="generate_isrc-1" value="0" tabindex="25" checked> No</label>
+    </div>
+    <div class="col-sm-2 divAppend"></div>
+</div>
+<?php /*
+<div class="form-group form-group-sm">
+    <div class="col-sm-3 control-label">
+        <label class=" behavior-2" id="label-easyEntryEditForm-producerReference-0" for="producerReference">Producer catalogue number</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="visibility: hidden;"> *</span> </span>
+    </div>
+    <div class="col-sm-7">
+        <input class="input-large inputString inputBehavior-2 form-control" name="producerReference" id="producerReference" type="text" value="" tabindex="31"><span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-producerReference-0"></span></div>
+    <div class="col-sm-2 divAppend"></div>
+</div>
+*/ ?>
+<div class="form-group form-group-sm">
+    <div class="col-sm-3 control-label">
+        <label class=" input-required behavior-2" id="label-easyEntryEditForm-explicitContent-0" for="explicitContent">Parental advisory</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> *</span> <span class="label-tip"><a href="#" data-html="true" data-placement="top" title="" class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip" data-original-title="<div style=&quot;text-align: left;&quot;>Choose &quot;cleaned&quot; if this track is a cleaned-up version of a track originally explicit. If the original track does not contain explicit lyrics, choose &quot;no&quot;.</div>"><span class="glyphicon glyphicon-question-sign"></span></a>
+        </span>
+        </span>
+    </div>
+    <div class="col-sm-7">
+        <label class="radio-inline">
+            <input type="radio" class="input-explicitContent inputInt inputBehavior-2" name="explicitContent" id="explicitContent-0" value="1" tabindex="32"> Yes</label>
+        <label class="radio-inline">
+            <input type="radio" class="input-explicitContent inputInt inputBehavior-2" name="explicitContent" id="explicitContent-1" value="0" tabindex="33"> No</label>
+        <label class="radio-inline">
+            <input type="radio" class="input-explicitContent inputInt inputBehavior-2" name="explicitContent" id="explicitContent-2" value="2" tabindex="34"> Cleaned</label>
+    </div>
+    <div class="col-sm-2 divAppend"></div>
+</div>
+<div class="form-group form-group-sm">
+    <div class="col-sm-3 control-label">
+        <label class=" input-required behavior-2" id="easyEntryEditForm-preview_start" for="easyEntryEditForm-preview_start-0">Preview start</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> </span> <span class="label-tip"><a href="#" data-html="true" data-placement="right" title="" class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip" data-original-title="<div style=&quot;text-align: left;&quot;>Please indicate when you want the 30 second pre-listen clip on your Player to start for this track. Please fill this field with seconds. i.e.: &quot;180&quot; for 3 minutes or &quot;30&quot; for 30 seconds.</div>"><span class="glyphicon glyphicon-question-sign"></span></a>
+        </span>
+        </span>
+    </div>
+    <div class="col-sm-7">
+        <input class="input-large inputString inputBehavior-2 form-control" name="preview_start" id="preview_start" type="text" value="120.00" tabindex="20"><span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-preview_start-0"></span></div>
+    <div class="col-sm-2 divAppend"></div>
+</div>
+<div class="form-group form-group-sm">
+    <div class="col-sm-3 control-label">
+        <label class=" input-required behavior-2" id="label-easyEntryEditForm-metadataLanguage-0" for="metadataLanguage">Track title language</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> *</span> <span class="label-tip"><a href="#" data-html="true" data-placement="right" title="" class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip" data-original-title="<div style=&quot;text-align: left;&quot;>Please indicate the spelling language of the release title.</div>"><span class="glyphicon glyphicon-question-sign"></span></a>
+        </span>
+        </span>
+    </div>
+    <div class="col-sm-7">
+        <select type="select" class="select2" name="metadataLanguage" id="metadataLanguage" tabindex="36">
+            <option value="0">Please select...</option>
+            <option value="OM">(Afan) Oromo</option>
+            <option value="AB">Abkhazian</option>
+            <option value="AA">Afar</option>
+            <option value="AF">Afrikaans</option>
+            <option value="SQ">Albanian</option>
+            <option value="AM">Amharic</option>
+            <option value="AR">Arabic</option>
+            <option value="HY">Armenian</option>
+            <option value="AS">Assamese</option>
+            <option value="AY">Aymara</option>
+            <option value="AZ">Azerbaijani</option>
+            <option value="BM">Bambara</option>
+            <option value="BA">Bashkir</option>
+            <option value="EU">Basque</option>
+            <option value="BN">Bengali, Bangla</option>
+            <option value="H8">Bhojpuri</option>
+            <option value="DZ">Bhutani</option>
+            <option value="BH">Bihari</option>
+            <option value="BI">Bislama</option>
+            <option value="I8">Bodo</option>
+            <option value="BR">Breton</option>
+            <option value="BG">Bulgarian</option>
+            <option value="MY">Burmese</option>
+            <option value="BE">Byelorussian</option>
+            <option value="KM">Cambodian</option>
+            <option value="Z3">Cantonese</option>
+            <option value="CA">Catalan</option>
+            <option value="H6">Chhattisgarhi</option>
+            <option value="ZH">Chinese</option>
+            <option value="Z1">Chinese (Simplified)</option>
+            <option value="Z2">Chinese (Traditional)</option>
+            <option value="CO">Corsican</option>
+            <option value="HR">Croatian</option>
+            <option value="CS">Czech</option>
+            <option value="DA">Danish</option>
+            <option value="I1">Dogri</option>
+            <option value="H2">Dogri</option>
+            <option value="NL">Dutch</option>
+            <option value="EN">English</option>
+            <option value="EO">Esperanto</option>
+            <option value="ET">Estonian</option>
+            <option value="FO">Faroese</option>
+            <option value="FJ">Fiji</option>
+            <option value="FI">Finnish</option>
+            <option value="FR">French</option>
+            <option value="FY">Frisian</option>
+            <option value="GL">Galician</option>
+            <option value="H5">Garhwali</option>
+            <option value="I9">Garo</option>
+            <option value="KA">Georgian</option>
+            <option value="DE">German</option>
+            <option value="EL">Greek</option>
+            <option value="KL">Greenlandic</option>
+            <option value="GN">Guarani</option>
+            <option value="GU">Gujarati</option>
+            <option value="HT">Haitian</option>
+            <option value="H4">Haryanvi</option>
+            <option value="HA">Hausa</option>
+            <option value="HE">Hebrew</option>
+            <option value="HI">Hindi</option>
+            <option value="HU">Hungarian</option>
+            <option value="IS">Icelandic</option>
+            <option value="ID">Indonesian</option>
+            <option value="IA">Interlingua</option>
+            <option value="IE">Interlingue</option>
+            <option value="IU">Inuktitut</option>
+            <option value="IK">Inupiak</option>
+            <option value="GA">Irish</option>
+            <option value="IT">Italian</option>
+            <option value="JA">Japanese</option>
+            <option value="JV">Javanese</option>
+            <option value="KN">Kannada</option>
+            <option value="KS">Kashmiri</option>
+            <option value="KK">Kazakh</option>
+            <option value="I2">Khasi</option>
+            <option value="RW">Kinyarwanda</option>
+            <option value="KY">Kirghiz</option>
+            <option value="RN">Kirundi</option>
+            <option value="J1">Kok Borok</option>
+            <option value="I3">Konkani</option>
+            <option value="H7">Konkani</option>
+            <option value="KO">Korean</option>
+            <option value="KU">Kurdish</option>
+            <option value="J2">Kutchi</option>
+            <option value="LO">Laothian</option>
+            <option value="LA">Latin</option>
+            <option value="LV">Latvian, Lettish</option>
+            <option value="LN">Lingala</option>
+            <option value="LT">Lithuanian</option>
+            <option value="MK">Macedonian</option>
+            <option value="I4">Maithili</option>
+            <option value="MG">Malagasy</option>
+            <option value="MS">Malay</option>
+            <option value="ML">Malayalam</option>
+            <option value="MT">Maltese</option>
+            <option value="I5">Manipuri</option>
+            <option value="MI">Maori</option>
+            <option value="MR">Marathi</option>
+            <option value="I6">Mizo</option>
+            <option value="MO">Moldavian</option>
+            <option value="MN">Mongolian</option>
+            <option value="NA">Nauru</option>
+            <option value="NE">Nepali</option>
+            <option value="NO">Norwegian</option>
+            <option value="OC">Occitan</option>
+            <option value="OR">Oriya</option>
+            <option value="PS">Pashto, Pushto</option>
+            <option value="FA">Persian</option>
+            <option value="PL">Polish</option>
+            <option value="PT">Portuguese</option>
+            <option value="PA">Punjabi</option>
+            <option value="QU">Quechua</option>
+            <option value="H1">Rajasthani</option>
+            <option value="RC">Reunionese</option>
+            <option value="RM">Rhaeto-Romance</option>
+            <option value="RO">Romanian</option>
+            <option value="RU">Russian</option>
+            <option value="SM">Samoan</option>
+            <option value="SG">Sangho</option>
+            <option value="SA">Sanskrit</option>
+            <option value="I7">Santali</option>
+            <option value="GD">Scots Gaelic</option>
+            <option value="SR">Serbian</option>
+            <option value="SH">Serbo-Croatian</option>
+            <option value="ST">Sesotho</option>
+            <option value="TN">Setswana</option>
+            <option value="SN">Shona</option>
+            <option value="SD">Sindhi</option>
+            <option value="SI">Sinhalese</option>
+            <option value="SS">Siswati</option>
+            <option value="SK">Slovak</option>
+            <option value="SL">Slovenian</option>
+            <option value="SO">Somali</option>
+            <option value="ES">Spanish</option>
+            <option value="SU">Sundanese</option>
+            <option value="SW">Swahili</option>
+            <option value="SV">Swedish</option>
+            <option value="TL">Tagalog</option>
+            <option value="TG">Tajik</option>
+            <option value="TA">Tamil</option>
+            <option value="TT">Tatar</option>
+            <option value="TE">Telugu</option>
+            <option value="TH">Thai</option>
+            <option value="BO">Tibetan</option>
+            <option value="TI">Tigrinya</option>
+            <option value="TO">Tonga</option>
+            <option value="TS">Tsonga</option>
+            <option value="J3">Tulu</option>
+            <option value="TR">Turkish</option>
+            <option value="TK">Turkmen</option>
+            <option value="TW">Twi</option>
+            <option value="UG">Uighur</option>
+            <option value="UK">Ukrainian</option>
+            <option value="UR">Urdu</option>
+            <option value="UZ">Uzbek</option>
+            <option value="H3">Varhadi-Nagpuri</option>
+            <option value="VI">Vietnamese</option>
+            <option value="VO">Volapuk</option>
+            <option value="CY">Welsh</option>
+            <option value="WO">Wolof</option>
+            <option value="XH">Xhosa</option>
+            <option value="YI">Yiddish</option>
+            <option value="YO">Yoruba</option>
+            <option value="ZA">Zhuang</option>
+            <option value="ZU">Zulu</option>
+        </select><span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-metadataLanguage-0"></span></div>
+    <div class="col-sm-2 divAppend"></div>
+</div>
+
+<div class="form-group form-group-sm">
+    <div class="col-sm-3 control-label">
+        <label class=" behavior-2" id="label-easyEntryEditForm-idLyricsSelect-0" for="idLyricsSelect">Lyrics language</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="visibility: visible; color: rgb(255, 0, 0);"> *</span> <span class="label-tip"><a href="#" data-html="true" data-placement="right" title="" class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip" data-original-title="<div style=&quot;text-align: left;&quot;>Please indicate the language your release is in. If the release language is not listed, please select the closest provided.</div>"><span class="glyphicon glyphicon-question-sign"></span></a>
+        </span>
+        </span>
+    </div>
+    <div class="col-sm-7">
+        <select type="select" class="select2" name="idLyricsSelect" id="idLyricsSelect" tabindex="37">
+            <option value="0">Please select...</option>
+            <option value="(Afan) Oromo">(Afan) Oromo</option>
+			<option value="Abkhazian">Abkhazian</option>
+			<option value="Afar">Afar</option>
+			<option value="Afrikaans">Afrikaans</option>
+			<option value="Albanian">Albanian</option>
+			<option value="Amharic">Amharic</option>
+			<option value="Arabic">Arabic</option>
+			<option value="Armenian">Armenian</option>
+			<option value="Assamese">Assamese</option>
+			<option value="Aymara">Aymara</option>
+			<option value="Azerbaijani">Azerbaijani</option>
+			<option value="Bambara">Bambara</option>
+			<option value="Bashkir">Bashkir</option>
+			<option value="Basque">Basque</option>
+			<option value="Bengali, Bangla">Bengali, Bangla</option>
+			<option value="Bhojpuri">Bhojpuri</option>
+			<option value="Bhutani">Bhutani</option>
+			<option value="Bihari">Bihari</option>
+			<option value="Bislama">Bislama</option>
+			<option value="Bodo">Bodo</option>
+			<option value="Breton">Breton</option>
+			<option value="Bulgarian">Bulgarian</option>
+			<option value="Burmese">Burmese</option>
+			<option value="Byelorussian">Byelorussian</option>
+			<option value="Cambodian">Cambodian</option>
+			<option value="Cantonese">Cantonese</option>
+			<option value="Catalan">Catalan</option>
+			<option value="Chhattisgarhi">Chhattisgarhi</option>
+			<option value="Chinese">Chinese</option>
+			<option value="Chinese (Simplified)">Chinese (Simplified)</option>
+			<option value="Chinese (Traditional)">Chinese (Traditional)</option>
+			<option value="Corsican">Corsican</option>
+			<option value="Croatian">Croatian</option>
+			<option value="Czech">Czech</option>
+			<option value="Danish">Danish</option>
+			<option value="Dogri">Dogri</option>
+			<option value="Dogri">Dogri</option>
+			<option value="Dutch">Dutch</option>
+			<option value="English">English</option>
+			<option value="Esperanto">Esperanto</option>
+			<option value="Estonian">Estonian</option>
+			<option value="Faroese">Faroese</option>
+			<option value="Fiji">Fiji</option>
+			<option value="Finnish">Finnish</option>
+			<option value="French">French</option>
+			<option value="Frisian">Frisian</option>
+			<option value="Galician">Galician</option>
+			<option value="Garhwali">Garhwali</option>
+			<option value="Garo">Garo</option>
+			<option value="Georgian">Georgian</option>
+			<option value="German">German</option>
+			<option value="Greek">Greek</option>
+			<option value="Greenlandic">Greenlandic</option>
+			<option value="Guarani">Guarani</option>
+			<option value="Gujarati">Gujarati</option>
+			<option value="Haitian">Haitian</option>
+			<option value="Haryanvi">Haryanvi</option>
+			<option value="Hausa">Hausa</option>
+			<option value="Hebrew">Hebrew</option>
+			<option value="Hindi">Hindi</option>
+			<option value="Hungarian">Hungarian</option>
+			<option value="Icelandic">Icelandic</option>
+			<option value="Indonesian">Indonesian</option>
+			<option value="Interlingua">Interlingua</option>
+			<option value="Interlingue">Interlingue</option>
+			<option value="Inuktitut">Inuktitut</option>
+			<option value="Inupiak">Inupiak</option>
+			<option value="Irish">Irish</option>
+			<option value="Italian">Italian</option>
+			<option value="Japanese">Japanese</option>
+			<option value="Javanese">Javanese</option>
+			<option value="Kannada">Kannada</option>
+			<option value="Kashmiri">Kashmiri</option>
+			<option value="Kazakh">Kazakh</option>
+			<option value="Khasi">Khasi</option>
+			<option value="Kinyarwanda">Kinyarwanda</option>
+			<option value="Kirghiz">Kirghiz</option>
+			<option value="Kirundi">Kirundi</option>
+			<option value="Kok Borok">Kok Borok</option>
+			<option value="Konkani">Konkani</option>
+			<option value="Konkani">Konkani</option>
+			<option value="Korean">Korean</option>
+			<option value="Kurdish">Kurdish</option>
+			<option value="Kutchi">Kutchi</option>
+			<option value="Laothian">Laothian</option>
+			<option value="Latin">Latin</option>
+			<option value="Latvian, Lettish">Latvian, Lettish</option>
+			<option value="Lingala">Lingala</option>
+			<option value="Lithuanian">Lithuanian</option>
+			<option value="Macedonian">Macedonian</option>
+			<option value="Maithili">Maithili</option>
+			<option value="Malagasy">Malagasy</option>
+			<option value="Malay">Malay</option>
+			<option value="Malayalam">Malayalam</option>
+			<option value="Maltese">Maltese</option>
+			<option value="Manipuri">Manipuri</option>
+			<option value="Maori">Maori</option>
+			<option value="Marathi">Marathi</option>
+			<option value="Mizo">Mizo</option>
+			<option value="Moldavian">Moldavian</option>
+			<option value="Mongolian">Mongolian</option>
+			<option value="Nauru">Nauru</option>
+			<option value="Nepali">Nepali</option>
+			<option value="Norwegian">Norwegian</option>
+			<option value="Occitan">Occitan</option>
+			<option value="Oriya">Oriya</option>
+			<option value="Pashto, Pushto">Pashto, Pushto</option>
+			<option value="Persian">Persian</option>
+			<option value="Polish">Polish</option>
+			<option value="Portuguese">Portuguese</option>
+			<option value="Punjabi">Punjabi</option>
+			<option value="Quechua">Quechua</option>
+			<option value="Rajasthani">Rajasthani</option>
+			<option value="Reunionese">Reunionese</option>
+			<option value="Rhaeto-Romance">Rhaeto-Romance</option>
+			<option value="Romanian">Romanian</option>
+			<option value="Russian">Russian</option>
+			<option value="Samoan">Samoan</option>
+			<option value="Sangho">Sangho</option>
+			<option value="Sanskrit">Sanskrit</option>
+			<option value="Santali">Santali</option>
+			<option value="Scots Gaelic">Scots Gaelic</option>
+			<option value="Serbian">Serbian</option>
+			<option value="Serbo-Croatian">Serbo-Croatian</option>
+			<option value="Sesotho">Sesotho</option>
+			<option value="Setswana">Setswana</option>
+			<option value="Shona">Shona</option>
+			<option value="Sindhi">Sindhi</option>
+			<option value="Sinhalese">Sinhalese</option>
+			<option value="Siswati">Siswati</option>
+			<option value="Slovak">Slovak</option>
+			<option value="Slovenian">Slovenian</option>
+			<option value="Somali">Somali</option>
+			<option value="Spanish">Spanish</option>
+			<option value="Sundanese">Sundanese</option>
+			<option value="Swahili">Swahili</option>
+			<option value="Swedish">Swedish</option>
+			<option value="Tagalog">Tagalog</option>
+			<option value="Tajik">Tajik</option>
+			<option value="Tamil">Tamil</option>
+			<option value="Tatar">Tatar</option>
+			<option value="Telugu">Telugu</option>
+			<option value="Thai">Thai</option>
+			<option value="Tibetan">Tibetan</option>
+			<option value="Tigrinya">Tigrinya</option>
+			<option value="Tonga">Tonga</option>
+			<option value="Tsonga">Tsonga</option>
+			<option value="Tulu">Tulu</option>
+			<option value="Turkish">Turkish</option>
+			<option value="Turkmen">Turkmen</option>
+			<option value="Twi">Twi</option>
+			<option value="Uighur">Uighur</option>
+			<option value="Ukrainian">Ukrainian</option>
+			<option value="Urdu">Urdu</option>
+			<option value="Uzbek">Uzbek</option>
+			<option value="Varhadi-Nagpuri">Varhadi-Nagpuri</option>
+			<option value="Vietnamese">Vietnamese</option>
+			<option value="Volapuk">Volapuk</option>
+			<option value="Welsh">Welsh</option>
+			<option value="Wolof">Wolof</option>
+			<option value="Xhosa">Xhosa</option>
+			<option value="Yiddish">Yiddish</option>
+			<option value="Yoruba">Yoruba</option>
+			<option value="Zhuang">Zhuang</option>
+			<option value="Zulu">Zulu</option>
+        </select><span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-idLyricsSelect-0"></span></div>
+    <div class="col-sm-2 divAppend"></div>
+</div>
+
+
+
+<div class="jarviswidget panel panel-default panel-hovered panel-stacked mb30 jarviswidget-sortable show">
+  <div class="panel-body">
+    <div class="row">
+      <div class="col-md-12 col-xs-12">
+        <form id="fileupload" method="POST" enctype="multipart/form-data">
+
+          <!-- 📄 Upload guide -->
+          <div class="guide">
+            
+            <div class="guide-title">Guide to uploading</div>
+            <div class="guide-list">
+              <div class="guide-item">
+                <b><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" style="margin-right:4px;">
+      <path d="M11.536 14.01a.75.75 0 0 0 1.06 0A8 8 0 0 0 11.5 1.99a.75.75 0 1 0-1.06 1.06 6.5 6.5 0 0 1 0 9.192.75.75 0 0 0 0 1.06ZM8.5 12.621a.75.75 0 0 0 1.06 0A5 5 0 0 0 9.5 3.379a.75.75 0 0 0-1.06 1.06 3.5 3.5 0 0 1 0 4.95.75.75 0 0 0 0 1.06Z"/>
+    </svg>
+                Audio specs : </b>Upload 16-bit or 24-bit WAV Mini 44.1 kHz / Max 192 kHz. Stereo only.
+                  </div> 
+              
+              <div class="guide-item">
+               <b> <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" style="margin-right:4px;">
+      <path d="M6 12.5a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 0-1h-3a.5.5 0 0 0-.5.5Zm-4-3a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 0-1h-11a.5.5 0 0 0-.5.5Zm2-3a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 0-1h-7a.5.5 0 0 0-.5.5Zm-2-3a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 0-1h-11a.5.5 0 0 0-.5.5Z"/>
+    </svg>
+                Audio consistency :</b>Don’t mix bit-depth/rate across tracks within the same release.
+              </div>
+            </div>
+            
+            <a href="/faq/article/88" target="_blank" class="dz-faq-link">Learn more about supported formats →</a>
+          </div>
+
+          <!-- 📦 Drop zone -->
+<div class="dropzone believe-dropzone" title="Drag & drop or click to upload" onclick="document.getElementById('audio_upload').click()">
+  <div class="dz-icon">⬆️</div>
+  <div class="dz-title">Drag & drop <span style="font-weight:400">or</span> <a class="dz-browse" href="javascript:void(0)">browse files</a></div>
+  <div class="dz-accept">
+    <p>
+      Accepted Audio:
+      The standard format of audio file is WAV 16-bit, 44,100 Hz, Stereo.<br>  
+    </p>
+    
+  </div>
+</div>
+
+          <!-- Hidden file input -->
+          <input type="file" id="audio_upload" multiple style="left:-99999px;visibility:hidden;width:0px;z-index:-999;" accept=".wav,.flac">
+          
+
+
+          <!-- ⚠️ Warning -->
+          <div class="alert alert-warning audio-mixed-bitrate-warning-message hidden">
+            <strong>We have detected different bit depth among your audio files, this release will not be considered as HD.</strong>
+          </div>
+
+          <!-- 📊 Upload table -->
+          <table class="table table-bordered" id="tableContainer" style="empty-cells: hide;">
+            <thead id="tableContainerHead">
+              <tr>
+                <th class="text-center">File Name&nbsp;</th>
+                <th class="text-center">Upload</th>
+                <th class="text-center">Check</th>
+                <th class="text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody id="tableContainerBody" class="files">
+              <tr>
+                <td id="audio_file_info" width="40%"></td>
+                <td width="20%" align="center">
+                  <div class="glyphicon glyphicon-ok upload_status hide"></div>
+                  <div class="progress hide" style="height:21px;" id="customfileupload">
+                    <div class="progress-bar progress-bar-success progress-bar-striped active"
+                      role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"
+                      style="width:0%;line-height:21px;color:#FFFFFF;font-size:16px" id="progressBar">0%</div>
+                  </div>
+                </td>
+                <td id="audio_file_check" width="20%" align="center"></td>
+                <td width="20%" align="center">
+                  <button type="button" class="btn btn-default delete_audio hide">
+                    <b><i class="glyphicon glyphicon-remove"></i> Delete file</b>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- 📥 Upload button -->
+          <div class="form-group">
+            
+            <div class="col-sm-7">
+              <div class="container-fluid">
+                <div class="row">
+                  <div class="col-md-6 col-xs-7">
+                    <span class="btn btn-primary fileinput-button" style="width: 250px;" onclick="document.getElementById('audio_upload').click()">
+                      <i class="glyphicon glyphicon-plus"></i> <span>Add and upload file</span>
+                    </span>
+                  </div>
+                </div>
+                <div class="row hidden">
+                  <div class="alert alert-danger text-center uploader-service-unavailable"><strong></strong></div>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-2 divAppend"></div>
+          </div>
+
+        
+
+          <!-- Modal footer -->
+          <div class="modal-footer">
+            <button href="#" class="btn btn-default btn-tracks-close" data-dismiss="modal">Close</button>
+            <button id="easyEntryDataSaveButton" class="btn btn-primary nf-btn-submit" type="button">
+              <i class="icon-ok-circle icon-white"></i> Save
+            </button>
+            <div style="float: right;">
+              <img style="margin: 10px 30px;" src="<?php echo $this->basePath(); ?>/public/img/loader.gif" class="hide nf-loader">
+            </div>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<style>
+.controls label.radio.inline:first-child {margin-left: 0;}
+.tooltip-inner {max-width: 350px;}
+.tooltip-inner {max-width: 350px;}
+.tooltip-inner {max-width: 350px;}
+.tooltip-inner {max-width: 350px;}
+.tooltip-inner {max-width: 350px;}
+.tooltip-inner {max-width: 350px;}
+.tooltip-inner {max-width: 350px;}
+.tooltip-inner {max-width: 350px;}
+.tooltip-inner {max-width: 350px;}
+.tooltip-inner {max-width: 350px;}
+.tooltip-inner {max-width: 350px;}
+.tooltip-inner {max-width: 350px;}
+.tooltip-inner {max-width: 350px;}
+.tooltip-inner {max-width: 350px;}
+.tooltip-inner {max-width: 350px;}
+.tooltip-inner {max-width: 350px;}
+.form-control-inline {width: 250px !important}
+.control-label.controls-vertical {float: none; text-align: left}
+.controls.controls-vertical {margin-left: 0}
+.form-group .control-label label {padding-right: 5px;}
+.form-group .col-sm-2.divAppend {padding-top: 7px; padding-left: 0;}
+</style>
+<script type="text/javascript">
+</script>
+</div>
+    <div id="easyEntryAssetsPopover"></div>
+    <div id="easyEntryArtistIdModal" class="modal fade" aria-hidden="true"></div>
+    <div id="focusTrackModal" class="modal fade" aria-hidden="true"></div>
+    <div id="madeForKidsGuidelinesModal" class="modal fade" aria-hidden="true"></div>
+
+</div>
+</div>
+</div>
+		</div>
+	</div>
+</div>
+
+
+<div id="deleteTrackModal" class="modal fade" aria-hidden="false" style="display: none; padding-right: 17px;">
+	<input type="hidden" id="delete_track_id" value="">
+	<div class="modal-dialog"><div class="modal-content">
+		<div class="modal-body"><p>Are you sure you want to delete this track ?<br><strong id="delete_track_name"></strong></p></div>
+			<div class="modal-footer">
+				<button class="btn btn-default" data-dismiss="modal">Close</button>
+				<a href="javascript:;" class="btn btn-primary deleteTrack">Delete</a>
+			</div>
+		</div>
+	</div>
+</div>
+     
+<!-- Dropdown popup (minimal) -->
+<div id="ap-spot-pop" class="ap-pop ap-pop--dropdown hidden" role="dialog" aria-modal="true" aria-labelledby="ap-pop-name">
+  <div class="ap-pop-head">
+    <div class="ap-pop-title"><strong>Select Spotify Profile</strong></div>
+    <button class="ap-pop-close" type="button" aria-label="Close">&times;</button>
+  </div>
+
+  <div class="ap-pop-body">
+    <!-- Auto-search ke results (radio) -->
+    <ul id="ap-pop-results" class="ap-results" role="listbox" aria-live="polite"></ul>
+
+    <div class="ap-actions">
+      <button class="btn btn-link ap-pop-close" type="button">Cancel</button>
+      <button id="ap-link-save" class="btn btn-primary" type="button">Save</button>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+		
+	
+/* ===== Suggestion gating (show only after full name + pause) ===== */
+const MIN_FULLNAME_CHARS = 3;     // jitna chaho badha do (e.g., 4)
+const TRIGGER_IDLE_MS     = 1300; // 1.3s pause; 2000 karoge to 2s ho jayega
+
+let LAST_KEY      = '';
+let SUG_IDLE_TMR  = null;
+let SUG_VER       = 0;   // out-of-order responses ignore karne ke liye
+let lastXHR       = null;
+
+// Enter/Space capture (bas key track karne ke liye)
+$(document).on('keydown', function(e){ LAST_KEY = e.key || ''; });
+
+// Strict nahi rakha: idle + min length hi main guard hai
+function isLikelyFullName(q) {
+  const s = (q || '').trim();
+  if (s.length < MIN_FULLNAME_CHARS) return false;
+  return true;
+}
+
+// Abortable, versioned AJAX (race-proof)
+function safeArtistSearch($input, query, $listRef){
+  // cancel previous inflight
+  if (lastXHR && lastXHR.readyState !== 4) {
+    try { lastXHR.abort(); } catch(_) {}
+  }
+  const myVer = ++SUG_VER;
+
+  lastXHR = $.ajax({
+    url: '<?php echo $this->url('newrelease', array("action"=>"artistSuggestionList")); ?>',
+    type: 'POST',
+    data: { query },
+    success: function(response){
+      // stale response? ignore
+      if (myVer !== SUG_VER) return;
+
+      let $list = $listRef && $listRef.length ? $listRef : $input.siblings('.suggestion-list');
+      if (!$list.length) {
+        $input.after('<ul class="suggestion-list">' + response + '</ul>');
+        $list = $input.siblings('.suggestion-list');
+      } else {
+        $list.html(response);
+      }
+      decorateSuggestions($list);
+    },
+    error: function(xhr){
+      if (xhr && xhr.statusText === 'abort') return;
+      // optionally console.warn
+    }
+  });
+}
+
+	/* ========= MINI SVGs ========= */
+// ---------- SVG helpers (no DOM dependency) ----------
+// paths ko apne hisaab se set karo
+const ICON_ADD    = '/public/img/addlink.png';     // + left/big (tumhara)
+const ICON_LINKED = '/public/img/likedid.png';  // ✓ left (tumhara)
+
+function svgPlus(){
+  return `<img src="${ICON_ADD}" class="ap-ic" width="18" height="18" alt="Add on Spotify">`;
+}
+function svgLinked(){
+  return `<img src="${ICON_LINKED}" class="ap-ic" width="18" height="18" alt="Spotify linked">`;
+}
+
+/* ===================== NEW HELPERS ===================== */
+
+// right icon ko Spotify link me swap karo
+function setRowSpotifyIcon($li, url){
+  const right = $li.find('.ap-right');
+  if(!right.length) return;
+  $li.data('spotify-url', url).data('spotify-id', (url||'').split('/').pop());
+  right.html(
+    `<a class="ap-mini-spotify" href="${url}" title="Open on Spotify">${svgLinked()}</a>`
+  );
+}
+
+// LI se clean name nikaalo (list me “Add "X" as new artist” jaisa text ho sakta hai)
+function liCleanName($li){
+  let name = $li.data('name') || $li.find('.ap-title').text().trim() || $li.text().trim();
+  return (name||'')
+    .replace(/^➕\s*Add\s*[“"]?/i,'')
+    .replace(/[”"]?\s*as\s*new\s*artist\s*$/i,'')
+    .trim();
+}
+function norm(s){ return (s||'').toString().trim().replace(/\s+/g,' ').toLowerCase(); }
+
+// server se Spotify info hydrate (DB me link hua ho to + ki jagah icon)
+function hydrateSuggestionIcons($ul){
+  if(!$ul || !$ul.length) return;
+
+  const need = [];
+  const seen = new Set();
+
+  $ul.find('li.suggestion-item').each(function(){
+    const $li = $(this);
+    if ($li.data('spotify-url') || $li.data('spotify-id')) return; // already has
+    const nm = liCleanName($li);
+    if (nm && !seen.has(norm(nm))){
+      seen.add(norm(nm));
+      need.push({ name: nm, $li });
+    }
+  });
+
+  if(!need.length) return;
+
+  // per-name lookup (same endpoint jo inputs hydrate karta hai)
+  need.forEach(item => {
+    $.post('<?php echo $this->url("newrelease", array("action"=>"lookupArtistByName")); ?>', { name: item.name })
+      .done(res=>{
+        try{ if(typeof res==='string') res = JSON.parse(res); }catch(_){}
+        if(res && res.exists && res.has_spotify && res.spotify_url){
+          setRowSpotifyIcon(item.$li, res.spotify_url);
+        }
+      });
+  });
+}
+
+// linkSpotify AJAX success ke turant baad open list row ko update kar do
+$(document).ajaxSuccess(function(_e, xhr, settings){
+  try{
+    if(!settings || !settings.url) return;
+    if(settings.url.indexOf('linkSpotifyToArtist') === -1) return;
+
+    // parse POST body (urlencoded)
+    const q = {};
+    (settings.data || '').toString().split('&').forEach(kv=>{
+      const [k,v=''] = kv.split('=');
+      if(k) q[decodeURIComponent(k)] = decodeURIComponent(v.replace(/\+/g,' '));
+    });
+    const spid = q.spotify_id;
+    const name = q.name;
+    if(!spid || !name) return;
+
+    const url = `https://open.spotify.com/artist/${spid}`;
+    $('.suggestion-list .suggestion-item').each(function(){
+      const $li = $(this);
+      if(norm(liCleanName($li)) === norm(name)){
+        setRowSpotifyIcon($li, url);
+      }
+    });
+  }catch(_){}
+});
+
+/* ===================== /NEW HELPERS ===================== */
+
+
+// ---------- Suggestion list decorate (icon on right) ----------
+function decorateSuggestions($ul){
+  if(!$ul || !$ul.length) return;
+
+  const $items = $ul.find('li').addClass('suggestion-item');
+  $items.each(function(){
+    const $li = $(this);
+    if ($li.find('.ap-right').length) return;
+
+    const id   = parseInt($li.data('artist-id')||0,10);
+    const name = $li.data('name') || $li.text().trim();
+    const sid  = $li.data('spotify-id') || '';
+    const surl = $li.data('spotify-url') || (sid ? `https://open.spotify.com/artist/${sid}` : '');
+
+    const right = $('<span class="ap-right" style="margin-left:auto;display:inline-flex;align-items:center"></span>');
+    if (surl){
+      right.append(`<a class="ap-mini-spotify" href="${surl}" title="Open on Spotify">${svgLinked()}</a>`);
+    } else {
+      right.append(
+        `<button type="button" class="ap-btn ap-linker" data-artist-id="${id}" data-artist-name="${$('<div>').text(name).html()}" title="Link Spotify">
+           ${svgPlus()}
+         </button>`
+      );
+    }
+    $li.css({display:'flex', alignItems:'center', gap:'8px'}).append(right);
+  });
+
+  // icons inert inside list
+  $(document)
+    .off('click.suggicon', '.suggestion-list .ap-mini-spotify, .suggestion-list .ap-linker')
+    .on('click.suggicon',  '.suggestion-list .ap-mini-spotify, .suggestion-list .ap-linker', function(e){
+      e.preventDefault(); e.stopPropagation(); return false;
+    });
+
+  // ✅ NEW: DB ke hisaab se rows ko hydrate karo (taaki Spotify icon aa jaye)
+  hydrateSuggestionIcons($ul);
+}
+
+// ---------- Bind events for input + list selection ----------
+/* === Config === */
+const SUG_IDLE_MS = 1500;  // 1500ms ~ 1.5 sec (2 sec chaho to 2000)
+const MIN_CHARS   = 3;     // min chars before we even try
+
+function bindSuggestionEvent() {
+  $('.input-trackArtist')
+    .off('.sugg') // apni hi bindings clean
+    // HIDE while typing + arm idle timer
+    .on('input.sugg', function () {
+      const $input = $(this);
+      const query  = ($input.val() || '');
+      const qTrim  = query.trim();
+      let   $list  = $input.siblings('.suggestion-list');
+
+      // ----- picked-name logic (as-is) -----
+      const pickedName    = ($input.data('picked-name') || '').toString().trim();
+      const sameAsPicked  = pickedName && (qTrim.toLowerCase() === pickedName.toLowerCase());
+      if (!sameAsPicked) {
+        $input.data('picked', false)
+              .removeData('spotify-url')
+              .removeData('artist-id')
+              .removeData('picked-name');
+        $input.parent().find('.ap-inp-ico').remove();
+        $input.css('padding-right','');
+      } else {
+        ensureInputIcon($input, {
+          picked: true,
+          name: pickedName,
+          url:  $input.data('spotify-url') || '',
+          id:   $input.data('artist-id')   || 0
+        });
+      }
+
+      // ---- typing ke dauran list ko hatao ----
+      if ($list && $list.length) $list.remove();
+
+      // ---- previous idle timer cancel ----
+      const tmr = $input.data('idleTmr');
+      if (tmr) { clearTimeout(tmr); $input.removeData('idleTmr'); }
+
+      // ---- previous XHR abort (race-safe) ----
+      const prevXhr = $input.data('sugXhr');
+      if (prevXhr && prevXhr.readyState !== 4) {
+        try { prevXhr.abort(); } catch(e) {}
+      }
+
+      // ---- length gate: chhota hai to kuch mat karo ----
+      if (qTrim.length < MIN_CHARS) return;
+
+      // ---- version bump (stale responses ignore) ----
+      const ver = ($input.data('sugVer') || 0) + 1;
+      $input.data('sugVer', ver);
+
+      // ---- idle arm: user rukne ke ~1.5–2s baad hi fetch ----
+      const newTmr = setTimeout(function(){
+        const xhr = $.ajax({
+          url: '<?php echo $this->url('newrelease',array("action" => "artistSuggestionList"));?>',
+          type: 'POST',
+          data: { query: qTrim },
+          success: function(response) {
+            // ignore stale
+            if (($input.data('sugVer') || 0) !== ver) return;
+
+            let $listNow = $input.siblings('.suggestion-list');
+            if (!$listNow.length) {
+              $input.after('<ul class="suggestion-list"></ul>');
+              $listNow = $input.siblings('.suggestion-list');
+            }
+            $listNow.html(response);
+            decorateSuggestions($listNow);
+          },
+          error: function(x){ if (x && x.statusText === 'abort') return; },
+          complete: function(){ $input.removeData('sugXhr'); }
+        });
+        $input.data('sugXhr', xhr);
+      }, SUG_IDLE_MS);
+
+      $input.data('idleTmr', newTmr);
+    })
+
+    // Focus par AB koi preload nahi (policy: only after idle pause)
+    .on('focus.sugg', function () {
+      const $input = $(this);
+      const $list  = $input.siblings('.suggestion-list');
+      if ($list && $list.length) $list.remove();
+    });
+}
+
+// ---- init ----
+bindSuggestionEvent();
+
+
+// initial icon (edit mode): only if already linked/has id
+$(function(){
+  const $main = $('#f_track_Artist');
+  const initialName = ($main.val()||'').trim();
+  const initialUrl  = $main.data('spotify-url')||'';
+  const initialId   = parseInt($main.data('artist-id')||0,10);
+
+  if(initialName && (initialUrl || initialId)){
+    $main.data('picked', true);
+    ensureInputIcon($main, { picked:true, name:initialName, url:initialUrl, id:initialId });
+  }else{
+    $main.data('picked', false);
+    ensureInputIcon($main, { picked:false });
+  }
+
+  // keep popup outside any overflow parents
+  $('#ap-spot-pop').appendTo('body');
+});
+
+
+
+		function setErrorMsg(field,msg)
+		{
+			$('#'+field).parents('.form-group').find('label').addClass('labelError');
+			$('#'+field).addClass('inputError');
+			$('#'+field).parents('.form-group').find(".form-input-error").text(msg);
+			$('#'+field).parents('.form-group').find(".form-input-error").removeAttr('style');
+			$('#'+field).parents('.form-group').addClass('has-error'); 
+		}
+		function removeErrorMsg()
+		{
+			$('input,select,textarea').parents('.form-group').find('label').removeClass('labelError');
+			$('input,select,textarea').removeClass('inputError');
+			$('input,select,textarea').parents('.form-group').find(".form-input-error").text('');
+			$('input,select,textarea').parents('.form-group').find(".form-input-error").attr('style','display:none;');
+			$('input,select,textarea').parents('.form-group').removeClass('has-error'); 
+		}
+		
+		function removeField(button) {
+			var div = button.parentNode;
+			div.parentNode.remove(div);
+		}
+		
+		
+		function addTrackArtist() {
+		
+			if($('#artist-fields input').length < "<?php echo $user_artist_cnt;?>" || <?php echo $user_artist_cnt;?> == 0)
+			{
+				var newInputGroup = '<div style="margin-top:5px;position: relative;"><input data-tags="true" class="input-large input-trackArtist input-multiple inputString inputBehavior-2 form-control" name="trackArtist[]" type="text" value="" tabindex="3" autocomplete="off"><span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-trackArtist-0"></span><a href="javascript:;" class="addFieldLink removemultifield" data-selector="input-trackArtist"><span class="glyphicon glyphicon-minus-sign" onclick="removeField(this)"></span></a></div>';
+				$('#artist-fields').append(newInputGroup);
+				 bindSuggestionEvent();
+              var $new = $('#artist-fields .input-trackArtist').last();
+    
+			}
+		}
+		function addFieldFeaturing()
+		{
+			
+			var newInputGroup = '<div style="margin-top:5px;position: relative;"><input data-tags="true" class="input-large input-featuring input-multiple inputString inputBehavior-2 form-control" name="featuring[]" type="text" value="" tabindex="3" autocomplete="off"><span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-featuring-0"></span><a href="javascript:;" class="addFieldLink removemultifield" data-selector="input-featuring"><span class="glyphicon glyphicon-minus-sign" onclick="removeField(this)"></span></a></div>';
+			$('#featuring-fields').append(newInputGroup);
+		}
+		function addauthor()
+		{
+			
+			var newInputGroup = '<div style="margin-top:5px;position: relative;"><input data-tags="true" class="input-large input-author input-multiple inputString inputBehavior-2 form-control" name="author[]" type="text" value="" tabindex="3" autocomplete="off"><span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-author-0"></span><a href="javascript:;" class="addFieldLink removemultifield" data-selector="input-author"><span class="glyphicon glyphicon-minus-sign" onclick="removeField(this)"></span></a></div>';
+			$('#author-fields').append(newInputGroup);
+		}
+		function addcomposer()
+		{
+			var newInputGroup = '<div style="margin-top:5px;position: relative;"><input data-tags="true" class="input-large input-composer input-multiple inputString inputBehavior-2 form-control" name="composer[]" type="text" value="" tabindex="3" autocomplete="off"><span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-composer-0"></span><a href="javascript:;" class="addFieldLink removemultifield" data-selector="input-composer"><span class="glyphicon glyphicon-minus-sign" onclick="removeField(this)"></span></a></div>';
+			$('#composer-fields').append(newInputGroup);
+		}
+		function addproduceBy()
+		{
+			var newInputGroup = '<div style="margin-top:5px;position: relative;"><input data-tags="true" class="input-large input-produceBy input-multiple inputString inputBehavior-2 form-control" name="produceBy[]" type="text" value="" tabindex="3" autocomplete="off"><span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-produceBy-0"></span><a href="javascript:;" class="addFieldLink removemultifield" data-selector="input-produceBy"><span class="glyphicon glyphicon-minus-sign" onclick="removeField(this)"></span></a></div>';
+			$('#produceby-fields').append(newInputGroup);
+		}
+		$(document).on('click', '.moveTrackLink', function(e) {
+        e.preventDefault();
+        $(this).popover({
+		
+		
+				html: true,
+				content: function(){
+					var ulElt = $(this).closest("ul.volume");
+				
+					var currentVolume = ulElt.attr("data-volume");
+					var volumes = $("ul.volume");
+					
+					var releaseId = ulElt.attr("data-release");
+					var trackId   = $(this).closest("li.track").attr("id").replace(/track-/, "");
+					
+					// modal body
+					var html = "";
+					
+					html += "<form method='post' style='margin-bottom: 0' class='moveTrackForm' >"
+					
+					html += "<input type='hidden' name='idTrack' value='"+trackId+"' />";
+					html += "<input type='hidden' name='moveFrom' value='"+currentVolume+"' />";
+					
+					html += "<table><tr><td stye='vertical-align: middle;'>Move to :  </td>";
+					html += "<td stye='vertical-align: middle;'><select style='margin-bottom:0px;border-width: 1px;border-style: solid;border-color: rgb(118, 118, 118);' class='input-small' id='moveTo' name='moveTo'>";
+					
+					$.each(volumes, function(i, v){
+						
+						var volumeNb = $(this).attr("data-volume");
+						
+						if(volumeNb != currentVolume )
+						{
+							html += "<option value='"+volumeNb+"'>Volume "+volumeNb+"</option>";
+						}
+					});
+					
+					html += "</select></td>";
+					html += "<td stye='vertical-align: middle;'>&nbsp;&nbsp;<a onclick='$(\".moveTrackLink\").popover(\"hide\"); return false;' href='javascript:;'><span class='glyphicon glyphicon-remove-sign'></span></a>&nbsp;&nbsp;<a onclick='submitFormWithAjax($(this).parents(\".moveTrackForm\")); return false;' href='javascript:;'><span class='glyphicon glyphicon-ok-sign'></span></a>";
+					html += "&nbsp;</td></tr></table>"; 
+					
+					html += "</form>";
+					return html;
+				}
+			}).popover('show');
+		 });
+		 
+		  function submitFormWithAjax(form) {
+					var $form = form;
+                    var objMasterData = $form.serializeObject();
+                    
+                    $.extend(objMasterData, { MASTER_KEY_ID: iActiveID});
+                    objMasterData = JSON.stringify(objMasterData);
+                    var objFormData =
+                    {
+                        FORM_DATA: objMasterData
+                    };
+					
+					
+                    var objMyPost = AJAX_Post("<?php echo $this->url('newrelease', array('action'=>'moveTrack'));?>", objFormData);
+                    if (objMyPost.ERR_NO === 0) {
+                        if (objMyPost.DATA.DBStatus === 'OK') {
+                            
+							window.location.href=window.location.href;
+                        }
+                    }
+                    else {
+                        mySmallAlert('Error...!', 'There was an error', 0);
+                    }
+			}
+			
+			
+		$(".volume").sortable({
+			//containment: '.bloc-volume:hover',
+			containment: "parent", 
+			update: function(event, ui){
+				var releaseId = $(this).attr("data-release");
+				var tracks = $(this).find("li.track");
+				var trackOrder = {};
+				
+				
+				$.each(tracks, function(i,v){
+					var trackId = $(this).attr("id").replace(/track_/, "");
+					trackOrder[trackId] = (i+1);
+				});
+				
+				$.get("<?php echo $this->url('newrelease', array('action'=>'updateTrackOrder'));?>", 
+				{ idRelease: releaseId, trackOrder: JSON.stringify(trackOrder)}, function(data){
+					
+					data = $.parseJSON(data);
+					
+					$.each(trackOrder, function(id, order){
+						$("li#track_"+id).find("span.trackNumber").text(order);
+					});
+					
+				});
+							
+			}
+	}); 
+		
+$(document).on('change', '#audio_upload', function () {
+  console.log('1');
+
+  // ✅ file & name define karo
+  if (!this.files || !this.files[0]) return;
+  var file = this.files[0];
+  var audio_file_name = file.name;
+
+  // (optional preview)
+  try {
+    var reader = new FileReader();
+    reader.onload = imageIsLoadedLogo;
+    reader.readAsDataURL(file);
+  } catch (e) {}
+
+  // ✅ UI: clean slate (append ki jagah text, taaki dup na ho)
+  $('#tableContainerBody tr').show();
+  $('.upload_status').addClass('hide');
+  $('#audio_file_check').text('Processing...');
+  $('#audio_file_info').text(audio_file_name);     // ← text use karo
+  $('#audio_file_name').val(audio_file_name);
+
+  // ✅ FormData
+  var $form = $('#fileupload'); // make sure: enctype="multipart/form-data"
+  var oMyForm = new FormData($form.get(0));
+  oMyForm.append('audio_upload', file);
+  oMyForm.append('track_id', '<?php echo $_GET['edit'];?>');
+
+  // ✅ Agar pehle se koi file save hai to server ko batao (taaki wo delete/replace kar sake)
+  var prevFile = $('#audio_hidden').val();
+  if (prevFile) oMyForm.append('old_file', prevFile);
+
+  // UI: progress/disable
+  $('#customfileupload').removeClass('hide');
+  $('#btnSave').addClass('hide');
+  $('.modal-footer button').prop('disabled', true);
+  $('.modal-header button').hide();
+
+  var ajax = new XMLHttpRequest();
+
+  ajax.upload.addEventListener('progress', function (event) {
+    if (event.lengthComputable) {
+      var p = Math.round((event.loaded / event.total) * 100);
+      var $bar = $('#customfileupload .progress-bar');
+      $bar.css('width', p + '%').attr('aria-valuenow', p).text(p + '%');
+    }
+  }, false);
+
+  ajax.addEventListener('load', function (event) {
+    // UI reset
+    $('#customfileupload').addClass('hide');
+    $('#btnSave').removeClass('hide');
+    $('.upload_status').removeClass('hide');
+    $('.delete_audio').removeClass('hide'); // delete button dikhao
+    $('.modal-footer button').prop('disabled', false);
+    $('.modal-header button').show();
+    $('#audio_upload').val('');
+    $('#customfileupload .progress-bar').css('width', '0%').text('0%');
+
+    var result = {};
+    try { result = JSON.parse(event.target.responseText || '{}'); } catch(e){}
+
+    if (result.status === 'OK') {
+      // ✅ server se finalized filename & format info set karo
+      $('#audio_hidden').val(result.file_name || '');
+      $('#audio_format_info').val(result.format_info || '');
+      // info ko replace karo (append mat karo)
+      $('#audio_file_info').text((audio_file_name || '') + (result.format_info ? ' · ' + result.format_info : ''));
+      $('#audio_file_check').html('<div class="glyphicon glyphicon-ok"></div>');
+    } else if (result.status === 'WRONG_FORMAT') {
+      $('#audio_hidden').val('');
+      $('#audio_format_info').val('');
+      $('#audio_file_info').text(result.format_info || 'Unsupported');
+      $('#audio_file_check').html('<div class="glyphicon glyphicon-remove"></div><div style="color:#d9534f" class="error">Wrong Format</div>');
+    } else {
+      $('#audio_hidden').val('');
+      $('#audio_format_info').val('');
+      $('#audio_file_info').text(result.format_info || 'Upload failed');
+      $('#audio_file_check').html('<div class="glyphicon glyphicon-remove"></div><div style="color:#d9534f" class="error">Upload Error</div>');
+      if (result.msg) mySmallAlert('Error...!', result.msg, 0);
+    }
+  }, false);
+
+  ajax.addEventListener('error', function () {
+    alert('There was an error uploading the file.');
+    $('.modal-footer button').prop('disabled', false);
+    $('.modal-header button').show();
+  }, false);
+
+  ajax.open('POST', "<?php echo $this->url('newrelease', array('action'=>'uploadaudio'));?>");
+  ajax.send(oMyForm);
+});
+
+ function performClick(node) {
+  var evt = document.createEvent("MouseEvents");
+  evt.initEvent("click", true, false);
+  node.dispatchEvent(evt);
+ }
+ function progressHandler(event) {
+	 console.log('load');
+  _("loaded_n_total").innerHTML = "Uploaded " + event.loaded + " bytes of " + event.total;
+  var percent = (event.loaded / event.total) * 100;
+  _("progressBar").value = Math.round(percent);
+  _("status").innerHTML = Math.round(percent) + "% uploaded... please wait";
+}
+
+function completeHandler(event) {
+  _("status").innerHTML = event.target.responseText;
+  _("progressBar").value = 0; //wil clear progress bar after successful upload
+}
+
+ function imageIsLoadedLogo(e) {
+  $('#imgCompanyLogo').attr('src', e.target.result);
+ }
+		
+		$(document).on('click', '.editTrackLink', function() {
+			var track_id = $(this).attr('track_id');
+			
+			clearForm("easyEntryEditForm");
+			cPopulateEditEntries(track_id, "<?php echo $this->url('newrelease', array('action'=>'getTrack'));?>");
+			
+			$("#easyEntryAssetsModal").modal({backdrop: 'static', keyboard: false});
+			
+			<?php
+				if($_GET['showError'] == '1')
+				{
+					?>
+					setTimeout(function(){
+						$("#easyEntryDataSaveButton").trigger('click');
+					},1000)
+					<?php
+				}
+			?>
+			
+			
+		});
+		$(document).on('click', '.delete_audio', function() {
+			$("#audio_hidden").val('');
+			$("#audio_format_info").val('');
+			
+			$('#tableContainerBody tr').hide();
+			$('#audio_file_check').html('');
+		});
+$(document).on('click', '.deleteTrackLink', function() {
+    var track_name = $(this).parents('.track').find('.trackName').html();
+    var track_id = $(this).attr('track_id');
+    $('#delete_track_name').html(track_name);
+    $("#deleteTrackModal").modal("show");
+    $('#delete_track_id').val(track_id);
+});
+
+
+$(document).on('click', '.deleteTrack', function() {
+    var objFormData={
+        track_id  : $('#delete_track_id').val()
+    }
+    var objMyPost = AJAX_Post("<?php echo $this->url('newrelease', array('action'=>'deleteTrack'));?>", objFormData);
+    if (objMyPost.ERR_NO === 0) {
+        if (objMyPost.DATA.DBStatus === 'OK') {
+            window.location.href = window.location.href ;
+        }
+    }
+    else {
+        mySmallAlert('Error...!', 'There was an error', 0);
+    }
+});
+
+	
+		$('input[name=generate_isrc]').change(function(){
+			if($('#generate_isrc-0').prop('checked') == true)
+			{
+				$('.isrc_div').addClass('hide');
+			}
+			else
+			{
+				$('.isrc_div').removeClass('hide');
+			}
+		})
+		$(document).on('click', '.addNewTrackLink', function() {
+		
+			
+			var volume = $(this).attr('volume');
+			var objFormData={
+				master_id : "<?php echo $_GET['edit'];?>",
+				volume : volume
+			}
+			var objMyPost = AJAX_Post("<?php echo $this->url('newrelease', array('action'=>'addTrack'));?>", objFormData);
+			if (objMyPost.ERR_NO === 0) {
+				if (objMyPost.DATA.DBStatus === 'OK') {
+					
+					
+					$("#easyEntryAssetsModal").modal({backdrop: 'static', keyboard: false});
+					clearForm('easyEntryEditForm');
+					
+					$('#track_id').val(objMyPost.DATA.track_id);
+					
+					$('#release-tracks-volume-'+volume).append(objMyPost.DATA.add_new_track_html);
+					if(objMyPost.DATA.add_new_volume == true)
+					{
+						$('.bloc-volume').append(objMyPost.DATA.add_new_volume_html);
+						
+					}
+				}
+			}
+			else {
+				mySmallAlert('Error...!', 'There was an error', 0);
+			}
+			
+			
+			var release_artist= "<?php echo $this->INFO['releaseArtist'] ?>";
+			var featuring= "<?php echo $this->INFO['featuring'] ?>";
+				
+			$('#songName').val("<?php echo $this->INFO['title']; ?>");
+			$('#version').val("<?php echo $this->INFO['version']; ?>");
+			$('#pLine').val("<?php echo $this->INFO['pLine']; ?>");
+			$('#productionYear').select2('val',"<?php echo $this->INFO['productionYear']; ?>");
+			
+			release_artist = release_artist.split(',');
+			featuring = featuring.split(',');
+			
+						 for(var i=0;i<release_artist.length;i++)
+						 {
+							 if(i == 0)
+							 {
+								 $('#f_track_artist').val(release_artist[i]);
+							 }
+							 else
+							 {
+								 var newInputGroup = '<div style="margin-top:5px;position: relative;"><input data-tags="true" class="input-large input-trackArtist input-multiple inputString inputBehavior-2 form-control" name="trackArtist[]" type="text" value="'+release_artist[i]+'" tabindex="3" autocomplete="off"><span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-trackArtist-0"></span><a href="javascript:;" class="addFieldLink removemultifield" data-selector="input-trackArtist"><span class="glyphicon glyphicon-minus-sign" onclick="removeField(this)"></span></a></div>';
+								$('#artist-fields').append(newInputGroup);
+							 }
+						 }
+					 
+					 
+						 for(var i=0;i<featuring.length;i++)
+						 {
+							 if(i == 0)
+							 {
+								 $('#f_featuring').val(featuring[i]);
+							 }
+							 else
+							 {
+								 var newInputGroup = '<div style="margin-top:5px;position: relative;"><input data-tags="true" class="input-large input-featuring input-multiple inputString inputBehavior-2 form-control" name="featuring[]" type="text" value="'+featuring[i]+'" tabindex="3" autocomplete="off"><span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-featuring-0"></span><a href="javascript:;" class="addFieldLink removemultifield" data-selector="input-featuring"><span class="glyphicon glyphicon-minus-sign" onclick="removeField(this)"></span></a></div>';
+								$('#featuring-fields').append(newInputGroup);
+							 }
+						 }
+					 
+					
+		});
+		
+		
+    $(document).ready(function () {
+		acl_PRINT=0;
+        $("#easyEntryDataSaveButton").click(function (e) {
+            e.stopPropagation();
+            $("#easyEntryEditForm").submit();
+        });
+		
+		$('.fileinput-button').click(function(){
+			$('#audio_upload').trigger('click');
+		});
+					
+				
+				
+		<?php
+			if($_GET['edit'] > 0 && $_GET['track_id'] > 0)
+			{
+				?>
+					$('.editTrackLink[track_id="<?php echo $_GET['track_id']?>"]').trigger('click');
+					
+					
+				<?php
+			}
+		?>
+		
+		$('.btn-tracks-close,.close').click(function(){
+			let url = new URL(window.location.href);
+
+			// Remove the 'showError' parameter
+			url.searchParams.delete('showError');
+			url.searchParams.delete('track_id');
+
+			// Redirect to the new URL without the 'showError' parameter
+			window.location.href = url.toString();
+		})
+        $("#easyEntryEditForm").validate(
+        {
+                submitHandler: function (form) {
+					removeErrorMsg();
+                    var is_required=false;
+					
+                    if ($("#songName").val() == '') {
+                      setErrorMsg('songName','This field is required');
+					  is_required=true;
+                    }
+
+// ✅ SAFE Track Price check (drop-in replacement)
+(function () {
+  var $tp = $('#trackPrice');
+  var hasField = $tp.length > 0;
+  var val = hasField ? String($tp.val() ?? '').trim() : '';
+
+  // invalid when: field missing, empty, or placeholder "0" / label text
+  var invalid = !hasField || val === '' || val === '0' || val === '- Please select -';
+
+  if (invalid) {
+    if (typeof setErrorMsg === 'function') setErrorMsg('trackPrice','This field is required');
+    var s2 = hasField && $tp.data('select2');
+    if (s2 && s2.$container) s2.$container.addClass('s2-error');
+    is_required = true;
+  } else {
+    if (typeof clearFieldError === 'function') clearFieldError('trackPrice');
+    var s2ok = $tp.data('select2');
+    if (s2ok && s2ok.$container) s2ok.$container.removeClass('s2-error');
+  }
+})();
+
+                    <?php
+						if($_GET['showError'] == '1')
+						{
+					?>
+							if ($("#trackType-0").prop('checked') == false && $("#trackType-1").prop('checked') == false && $("#trackType-2").prop('checked') == false && $("#trackType-3").prop('checked') == false) {
+							  setErrorMsg('trackType-0','This field is required');
+							  is_required=true;
+							}
+							if($('#f_track_artist').val() == '')
+							{
+							  setErrorMsg('f_track_artist','This field is required');
+							  is_required=true;
+							}
+							if($('#f_author').val() == '')
+							{
+							  setErrorMsg('f_author','This field is required');
+							  is_required=true;
+							}
+							else
+							{
+								var inputValue = $('#f_author').val();
+                
+								// Check if the value contains a space
+								if (inputValue.includes(' ')) {
+									
+								} else {
+									setErrorMsg('f_author','Digital Music Stores require full first and last (family) name');
+									 is_required=true;
+								}
+							}								
+							if($('#f_composer').val() == '')
+							{
+							  setErrorMsg('f_composer','This field is required');
+							  is_required=true;
+							}
+							else
+							{
+								var inputValue = $('#f_composer').val();
+                
+								// Check if the value contains a space
+								if (inputValue.includes(' ')) {
+									
+								} else {
+									setErrorMsg('f_composer','Digital Music Stores require full first and last (family) name');
+									 is_required=true;
+								}
+							}	
+							if($('#pLine').val() == '')
+							{
+							  setErrorMsg('pLine','This field is required');
+							  is_required=true;
+							}
+							if($('#productionYear').val() == '0')
+							{
+							  setErrorMsg('productionYear','This field is required');
+							  is_required=true;
+							}
+                  
+
+                  
+                  
+							if($('#generate_isrc-1').prop('checked') == true)
+							{
+							    if($('#isrc').val() == '')
+								{
+								  setErrorMsg('isrc','This field is required');
+								  is_required=true;
+								}
+								else if($('#isrc').length > 15)
+								{
+								  setErrorMsg('isrc','Maximum length should be 15 char');
+								  is_required=true;
+								}
+							}
+							if ($("#explicitContent-0").prop('checked') == false && $("#explicitContent-1").prop('checked') == false && $("#explicitContent-2").prop('checked') == false ) {
+							  setErrorMsg('explicitContent-0','This field is required');
+							  is_required=true;
+							}
+							if($('#metadataLanguage').val() == '0')
+							{
+							  setErrorMsg('metadataLanguage','This field is required');
+							  is_required=true;
+							}
+							if($('#idLyricsSelect').val() == '0')
+							{
+							  setErrorMsg('idLyricsSelect','This field is required');
+							  is_required=true;
+							}
+							if($('#audio_hidden').val() == '')
+							{
+							  setErrorMsg('label-easyEntryEditForm-lyrics-0','This field is required');
+							  is_required=true;
+							}
+					<?php
+						}
+					?>
+					
+					if(is_required)
+						return;
+					
+                    var $form = $('#easyEntryEditForm');
+                    var objMasterData = $form.serializeObject();
+                    
+                    $.extend(objMasterData, { MASTER_KEY_ID: iActiveID});
+                    objMasterData = JSON.stringify(objMasterData);
+                    var objFormData =
+                    {
+                        pAction    : strActionMode,
+                        FORM_DATA: objMasterData
+                    };
+					$('.nf-loader').removeClass('hide');
+					$('#easyEntryDataSaveButton,.btn-tracks-close').addClass('hide');
+					
+					
+					
+                    var objMyPost = AJAX_Post("<?php echo $this->url('newrelease', array('action'=>'saveTrack'));?>", objFormData);
+                    if (objMyPost.ERR_NO === 0) {
+						$('.nf-loader').addClass('hide');
+						$('#easyEntryDataSaveButton,.btn-tracks-close').removeClass('hide');
+						
+                        if (objMyPost.DATA.DBStatus === 'OK') {
+                            strActionMode = "EDIT";
+                           // myAlert('Save Record', 'Data Saved successfully', 1);
+                            
+							
+							<?php
+							if($_GET['showError'] == '1')
+							{
+							?>
+								let url = new URL(window.location.href);
+
+								// Remove the 'showError' parameter
+								url.searchParams.delete('showError');
+								url.searchParams.delete('track_id');
+
+								// Redirect to the new URL without the 'showError' parameter
+								window.location.href = url.toString();
+								
+							<?php 	
+							} 
+							else
+							{
+							?>
+								window.location.href=window.location.href;
+							<?php
+							} 
+							?>
+                        }
+						if (objMyPost.DATA.DBStatus === 'EXIST') {
+							mySmallAlert('Duplicate Record', 'Duplicate ISRC', 0);
+							return;
+						}
+                    }
+                    else {
+                        mySmallAlert('Error...!', 'There was an error', 0);
+                    }
+                }
+            });
+    });
+    
+   function cPopulateEditEntries(iID,strURL) {
+       
+        var arrForms=[]; // Keep Form Values
+        var strElementType; // Keep element type
+        var objFormData =
+        {
+            pAction: 'GETREC',
+            KEY_ID : iID
+        };
+        var objMyPost = AJAX_Post(strURL, objFormData);
+		
+        if (objMyPost.ERR_NO === 0) {
+            if (objMyPost.DATA.DBStatus === 'OK') {
+              
+                strActionMode = 'EDIT';
+                //populate master Records
+                arrForms=objMyPost.DATA.data[0];
+                $.each( arrForms, function( key, value ) { 
+				
+					 if(key == 'audio_file')
+					 {
+						 if(value != '')
+						 {
+							$('#tableContainerBody tr').show();
+							$("#audio_hidden").val(value);
+							$("#audio_format_info").val(arrForms['audio_format_info']);
+							$('#audio_file_info').html(arrForms['audio_file_name']+''+arrForms['audio_format_info']);
+							$('.upload_status,.delete_audio').removeClass('hide');
+							$('#audio_file_check').html('<div class="glyphicon glyphicon-ok"></div>');
+						 }
+						 else
+						 {
+							$("#audio_hidden").val('');
+							$("#audio_format_info").val('');
+							$('#tableContainerBody tr').hide();
+							$('#audio_file_check').html('');
+						 }
+					 }
+					 if(key == 'trackArtist')
+					 {
+						 for(var i=0;i<value.length;i++)
+						 {
+							 if(i == 0)
+							 {
+								 $('#f_track_artist').val(value[i]);
+							 }
+							 else
+							 {
+								 var newInputGroup = '<div style="margin-top:5px;position: relative;"><input data-tags="true" class="input-large input-trackArtist input-multiple inputString inputBehavior-2 form-control" name="trackArtist[]" type="text" value="'+value[i]+'" tabindex="3" autocomplete="off"><span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-trackArtist-0"></span><a href="javascript:;" class="addFieldLink removemultifield" data-selector="input-trackArtist"><span class="glyphicon glyphicon-minus-sign" onclick="removeField(this)"></span></a></div>';
+								$('#artist-fields').append(newInputGroup);
+							 }
+						 }
+					 }
+					 if(key == 'featuring')
+					 {
+						for(var i=0;i<value.length;i++)
+						 {
+							 if(i == 0)
+							 {
+								 $('#f_featuring').val(value[i]);
+							 }
+							 else
+							 {
+								 var newInputGroup = '<div style="margin-top:5px;position: relative;"><input data-tags="true" class="input-large input-featuring input-multiple inputString inputBehavior-2 form-control" name="featuring[]" type="text" value="'+value[i]+'" tabindex="3" autocomplete="off"><span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-featuring-0"></span><a href="javascript:;" class="addFieldLink removemultifield" data-selector="input-featuring"><span class="glyphicon glyphicon-minus-sign" onclick="removeField(this)"></span></a></div>';
+								$('#featuring-fields').append(newInputGroup);
+							 }
+						 }
+					 }
+					 if(key == 'author')
+					 {
+						for(var i=0;i<value.length;i++)
+						 {
+							 if(i == 0)
+							 {
+								 $('#f_author').val(value[i]);
+							 }
+							 else
+							 {
+								 var newInputGroup = '<div style="margin-top:5px;position: relative;"><input data-tags="true" class="input-large input-author input-multiple inputString inputBehavior-2 form-control" name="author[]" type="text" value="'+value[i]+'" tabindex="3" autocomplete="off"><span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-author-0"></span><a href="javascript:;" class="addFieldLink removemultifield" data-selector="input-author"><span class="glyphicon glyphicon-minus-sign" onclick="removeField(this)"></span></a></div>';
+								 $('#author-fields').append(newInputGroup);
+							 }
+						 }
+					 }
+					 if(key == 'composer')
+					 {
+						for(var i=0;i<value.length;i++)
+						 {
+							 if(i == 0)
+							 {
+								 $('#f_composer').val(value[i]);
+							 }
+							 else
+							 {
+								var newInputGroup = '<div style="margin-top:5px;position: relative;"><input data-tags="true" class="input-large input-composer input-multiple inputString inputBehavior-2 form-control" name="composer[]" type="text" value="'+value[i]+'" tabindex="3" autocomplete="off"><span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-composer-0"></span><a href="javascript:;" class="addFieldLink removemultifield" data-selector="input-composer"><span class="glyphicon glyphicon-minus-sign" onclick="removeField(this)"></span></a></div>';
+								$('#composer-fields').append(newInputGroup);
+							 }
+						 }
+					 }
+					 if(key == 'produceBy')
+					 {
+						for(var i=0;i<value.length;i++)
+						 {
+							 if(i == 0)
+							 {
+								 $('#f_produceby').val(value[i]);
+							 }
+							 else
+							 {
+								var newInputGroup = '<div style="margin-top:5px;position: relative;"><input data-tags="true" class="input-large input-produceBy input-multiple inputString inputBehavior-2 form-control" name="produceBy[]" type="text" value="'+value[i]+'" tabindex="3" autocomplete="off"><span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-produceBy-0"></span><a href="javascript:;" class="addFieldLink removemultifield" data-selector="input-produceBy"><span class="glyphicon glyphicon-minus-sign" onclick="removeField(this)"></span></a></div>';
+								$('#produceby-fields').append(newInputGroup);
+							 }
+						 }
+					 }
+					 if(key == 'trackType')
+					 {
+						if(value == 'original track')
+							$('#trackType-0').prop('checked',true);
+						if(value == 'karaoke')
+							$('#trackType-1').prop('checked',true);
+						if(value == 'medley')
+							$('#trackType-2').prop('checked',true);
+						if(value == 'cover')
+							$('#trackType-3').prop('checked',true);
+						if(value == 'cover by cover band')
+							$('#trackType-4').prop('checked',true);
+					 }
+					 if(key == 'idInstrumental')
+					 {
+						if(value == '-1')
+							$('#idInstrumental-0').prop('checked',true);
+						if(value == '0')
+							$('#idInstrumental-1').prop('checked',true);
+					 }
+					 if(key == 'generate_isrc')
+					 {
+						if(value == '1')
+						{
+							$('#generate_isrc-0').prop('checked',true);
+							$('.isrc_div').addClass('hide');
+						}
+						if(value == '0')
+						{
+							$('#generate_isrc-1').prop('checked',true);
+							$('.isrc_div').removeClass('hide');
+						}
+					 }
+					 if(key == 'explicitContent')
+					 {
+						if(value == '1')
+							$('#explicitContent-0').prop('checked',true);
+						if(value == '0')
+							$('#explicitContent-1').prop('checked',true);
+						if(value == '2')
+							$('#explicitContent-2').prop('checked',true);
+					 }
+                    if ($("#"+key).length > 0) {  // check if exists or not
+                        strElementType= $("#"+key).attr("type");
+						
+					
+                        if(strElementType == "hidden") {  // if textbox
+                            $("#" + key).val(value);
+                            $("#spanRefNo").html(value);
+                        }
+                        else  if(strElementType == "text") {  // if textbox
+                            $("#" + key).val(value);
+                        }
+						else  if(strElementType == "number") {  // if textbox
+                            $("#" + key).val(value);
+                        }
+						else  if(strElementType == "password") {  // if textbox
+                            $("#" + key).val(value);
+                        }
+                        else if($("#"+key).attr("name") == "descriptions") {  // if textarea
+                            $("textarea#"+key).text(value);
+                        }
+                        else if(strElementType == "select") {  // if Select Box	
+							
+							$("#" + key).select2("val",value).trigger('change');
+                        }
+                        else if(strElementType == "multiselect") {  // if Select Box with multi select
+                            var arrValues = $.parseJSON(stripslashes(value));
+                            $("#" + key).select2("val", arrValues);
+                        }
+                    }
+                });
+
+				
+            }
+        }
+        else {
+            mySmallAlert('Error...!', 'There was an error', 0);
+        }
+    }
+
+
+// ✅ If user deletes file, remove from uploadedFiles set
+$(document).on('click', '.delete_audio', function () {
+    let row = $(this).closest('tr');
+    let fileName = row.find('#audio_file_info').text().trim();
+    uploadedFiles.delete(fileName);
+    row.remove();
+});
+
+	document.getElementById('audio_upload').addEventListener('change', function() {
+    if (this.files.length > 0) {
+        document.getElementById('tableContainer').style.display = 'table';
+    }
+});
+  const dropzone = document.querySelector('.believe-dropzone');
+const fileInput = document.getElementById('audio_upload');
+
+// Prevent default
+['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+  dropzone.addEventListener(eventName, e => e.preventDefault(), false);
+  dropzone.addEventListener(eventName, e => e.stopPropagation(), false);
+});
+
+// Highlight
+dropzone.addEventListener('dragover', () => {
+  dropzone.classList.add('dragover');
+});
+dropzone.addEventListener('dragleave', () => {
+  dropzone.classList.remove('dragover');
+});
+
+// Drop handler
+dropzone.addEventListener('drop', e => {
+  dropzone.classList.remove('dragover');
+
+  const files = e.dataTransfer.files;
+  if (files.length > 0) {
+    // Assign files to hidden input
+    fileInput.files = files;
+
+    // Show upload table
+    document.getElementById('tableContainer').style.display = 'table';
+
+    // Manually trigger your original change event
+    fileInput.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+});
+
+// Browse click
+document.querySelector('.dz-browse').addEventListener('click', () => {
+  fileInput.click();
+});
+
+</script>
+  
+  <script>
+// ========= TRACK PAGE: hydrate saved artist fields with Spotify icons =========
+
+// Saved track-artist names ke liye Spotify icon hydrate karega
+function hydrateSpotifyIconsTrack(){
+  // sab track-artist inputs (pehla + dynamically added)
+  $('#artist-fields input.input-trackArtist[name="trackArtist[]"], #f_track_artist').each(function () {
+    const $inp = $(this);
+    const name = ($inp.val() || '').trim();
+    if (!name) return;
+
+    // already hydrated with same name? skip
+    const pickedName = ($inp.data('picked-name') || '').toString().trim().toLowerCase();
+    if (pickedName && pickedName === name.toLowerCase() && $inp.parent().find('.ap-inp-ico').length) {
+      return;
+    }
+
+    $.post('<?php echo $this->url("newrelease", array("action"=>"lookupArtistByName")); ?>', { name: name })
+      .done(function (res) {
+        try { if (typeof res === 'string') res = JSON.parse(res); } catch(_) {}
+
+        if (!res || !res.exists) return;
+
+        // common: mark as picked so input-change par icon na hate
+        $inp
+          .data('artist-id', res.id || 0)
+          .data('picked', true)
+          .data('picked-name', name);
+
+        if (res.has_spotify && res.spotify_url) {
+          $inp.data('spotify-url', res.spotify_url);
+          // show linked icon
+          ensureInputIcon($inp, {
+            picked: true, name: name, url: res.spotify_url, id: res.id || 0
+          });
+        } else {
+          $inp.removeData('spotify-url');
+          // show + button (linker)
+          ensureInputIcon($inp, {
+            picked: true, name: name, url: '', id: res.id || 0
+          });
+        }
+      });
+  });
+}
+
+/* ---- Triggers ---- */
+// modal open hone par (Assets metadata / track form)
+$(document).on('shown.bs.modal', '#easyEntryAssetsModal', function(){
+  hydrateSpotifyIconsTrack();
+});
+
+// naya artist field add hote hi (plus icon se)
+$(document).on('click', '.addFieldLink[data-selector="input-trackArtist"]', function(){
+  // DOM add ke turant baad hydrate
+  setTimeout(hydrateSpotifyIconsTrack, 0);
+});
+
+// user ne value edit kari — blur par try hydrate
+$(document).on('blur', '#artist-fields input.input-trackArtist[name="trackArtist[]"]', function(){
+  hydrateSpotifyIconsTrack();
+});
+</script>
+
+  
+  
+  <!-- ========= TRACK PAGE: Spotify linker (JS) ========= -->
+<script>
+(function($){
+  // fallback SVGs (agar pehle se defined nahi)
+  if (typeof svgLinked!=='function'){
+    window.svgLinked = function(){
+      return `
+        <svg class="ap-ic linked" viewBox="0 0 24 24" aria-hidden="true" width="16" height="16">
+          <path d="M12 1.5A10.5 10.5 0 1 0 22.5 12 10.5 10.5 0 0 0 12 1.5Zm4.55 14.91a.88.88 0 0 1-1.21.29c-3.32-2.03-7.51-2.49-12.3-1.38a.88.88 0 0 1-.39-1.72c5.21-1.19 9.85-.65 13.51 1.57a.88.88 0 0 1 .39 1.24Zm1.73-3.02a1.1 1.1 0 0 1-1.51.36c-3.8-2.32-9.6-3-14.11-1.67a1.1 1.1 0 1 1-.62-2.11c5.1-1.5 11.45-.74 15.73 1.82a1.1 1.1 0 0 1 .51 1.6Zm.14-3.12a1.33 1.33 0 0 1-1.83.44c-4.35-2.66-10.96-2.9-14.92-1.68a1.33 1.33 0 0 1-.81-2.54c4.59-1.46 12.02-1.18 17.1 1.87a1.33 1.33 0 0 1 .46 1.91Z"/>
+        </svg>`;
+    }
+  }
+  if (typeof svgPlus!=='function'){
+    window.svgPlus = function(){
+      return `
+        <svg class="ap-ic plus" viewBox="0 0 24 24" aria-hidden="true" width="16" height="16">
+          <circle cx="12" cy="12" r="10" fill="#1DB954"></circle>
+          <text x="12" y="16" text-anchor="middle" fill="#0b3d21" font-size="14" font-weight="700">+</text>
+        </svg>`;
+    }
+  }
+
+
+  const esc = s => $('<div>').text(s||'').html();
+  const pop = () => $('#ap-spot-pop');
+  let anchorInput = null;
+
+  /* --- input icon: sirf selection ke baad --- */
+  function ensureInputIcon($input, data){
+    if(!$input?.length) return;
+    if(!$input.parent().hasClass('ap-inp-wrap')) $input.wrap('<div class="ap-inp-wrap"></div>');
+    const $wrap = $input.parent();
+    $wrap.find('.ap-inp-ico').remove();
+
+    const show = !!(data?.url || data?.picked);
+    if(!show) return;
+
+    const url = data?.url || '';
+    const id  = data?.id || 0;
+    const nm  = esc(data?.name || $input.val() || '');
+    const $ico = $('<span class="ap-inp-ico"></span>');
+    if(url){
+      $ico.html(`<a href="${url}" target="_blank" title="Open on Spotify">${svgLinked()}</a>`);
+    }else{
+      $ico.html(`<button type="button" class="ap-btn ap-open" data-artist-id="${id}" data-artist-name="${nm}" title="Link Spotify">${svgPlus()}</button>`);
+    }
+    $wrap.append($ico);
+  }
+  window.ensureInputIcon = window.ensureInputIcon || ensureInputIcon;
+  window.anchorInput = null;
+
+  /* --- popup position (anchor ke right align) --- */
+  function positionPop($anchor){
+    const $p = pop(); if(!$p.length || !$anchor?.length) return;
+    const off = $anchor.offset();
+    const aW  = $anchor.outerWidth();
+    const pW  = $p.outerWidth() || 520;
+    const top = off.top + $anchor.outerHeight() + 6;
+
+    let left = off.left + aW - pW;
+    const vw = $(window).width(), sx = $(window).scrollLeft();
+    left = Math.max(10 + sx, Math.min(left, sx + vw - pW - 10));
+
+    $p.css({ top, left });
+  }
+
+  /* --- popup open + auto search --- */
+  function openSpotifyDropdown(name, $anchor){
+    const $p = pop(); if(!$p.length) return;
+    window.anchorInput = $anchor && $anchor[0];
+    anchorInput = $anchor?.length ? $anchor : $('#f_track_artist');
+
+    const qName = (name || anchorInput.val() || '').trim();
+    $('#ap-pop-name').text(qName || 'Select artist on Spotify');
+    $('#ap-pop-results').html('<li>Searching…</li>');
+
+    $p.removeClass('hidden');
+    positionPop(anchorInput);
+    doSearch(qName);
+  }
+  window.openSpotifyPopup = (name)=>openSpotifyDropdown(name, $('#f_track_artist'));
+
+  $(window).on('resize scroll', ()=>{ if(!pop().hasClass('hidden') && anchorInput) positionPop(anchorInput); });
+  $(document).off('click','.ap-pop-close').on('click','.ap-pop-close', ()=> pop().addClass('hidden'));
+
+  /* --- Spotify search --- */
+  function doSearch(q){
+    const query = (q || (anchorInput?.val()||'')).trim();
+    if(!query){ $('#ap-pop-results').html('<li>Type an artist name first</li>'); return; }
+
+    $.getJSON('<?php echo $this->url("newrelease", ["action" => "searchArtistSpotify"]); ?>', { q: query })
+      .done(function(res){
+        const items = res?.items || [];
+        if(!items.length){ $('#ap-pop-results').html('<li>No results</li>'); return; }
+
+        const lis = items.map(it => `
+          <li>
+            <label class="ap-row-lab">
+              <input type="radio" name="apPick" value="${it.id}">
+              <img src="${it.image||''}" alt="">
+              <div style="flex:1">
+                <div><strong>${esc(it.name)}</strong></div>
+                <div style="font-size:12px;color:#6b7280">
+                  pop: ${it.pop??'-'} • followers: ${it.followers??'-'}
+                </div>
+              </div>
+            </label>
+          </li>
+        `).join('');
+        $('#ap-pop-results').html(lis);
+      })
+      .fail(function(xhr){
+        let msg = 'Error contacting Spotify.';
+        try{
+          const j = JSON.parse(xhr.responseText||'{}');
+          if (j.error) msg = j.error;
+        }catch(_){}
+        $('#ap-pop-results').html(`<li style="color:#b91c1c">${msg}</li>`);
+      });
+  }
+
+  /* --- Save link (selected radio required) --- */
+  $(document).off('click','#ap-link-save').on('click','#ap-link-save', function(){
+    const spid = $('input[name="apPick"]:checked').val();
+    if(!spid){ alert('Please select an artist.'); return; }
+
+    if (typeof linkSpotify === 'function') {
+      linkSpotify(spid);
+    } else {
+      // frontend fallback
+      const url = `https://open.spotify.com/artist/${spid}`;
+      const $inp = (anchorInput && $(anchorInput)) || $('#f_track_artist');
+      ensureInputIcon($inp, { picked:true, name:$inp.val(), url, id:0 });
+    }
+    pop().addClass('hidden');
+  });
+
+  /* --- input icon (+) → popup open --- */
+  $(document).off('click','.ap-inp-ico .ap-open').on('click','.ap-inp-ico .ap-open', function(e){
+    e.preventDefault(); e.stopPropagation();
+    const $inp = $(this).closest('.ap-inp-wrap').find('.input-trackArtist');
+    openSpotifyDropdown(($inp.val()||''), $inp);
+  });
+
+  /* --- suggestion list behaviour (track page selectors) --- */
+  $(document)
+    .off('click.suggicon', '.suggestion-list .ap-mini-spotify, .suggestion-list .ap-linker')
+    .on('click.suggicon',  '.suggestion-list .ap-mini-spotify, .suggestion-list .ap-linker', e=>{
+      // list ke icons inert rahenge
+      e.preventDefault(); e.stopPropagation();
+    });
+
+  $(document)
+    .off('click.apPick', '.suggestion-item')
+    .on('click.apPick', '.suggestion-item', function (e) {
+      if ($(e.target).closest('a,.ap-linker').length) return;
+
+      const $li    = $(this);
+      const $list  = $li.closest('.suggestion-list');
+      const $input = $list.siblings('.input-trackArtist');
+
+      let name = $li.data('name') || $li.find('.ap-title').text().trim() || $li.text().trim();
+      name = name.replace(/^➕\s*Add\s*[“"]?/i,'').replace(/[”"]?\s*as\s*new\s*artist\s*$/i,'').trim();
+
+      const artistId = parseInt($li.data('artist-id') || 0, 10);
+      const sid      = $li.data('spotify-id') || '';
+      const surl     = $li.data('spotify-url') || (sid ? `https://open.spotify.com/artist/${sid}` : '');
+
+      $input.val(name)
+            .data('picked', true)
+            .data('picked-name', name)
+            .data('artist-id', artistId)
+            .data('spotify-url', surl);
+
+      ensureInputIcon($input, { picked:true, name, url:surl, id:artistId });
+      $('.suggestion-list').remove();
+      $input.trigger('change');
+
+      if (sid) {
+        window.anchorInput = $input[0];
+        linkSpotify(sid);
+      }
+    });
+
+})(jQuery);
+
+/* --- server link + input icon refresh --- */
+window.linkSpotify = function (spid) {
+  var $inp = (window.anchorInput && $(window.anchorInput)) || $('#f_track_artist');
+  var name     = ($inp.val() || '').trim();
+  var artistId = parseInt($inp.data('artist-id') || 0, 10) || 0;
+
+  $.ajax({
+    url: '<?php echo $this->url("newrelease", ["action" => "linkSpotifyToArtist"]); ?>',
+    type: 'POST',
+    dataType: 'json',
+    data: { artist_id: artistId, name: name, spotify_id: spid }
+  })
+  .done(function (res) {
+    const url = 'https://open.spotify.com/artist/' + spid;
+    const newId = (res && (res.artist_id || (res.artist && res.artist.id))) || null;
+
+    $inp.data('spotify-url', url);
+    if (newId) $inp.data('artist-id', parseInt(newId,10));
+
+    ensureInputIcon($inp, { picked:true, name:name, url:url, id: ($inp.data('artist-id')||0) });
+    if (typeof mySmallAlert==='function') mySmallAlert('Linked', 'Spotify artist linked successfully', 1);
+  })
+  .fail(function (xhr) {
+    var msg = 'Link failed';
+    try { msg = (xhr.responseJSON && (xhr.responseJSON.error || xhr.responseJSON.message)) || msg; } catch(_){}
+    if (typeof myAlert === 'function') myAlert('Error', msg, 0); else alert(msg);
+  });
+};
+</script>
+
+
+

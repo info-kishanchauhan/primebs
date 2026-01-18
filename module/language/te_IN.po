@@ -1,0 +1,152 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2022-09-17 16:03+0800\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: te_IN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.13\n"
+"X-Poedit-Basepath: .\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Dashboard"
+msgstr "డాష్‌బోర్డ్"
+
+msgid "Financial"
+msgstr "ఆర్థిక"
+
+msgid "Activity"
+msgstr "కార్యకలాపం"
+
+msgid "Academic Year Plan"
+msgstr "అకడమిక్ ఇయర్ ప్లాన్"
+
+msgid "Staff"
+msgstr "సిబ్బంది"
+
+msgid "Enquiry"
+msgstr "ఎంక్వైరీ"
+
+msgid "Students"
+msgstr "విద్యార్థులు"
+
+msgid "Attendance"
+msgstr "హాజరు"
+
+msgid "Online Class"
+msgstr "ఆన్ లైన్ క్లాసు"
+
+msgid "Timetable"
+msgstr "కాలసూచిక"
+
+msgid "Announcement"
+msgstr "ప్రకటన"
+
+msgid "Events"
+msgstr "ఈవెంట్‌లు"
+
+msgid "Gallery"
+msgstr "గ్యాలరీ"
+
+msgid "Home Work"
+msgstr "హోమ్ వర్క్"
+
+msgid "Exam"
+msgstr "పరీక్ష"
+
+msgid "Payroll"
+msgstr "పేరోల్"
+
+msgid "Accounts"
+msgstr "ఖాతాలు"
+
+msgid "Inventory"
+msgstr "జాబితా"
+
+msgid "Transport"
+msgstr "రవాణా"
+
+msgid "Report"
+msgstr "నివేదిక"
+
+msgid "Cloud Storage"
+msgstr "క్లౌడ్ స్టోరేజీ"
+
+msgid "Complaint"
+msgstr "ఫిర్యాదు"
+
+msgid "Certificate"
+msgstr "ధృవ పత్రం"
+
+msgid "Billing"
+msgstr "బిల్లింగ్"
+
+msgid "Support"
+msgstr "సపోర్ట్"
+
+msgid "Settings"
+msgstr "సెట్టింగ్‌లు"
+
+msgid "Online Resource"
+msgstr "ఆన్ లైన్ వనరు"
+
+msgid "File Manager"
+msgstr "అభికర్త"
+
+msgid "Conference Room"
+msgstr "సమావేశ మందిరం"
+
+msgid "Exam Timetable"
+msgstr "పరీక్ష టైంటేబుల్"
+
+msgid "Exam Score"
+msgstr "స్కోర్"
+
+msgid "Tracking"
+msgstr "ట్రాకింగ్"
+
+msgid "Primary Lesson Plan"
+msgstr "ప్రాథమిక పాఠ్య ప్రణాళిక"
+
+msgid "Lesson Plan"
+msgstr "పాఠం"
+
+msgid "Leave Request"
+msgstr "లీవ్ రిక్వెస్ట్"
+
+msgid "Fees"
+msgstr "ఫీజులు"
+
+msgid "Vehicle Payment"
+msgstr "వేహికల్ పేమెంట్"
+
+msgid "Holiday"
+msgstr "శెలవు"
+
+msgid "Subjects"
+msgstr "సబ్జెక్టులు"
+
+msgid "Classes Handling"
+msgstr "క్లాసుల హ్యాండ్లింగ్"
+
+msgid "School Finance"
+msgstr "స్కూల్ ఫైనాన్స్"
+
+msgid "Student Attendance"
+msgstr "విద్యార్థుల హాజరు"
+
+msgid "Staff Attendance"
+msgstr "సిబ్బంది హాజరు"
+
+msgid "System Log"
+msgstr "వ్యవస్థ"
+
+msgid "Notice Board"
+msgstr "నోటీస్ బోర్డు"
+
+msgid "Recent Students"
+msgstr "ఇటీవలి విద్యార్థులు"

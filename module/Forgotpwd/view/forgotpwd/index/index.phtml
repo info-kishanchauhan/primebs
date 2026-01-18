@@ -1,0 +1,106 @@
+<div class="flex justify-center">
+        <div class="max-w-sm mx-6">
+            <div class="mx-16 mt-12">
+				<a href="<?php echo $this->url("login",array('action' => 'index'))?>">
+					<img alt="Company Logo" id="logo" class="" src="public/img/backstage-logo.png">
+				</a>
+            </div>
+            <div id="api" data-name="SelfAsserted" class="mt-10">
+			
+			 <div class="text-green-500" id="success" style="display: none;"><b>Reset Password link sent to your email. Please check your email.</b><br></div>
+			 
+    <div class="intro text-center">Forgot your password?</div>
+	
+	
+	
+	<div id="infoStep2" class="mt-4 h-28 text-sm hidden" style="display: none;">
+                            <div class="text-gray-700">You will get an email with a verification code if we found your username.</div>
+                            <div class="text-gray-700"><b>For security reasons, the verification code in your mail will only work for 30 minutes.</b></div>
+                        </div><div id="infoStep1" class="mt-4 text-sm hidden" style="display: block;">
+                            <div class="text-gray-700">Fill in your username.</div>
+                            <div class="text-gray-700">You will get an email with instructions to reset your password. <br> Be sure to check your spam folder if you can’t find our email.</div>
+                        </div>
+    <form id="attributeVerification" action="JavaScript:void(0);">
+      <div id="passwordEntryMismatch" class="error pageLevel" style="display: none;" aria-hidden="true">Les champs de saisie du mot de passe ne correspondent pas. Veuillez entrer le même mot de passe dans les deux champs, puis réessayez.</div>
+      <div id="requiredFieldMissing" class="error pageLevel" style="display: none;" aria-hidden="true">Un champ obligatoire est manquant. Veuillez remplir tous les champs obligatoires, puis réessayez.</div>
+      <div id="fieldIncorrect" class="error pageLevel" style="display: none;" aria-hidden="true">Un ou plusieurs champs sont remplis incorrectement. Vérifiez vos entrées et réessayez.</div>
+      <div id="claimVerificationServerError" class="error pageLevel" style="display: none;" aria-hidden="true"></div>
+      <div id="attributeList" class="attr">
+        <ul class="mt-8">
+          <li class="VerificationControl"><div class="attrEntry"><label id="emailVerificationControl_label" for="emailVerificationControl"></label><div class="error itemLevel" role="alert"></div><div class="verificationControlContent" id="emailVerificationControl"><div class="verificationInfoText text-sm text-blue-500 mt-4 hidden"><div id="emailVerificationControl_info_message" aria-hidden="true" role="alert" aria-label="La verification est necessaire. Cliquez sur le bouton Envoyer." style="display: none;">La verification est necessaire. Cliquez sur le bouton Envoyer.</div></div><div class="verificationSuccessText text-sm text-green-500 mt-4 hidden"><div id="emailVerificationControl_success_message" aria-hidden="true" role="alert" aria-label="" style="display: none;"></div></div><div class="verificationErrorText error hidden"><div id="emailVerificationControl_error_message" aria-hidden="true" role="alert" aria-label="" style="display: none;"></div></div><ul class="mt-8"><li class="TextBox email" aria-hidden="false" style="display: inline;"><div class="attrEntry relative mb-6"><label id="email_label" for="email" class="hidden cursor-text text-gray-dark absolute left-11 top-2 text-xs" style="pointer-events: none;">Username</label><div class="error itemLevel hidden" role="alert"></div><div id="inputwrapper" class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="mr-2" width="24" height="24" fill="none" viewBox="0 0 24 24"><path fill="#C4C4C4" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path></svg><input id="email" class="textInput border-b-2 w-full px-4 cursor-text text-sm pt-4 pb-4 border-gray-border text-gray-dark" type="text" placeholder="Username" aria-label="Login" aria-required="true" maxlength="64"></div><div id="errorInput" class="h-4 mt-1 ml-8"><div class="hidden text-xs text-red-700" style="display: none;"></div></div><a class="helpLink tiny hidden" href="javascript:void(0)" data-help="Nom de l'utilisateur ( id à modifier)" style="display: none;">Qu’est-ce que ceci&nbsp;?</a></div></li><li class="TextBox VerificationCode" aria-hidden="true" style="display: none;"><div class="attrEntry relative mb-6" style="display: none;"><label id="VerificationCode_label" for="VerificationCode" class="hidden cursor-text text-gray-dark absolute left-11 top-2 text-xs" style="pointer-events: none;">Verification code</label><div class="error itemLevel hidden" role="alert"></div><div id="inputwrapper" class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="mr-2" width="24" height="24" fill="none" viewBox="0 0 24 24"><path fill="#C4C4C4" d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"></path></svg><input id="VerificationCode" class="textInput border-b-2 w-full px-4 cursor-text text-sm pt-4 pb-4 border-gray-border text-gray-dark" type="text" placeholder="Verification code" aria-label="Verification code" aria-required="true" disabled=""></div><div id="errorInput" class="h-4 mt-1 ml-8"><div class="hidden text-xs text-red-700" style="display: none;"></div></div><a class="helpLink tiny hidden" href="javascript:void(0)" data-help="Enter votre code de vérification" style="display: none;">Qu’est-ce que ceci&nbsp;?</a></div></li></ul><div class="working" style="display: none;" aria-hidden="true"></div><div class="buttons flex mt-10 justify-center"><button class="sendCode" id="emailVerificationControl_but_send_code" type="button" aria-label="Send" aria-hidden="false" disabled="" style="display: inline;">Send</button><button class="verifyCode" id="emailVerificationControl_but_verify_code" type="button" aria-label="Next" aria-hidden="true" disabled="" style="display: none;">Next</button><button class="sendNewCode" id="emailVerificationControl_but_send_new_code" type="button" aria-label="Envoyer un nouveau code" aria-hidden="true" disabled="" style="display: none;">Envoyer un nouveau code</button><button class="changeClaims" id="emailVerificationControl_but_change_claims" type="button" aria-label="Modifier le username" aria-hidden="true" disabled="" style="display: none;">Modifier le username</button></div></div><a class="helpLink tiny" href="javascript:void(0)" style="display: none;">Qu’est-ce que ceci&nbsp;?</a></div></li>
+        </ul>
+      </div>
+      <div class="buttons flex mt-10 justify-center">
+        <a id="cancel" href="" class="mb-8 bg-white border uppercase text-sm border-blue-500 text-blue-500 py-2 px-10 rounded-full" style="display: none;">Cancel</a><button id="continue" type="submit" form="attributeVerification" disabled="" aria-label="Continuer" style="display: none;">Continuer</button><button id="cancel" aria-label="Annuler" formnovalidate="" disabled="" style="display: none;">Annuler</button>
+      </div>
+
+      <div class="verifying-modal hidden" style="display: none;">
+        <div id="verifying_blurb"></div>
+      </div>
+    </form><div id="postStep1" class="mt-6 text-xs" style="display: none;">
+                    <div class="text-gray-700 font-bold">Didn’t receive your verification code?</div>
+                    <div class="text-gray-700">Maybe we didnt found an account matching your username and email adress. Please <a id="emailVerificationControl_but_send_new_code" class="sendNewCode text-blue-link underline cursor-pointer" onclick="fakeClick()">request a new code</a>.</div>
+                </div>
+                <div id="postStep1" class="mt-8 mb-10 text-xs" style="display: none;">
+                    <div class="text-gray-700 font-bold">Have issue connecting to your Backstage?</div>
+                    <div class="text-gray-700">Contact your <a class="sendNewCode text-blue-link underline cursor-pointer" href="" target="_blank">Local Support Team</a>.</div>
+                </div>
+  </div>
+        </div>
+    </div>
+	
+	<script>
+	 $(document).ready(function () {
+		
+			// Events
+			$('input[type="text"],input[type="password"]').focus(function() {
+				$(this).closest('.attrEntry').find('label').removeClass("text-gray-dark text-red-700 hidden").addClass("text-blue-500");
+				$(this).attr("placeholder", "");
+				$(this).removeClass("pt-4 pb-4 border-gray-border border-red-700").addClass("pt-6 pb-2 border-blue-500");
+			});
+			$('input[type="text"],input[type="password"]').focusout(function() {
+				$(this).closest('.attrEntry').find('label').removeClass("text-blue-500").addClass("text-gray-dark");
+				$(this).removeClass("border-blue-500").addClass("border-gray-border");
+				if($(this).val() == '')
+				{
+					$(this).closest('.attrEntry').find('label').addClass("text-gray-dark text-red-700 hidden").removeClass("text-blue-500");
+					$(this).attr("placeholder", $(this).closest('.attrEntry').find('label').text());
+					$(this).addClass("pt-4 pb-4 border-gray-border border-red-700").removeClass("pt-6 pb-2 border-blue-500");
+					$('#emailVerificationControl_but_send_code').removeClass('-enabled');
+					$('#emailVerificationControl_but_send_code').attr('disabled',true);
+				}
+			});
+			$('input[type="text"]').on('keyup input change', function() {
+				if($(this).val() != '')
+				{
+					$('#emailVerificationControl_but_send_code').addClass('-enabled');
+					$('#emailVerificationControl_but_send_code').removeAttr('disabled');
+				}
+				else
+				{
+					$('#emailVerificationControl_but_send_code').removeClass('-enabled');
+					$('#emailVerificationControl_but_send_code').attr('disabled',true);
+				}
+			
+			});
+	});	
+	
+	$('#emailVerificationControl_but_send_code').click(function(){
+			var objFormData =
+			{
+				email : $('#email').val()
+			};
+			var objMyPost = AJAX_Post("<?php echo $this->url('forgotpwd', array('action'=>'resetpwdlink'));?>", objFormData);
+			if (objMyPost.ERR_NO === 0) {
+				if (objMyPost.DATA.DBStatus === 'OK') {
+					
+					$('#success').show();
+					$('#email').val('');
+				}
+				
+				else {
+					mySmallAlert('Error...!', 'There was an error', 0);
+				}
+			}
+	});
+	</script>

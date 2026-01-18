@@ -1,0 +1,1138 @@
+<?php $this->headTitle('B2B Agreements | Prime Backstage'); ?>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  /* ===== Toasts ===== */
+#toast-host{
+  position: fixed; right: 18px; bottom: 18px;
+  display: flex; flex-direction: column; gap: 10px;
+  z-index: 2147483000; pointer-events: none;
+}
+.toast{
+  min-width: 280px; max-width: 380px;
+  background:#0b1220; color:#e5e7eb; border:1px solid #1f2937;
+  border-radius:12px; box-shadow:0 12px 30px rgba(2,6,23,.25);
+  padding:12px 14px; display:flex; gap:10px; align-items:flex-start;
+  pointer-events: auto; opacity:0; transform: translateY(8px) scale(.98);
+  transition: transform .18s ease, opacity .18s ease;
+  font: 600 13px/1.45 Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+.toast.show{ opacity:1; transform: translateY(0) scale(1); }
+.toast .ico{ width:18px; height:18px; margin-top:2px; flex:0 0 auto; opacity:.9 }
+.toast .msg{ flex:1; }
+.toast .close{ border:0; background:transparent; color:#9ca3af; cursor:pointer; font-weight:800; }
+.toast .bar{ height:3px; border-radius:999px; margin-top:8px; background:rgba(255,255,255,.12); overflow:hidden }
+.toast .bar > span{ display:block; height:100%; width:100%; transform-origin:left; }
+
+.toast.success{ background:#052e1b; border-color:#14532d; color:#dcfce7; }
+.toast.success .bar > span{ background:#22c55e; }
+.toast.error{ background:#2a1412; border-color:#7f1d1d; color:#fde2e2; }
+.toast.error .bar > span{ background:#ef4444; }
+.toast.info{ background:#111827; border-color:#374151; color:#e5e7eb; }
+.toast.info .bar > span{ background:#60a5fa; }
+
+  /* make sure modal is always on top of left nav */
+.modal{ z-index: 9999 !important; }
+.modal .modal-card{ z-index: 10000 !important; } /* card over backdrop */
+
+/* optional: sidebar shouldn't exceed backdrop */
+.sidebar{ z-index: 10; position: relative; } /* keep it below 9999 */
+
+  /* ==== Empty state (No agreements) ==== */
+.empty-wrap{
+  padding: 40px 18px;
+}
+.empty{
+  display:grid; place-items:center; text-align:center;
+  background:#fff; border:1px dashed #cbd5e1; border-radius:16px;
+  padding: 56px 24px; /* bigger box */
+  color:#475569;
+}
+.empty svg{ width:120px; height:120px; opacity:.85; margin-bottom:16px }
+.empty h3{ margin:6px 0 8px; font-weight:800; color:#0f172a; font-size:18px }
+.empty p{ margin:0 0 16px; color:#64748b; font-weight:600; font-size:13px }
+.empty .btn{ padding:10px 14px; border-radius:12px }
+
+/* ==== Confirm Modal (custom) ==== */
+.confirm .modal-card{ width:min(480px,92%); }
+.confirm .modal-body{ display:block; padding:18px }
+.confirm-title{ font-weight:800; font-size:16px }
+.confirm-text{ margin-top:8px; color:#475569; line-height:1.55 }
+.btn.danger{ background:#fee2e2; border-color:#fecaca; color:#991b1b; }
+.btn.danger.primary{ background:#ef4444; color:#fff; border-color:#ef4444; }
+
+  .status.terminated{
+  background:#f3f4f6;      /* light gray */
+  border-color:#cbd5e1;
+  color:#334155;           /* slate */
+}
+   /* ===== Notice bar (above hero) ===== */
+.notice-bar{ 
+  font-family:var(--font); 
+}
+.notice-bar .nb-wrap{
+  display:flex; align-items:flex-start; gap:10px;
+  padding:15px 12px;
+  border:1px solid var(--line);
+  background:#0b1220; color:#e5e7eb;
+  box-shadow:0 4px 14px rgba(15,23,42,.06);
+  border-radius:3px; /* same as cards */
+}
+/* Color variants (set via data-type="info|warn|ok") */
+.notice-bar[data-type="info"] .nb-wrap{
+  background:linear-gradient(180deg, #404040, #3b3b3b);
+}
+.notice-bar[data-type="warn"] .nb-wrap{
+  background:#2a1412; color:#fce7e7; border-color:#7f1d1d;
+}
+.notice-bar[data-type="ok"] .nb-wrap{
+  background:#0f1f14; color:#dcfce7; border-color:#14532d;
+}
+/* Icon, text, close */
+.nb-ico{ 
+  flex:0 0 auto; width:18px; height:18px; 
+  margin-top:2px; opacity:.9; 
+}
+.nb-text{
+  font:600 12.5px/1.55 var(--font); 
+  letter-spacing:.2px;
+}
+.nb-text b{ color:#fff; font-weight:800; }
+.nb-close{
+  margin-left:auto; 
+  background:transparent; border:0; 
+  color:#cbd5e1; font-weight:700;
+  line-height:1; font-size:16px; 
+  cursor:pointer; 
+  padding:2px 6px; border-radius:4px;
+  transition:background .18s ease, color .18s ease, transform .18s ease;
+}
+.nb-close:hover{ background:rgba(255,255,255,.06); color:#fff; }
+.nb-close:active{ transform:scale(.96); }
+  :root{ --ink:#0f172a; --ink-2:#334155; --muted:#64748b; --line:#e2e8f0; --bg:#f6f7fb;
+    --card:#ffffff; --primary:#6c57d4; --accent:#ff6a1a; --pill:#eef2ff; --pill-ink:#4f46e5;
+    --shadow:0 6px 24px rgba(2,6,23,.06); --radius:14px; }
+  *{box-sizing:border-box} body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);} a{text-decoration:none;color:inherit}
+
+  .content{flex:1;padding:24px}
+  .topbar{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;gap:12px;}
+  .tabs{display:flex;gap:8px;align-items:center;}
+  .tab{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:12px;color:var(--ink-2);font-weight:600;border:1px solid var(--line);background:#fff;cursor:pointer;user-select:none}
+  .tab.active{background:#f8fafc}.tab .dot{width:8px;height:8px;border-radius:50%;background:#cbd5e1;}
+  .spacer{flex:1}.avatar{display:flex;align-items:center;gap:8px;padding:4px 8px;border:1px solid var(--line);border-radius:999px}
+  .avatar span{font-weight:600}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);}
+  .card-head{display:flex;align-items:center;justify-content:space-between;padding:18px;border-bottom:1px solid var(--line);}
+  .card-title{font-size:20px;font-weight:700}.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 12px;font-weight:600;cursor:pointer}
+  .btn.primary{    background: linear-gradient(to right, #792b97, #5b34c8);color:#fff}
+  .btn[disabled]{opacity:.6;pointer-events:none}
+
+  .filters{display:flex;gap:8px;flex-wrap:wrap;padding:12px 18px}
+  .input,.select,.dropdown{height:38px;border:1px solid var(--line);border-radius:999px;padding:0 12px;background:#fff;display:flex;align-items:center;gap:8px;color:var(--ink-2)}
+  .input{background:#f8fafc;border-color:#e5e7eb}.input input{border:0;outline:0;height:100%;font-family:inherit;width:260px;background:transparent}
+  .select select{border:0;background:transparent;outline:0;font-family:inherit}
+  .dropdown{position:relative;cursor:pointer}.dropdown > .menu{position:absolute;top:110%;left:0;background:#fff;border:1px solid var(--line);border-radius:12px;
+    box-shadow:var(--shadow);padding:10px;display:none;min-width:240px;z-index:20}.dropdown.open > .menu{display:block}
+  .menu .row{display:flex;align-items:center;gap:8px;padding:6px 4px;font-size:13px;color:var(--ink-2)}
+
+  .table-wrap{padding:0 18px 14px 18px; position:relative; overflow:visible}
+  table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--line);border-radius:12px;overflow:visible}
+  thead th{background:#fbfdff;text-align:left;font-size:12px;color:#64748b;font-weight:700;padding:12px;border-bottom:1px solid var(--line);white-space:nowrap}
+  tbody td{padding:14px 12px;border-bottom:1px solid #f3f4f6;vertical-align:middle;font-size:13px;color:#0f172a; position:relative; overflow:visible}
+  tbody tr:hover{background:#fafafa}
+  .name{font-weight:800;color:#0f172a}.sub{display:block;color:#94a3b8;font-weight:600;font-size:12px;margin-top:2px}
+  .pill{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:var(--pill);color:var(--pill-ink);font-weight:700;font-size:12px;border:1px solid #e0e7ff}
+  .chip{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;border:1px solid #e5e7eb;font-size:12px;font-weight:600;color:#475569;background:#fff;margin-right:6px}
+  .doc{display:inline-flex;align-items:center;gap:8px;font-weight:600;color:#334155;cursor:pointer}
+
+  .tfoot{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;color:#64748b;font-size:12px;border-top:1px solid var(--line)}
+  .pager{display:flex;gap:6px;align-items:center}.pager .p{width:28px;height:28px;border:1px solid var(--line);border-radius:8px;display:grid;place-items:center;cursor:pointer;background:#fff}
+
+  .badge-expiring{background:#fff7ed;border-color:#fed7aa;color:#9a3412}.col-expiry .sub{margin-top:6px}
+
+  .menu-dot{position:relative}
+  .menu-dot .menu{position:absolute;top:120%;right:0;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:8px;display:none;min-width:180px;z-index:100}
+  .menu-dot.open .menu{display:block}
+  .menu a.action{display:flex;gap:8px;align-items:center;padding:8px;border-radius:8px;color:#334155}
+  .menu a.action:hover{background:#f8fafc}
+
+  .status{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;font-weight:700;font-size:12px;border:1px solid #e5e7eb;background:#fff;color:#475569}
+  .status.pending{background:#fff7ed;border-color:#fed7aa;color:#9a3412}
+  .status.active{background:#ecfdf5;border-color:#a7f3d0;color:#065f46}
+  .status.rejected{background:#fef2f2;border-color:#fecaca;color:#991b1b}
+  .status.verify{background:#eff6ff;border-color:#bfdbfe;color:#1e40af}
+
+  .modal{position:fixed;inset:0;background:rgba(17,24,39,.45);display:none;align-items:center;justify-content:center;z-index:50}
+  .modal.open{display:flex}
+  .modal-card{background:#fff;border-radius:3px;border:1px solid var(--line);box-shadow:var(--shadow);width:min(720px,92%);overflow:hidden}
+  .modal-head{padding:14px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+  .modal-body{padding:18px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .field{display:grid;gap:6px}.field label{font-size:12px;color:#64748b;font-weight:600}
+  .field input, .field select{height:38px;border:1px solid var(--line);border-radius:10px;padding:0 10px}
+  .field input[type="file"]{padding:6px 10px;height:auto}
+  .modal-foot{padding:12px 18px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end}
+
+  @media (max-width:1024px){ .content{padding:16px} .table-wrap{overflow:auto} table{min-width:1200px} .modal-body{grid-template-columns:1fr} }
+</style>
+
+
+
+<main class="content">
+  <div class="topbar">
+    <div class="tabs">
+      <div class="tab active" data-tab="overview"><div class="dot"></div><span>Overview</span></div>
+      <div class="tab" data-tab="agreements"><div class="dot"></div><span>Agreements</span></div>
+      <div class="tab" data-tab="events"><div class="dot"></div><span>Events</span></div>
+      <div class="tab" data-tab="reports"><div class="dot"></div><span>Reports</span></div>
+      <div class="tab" data-tab="companies"><div class="dot"></div><span>Companies</span></div>
+    </div>
+    <div class="spacer"></div>
+    <div class="toolbar">
+      <div class="avatar">
+        <div style="width:28px;height:28px;border-radius:999px;background:linear-gradient(180deg,#c7d2fe,#a78bfa);display:grid;place-items:center;font-weight:700;">P</div>
+        <span>Legal Team</span>
+      </div>
+    </div>
+  </div>
+<!-- ===== Top Notice (above hero) ===== -->
+<div class="notice-bar" id="releaseNotice" role="status" aria-live="polite" data-type="info">
+  <div class="nb-wrap">
+    <svg class="nb-ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M12 2a10 10 0 1 0 .001 20.001A10 10 0 0 0 12 2Zm0 7.25a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5Zm1.25 8.25h-2.5v-7h2.5v7Z"/>
+    </svg>
+    <div class="nb-text">
+  <b>Note:</b> You can upload your B2B agreement here for any new label, artist, or company.  
+  The Prime Digital Arena team will review and decide whether your agreement is valid.  
+  Please note that having a B2B agreement is mandatory for every user.
+</div>
+
+    <button class="nb-close" type="button" aria-label="Dismiss">×</button>
+  </div>
+</div>
+    
+  <div class="card" id="agreementsCard">
+    <div class="card-head">
+      <div class="card-title">Agreements</div>
+      <div class="actions">
+        <button class="btn" id="exportCsvBtn">Export All Data</button>
+        <button class="btn primary" id="addAgreementBtn">+ Add Agreement</button>
+      </div>
+    </div>
+
+    <div class="filters">
+      <div class="input">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 21l-4.35-4.35" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><circle cx="11" cy="11" r="7" stroke="#94a3b8" stroke-width="2"/></svg>
+        <input id="searchBox" type="text" placeholder="Search Label Name" required>
+      </div>
+      <div class="select">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M8 7h8M5 12h14M8 17h8" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/></svg>
+        <select id="datePreset" required>
+          <option value="all">All dates</option>
+          <option value="last7">Last 7 days</option>
+          <option value="last30">Last 30 days</option>
+          <option value="thisQ">This quarter</option>
+        </select>
+      </div>
+      <div class="dropdown" id="dealFilter">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M8 7h8M5 12h14M8 17h8" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/></svg>
+        <span>SERVICES</span>
+        <div class="menu">
+          <div class="row"><input type="checkbox" data-deal="Distribution" checked required> Distribution</div>
+          <div class="row"><input type="checkbox" data-deal="Licensing" checked required> Licensing</div>
+          <div class="row"><input type="checkbox" data-deal="B2B Partner" checked required> B2B Partner</div>
+          <div class="row"><input type="checkbox" data-deal="OA / Label Service" checked required> OA / Label Service</div>
+        </div>
+      </div>
+      <div class="select">
+        <span style="display:flex;align-items:center;gap:8px">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 6l-8 4 8 4 8-4-8-4zM4 14l8 4 8-4" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/></svg>
+          <select id="userTypeFilter" required>
+            <option value="">All user types</option>
+            <option>Labels</option><option>Artists</option><option>Companies</option>
+          </select>
+        </span>
+      </div>
+    </div>
+    
+
+    <div class="table-wrap">
+      <table id="agreementsTable">
+        <thead>
+          <tr>
+            <th style="width:42px;"><input type="checkbox" id="selectAll" required></th>
+            <th data-sort="label" style="cursor:pointer">LABEL NAME</th>
+            <th data-sort="date" class="col-date" style="cursor:pointer">DATE CREATED</th>
+            <th data-sort="expiry" class="col-expiry" style="cursor:pointer">DATE EXPIRY</th>
+            <th data-sort="usertype" class="col-usertype" style="cursor:pointer">USER TYPE</th>
+            <th class="col-rights" data-sort="rights" style="cursor:default">PUBLISHING RIGHTS</th>
+            <th class="col-services" data-sort="services" style="cursor:default">ADD ON</th>
+            <th class="col-deal" data-sort="deal" style="cursor:pointer">SERVICES</th>
+            <th class="col-revshare" data-sort="revshare" style="cursor:pointer">REVENUE SHARE</th>
+            <th class="col-status" data-sort="status" style="cursor:pointer">STATUS</th>
+            <th class="col-document">AGREEMENT</th>
+            <th style="width:50px;"></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="tfoot">
+      <div id="showingText">Showing 0 of 0 agreements</div>
+      <div class="pager" id="pager"></div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span>Go to page</span>
+        <div class="p" id="gotoInput" contenteditable="true" style="min-width:36px;text-align:center;outline:none">1</div>
+        <button class="btn" id="gotoBtn">Go</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Add/Edit Modal -->
+<div class="modal" id="addAgreementModal" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="addAgmtTitle">
+    <div class="modal-head">
+      <div id="addAgmtTitle" style="font-weight:700">Add B2B Agreement</div>
+      <button class="btn" id="closeAddModal" aria-label="Close">x</button>
+    </div>
+    <div class="modal-body">
+      <div class="field"><label>Label Name</label><input id="agmtLabel" placeholder="e.g., Zeeshan Records" required></div>
+      <div class="field"><label>User Type</label>
+        <select id="agmtUserType" required><option>Label</option><option>Artist</option><option>Companies</option></select>
+      </div>
+      <div class="field"><label>Publishing Rights</label><input id="agmtRights" placeholder="e.g., Yes, Not Now" required/></div>
+      <div class="field"><label>Add on</label><input id="agmtServices" placeholder="e.g., Distribution, Marketing, Video" required/></div>
+      <div class="field"><label>Services</label>
+        <select id="agmtDeal" required>
+          <option>Distribution</option><option>Licensing</option><option>B2B Partner</option><option>Artist / Label Service</option>
+        </select>
+      </div>
+      <div class="field"><label>Revenue Share (%)</label><input id="agmtRevShare" type="number" min="0" max="100" placeholder="e.g., 80" required></div>
+      <div class="field"><label>Agreement (PDF)</label><input id="agmtFile" type="file" accept="application/pdf" required></div>
+      <div class="field"><label>Created On</label><input id="agmtDate" type="date" required></div>
+      <div class="field"><label>Expiry Date</label><input id="agmtExpiry" type="date" required></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" id="cancelAdd">Cancel</button>
+      <button class="btn primary" id="saveAdd">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Modal -->
+<div class="modal confirm" id="confirmModal" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+    <div class="modal-head">
+      <div id="confirmTitle" class="confirm-title">Confirm</div>
+      <button class="btn" id="confirmClose" aria-label="Close">x</button>
+    </div>
+    <div class="modal-body">
+      <div id="confirmText" class="confirm-text">Are you sure?</div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" id="confirmCancel">Cancel</button>
+      <button class="btn primary" id="confirmOk">OK</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+(function(){
+  // PHP → JS
+  window.IS_ADMIN = <?= (isset($_SESSION['STAFFUSER']) && $_SESSION['STAFFUSER']=='1') ? 'true' : 'false' ?>;
+  const BASE_DOC_URL = 'https://www.primebackstage.in/public/uploads/agreements/';
+
+  const state = { rows:[], filtered:[], rowsPerPage:8, page:1, sortKey:'date', sortDir:'desc',
+                search:'', deals:new Set(['Distribution','Licensing','B2B Partner','Artist / Label Service']),
+
+                userType:'', activeTab:'overview', editingId:null, intent:'edit' };
+  let currentDocPath = '';
+
+  const $  = (s,r=document)=>r.querySelector(s);
+  const $$ = (s,r=document)=>Array.from(r.querySelectorAll(s));
+  const toDate = s=> s ? new Date(s+'T00:00:00') : null;
+  const fmtDateTime = d=> d ? new Date(d).toLocaleString() : '';
+  const fmtShort = s=> { const d=toDate(s); return d? d.toLocaleDateString(undefined,{month:'short',day:'2-digit',year:'numeric'}) : ''; };
+  const chips = arr=> (arr||[]).map(x=>`<span class="chip">${x}</span>`).join('');
+  const fullDocUrl = doc=>{
+    if(!doc) return '';
+    if(/^https?:\/\//i.test(doc)) return doc;
+    const clean = doc.replace(/^\/+/, '');
+    if(clean.startsWith('public/uploads/agreements/')) return 'https://www.primebackstage.in/'+clean;
+    if(clean.startsWith('uploads/agreements/'))       return 'https://www.primebackstage.in/public/'+clean;
+    return BASE_DOC_URL + clean; // filename only
+  };
+  const statusBadge = s=>{
+    const v=(s||'').toLowerCase();
+    if(v==='active') return '<span class="status active">Active</span>';
+    if(v==='rejected') return '<span class="status rejected">Rejected</span>';
+    if(v==='pending_verification') return '<span class="status verify">Pending Verification</span>';
+    if(v==='pending_review') return '<span class="status pending">Pending Review</span>';
+    if(v==='terminated') return '<span class="status terminated">Terminated</span>';
+    return '<span class="status">—</span>';
+  };
+
+  // ---- Inject styles for empty-state + confirm modal (once) ----
+  function ensureEnhanceStyles(){
+    if (document.getElementById('agreementsEnhanceStyles')) return;
+    const css = `
+      /* ==== Empty state (No agreements) ==== */
+      .empty-wrap{ padding: 40px 18px; }
+      .empty{
+        display:grid; place-items:center; text-align:center;
+        background:#fff; border:1px dashed #cbd5e1; border-radius:16px;
+        padding: 56px 24px; color:#475569;
+      }
+      .empty svg{ width:120px; height:120px; opacity:.85; margin-bottom:16px }
+      .empty h3{ margin:6px 0 8px; font-weight:800; color:#0f172a; font-size:18px }
+      .empty p{ margin:0 0 16px; color:#64748b; font-weight:600; font-size:13px }
+      .empty .btn{ padding:10px 14px; border-radius:12px }
+
+      /* ==== Confirm Modal (custom) ==== */
+      .modal.confirm .modal-card{ width:min(480px,92%); }
+      .modal.confirm .modal-body{ display:block; padding:18px }
+      .confirm-title{ font-weight:800; font-size:16px }
+      .confirm-text{ margin-top:8px; color:#475569; line-height:1.55 }
+      .btn.danger{ background:#fee2e2; border-color:#fecaca; color:#991b1b; }
+      .btn.danger.primary{ background:#ef4444; color:#fff; border-color:#ef4444; }
+    `;
+    const st = document.createElement('style');
+    st.id = 'agreementsEnhanceStyles';
+    st.textContent = css;
+    document.head.appendChild(st);
+  }
+
+  // ---- Create confirm modal dynamically (once) ----
+  function ensureConfirmModal(){
+    if ($('#confirmModal')) return;
+    const html = `
+      <div class="modal confirm" id="confirmModal" aria-hidden="true">
+        <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+          <div class="modal-head">
+            <div id="confirmTitle" class="confirm-title">Confirm</div>
+            <button class="btn" id="confirmClose" aria-label="Close">x</button>
+          </div>
+          <div class="modal-body">
+            <div id="confirmText" class="confirm-text">Are you sure?</div>
+          </div>
+          <div class="modal-foot">
+            <button class="btn" id="confirmCancel">Cancel</button>
+            <button class="btn primary" id="confirmOk">OK</button>
+          </div>
+        </div>
+      </div>`;
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    document.body.appendChild(wrap.firstElementChild);
+  }
+
+  // ===== Custom Confirm (Promise) =====
+  function showConfirm({title='Confirm', message='Are you sure?', okText='OK', cancelText='Cancel', danger=false}={}){
+    ensureConfirmModal();
+    const modal = $('#confirmModal');
+    $('#confirmTitle').textContent = title;
+    $('#confirmText').textContent = message;
+    const okBtn = $('#confirmOk');
+    const cancelBtn = $('#confirmCancel');
+    const closeBtn = $('#confirmClose');
+
+    okBtn.classList.remove('danger','primary');
+    if(danger){ okBtn.classList.add('danger','primary'); }
+    okBtn.textContent = okText;
+    cancelBtn.textContent = cancelText;
+
+    return new Promise(resolve=>{
+      function cleanup(v){
+        modal.classList.remove('open');
+        okBtn.removeEventListener('click', onOk);
+        cancelBtn.removeEventListener('click', onCancel);
+        closeBtn.removeEventListener('click', onCancel);
+        document.removeEventListener('keydown', onKey);
+        resolve(v);
+      }
+      function onOk(){ cleanup(true); }
+      function onCancel(){ cleanup(false); }
+      function onKey(e){ if(e.key==='Escape') cleanup(false); }
+
+      okBtn.addEventListener('click', onOk);
+      cancelBtn.addEventListener('click', onCancel);
+      closeBtn.addEventListener('click', onCancel);
+      document.addEventListener('keydown', onKey);
+
+      modal.classList.add('open');
+    });
+  }
+
+  // ---- Do NOT validate page filters/table checkboxes ----
+  document.addEventListener('DOMContentLoaded', ()=>{
+    ensureEnhanceStyles();
+    ['#selectAll','#userTypeFilter','#datePreset'].forEach(sel=>{
+      const el = document.querySelector(sel);
+      if (el) el.removeAttribute('required');
+    });
+    document.querySelectorAll('#dealFilter input[type="checkbox"]').forEach(cb=>cb.removeAttribute('required'));
+  });
+
+  // ===== Menu helpers (global) =====
+  function closeAllRowMenus(){ document.querySelectorAll('.menu-dot').forEach(w=>w.classList.remove('open')); }
+
+  // Close on outside click
+  document.addEventListener('click', (e)=>{
+    if(!e.target.closest('.menu-dot')) closeAllRowMenus();
+  });
+
+  // Close on ESC
+  document.addEventListener('keydown', (e)=>{
+    if(e.key === 'Escape'){
+      closeAllRowMenus();
+      const dealDrop = document.getElementById('dealFilter');
+      if (dealDrop) dealDrop.classList.remove('open');
+    }
+  });
+
+  // Close on resize or table scroll
+  window.addEventListener('resize', closeAllRowMenus, {passive:true});
+  document.addEventListener('DOMContentLoaded', ()=>{
+    const tw = document.querySelector('.table-wrap');
+    if(tw) tw.addEventListener('scroll', closeAllRowMenus, {passive:true});
+  });
+
+  function quarterStartDays(){ const n=new Date(), m=n.getMonth(), q=new Date(n.getFullYear(), m-(m%3),1); return Math.ceil((n-q)/(86400000)); }
+  function mapPresetToDays(v){ if(v==='last7')return 7; if(v==='last30')return 30; if(v==='thisQ')return quarterStartDays(); return null; }
+
+  async function loadAgreements(){
+    const q = encodeURIComponent(state.search || '');
+    const presetDays = mapPresetToDays($('#datePreset')?.value || 'all');
+    const preset = presetDays ? presetDays : 'all';
+    try{
+      const res = await fetch(`/settings/agreementslist?q=${q}&preset=${encodeURIComponent(preset)}&page=1&size=500`, {headers:{'Accept':'application/json'}});
+      const j = await res.json();
+      if(!j.ok) throw new Error(j.error||'Failed');
+      state.rows = (j.rows||[]).map(r=>({...r, rights:r.rights||[], services:r.services||[]}));
+      applyFiltersAndRender();
+    }catch(e){
+      console.error(e);
+      $('#agreementsTable tbody').innerHTML = `<tr><td colspan="12" style="padding:20px;color:#64748b;text-align:center">Failed to load agreements.</td></tr>`;
+      $('#showingText').textContent = 'Showing 0 of 0 agreements'; $('#pager').innerHTML='';
+    }
+  }
+  async function uploadPdf(file){
+    const fd=new FormData(); fd.append('file',file);
+    const r=await fetch('/settings/agreementsupload',{method:'POST',body:fd});
+    const j=await r.json(); if(!j.ok||!j.path) throw new Error(j.error||'Upload failed'); return j.path;
+  }
+  async function renewAgreement(id, newExpiry){
+    const fd=new FormData(); fd.append('id',id); fd.append('expiry',newExpiry);
+    const j=await (await fetch('/settings/agreementsrenew',{method:'POST',body:fd})).json(); return j.ok;
+  }
+  async function terminateAgreement(id){
+    const fd=new FormData(); fd.append('id',id);
+    const j=await (await fetch('/settings/agreementsterminate',{method:'POST',body:fd})).json(); return j.ok;
+  }
+  async function deleteAgreement(id){
+    const fd=new FormData(); fd.append('id',id);
+    const j=await (await fetch('/settings/agreementsdelete',{method:'POST',body:fd})).json(); return j.ok;
+  }
+  async function adminSetStatus(id, status){
+    const fd=new FormData(); fd.append('id',id); fd.append('status',status);
+    const j=await (await fetch('/settings/agreementsstatus',{method:'POST',body:fd})).json(); return j.ok;
+  }
+  async function saveAgreement(payload){
+    const fd=new FormData(); Object.entries(payload).forEach(([k,v])=>fd.append(k, v??''));
+    const j=await (await fetch('/settings/agreementssave',{method:'POST',body:fd})).json(); return j;
+  }
+
+  function applyFilters(){
+    let data=[...state.rows];
+    data=data.filter(r=>state.deals.has(r.deal));
+    if(state.userType) data=data.filter(r=>(r.usertype||'')===state.userType);
+    const k=state.sortKey, d=state.sortDir;
+    data.sort((a,b)=>{
+      let va=a[k], vb=b[k];
+      if(k==='date'||k==='expiry'){ va=toDate(va)?.getTime()||0; vb=toDate(vb)?.getTime()||0; }
+      else if(k==='revshare'){ va=+a.revshare||0; vb=+b.revshare||0; }
+      else { va=(va||'').toString().toLowerCase(); vb=(vb||'').toString().toLowerCase(); }
+      if(va<vb) return d==='asc'?-1:1; if(va>vb) return d==='asc'?1:-1; return 0;
+    });
+    state.filtered=data;
+  }
+  function applyFiltersAndRender(){ applyFilters(); renderTable(); rebuildPager(); }
+
+  function renderTable(){
+    const tbody=$('#agreementsTable tbody');
+    const total=state.filtered.length;
+    const pages=Math.max(1, Math.ceil(total/state.rowsPerPage));
+    state.page=Math.min(state.page,pages);
+
+    const start=(state.page-1)*state.rowsPerPage;
+    const rows=state.filtered.slice(start,start+state.rowsPerPage);
+
+    const now=new Date(), soonMs=30*24*3600*1000;
+
+    if(!rows.length){
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="12" style="padding:0;">
+            <div class="empty-wrap">
+              <div class="empty">
+                <svg viewBox="0 0 200 200" fill="none" aria-hidden="true">
+                  <defs>
+                    <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+                      <stop offset="0" stop-color="#c7d2fe"/>
+                      <stop offset="1" stop-color="#a78bfa"/>
+                    </linearGradient>
+                  </defs>
+                  <path d="M36 70a10 10 0 0 1 10-10h38l10 10h60a10 10 0 0 1 10 10v70a10 10 0 0 1-10 10H46a10 10 0 0 1-10-10V70Z" fill="url(#g1)"/>
+                  <rect x="70" y="88" width="60" height="68" rx="6" fill="#ffffff" />
+                  <rect x="82" y="98" width="36" height="6" rx="3" fill="#e5e7eb"/>
+                  <rect x="78" y="112" width="44" height="6" rx="3" fill="#e5e7eb"/>
+                  <rect x="78" y="126" width="44" height="6" rx="3" fill="#e5e7eb"/>
+                  <circle cx="160" cy="90" r="16" fill="#fee2e2" />
+                  <path d="M152 82l16 16M168 82l-16 16" stroke="#ef4444" stroke-width="4" stroke-linecap="round"/>
+                </svg>
+                <h3>No agreements yet</h3>
+                <p>Upload a B2B agreement to get started. You can add label, artist, or company agreements here.</p>
+                
+              </div>
+            </div>
+          </td>
+        </tr>`;
+      const eb = $('#emptyAddBtn');
+      if (eb) eb.addEventListener('click', ()=> openEdit(null));
+    }else{
+      tbody.innerHTML=rows.map(r=>{
+        const expDate=toDate(r.expiry); const expSoon=expDate && (expDate-now)<=soonMs;
+        const docText=r.document?'Open file':'No file'; const docUrl=fullDocUrl(r.document||'');
+        const ownerInfo = (window.IS_ADMIN && (r.first_name || r.company_name))
+            ? `<span class="sub">${(r.company_name||'')}${(r.company_name&&r.first_name)?' • ':''}${(r.first_name||'')+' '+(r.last_name||'')}</span>` : `<span class="sub">#${String(r.id).padStart(4,'0')}</span>`;
+        const adminMenu = window.IS_ADMIN ? `
+              <a href="#" class="action act-approve">Approve</a>
+              <a href="#" class="action act-pverify">Mark Pending Verification</a>
+              <a href="#" class="action act-reject" style="color:#991b1b">Reject</a>
+        ` : '';
+        return `
+        <tr data-id="${r.id}">
+          <td><input type="checkbox" class="rowChk"></td>
+          <td><div class="name">${r.label||''}</div>${ownerInfo}</td>
+          <td>${fmtDateTime(r.date)}</td>
+          <td>${fmtShort(r.expiry)} ${expSoon?'<span class="chip badge-expiring">Expiring soon</span>':''}</td>
+          <td>${r.usertype||''}</td>
+          <td>${chips(r.rights)}</td>
+          <td>${chips(r.services)}</td>
+          <td><span class="pill">${r.deal||''}</span></td>
+          <td>${(r.revshare??0)}%</td>
+          <td>${statusBadge(r.status)}</td>
+          <td><span class="doc" data-url="${docUrl}">${docText}</span></td>
+          <td>
+            <div class="menu-dot">
+              <button class="btn btn-dot" aria-haspopup="true">⋯</button>
+              <div class="menu">
+                <a href="#" class="action act-edit">Edit</a>
+                <a href="#" class="action act-renew">Renew Agreement</a>
+                <a href="#" class="action act-terminate">Terminate</a>
+                <a href="#" class="action act-delete" style="color:#b91c1c">Delete</a>
+                ${adminMenu}
+              </div>
+            </div>
+          </td>
+        </tr>`;
+      }).join('');
+    }
+
+    $('#showingText').textContent = `Showing ${rows.length} of ${total} agreements`;
+
+    // Open docs
+    $$('.doc').forEach(el=>el.addEventListener('click', e=>{
+      const u=e.currentTarget.getAttribute('data-url'); if(u) window.open(u,'_blank'); else alert('No file uploaded.');
+    }));
+
+    // Menu toggle (uses global closeAllRowMenus)
+    $$('.menu-dot .btn-dot').forEach(btn=>{
+      btn.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        const wrap=e.currentTarget.parentElement;
+        const willOpen = !wrap.classList.contains('open');
+        closeAllRowMenus();                 // close others
+        if (willOpen) wrap.classList.add('open');  // open current
+      });
+    });
+
+    // Close menu on action click
+    $$('.menu a.action').forEach(a=>{
+      a.addEventListener('click', ()=> closeAllRowMenus());
+    });
+
+    // Row actions
+    $$('.act-edit').forEach(a=>a.addEventListener('click', e=>{
+      e.preventDefault();
+      const id=+e.currentTarget.closest('tr').dataset.id;
+      const row=state.filtered.find(x=>x.id===id); openEdit(row);
+    }));
+    // Renew -> open modal in 'renew' mode
+    $$('.act-renew').forEach(a=>a.addEventListener('click', e=>{
+      e.preventDefault();
+      const id = +e.currentTarget.closest('tr').dataset.id;
+      const row = state.filtered.find(x=>x.id===id);
+      if (!row) return;
+      openEdit(row, 'renew');
+    }));
+
+    // Terminate (custom confirm)
+    $$('.act-terminate').forEach(a=>a.addEventListener('click', async e=>{
+      e.preventDefault();
+      const id=+e.currentTarget.closest('tr').dataset.id;
+      const ok = await showConfirm({
+        title: 'Terminate Agreement',
+        message: 'This will mark the agreement as terminated. Are you sure you want to continue?',
+        okText: 'Terminate',
+        cancelText: 'Cancel',
+        danger: true
+      });
+      if(!ok) return;
+      if(await terminateAgreement(id)) loadAgreements(); else alert('Failed to terminate');
+    }));
+
+    // Delete (custom confirm)
+    $$('.act-delete').forEach(a=>a.addEventListener('click', async e=>{
+      e.preventDefault();
+      const id=+e.currentTarget.closest('tr').dataset.id;
+      const ok = await showConfirm({
+        title: 'Delete Agreement',
+        message: 'Deleting an agreement is irreversible. Do you want to proceed?',
+        okText: 'Delete',
+        cancelText: 'Cancel',
+        danger: true
+      });
+      if(!ok) return;
+      if(await deleteAgreement(id)) loadAgreements(); else alert('Failed to delete');
+    }));
+
+    if(window.IS_ADMIN){
+      // (optional) confirms for admin status changes
+      $$('.act-approve').forEach(a=>a.addEventListener('click', async e=>{
+        e.preventDefault(); const id=+e.currentTarget.closest('tr').dataset.id;
+        const ok = await showConfirm({ title:'Approve Agreement', message:'Set status to Active?', okText:'Approve', cancelText:'Cancel' });
+        if(!ok) return;
+        if(await adminSetStatus(id,'active')) loadAgreements(); else alert('Failed');
+      }));
+      $$('.act-pverify').forEach(a=>a.addEventListener('click', async e=>{
+        e.preventDefault(); const id=+e.currentTarget.closest('tr').dataset.id;
+        const ok = await showConfirm({ title:'Mark Pending Verification', message:'Move this agreement to Pending Verification?', okText:'Proceed', cancelText:'Cancel' });
+        if(!ok) return;
+        if(await adminSetStatus(id,'pending_verification')) loadAgreements(); else alert('Failed');
+      }));
+      $$('.act-reject').forEach(a=>a.addEventListener('click', async e=>{
+        e.preventDefault(); const id=+e.currentTarget.closest('tr').dataset.id;
+        const ok = await showConfirm({ title:'Reject Agreement', message:'Set status to Rejected?', okText:'Reject', cancelText:'Cancel', danger:true });
+        if(!ok) return;
+        if(await adminSetStatus(id,'rejected')) loadAgreements(); else alert('Failed');
+      }));
+    }
+  }
+
+  function rebuildPager(){
+    const total=state.filtered.length;
+    const pages=Math.max(1, Math.ceil(total/state.rowsPerPage));
+    const pager=$('#pager');
+    const btn=(label,dis,click)=>`<div class="p" ${dis?'style="opacity:.5;pointer-events:none"':''} data-click="${click||''}">${label}</div>`;
+    const items=[];
+    items.push(btn('«', state.page===1,'first'));
+    items.push(btn('‹', state.page===1,'prev'));
+    const windowSize=5;
+    let startPage=Math.max(1, state.page-Math.floor(windowSize/2));
+    let endPage=Math.min(pages, startPage+windowSize-1);
+    startPage=Math.max(1, endPage-windowSize+1);
+    for(let p=startPage;p<=endPage;p++){
+      items.push(`<div class="p" data-page="${p}" ${p===state.page?'style="background:#f1f5f9"':''}>${p}</div>`);
+    }
+    items.push(btn('›', state.page===pages,'next'));
+    items.push(btn('»', state.page===pages,'last'));
+    pager.innerHTML=items.join('');
+  }
+  // ===== Toast utilities =====
+function ensureToastHost(){
+  if(!document.getElementById('toast-host')){
+    const host = document.createElement('div');
+    host.id = 'toast-host';
+    document.body.appendChild(host);
+  }
+}
+
+function toast(type='info', message='Done', {duration=3000}={}){
+  ensureToastHost();
+  const host = document.getElementById('toast-host');
+
+  const div = document.createElement('div');
+  div.className = `toast ${type}`;
+  div.innerHTML = `
+    <svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      ${type==='success'
+        ? '<path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm-1 13-4-4 1.4-1.4L11 11.2l5.6-5.6L18 7l-7 8Z"/>'
+        : type==='error'
+        ? '<path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm-1 5h2v7h-2V7Zm0 9h2v2h-2v-2Z"/>'
+        : '<path d="M12 2a10 10 0 1 0 .001 20.001A10 10 0 0 0 12 2Zm1 14h-2v-2h2v2Zm0-4h-2V6h2v6Z"/>'}
+    </svg>
+    <div class="msg">${message}</div>
+    <button class="close" aria-label="Close">×</button>
+  `;
+  const bar = document.createElement('div');
+  bar.className = 'bar';
+  bar.innerHTML = '<span></span>';
+  div.appendChild(bar);
+
+  host.appendChild(div);
+  // animate in
+  requestAnimationFrame(()=> div.classList.add('show'));
+
+  // progress
+  const span = bar.firstElementChild;
+  span.style.transition = `transform ${duration}ms linear`;
+  requestAnimationFrame(()=> span.style.transform = 'scaleX(0)');
+
+  // close
+  const done = ()=> {
+    div.classList.remove('show');
+    setTimeout(()=> div.remove(), 180);
+    clearTimeout(tid);
+  };
+  const tid = setTimeout(done, duration);
+  div.querySelector('.close').addEventListener('click', done);
+  return {close: done, el: div};
+}
+
+
+  // ===== Modal helpers =====
+  function openEdit(row, intent='edit'){
+    state.editingId = row?.id || null;
+    state.intent = intent; // 'edit' | 'renew'
+
+    const isRenew = intent === 'renew';
+    $('#addAgmtTitle').textContent = state.editingId
+        ? (isRenew ? 'Renew Agreement' : 'Edit B2B Agreement')
+        : 'Add B2B Agreement';
+
+    $('#agmtLabel').value    = row?.label || '';
+    $('#agmtUserType').value = row?.usertype || 'Label';
+    $('#agmtRights').value   = (row?.rights||[]).join(', ');
+    $('#agmtServices').value = (row?.services||[]).join(', ');
+    $('#agmtDeal').value     = row?.deal || 'Distribution';
+    $('#agmtRevShare').value = row?.revshare ?? '';
+    $('#agmtDate').value     = row?.date || '';
+
+    // Expiry: if renew → +1 year from current expiry (or today)
+    let exp = row?.expiry || '';
+    if (isRenew){
+      const base = exp ? new Date(exp+'T00:00:00') : new Date();
+      const next = new Date(base.getTime());
+      next.setFullYear(next.getFullYear()+1);
+      const y = next.getFullYear();
+      const m = String(next.getMonth()+1).padStart(2,'0');
+      const d = String(next.getDate()).padStart(2,'0');
+      exp = `${y}-${m}-${d}`;
+    }
+    $('#agmtExpiry').value = exp;
+
+    // File input reset
+    $('#agmtFile').value = '';
+    currentDocPath = row?.document || '';
+
+    openModal();
+  }
+
+  function openModal(){ closeAllRowMenus(); $('#addAgreementModal').classList.add('open'); }
+  function closeModal(){ $('#addAgreementModal').classList.remove('open'); state.editingId=null; $('#agmtFile').value=''; currentDocPath=''; $('#addAgmtTitle').textContent='Add B2B Agreement'; }
+
+  // ===== Wire filters/buttons =====
+  $('#addAgreementBtn').addEventListener('click', ()=> openEdit(null));
+  $('#closeAddModal').addEventListener('click', closeModal);
+  $('#cancelAdd').addEventListener('click', closeModal);
+
+  $('#searchBox').addEventListener('input', ()=>{ state.search=$('#searchBox').value.trim(); state.page=1; loadAgreements(); });
+  $('#datePreset').addEventListener('change', ()=>{ state.page=1; loadAgreements(); });
+
+  const dealDrop=$('#dealFilter');
+  dealDrop.addEventListener('click', e=>{ if(e.target.closest('.menu')) return; dealDrop.classList.toggle('open'); });
+  dealDrop.querySelectorAll('input[type="checkbox"]').forEach(cb=>{
+    cb.addEventListener('change', e=>{
+      const v=e.target.dataset.deal; if(e.target.checked) state.deals.add(v); else state.deals.delete(v);
+      state.page=1; applyFiltersAndRender();
+    });
+  });
+  document.addEventListener('click', e=>{
+    if(!e.target.closest('#dealFilter')) dealDrop.classList.remove('open');
+  });
+
+  $('#userTypeFilter').addEventListener('change', e=>{ state.userType=e.target.value; state.page=1; applyFiltersAndRender(); });
+
+  $('#pager').addEventListener('click', e=>{
+    const el=e.target.closest('.p'); if(!el) return;
+    const total=state.filtered.length;
+    const pages=Math.max(1, Math.ceil(total/state.rowsPerPage));
+    const c=el.getAttribute('data-click');
+    if(c==='first') state.page=1;
+    else if(c==='prev') state.page=Math.max(1, state.page-1);
+    else if(c==='next') state.page=Math.min(pages, state.page+1);
+    else if(c==='last') state.page=pages;
+    else if(el.dataset.page){ state.page=parseInt(el.dataset.page,10); }
+    renderTable();
+  });
+  $('#gotoBtn').addEventListener('click', ()=>{
+    const n=parseInt($('#gotoInput').innerText,10);
+    const pages=Math.max(1, Math.ceil(state.filtered.length/state.rowsPerPage));
+    if(!isNaN(n)&&n>=1&&n<=pages){ state.page=n; renderTable(); }
+  });
+
+  // Export CSV
+  $('#exportCsvBtn').addEventListener('click', ()=>{
+    const data=state.filtered;
+    const headers=['Label Name','ID','Date Created','Date Expiry','User Type','Rights','Services','Deal','Revenue Share','Status','Document'];
+    const rows=data.map(r=>[
+      r.label||'', String(r.id).padStart(4,'0'), r.date||'', r.expiry||'', r.usertype||'',
+      (r.rights||[]).join('; '), (r.services||[]).join('; '), r.deal||'', (r.revshare??0)+'%', r.status||'',
+      fullDocUrl(r.document||'')
+    ]);
+    const csv=[headers].concat(rows).map(a=>a.map(x=>`"${String(x).replaceAll('"','""')}"`).join(',')).join('\n');
+    const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}); const url=URL.createObjectURL(blob);
+    const a=document.createElement('a'); a.href=url; a.download='b2b-agreements.csv'; document.body.appendChild(a); a.click(); a.remove();
+  });
+
+  // Tabs
+  $$('.tab').forEach(t=>t.addEventListener('click', ()=>{
+    $$('.tab').forEach(x=>x.classList.remove('active')); t.classList.add('active');
+    state.activeTab=t.dataset.tab; state.sortKey=(state.activeTab==='agreements'?'expiry':'date'); state.sortDir=(state.activeTab==='agreements'?'asc':'desc');
+    state.page=1; applyFiltersAndRender();
+  }));
+
+  // ======= Inline error helpers for modal =======
+  function pbAddError(el, msg){
+    el.classList.add('pb-field-error');
+    if (!el.nextElementSibling || !el.nextElementSibling.classList.contains('pb-error')) {
+      const s = document.createElement('div');
+      s.className = 'pb-error';
+      s.textContent = msg || 'This field is required.';
+      el.insertAdjacentElement('afterend', s);
+    }
+  }
+  function pbClearError(el){
+    el.classList.remove('pb-field-error');
+    if (el.nextElementSibling && el.nextElementSibling.classList.contains('pb-error')) {
+      el.nextElementSibling.remove();
+    }
+  }
+  ['input','change'].forEach(evt=>{
+    document.addEventListener(evt, (e)=>{
+      const el=e.target;
+      if (el.matches('#addAgreementModal input, #addAgreementModal select')) pbClearError(el);
+    }, true);
+  });
+
+  function validateAddForm(isEdit){
+    let firstBad=null;
+    const $L = s=>document.querySelector(s);
+
+    const fLabel   = $L('#agmtLabel');
+    const fType    = $L('#agmtUserType');
+    const fRights  = $L('#agmtRights');
+    const fServ    = $L('#agmtServices');
+    const fDeal    = $L('#agmtDeal');
+    const fShare   = $L('#agmtRevShare');
+    const fFile    = $L('#agmtFile');
+    const fDate    = $L('#agmtDate');
+    const fExpiry  = $L('#agmtExpiry');
+
+    [fLabel,fType,fRights,fServ,fDeal,fShare,fFile,fDate,fExpiry].forEach(el=>el && pbClearError(el));
+
+    function req(el, msg){
+      const v = (el.value||'').trim();
+      if (!v){ pbAddError(el, msg||'This field is required.'); if(!firstBad) firstBad=el; return false; }
+      return true;
+    }
+
+    req(fLabel, 'Enter label name');
+    req(fType, 'Pick a user type');
+    req(fRights, 'Enter Publishing rights (e.g., Worldwide, Publishing)');
+    req(fServ, 'Enter Add on (e.g., Distribution, Marketing)');
+    req(fDeal, 'Pick a services type');
+    req(fDate, 'Select created date');
+    req(fExpiry, 'Select expiry date');
+
+    const shareVal = (fShare.value||'').trim();
+    if (shareVal===''){ pbAddError(fShare,'Enter revenue share %'); if(!firstBad) firstBad=fShare; }
+    else {
+      const n = Number(shareVal);
+      if (!Number.isFinite(n) || n<0 || n>100){
+        pbAddError(fShare,'Enter a valid % between 0 and 100');
+        if(!firstBad) firstBad=fShare;
+      }
+    }
+
+    if (fDate.value && fExpiry.value){
+      const d1 = new Date(fDate.value+'T00:00:00');
+      const d2 = new Date(fExpiry.value+'T00:00:00');
+      if (d2 < d1){
+        pbAddError(fExpiry, 'Expiry must be on/after Created On');
+        if(!firstBad) firstBad=fExpiry;
+      }
+    }
+
+    const picked = fFile.files && fFile.files[0];
+    if (!isEdit){
+      if (!picked){ pbAddError(fFile, 'Please attach agreement PDF'); if(!firstBad) firstBad=fFile; }
+    }
+    if (picked){
+      if (picked.type !== 'application/pdf'){
+        pbAddError(fFile,'Only PDF allowed'); if(!firstBad) firstBad=fFile;
+      } else if (picked.size > 10*1024*1024){
+        pbAddError(fFile,'Max 10 MB PDF'); if(!firstBad) firstBad=fFile;
+      }
+    }
+
+    if (firstBad){
+      try{ firstBad.focus({preventScroll:false}); firstBad.scrollIntoView({block:'center',behavior:'smooth'}); }catch(_){}
+      return false;
+    }
+    return true;
+  }
+
+  // ===== Save (create/update): VALIDATE FIRST, then upload/save =====
+  $('#saveAdd').addEventListener('click', async ()=>{
+    const isEdit = !!state.editingId;
+    if (!validateAddForm(isEdit)) return;
+
+    const $ = (s)=>document.querySelector(s);
+    const fileEl = $('#agmtFile');
+    const picked = fileEl.files && fileEl.files[0];
+
+    let documentPath = currentDocPath || '';
+    try{
+      if (picked){ documentPath = await uploadPdf(picked); }
+
+      const payload = {
+        id: state.editingId||0,
+        label: $('#agmtLabel').value.trim(),
+        usertype: $('#agmtUserType').value,
+        rights: $('#agmtRights').value.trim(),
+        services: $('#agmtServices').value.trim(),
+        deal: $('#agmtDeal').value,
+        revshare: ($('#agmtRevShare').value||0),
+        document: documentPath,
+        date: $('#agmtDate').value || new Date().toISOString().slice(0,10),
+        expiry: $('#agmtExpiry').value || ''
+      };
+
+      // Non-admin → review queue
+      if (!window.IS_ADMIN){
+        payload.mode = 'edit_request'; // server will set status='pending_review'
+      }
+
+      const res = await saveAgreement(payload);
+      if (res.ok){
+        closeModal();
+        loadAgreements();
+        toast('success', state.intent==='renew' ? 'Renewal submitted for review.' : 'Submitted for review.');
+
+      } else {
+        alert(res.error||'Failed to save');
+      }
+    }catch(e){
+      alert(e.message||'Upload/Save failed');
+    }
+  });
+
+  // INIT
+  ensureEnhanceStyles();    // styles for empty+confirm
+  ensureConfirmModal();     // ensure modal is in DOM
+  loadAgreements();
+})();
+</script>
+
+
+<!-- (Optional) Keep your generic form validator as-is if you still want it on other forms -->
+<script id="agreementsRequiredValidator">
+(function(){
+  if (window.__agreementsRequiredBound) return; 
+  window.__agreementsRequiredBound = true;
+  function addError(el, msg){
+    el.classList.add('pb-field-error');
+    if (!el.nextElementSibling || !el.nextElementSibling.classList.contains('pb-error')) {
+      var s = document.createElement('div');
+      s.className = 'pb-error';
+      s.textContent = msg || 'This field is required.';
+      el.insertAdjacentElement('afterend', s);
+    }
+  }
+  function clearError(el){
+    el.classList.remove('pb-field-error');
+    if (el.nextElementSibling && el.nextElementSibling.classList.contains('pb-error')) {
+      el.nextElementSibling.remove();
+    }
+  }
+  document.addEventListener('input', function(e){
+    var el = e.target;
+    if (el.matches('input, select, textarea')) {
+      clearError(el);
+    }
+  }, true);
+
+  Array.prototype.forEach.call(document.querySelectorAll('form'), function(form){
+    form.addEventListener('submit', function(e){
+      var required = form.querySelectorAll('input[required], select[required], textarea[required]');
+      var firstBad = null;
+      required.forEach(function(el){
+        var ok = true;
+        if (el.type === 'checkbox' || el.type === 'radio') {
+          if (el.type === 'radio' && el.name){
+            var group = form.querySelectorAll('input[type="radio"][name="'+CSS.escape(el.name)+'"]');
+            ok = Array.prototype.some.call(group, function(r){ return r.checked; });
+          } else {
+            ok = el.checked;
+          }
+        } else if (el.tagName === 'SELECT') {
+          ok = el.value !== '' && el.value !== null;
+        } else {
+          ok = (el.value || '').trim() !== '';
+        }
+        clearError(el);
+        if (!ok){
+          addError(el);
+          if (!firstBad) firstBad = el;
+        }
+      });
+      if (firstBad){
+        e.preventDefault();
+        try { firstBad.focus(); } catch(_){}
+      }
+    }, true);
+  });
+})();
+  
+  
+</script>
+
+<style id="agreementsRequiredStyles">
+.pb-field-error{ outline: 1px solid rgba(239,68,68,.7) !important; box-shadow: 0 0 0 2px rgba(239,68,68,.12) !important; border-color: rgba(239,68,68,.7) !important; }
+.pb-error{ color:#ef4444; font-size:12px; margin:6px 0 0 2px; }
+</style>
+<script>
+(function(){
+  var bar = document.getElementById('releaseNotice');
+  if(!bar) return;
+
+  var btn = bar.querySelector('.nb-close');
+  if(btn){
+    btn.addEventListener('click', function(){
+      // No storage used → will reappear on refresh
+      bar.style.transition = 'opacity .18s ease, height .18s ease, margin .18s ease, padding .18s ease';
+      bar.style.opacity = '0';
+      bar.style.height = '0';
+      bar.style.margin = '0';
+      setTimeout(function(){ if(bar && bar.parentNode) bar.parentNode.removeChild(bar); }, 220);
+    });
+  }
+})();
+</script>
+

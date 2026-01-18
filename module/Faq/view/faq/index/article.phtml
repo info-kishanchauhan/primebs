@@ -1,0 +1,575 @@
+<?php $this->headTitle("FAQ Article | Prime Digital Arena"); ?>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root {
+  --font-family-primary: 'Poppins', 'Poppins Fallback';
+  --font-family-secondary: system-ui, "Segoe UI", "Roboto", "Helvetica", "Arial", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+body {
+  font-family: var(--font-family-primary);
+  background-color: #f4f5fa;
+  margin: 0;
+  padding: 0;
+}
+
+/* ===== HEADER WITH LOGO + SEARCH ===== */
+.faq-top-header {
+  background: linear-gradient(2deg, #5b46b3, #9f1ac6);
+  padding: 40px 20px 50px;
+  color: white;
+}
+
+.faq-header-inner {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.faq-header-top {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.faq-logo-img {
+  height: 45px;
+  display: block;
+}
+
+.share-icon {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  color: #fff;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.share-icon svg {
+  width: 24px;
+  height: 24px;
+  fill: white;
+  transition: opacity 0.2s;
+}
+
+.share-icon:hover svg {
+  opacity: 0.75;
+}
+
+.faq-search-wrap {
+  width: 100%;
+  max-width: 800px;
+  position: relative;
+  margin: 0 auto; /* ✅ This centers it horizontally */
+}
+
+
+.faq-search {
+  width: 100%;
+  padding: 18px 24px 18px 55px;
+  border: none;
+  border-radius: 14px;
+  font-size: 17px;
+  font-weight: 400;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  backdrop-filter: blur(8px);
+  outline: none;
+  transition: all 0.3s ease;
+  height: 58px;
+}
+
+.faq-search:focus,
+.faq-search.active {
+  background: #ffffff;
+  color: #000;
+}
+
+.faq-search:focus::placeholder,
+.faq-search.active::placeholder {
+  color: #999;
+}
+
+.faq-search::placeholder {
+  color: #e4e4e4;
+}
+
+.search-icon {
+  position: absolute;
+  top: 50%;
+  left: 16px;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: #e0e0e0;
+  transition: color 0.3s ease;
+  pointer-events: none;
+}
+
+.faq-search:focus ~ .search-icon,
+.faq-search.active ~ .search-icon {
+  color: #4b5563;
+}
+
+.faq-search:focus + .faq-search-wrap::before,
+.faq-search.active + .faq-search-wrap::before {
+  color: #4b5563;
+}
+
+/* ===== ARTICLE BOX ===== */
+.faq-article-container {
+  max-width: 760px;
+  background: white;
+  margin: 30px auto;
+  border-radius: 20px;
+  font-family: var(--font-family-secondary);
+}
+
+/* BREADCRUMB INSIDE BOX */
+.faq-breadcrumb-inline {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 10px;
+}
+
+.faq-breadcrumb-inline a {
+  color: #374151;
+  text-decoration: none;
+}
+
+.faq-breadcrumb-inline a:hover {
+  text-decoration: underline;
+}
+
+/* TITLE + DATE */
+.faq-article-container h1 {
+  font-weight: 700;
+  color: #181b1e;
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+.updated-date {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 30px;
+  text-align: left;
+}
+
+/* ARTICLE CONTENT */
+.faq-article-container p {
+  font-size: 17px;
+  color: #242424;
+  line-height: 1.8;
+  margin-bottom: 20px;
+}
+
+.faq-article-container a {
+  color: #7d2491;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.faq-article-container iframe {
+  width: 100%;
+  max-width: 700px;
+  aspect-ratio: 16/9;
+  border-radius: 12px;
+  margin: 30px auto;
+  display: block;
+}
+
+/* TABLE STYLE */
+.faq-article-container table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 15px;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.faq-article-container th,
+.faq-article-container td {
+  padding: 12px 16px;
+  border: 1px solid #e5e7eb;
+  text-align: left;
+}
+
+.faq-article-container th {
+  background-color: #f9fafb;
+  font-weight: 600;
+}
+
+/* RELATED ARTICLES */
+.related-articles {
+  margin-top: 50px;
+  border-top: 1px solid #ddd;
+  padding-top: 30px;
+  background: #fafafa;
+  border-radius: 12px;
+  padding: 30px;
+}
+
+.related-articles h3 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.related-articles ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.related-articles ul li {
+  padding: 12px 0;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.related-articles ul li:last-child {
+  border-bottom: none;
+}
+
+.related-articles ul li a {
+  color: #1f2937;
+  text-decoration: none;
+  flex: 1;
+}
+
+.related-articles ul li a:hover {
+  text-decoration: underline;
+}
+
+.related-articles ul li::after {
+  content: '\276F';
+  color: #ccc;
+  font-size: 14px;
+  margin-left: 10px;
+}
+
+/* FEEDBACK SECTION */
+.feedback-box {
+  text-align: center;
+  margin-top: 50px;
+  padding: 30px 0 10px;
+  border-top: 1px solid #eee;
+  background: #fafafa;
+  border-radius: 12px;
+}
+
+.feedback-box p {
+  font-size: 16px;
+  margin-bottom: 15px;
+  color: #555;
+}
+
+.feedback-box span {
+  font-size: 24px;
+  margin: 0 10px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.feedback-box span:hover {
+  transform: scale(1.2);
+}
+
+#bs-main-content-container {
+  padding-top: 0px;
+  padding-bottom: 30px;
+}
+
+.container-fluid {
+  padding-right: 0px;
+  padding-left: 0px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.faq-article-container b {
+  font-size: 13px;
+  color: #686868;
+  line-height: 1.8;
+  font-weight: 450;
+  margin-bottom: 20px;
+}
+  .share-icon {
+  position: relative; /* Ensure dropdown is positioned absolutely to this */
+  z-index: 1000;
+}
+
+.share-dropdown {
+  display: none;
+  position: absolute;
+  top: 36px;
+  right: 0;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  min-width: 160px;
+  z-index: 1001; /* Ensure it's above everything */
+  transition: all 0.2s ease;
+}
+
+.share-dropdown a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  font-size: 14px;
+  color: #333;
+  text-decoration: none;
+  border-bottom: 1px solid #f2f2f2;
+}
+
+.share-dropdown a:last-child {
+  border-bottom: none;
+}
+
+.share-dropdown a:hover {
+  background: #f9f9f9;
+}
+
+.copy-toast {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: #1f2937;
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease, transform 0.3s ease;
+  transform: translateY(20px);
+  z-index: 10000;
+}
+
+.copy-toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.share-dropdown {
+  display: none;
+}
+
+.share-dropdown.open {
+  display: block;
+}
+
+.rating-emoji {
+  transition: transform 0.2s ease;
+}
+.rating-emoji:hover {
+  transform: scale(1.3);
+}
+
+</style>
+
+<!-- HEADER (with logo image & search bar) -->
+<div class="faq-top-header">
+  <div class="faq-header-inner">
+  <div class="faq-header-top">
+    <img src="https://www.primedigitalarena.com/wp-content/themes/PrimeDigitalArena/assets/images/PDA.png" alt="Prime Logo" class="faq-logo-img" />
+
+   <div class="share-icon" id="shareToggle" style="position: relative;" title="Share this page">
+  <i class="fas fa-share-alt" style="font-size: 20px; color: #fff;"></i>
+
+
+  <div id="shareMenu" class="share-dropdown">
+    <a href="#" onclick="copyToClipboard(); return false;">
+      <i class="fas fa-copy" style="width: 16px;"></i> <span>Copy Link</span>
+    </a>
+    <a href="#" id="whatsappShare" target="_blank">
+      <i class="fab fa-whatsapp" style="color: #25D366; width: 16px;"></i> <span>WhatsApp</span>
+    </a>
+    <a href="#" id="emailShare">
+      <i class="fas fa-envelope" style="color: #6b7280; width: 16px;"></i> <span>Email</span>
+    </a>
+  </div>
+</div>
+
+<div id="toast" class="copy-toast">🔗 Link copied!</div>
+  </div>
+
+  <div class="faq-search-wrap">
+    <input type="text" id="faqSearchInput" class="faq-search" placeholder="Search for articles..." onkeydown="handleFAQSearch(event)" onfocus="this.classList.add('active')" onblur="this.classList.remove('active')">
+    <span class="search-icon">🔍</span>
+  </div>
+</div>
+
+
+</div>
+
+
+
+<!-- ARTICLE CONTAINER WITH BREADCRUMB -->
+<div class="faq-article-container">
+
+  <!-- Breadcrumb just above title -->
+  <div class="faq-breadcrumb-inline">
+    <a href="/faq">All Collections</a>
+    &nbsp;&rsaquo;&nbsp;
+    <a href="/faq/category/<?php echo $faq['category']; ?>">
+      <?php echo $this->escapeHtml($faq['category_name']); ?>
+    </a>
+    &nbsp;&rsaquo;&nbsp;
+    <span><?php echo $this->escapeHtml($faq['question']); ?></span>
+  </div>
+<br>
+  <h1><?php echo $this->escapeHtml($faq['question']); ?></h1>
+  <b class="updated-date">Updated on <?php echo date('F j, Y', strtotime($faq['updated_at'])); ?></b><br><br><br>
+
+  <?php
+$answer = $faq['answer'];
+
+// normal youtube.com link
+$answer = preg_replace(
+  '/https?:\/\/(?:www\.)?youtube\.com\/watch\?v=([\w-]+)/i',
+  '<iframe src="https://www.youtube-nocookie.com/embed/$1"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen></iframe>',
+  $answer
+);
+
+// youtu.be short link
+$answer = preg_replace(
+  '/https?:\/\/youtu\.be\/([\w-]+)/i',
+  '<iframe src="https://www.youtube-nocookie.com/embed/$1"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen></iframe>',
+  $answer
+);
+
+echo $answer;
+?>
+
+
+  <?php if (!empty($relatedFaqs)) : ?>
+  <div class="related-articles">
+    <h3>Related Articles</h3>
+    <ul>
+      <?php foreach ($relatedFaqs as $related) : ?>
+        <li><a href="/faq/article/<?php echo $related['id']; ?>"><?php echo $this->escapeHtml($related['question']); ?></a></li>
+      <?php endforeach; ?>
+    </ul>
+  </div>
+  <?php endif; ?>
+
+  <div class="feedback-box">
+  <p style="font-weight: 500; font-size: 16px; color: #444;">Your feedback helps us improve!</p>
+  <p style="margin-top: -5px; font-size: 15px; color: #666;">How helpful was this article?</p>
+
+  <span class="rating-emoji" data-rating="1" title="Not Helpful">😞</span>
+  <span class="rating-emoji" data-rating="2" title="Somewhat Helpful">😐</span>
+  <span class="rating-emoji" data-rating="3" title="Very Helpful">😃</span>
+
+  <div id="feedbackMessage" style="margin-top: 10px; font-size: 14px; color: #16a34a;"></div>
+</div>
+
+<?php
+  $isAdmin = (isset($_SESSION['STAFFUSER']) && $_SESSION['STAFFUSER'] == '1') || (isset($_SESSION['user_id']) && $_SESSION['user_id'] == 0);
+?>
+
+<?php if ($isAdmin && $voteStats['total'] > 0): ?>
+  <div style="margin-top: 30px; font-size: 15px; padding: 15px; background: #f9fafb; border: 1px solid #ddd; border-radius: 12px;">
+    <strong>🗳️ Feedback Summary:</strong><br>
+    <div style="margin-top: 8px;">
+      😃 <?= $voteStats['happy'] ?> &nbsp;
+      😐 <?= $voteStats['neutral'] ?> &nbsp;
+      😞 <?= $voteStats['sad'] ?> &nbsp;
+      | ⭐ Avg: <?= round((3*$voteStats['happy'] + 2*$voteStats['neutral'] + 1*$voteStats['sad']) / max(1, $voteStats['total']), 2) ?> / 3
+      &nbsp; (<?= $voteStats['total'] ?> votes)
+    </div>
+  </div>
+<?php endif; ?>
+
+</div>
+
+
+<script>
+function handleFAQSearch(e) {
+  if (e.key === 'Enter') {
+    const query = document.getElementById('faqSearchInput').value.trim();
+    if (query) {
+      window.location.href = '/faq?query=' + encodeURIComponent(query);
+    }
+  }
+}
+  // Toggle dropdown
+document.getElementById("shareToggle").addEventListener("click", function (e) {
+  e.stopPropagation();
+  const menu = document.getElementById("shareMenu");
+  menu.classList.toggle("open");
+});
+
+
+document.addEventListener("click", function (e) {
+  const toggle = document.getElementById("shareToggle");
+  const menu = document.getElementById("shareMenu");
+  if (!toggle.contains(e.target)) {
+    menu.classList.remove("open");
+  }
+});
+
+
+// Setup share URLs
+const pageURL = window.location.href;
+document.getElementById("whatsappShare").href = `https://wa.me/?text=${encodeURIComponent(pageURL)}`;
+document.getElementById("emailShare").href = `mailto:?subject=Check this out&body=${encodeURIComponent(pageURL)}`;
+
+// Copy link + show toast
+function copyToClipboard() {
+  navigator.clipboard.writeText(pageURL).then(() => {
+    const toast = document.getElementById("toast");
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 2000);
+  });
+}
+document.querySelectorAll('.rating-emoji').forEach(function(el) {
+  el.addEventListener('click', function() {
+    const rating = this.getAttribute('data-rating');
+    const faqId = <?= (int)$faq['id'] ?>;
+
+    fetch('/faq/rate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ faq_id: faqId, rating: rating })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        document.getElementById('feedbackMessage').textContent = "Thanks for your feedback!";
+      } else {
+        document.getElementById('feedbackMessage').textContent = "Something went wrong.";
+      }
+    })
+    .catch(() => {
+      document.getElementById('feedbackMessage').textContent = "Network error.";
+    });
+  });
+});
+
+</script>

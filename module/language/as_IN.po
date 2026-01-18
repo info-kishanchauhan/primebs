@@ -1,0 +1,152 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2022-09-17 16:06+0800\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: as_IN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.13\n"
+"X-Poedit-Basepath: .\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Dashboard"
+msgstr "ডেশ্বব'ৰ্ড"
+
+msgid "Financial"
+msgstr "বিত্তীয়"
+
+msgid "Activity"
+msgstr "কাৰ্যকলাপ"
+
+msgid "Academic Year Plan"
+msgstr "একাডেমিক বৰ্ষপৰিকল্পনা"
+
+msgid "Staff"
+msgstr "কৰ্মচাৰী"
+
+msgid "Enquiry"
+msgstr "অনুসন্ধান"
+
+msgid "Students"
+msgstr "শিক্ষাৰ্থীসকল"
+
+msgid "Attendance"
+msgstr "উপস্থিতি"
+
+msgid "Online Class"
+msgstr "অনলাইন শ্ৰেণী"
+
+msgid "Timetable"
+msgstr "সময়সূচী"
+
+msgid "Announcement"
+msgstr "ঘোষণা"
+
+msgid "Events"
+msgstr "ঘটনাসমূহ"
+
+msgid "Gallery"
+msgstr "গেলেৰী"
+
+msgid "Home Work"
+msgstr "ঘৰৰ কাম"
+
+msgid "Exam"
+msgstr "পৰীক্ষা"
+
+msgid "Payroll"
+msgstr "পেৰোল"
+
+msgid "Accounts"
+msgstr "একাওন্টসমূহ"
+
+msgid "Inventory"
+msgstr "ইনভেণ্টৰী"
+
+msgid "Transport"
+msgstr "পৰিবহন"
+
+msgid "Report"
+msgstr "প্ৰতিবেদন"
+
+msgid "Cloud Storage"
+msgstr "ক্লাউড সংৰক্ষণ"
+
+msgid "Complaint"
+msgstr "অভিযোগ"
+
+msgid "Certificate"
+msgstr "প্ৰমাণপত্ৰ"
+
+msgid "Billing"
+msgstr "বিলিং"
+
+msgid "Support"
+msgstr "সহায়"
+
+msgid "Settings"
+msgstr "সংহতিসমূহ"
+
+msgid "Online Resource"
+msgstr "অনলাইন সম্পদ"
+
+msgid "File Manager"
+msgstr "ফাইল ব্যৱস্থাপক"
+
+msgid "Conference Room"
+msgstr "কনফাৰেন্স ৰুম"
+
+msgid "Exam Timetable"
+msgstr "পৰীক্ষাৰ সময়সূচী"
+
+msgid "Exam Score"
+msgstr "পৰীক্ষাৰ নম্বৰ"
+
+msgid "Tracking"
+msgstr "ট্ৰেকিং"
+
+msgid "Primary Lesson Plan"
+msgstr "প্ৰাথমিক পাঠ পৰিকল্পনা"
+
+msgid "Lesson Plan"
+msgstr "পাঠ পৰিকল্পনা"
+
+msgid "Leave Request"
+msgstr "অনুৰোধ এৰি দিয়ক"
+
+msgid "Fees"
+msgstr "মাচুল"
+
+msgid "Vehicle Payment"
+msgstr "বাহন পৰিশোধ"
+
+msgid "Holiday"
+msgstr "বন্ধৰ দিন"
+
+msgid "Subjects"
+msgstr "বিষয়সমূহ"
+
+msgid "Classes Handling"
+msgstr "শ্ৰেণী সমূহ পৰিচালনা"
+
+msgid "School Finance"
+msgstr "স্কুল ফাইনেন্স"
+
+msgid "Student Attendance"
+msgstr "শিক্ষাৰ্থীৰ উপস্থিতি"
+
+msgid "Staff Attendance"
+msgstr "কৰ্মচাৰীৰ উপস্থিতি"
+
+msgid "System Log"
+msgstr "চিস্টেম লগ"
+
+msgid "Notice Board"
+msgstr "জাননী বোৰ্ড"
+
+msgid "Recent Students"
+msgstr "শেহতীয়া শিক্ষাৰ্থী"

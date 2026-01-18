@@ -1,0 +1,2857 @@
+
+<style>
+ /* Fix Spotify popup height & scroll */
+
+/* Fix Spotify popup height & scroll */
+#ap-spot-pop .ap-pop-body {
+  max-height: 435px;           /* control total height */
+  overflow-y: auto;            /* scroll if list is long */
+  padding-bottom: 70px;        /* space for buttons */
+  position: relative;
+}
+
+  /* ===== Gentle Theme Tokens (very safe overrides) ===== */
+  :root{
+    --font: 'Inter', -apple-system, 'SF Pro Text', system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --ink:#111827;          /* text */
+    --muted:#6b7280;        /* secondary text */
+    --line:#e5e7eb;         /* borders */
+    --bg:#f7f7f8;           /* page bg */
+    --card:#ffffff;         /* surfaces */
+    --brand:#5b34c8;        /* primary */
+    --brand-2:#792b97;      /* primary alt */
+    --ok:#16a34a; --warn:#f59e0b; --bad:#ef4444;
+    --r:10px;               /* radius */
+    --shadow:0 8px 24px rgba(2,6,23,.06);
+  }
+
+  /* ===== Global (super low specificity) ===== */
+  html { -webkit-text-size-adjust: 100%; }
+  body { font-family: var(--font) !important; color: var(--ink); background: var(--bg); }
+  h1,h2,h3,h4,h5 { letter-spacing:-.01em; }
+  
+  a { color: var(--brand); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* ===== Cards/Panels (respect existing layout) ===== */
+  .panel, .section-card, .card, .ap-card, .well, .box {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--r); box-shadow: var(--shadow);
+  }
+
+  /* ===== Buttons (keep sizes; soften visuals) ===== */
+  .btn, .btn-primary, .btn-default, .btn-secondary, .btn-danger, .btn-ghostn {
+    font: 600 14px/1 var(--font); border-radius: var(--r) !important;
+    border: 1px solid var(--line); background:#fff; color:#1f2937;
+    transition: box-shadow .2s ease, transform .12s ease, background .2s ease, border-color .2s ease;
+  }
+  .btn:hover { box-shadow: 0 10px 22px rgba(2,6,23,.08); transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+  .btn-primary { background: linear-gradient(90deg, var(--brand), var(--brand-2)); color:#fff; border-color: transparent; }
+  .btn-danger  { background: var(--bad); color:#fff; border-color: var(--bad); }
+  .btn-secondary, .btn-default { background:#f3f4f6; }
+
+  /* ===== Inputs (do not change structure) ===== */
+  input[type="text"], input[type="number"], input[type="email"], input[type="search"], select, textarea {
+    font: 500 14px/1.4 var(--font); color: var(--ink); background:#fff;
+    border:1px solid var(--line); border-radius: var(--r); padding:10px 12px;
+    transition: box-shadow .15s ease, border-color .15s ease;
+  }
+  input:focus, select:focus, textarea:focus { outline:none; border-color:#a78bfa; box-shadow:0 0 0 4px rgba(167,139,250,.18); }
+
+  /* ===== Tables (same markup, clearer look) ===== */
+  .table { background: var(--card); border:1px solid var(--line); border-radius: var(--r); overflow:hidden; box-shadow: var(--shadow); }
+  .table>thead>tr>th { font: 700 12px/1.2 var(--font); text-transform:uppercase; letter-spacing:.04em; color:#475569; background:#f8fafc; }
+  .table>tbody>tr>td { font: 500 13px/1.45 var(--font); color:#1f2937; }
+  .table>tbody>tr:hover>td { background:#fafafa; }
+  .num { text-align:right; font-variant-numeric: tabular-nums; }
+
+  /* ===== Tiny status pills (non-breaking) ===== */
+  .status, .badge { border-radius: 8px; font: 700 11px/1 var(--font); padding:6px 8px; text-transform:uppercase; letter-spacing:.04em; }
+  .status.ok { background:#ecfdf5; color:var(--ok); }
+  .status.warn { background:#fffbeb; color:var(--warn); }
+  .status.bad { background:#fef2f2; color:var(--bad); }
+
+  /* ===== Light utility classes (opt-in) ===== */
+  .muted{ color:var(--muted)!important; } .mono{ font-variant-numeric:tabular-nums; font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .gap-xs{ gap:6px; } .gap-sm{ gap:10px; } .gap-md{ gap:14px; } .gap-lg{ gap:18px; }
+  .rounded{ border-radius:var(--r)!important; }
+
+  /* ===== iPad/Safari focus/zoom fixes ===== */
+  @supports (-webkit-touch-callout: none) { select, input, textarea { font-size:16px; } }
+
+  /* ===== Slim scrollbars (safe) ===== */
+  *::-webkit-scrollbar{ width:10px; height:10px; }
+  *::-webkit-scrollbar-thumb{ background:#d1d5db; border-radius:10px; }
+  *::-webkit-scrollbar-thumb:hover{ background:#9ca3af; }
+</style>
+
+<!-- Optional: sticky header assist only if parent scrolls; harmless if not present -->
+<script>
+  (function(){
+    document.querySelectorAll('.table').forEach(function(tbl){ var p = tbl.parentElement; if(p){ p.style.overflow='auto'; }});
+  })();
+</script>
+
+
+
+<!-- ================================ -->
+<!-- PURE LOOK POLISH ONLY (no new features, no JS) -->
+<!-- Scope it to the track page to avoid global impact: wrap your page with <div class="pda-track"> ... -->
+
+<style>
+  /* ===== Scope ===== */
+  .pda-track{ --font:'Inter', -apple-system, 'SF Pro Text', system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; --ink:#111827; --muted:#6b7280; --line:#e5e7eb; --bg:#f7f7f8; --card:#ffffff; --brand:#5b34c8; --brand-2:#792b97; --ok:#16a34a; --warn:#f59e0b; --bad:#ef4444; --r:10px; --shadow:0 8px 24px rgba(2,6,23,.06); }
+
+  /* ===== Global feel (scoped) ===== */
+  .pda-track, .pda-track *{ font-family:var(--font) !important; }
+  .pda-track{ color:var(--ink); background:var(--bg); }
+  .pda-track a{ color:var(--brand); text-decoration:none; }
+  .pda-track a:hover{ text-decoration:underline; }
+
+  /* ===== Panels/Cards ===== */
+  .pda-track .panel, .pda-track .section-card, .pda-track .card, .pda-track .ap-card, .pda-track .well, .pda-track .box{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--shadow);
+  }
+
+  /* ===== Buttons (sizes stay same) ===== */
+  .pda-track .btn, .pda-track .btn-primary, .pda-track .btn-default, .pda-track .btn-secondary, .pda-track .btn-danger{
+    border-radius:var(--r) !important; border:1px solid var(--line); background:#fff; color:#1f2937;
+    transition:box-shadow .2s ease, background .15s ease, border-color .15s ease; 
+  }
+  .pda-track .btn:hover{ box-shadow:0 10px 22px rgba(2,6,23,.08); }
+  .pda-track .btn-primary{ background:linear-gradient(90deg, var(--brand), var(--brand-2)); color:#fff; border-color:transparent; }
+  .pda-track .btn-danger{ background:var(--bad); color:#fff; border-color:var(--bad); }
+  .pda-track .btn-default, .pda-track .btn-secondary{ background:#f3f4f6; }
+
+  /* ===== Inputs (no layout change) ===== */
+  .pda-track input[type="text"], .pda-track input[type="number"], .pda-track input[type="email"], .pda-track input[type="search"], .pda-track select, .pda-track textarea{
+    background:#fff; color:var(--ink); border:1px solid var(--line); border-radius:var(--r); padding:10px 12px; 
+    transition:border-color .15s ease, box-shadow .15s ease;
+  }
+  .pda-track input:focus, .pda-track select:focus, .pda-track textarea:focus{ outline:none; border-color:#a78bfa; box-shadow:0 0 0 4px rgba(167,139,250,.18); }
+
+  /* ===== Tables (same markup) ===== */
+  .pda-track .table{ background:var(--card); border:1px solid var(--line); border-radius:var(--r); overflow:hidden; box-shadow:var(--shadow); }
+  .pda-track .table>thead>tr>th{ background:#f8fafc; color:#475569; font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:.04em; }
+  .pda-track .table>tbody>tr>td{ color:#1f2937; font-weight:500; font-size:13px; }
+  .pda-track .table>tbody>tr:hover>td{ background:#fafafa; }
+
+  /* ===== Badges/Statuses (reuse existing classes if any) ===== */
+  .pda-track .status, .pda-track .badge{ border-radius:8px; font-weight:700; font-size:11px; text-transform:uppercase; letter-spacing:.04em; padding:6px 8px; }
+  .pda-track .status.ok{ background:#ecfdf5; color:var(--ok); }
+  .pda-track .status.warn{ background:#fffbeb; color:var(--warn); }
+  .pda-track .status.bad{ background:#fef2f2; color:var(--bad); }
+
+  /* ===== Chips/Tags (optional, if present) ===== */
+  .pda-track .chip{ background:#eef2ff; color:#4f46e5; border-radius:999px; padding:6px 10px; font-weight:600; font-size:12px; }
+
+  /* ===== Modals (visual only) ===== */
+  .pda-track .modal-content{ border-radius:14px; border:1px solid var(--line); box-shadow:0 20px 60px rgba(2,6,23,.22); }
+  .pda-track .modal-header{ background:#f8fafc; border-bottom:1px solid var(--line); }
+
+  /* ===== Small utilities (opt-in) ===== */
+  .pda-track .muted{ color:var(--muted)!important; }
+  .pda-track .rounded{ border-radius:var(--r)!important; }
+  .pda-track .mono{ font-variant-numeric:tabular-nums; font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+
+  /* ===== iPad/Safari font zoom fix ===== */
+  @supports (-webkit-touch-callout: none){ .pda-track select, .pda-track input, .pda-track textarea{ font-size:16px; } }
+
+  /* ===== Slim scrollbars (safe) ===== */
+  .pda-track *::-webkit-scrollbar{ width:10px; height:10px; }
+  .pda-track *::-webkit-scrollbar-thumb{ background:#d1d5db; border-radius:10px; }
+  .pda-track *::-webkit-scrollbar-thumb:hover{ background:#9ca3af; }
+</style>
+
+<style>
+  
+      .btn {
+    border-radius: 4px !important;
+    margin: 1px 2px;
+}
+/* Right icon area stable rahe */
+.suggestion-list .ap-right{
+  margin-left:auto;
+  display:inline-flex;
+  align-items:center;
+  justify-content:flex-end;
+  width:40px;           /* fixed width ≠ jump */
+  min-width:40px;
+  gap:6px;
+}
+.removemultifield {
+    position: absolute;
+    right: -7px !important; 
+    margin-top: 8px;
+}
+/* Dono states pre-mounted; sirf opacity flip (no display:none) */
+.suggestion-item .ap-icon{
+  width:18px; height:18px; display:inline-block;
+  opacity:0; transition:opacity .12s linear;
+}
+.suggestion-item.is-linked   .ap-icon--linked   { opacity:1; }
+.suggestion-item.is-linked   .ap-icon--unlinked { opacity:0; }
+.suggestion-item.is-unlinked .ap-icon--linked   { opacity:0; }
+.suggestion-item.is-unlinked .ap-icon--unlinked { opacity:1; }
+
+  /* suggestion list ke right me jo + button hai */
+.suggestion-list .ap-right .ap-linker{
+  background: transparent !important;
+  border: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  line-height: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  cursor: pointer;
+}
+.suggestion-list .ap-right .ap-linker img{
+  display:block; width:18px; height:18px;
+}
+
+/* input ke andar right-ico wale + button ke liye */
+#artist-fields .ap-inp-ico .ap-open{
+  background: transparent !important;
+  border: 0 !important;
+  padding: 0 !important;
+  line-height: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+}
+
+  .suggestion-item.is-active { background: #f0f0f0; }
+
+     /* Right-aligned dropdown shell */
+.ap-pop--dropdown{
+  position:absolute;
+  width:400px; 
+      height: 420px;/* zarurat ho to 420–560 ke beech adjust */
+  max-width:min(520px, 94vw);
+  background:#fff;
+  border:1px solid #e5e7eb;
+  border-radius:10px;
+  box-shadow:0 12px 40px rgba(0,0,0,.12);
+  z-index:2000;
+}
+.ap-pop.hidden{ display:none; }
+.ap-pop-head{ display:flex; justify-content:space-between; align-items:center; padding:10px 12px; border-bottom:1px solid #f1f2f5 }
+.ap-pop-close{ background:transparent; border:0; font-size:14px; line-height:1; cursor:pointer }
+.ap-pop-body{ padding:14px; display:flex; flex-direction:column; gap:10px }
+
+.ap-results{ list-style:none; margin:0; padding:0; max-height:290px; overflow:auto; border:1px solid #eee; border-radius:8px }
+.ap-results li{ display:flex; align-items:center; gap:10px; padding:8px 10px; border-bottom:1px solid #f7f7f7 }
+.ap-results li:last-child{ border-bottom:0 }
+.ap-results img{ width:36px; height:36px; object-fit:cover; border-radius:50% }
+.ap-row-lab{ display:flex; align-items:center; gap:10px; flex:1; cursor:pointer }
+.ap-actions{ display:flex; justify-content:flex-end; gap:10px; padding-top:6px; border-top:1px solid #f1f2f5 }
+
+/* Input icon wrap (agar pehle se nahi hai) */
+.ap-inp-wrap{ position:relative }
+.ap-inp-ico{ position:absolute; right:10px; top:50%; transform:translateY(-50%); display:inline-flex }
+.ap-ic{ width:18px; height:18px }
+.ap-ic.plus circle{ opacity:.25 }
+.ap-ic.linked path{ fill:#1DB954 }
+
+  /* ===== Primary artist input: right icon & sizing ===== */
+#artist-fields .ap-inp-wrap{
+  position: relative;
+  display: block;
+  width: 100%;
+}
+#artist-fields .ap-inp-wrap .form-control{
+  /* apne form-control ki height agar 44/48 px hai to sahi lagega */
+  padding-right: 44px;          /* text icon se na takraye */
+                /* optional: match your UI */
+  line-height: 44px;            /* optional: crisp vertical centering */
+}
+
+#artist-fields .ap-inp-ico{
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  pointer-events: auto;         /* button clickable */
+  z-index: 2;
+}
+#artist-fields .ap-inp-ico a,
+#artist-fields .ap-inp-ico .ap-btn{
+  display: inline-flex;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+#artist-fields .ap-inp-ico .ap-ic{ width: 18px; height: 18px; }
+#artist-fields .ap-inp-ico .ap-ic.plus circle{ opacity: .25; }
+#artist-fields .ap-inp-ico .ap-ic.linked path{ fill:#1DB954; }
+
+/* ===== Suggestion list should align with input width ===== */
+#artist-fields .suggestion-list {
+    position: absolute;
+    left: auto;
+    /* right: 0; */
+    top: calc(100% - 1px);
+   width: 360px; 
+    z-index: 2000;
+    border-radius: 0 0 10px 10px;
+    border-top: none;
+}
+#artist-fields .suggestion-item{
+  display:flex; align-items:center; gap:8px;
+}
+#artist-fields .suggestion-item .ap-right{
+  margin-left:auto; display:inline-flex; align-items:center; gap:6px;
+}
+/* dropdown rows */
+.suggestion-list .suggestion-item{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.suggestion-list .suggestion-item > a,
+.suggestion-list .suggestion-item > div{
+  flex:1 1 auto; /* title takes remaining space */
+  min-width:0;
+}
+.suggestion-list .ap-right{
+  margin-left:auto;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+}
+.suggestion-list .ap-right .ap-btn{
+  border:0;
+  background:transparent;
+  cursor:pointer;
+}
+.suggestion-list .ap-right .ap-ic{ width:18px; height:18px; } /* svg size */
+.suggestion-list .ap-mini-spotify{ display:inline-flex; }
+  
+.ap-suggest{position:absolute;z-index:50;background:#fff;border:1px solid #e5e7eb;max-height:280px;overflow:auto;width:420px;display:none;}
+.ap-suggest li{padding:8px 10px;cursor:pointer;display:flex;align-items:center;gap:8px;}
+.ap-suggest li:hover{background:#f3f4f6;}
+.ap-selected{margin-top:8px;display:flex;flex-wrap:wrap;gap:6px}
+.ap-chip{display:inline-flex;align-items:center;gap:6px;background:#f3f4f6;border-radius:999px;padding:6px 9px}
+.ap-chip .ap-name{font-weight:600}
+.ap-chip .ap-sp{display:inline-flex;align-items:center}
+.ap-chip .ap-sp a{display:inline-flex}
+.ap-chip .ap-sp .ap-btn{border:none;background:transparent;cursor:pointer;display:inline-flex}
+.ap-ic{width:18px;height:18px}
+.ap-ic.plus circle{opacity:.25} /* dull green */
+.ap-ic.plus text{font-weight:700;font-size:14px}
+.ap-ic.linked path{fill:#1DB954}
+
+
+/* responsive: on very small screens stack vertically */
+@media (max-width: 480px){
+  #releaseCover .release-inner{
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+/* image: responsive and keeps aspect ratio */
+/* clamp ensures image scales between min and max */
+#releaseCover img{
+  
+  width: clamp(64px, 20vw, 140px); /* min 64px, preferred 20vw, max 140px */
+  height: auto;
+  border-radius: 12px;
+  object-fit: cover; /* maintain cover crop if you force height later */
+  flex: 0 0 auto; /* don't stretch */
+  margin: 0;
+}
+
+/* upload area takes remaining space */
+#releaseCover .upload-area{
+  flex: 1 1 auto;
+  text-align: left;
+  min-width: 0; /* important for ellipsis and flex children */
+}
+
+/* title / text */
+#upload_cover_text{
+  color: #7d2492;
+  font-weight: 600;
+  margin-bottom: 6px;
+  font-size: 12px;
+}
+
+  
+
+
+/* upload button and hint */
+.btn-upload{
+  display: inline-block;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background: white;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.hint{
+  margin-top: 6px;
+  color: #6b7280;
+  font-size: 12px;
+}
+
+/* If you use an <input type="file"> visually hidden but clickable via button */
+input[type="file"].cover-file-input{
+  position: absolute;
+  left: -9999px;
+}
+
+/* optional: when you want fixed square preview (example) */
+/* #releaseCover img { width: 140px; height: 140px; } */
+/* but above we used fluid sizing so avoid fixed height unless wanted */
+
+
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.control-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.form-control, select, textarea {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 14px;
+  transition: border .2s ease, box-shadow .2s ease;
+}
+.form-control:focus {
+  border-color: #7d2492;
+  box-shadow: 0 0 0 3px rgba(125, 36, 146, .15);
+}
+
+ .disabled a{
+	 pointer-events:none;
+	 z-index: 0;
+
+ }
+ li.disabled
+ {
+	 cursor:not-allowed;
+ }
+ .cover-error a 
+ {
+	 color: #b94a48;
+ }
+ .divAppend
+ {
+	 margin-left: -20px;
+    margin-top: 7px;
+ }
+ .bs-alert-danger
+{
+	color: #a94442 !important;
+    background-color: #f2dede!important;
+    border-color: #ebccd1!important;
+	margin: 15px 15px 0;
+	border-radius: 4px!important;
+}
+.bs-alert-message {
+    font-size: 14px!important;
+	/*white-space: pre-line;*/
+    
+}
+.suggestion-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 5px 0 0;
+    border: 1px solid #ccc;
+    border-top: none;
+    max-height: 200px;
+    overflow-y: auto;
+    position: absolute;
+    background: #f8f6f6;
+    z-index: 1000;
+    border-radius: 0 0 5px 5px;
+    width: calc(100% - 30px);
+	top: 27px;
+}
+
+/* Individual Suggestion Item */
+.suggestion-item {
+    padding: 10px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.suggestion-item:hover {
+    background: #f0f0f0;
+}
+
+</style>
+
+<link rel="stylesheet" type="text/css" href="<?php echo $this->basePath(); ?>/public/css/assets.css">
+
+<?php
+	if($_SESSION['USER_TYPE'] == 'Limited Access' && $_SESSION["SUBUSER"] == '0' )
+	{
+		if(strtotime('Y-m-d') >= strtotime($_SESSION['USER_START_DATE']) && strtotime('Y-m-d') <= strtotime($_SESSION['USER_END_DATE'])){}
+		else
+		{
+			echo '<div id="bs-main-alert" class="bs-alert bs-alert-left" style="display:block;">
+				<div class="bs-alert-message">Your standard user access has expired. Please renew your subscription to continue accessing all features.</div>
+			</div>';
+			
+		}
+	}
+	else
+	{
+?>
+
+<div id="easyEntryContent">
+    <!-- header (release title, save button...) -->
+    <div id="easyEntryAssetsHeader" class="clearfix">
+         <h2 style="float: left;"><?php echo $this->Title.' '.$this->SubTitle;?></h2>
+        <div style="float: right;">
+            <button id="btnSave" class="btn btn-large btn-primary nf-btn-submit" href="javascript:;"><i class="icon-ok-circle icon-white"></i> Save</button>
+			
+			
+			<?php
+				if($this->import_flag == '1')
+				{
+				?>
+					<button id="btnApprove" class="btn-success btn btn-large"  aria-label="Approve"  class="mb-8" style="">Approve</button>
+				<?php
+				}
+			?>
+			<img style="margin: 10px 30px;" src="<?php echo $this->basePath(); ?>/public/img/loader.gif" class="hide nf-loader">
+        </div>
+    </div>
+
+    <!-- message -->
+    <div id="msgBox">
+    </div>
+
+	<?php
+		$disabled='';
+		if($_GET['edit'] == '')
+			$disabled=' disabled';
+	?>
+
+    <!-- tabs -->
+    <ul class="nav nav-tabs" id="ee_tabs">
+        <li class="active"><a class="easyEntryStep" data-page="main" href="<?php echo $this->url('newrelease',array('action' => 'index'));?>?edit=<?php echo $_GET['edit'];?>">Release information</a></li>
+        <li class="<?php echo $disabled;?>"><a class="easyEntryStep" data-page="tracks" href="<?php echo $this->url('newrelease',array('action' => 'track'));?>?edit=<?php echo $_GET['edit'];?>">Tracks</a></li>
+        <li class="<?php echo $disabled;?>"><a class="easyEntryStep" data-page="releasedate" href="<?php echo $this->url('newrelease',array('action' => 'releasedate'));?>?edit=<?php echo $_GET['edit'];?>">Release date</a></li>
+		<?php
+			if($this->import_flag == '0')
+			{
+		?>
+        <li class="<?php echo $disabled;?>"><a class="easyEntryStep" data-page="submission" href="<?php echo $this->url('newrelease',array('action' => 'submission'));?>?edit=<?php echo $_GET['edit'];?>">Submission</a></li>
+		<?php } ?>
+    </ul>
+
+   <style>
+ul.list-unstyled li
+{
+	margin-top: 5px;
+}
+#previewContainer img{
+    width: 70%;
+    margin: 0 auto;
+}
+/*ul.introOptions li a
+{
+	color:  inherit;
+}*/
+</style>
+
+
+    <div id="mainForm">
+        <form method="post" action="" id="frmForm" class="form-horizontal" role="form">
+            <input type="hidden" name="filehidden" id="filehidden" value="">
+            
+
+            <div style="text-align: center;" class="col-md-2 easyEntryCol">
+	<div id="release-col-cover" class=""><div class="col-sm-9"><div id="releaseCover" class=""><a style="display: block;" href="javascript:;" data-id="6859263" id="uploadCoverLink"><img class="img-thumbnail " src="public/img/noCover.png" alt="No cover" id="coverOfThisAlbum"><br><br><span id="upload_cover_text">Upload cover</span></a><a id="deleteCoverLink" style="line-height:35px;" class="hide" href="javascript:;">Delete</a></div></div></div></div>
+            <div class="col-md-5 easyEntryCol">
+                <div id="release-col1" class="">
+					<?php
+						/*if($_SESSION['user_id'] == '0')
+						{
+					?>
+					 <div class="form-group form-group-sm">
+                        <div class="col-sm-3 control-label">
+                            <label class=" input-required behavior-1" id="label-easyEntryEditForm-albumName-0" for="easyEntryEditForm-albumName-0">User</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> *</span> <span class="label-tip">
+                            </span>
+                            </span>
+                        </div>
+                        <div class="col-sm-7">
+                            <select type="select" class="input-large inputInt inputBehavior-2 select2" name="user_id" id="user_id" tabindex="6">
+								<option value="0">Select a user</option>
+							</select>
+							<span style="display:none;" class="form-input-error help-inline control-label" rel="title"></span>
+							
+						</div>
+					</div>
+					<?php }*/ ?>
+                    <div class="form-group form-group-sm">
+                        <div class="col-sm-3 control-label">
+                            <label class=" input-required behavior-1" id="label-easyEntryEditForm-title-0" for="title">Release title</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> *</span> <span class="label-tip"><a href="javascript:;" data-html="true" data-placement="top" title="" class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip" data-original-title="<div style=&quot;text-align: left;&quot;>Please enter a title for this release:<br /><br /> eg.: <font color=&quot;#ff0000&quot;><em>Ya Nabi Salam Alayka</em></font>, <font color=&quot;#ff0000&quot;><em>Tajdar-e-Haram</em></font>, <font color=&quot;#ff0000&quot;><em>Bhar Do Jholi</em></font>, etc...<br /><br />Please use version field to enter further information for the release.<br /><br />eg.: <font color=&quot;#ff0000&quot;><em>Ramzan Special</em></font>, <font color=&quot;#ff0000&quot;><em>Live at Ajmer Sharif</em></font>, <font color=&quot;#ff0000&quot;><em>Qawwali Reprise</em></font>, <font color=&quot;#000000&quot;><em><font color=&quot;#ff0000&quot;>Mehfil-e-Sama Version</font></em></font>, etc...</div>"><span class="glyphicon glyphicon-question-sign"></span></a></span></span>
+
+                        </div>
+                        <div class="col-sm-7">
+                            <input class="input-large inputString inputBehavior-1 form-control" name="title" id="title" type="text" value="" tabindex="1"><span style="display:none" class="form-input-error help-inline control-label" rel="title"></span></div>
+                        <div class="col-sm-2 divAppend"></div>
+                    </div>
+                    <div class="form-group form-group-sm">
+                        <div class="col-sm-3 control-label">
+                            <label class=" behavior-2" id="label-easyEntryEditForm-version-0" for="version">Version/Subtitle</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="visibility: hidden;"> *</span> <span class="label-tip"><a href="javascript:;" data-html="true" data-placement="top" title="" class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip" data-original-title="<div style=&quot;text-align: left;&quot;>Use this field to add further details to your release title.<br /><br />eg.: <font color=&quot;#ff0000&quot;><em>Ramzan Special</em></font>, <font color=&quot;#ff0000&quot;><em>Live at Ajmer Sharif</em></font>, <font color=&quot;#ff0000&quot;><em>Qawwali Reprise</em></font>, <font color=&quot;#000000&quot;><em><font color=&quot;#ff0000&quot;>Mehfil-e-Sama Version</font></em></font>, etc.</div>"><span class="glyphicon glyphicon-question-sign"></span></a></span></span>
+
+                        </div>
+                        <div class="col-sm-7">
+                            <input class="input-large inputString inputBehavior-2 form-control" name="version" id="version" type="text" value="" tabindex="2"><span style="display:none" class="form-input-error help-inline control-label" rel="version"></span></div>
+                        <div class="col-sm-2 divAppend"></div>
+                    </div>
+                    <div class="form-group form-group-sm">
+                        <div class="col-sm-3 control-label">
+                            <label class=" input-required behavior-2" id="label-easyEntryEditForm-releaseArtist-0" for="releaseArtist">Primary artist</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> *</span> <span class="label-tip"><a href="javascript:;" data-html="true" data-placement="top" title="" class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip" data-original-title="<div style=&quot;text-align: left;&quot;>Please enter the name of the band or artist on this release.<br /><br />Please enter the <strong>full first-name</strong>, no initials.<br /><br />eg.: <font color=&quot;#ff0000&quot;><em>Junaid Jamshed</em></font>, <font color=&quot;#ff0000&quot;><em>Amjad Sabri</em></font>, <font color=&quot;#ff0000&quot;><em>Rahat Fateh Ali Khan</em></font><br /><br />Please only <strong>enter one name per field.</strong><br /><br />For example, don't enter <font color=&quot;#ff0000&quot;>Qari Rizwan &amp; Hafiz Noman</font> in the Artist Name field, but <font color=&quot;#ff0000&quot;>Qari Rizwan</font> <strong>in the first field</strong> and <font color=&quot;#ff0000&quot;>Hafiz Noman</font> <strong>in a separate field.</strong> To add an additional artist, click <em>Add a new artist.</em><br /><br />If your release is a compilation, you do not need to indicate all artists individually: just click the appropriate box.<strong><br /></strong></div>"><span class="glyphicon glyphicon-question-sign"></span></a></span></span>
+
+                        </div>
+						<?php 
+										if($this->user_artist_cnt == '1')
+										{
+											?>
+											<div class="col-sm-7" >
+													<div  id="artist-fields">
+														<div style="display:flex">
+															
+															<input data-tags="true" class="input-large input-releaseArtist input-multiple inputString inputBehavior-2 form-control" name="releaseArtist[]" id="f_release_artist" type="text" value="<?php echo $this->user_artist_name;?>" tabindex="3" autocomplete="off" readonly>
+														</div>
+														<span style="display:none" class="form-input-error help-inline control-label" rel="releaseArtist"></span>
+													</div>
+												</div>
+												<div class="col-sm-2 divAppend">
+												<span class="append-input">
+													
+														<span class="glyphicon glyphicon-lock" style="color:#4CAF50"></span>
+													
+												</span>
+											</div>
+											<?php
+										}
+										else
+										{
+											?>
+											<div class="col-sm-7" >
+												<div  id="artist-fields">
+													<div style="display:flex">
+														
+														<input data-tags="true" class="input-large input-releaseArtist input-multiple inputString inputBehavior-2 form-control" name="releaseArtist[]" id="f_release_artist" type="text" value="<?php echo $this->user_artist_name;?>" tabindex="3" autocomplete="off">
+													</div>
+                                                   <div id="ap-selected" class="ap-selected"></div>
+
+													<span style="display:none" class="form-input-error help-inline control-label" rel="releaseArtist"></span>
+												</div>
+											</div>
+											<div class="col-sm-2 divAppend">
+												<span class="append-input">
+													<a href="javascript:;" class="addFieldLink" data-selector="input-releaseArtist">
+														<span class="glyphicon glyphicon-plus-sign" onclick="addFieldArtist()"></span>
+													</a>
+												</span>
+											</div>
+											<?php
+										}
+									?>
+                        
+                    </div>
+                    <div class="form-group form-group-sm">
+						
+                        <div class="col-sm-3 control-label">
+                            <label class=" behavior-2" id="label-easyEntryEditForm-featuring-0" for="Select a label">Featuring</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="visibility: hidden;"> *</span> </span>
+                        </div>
+						<div class="col-sm-7" >
+							<div  id="featuring-fields">
+								<div style="display:flex">
+									<input data-tags="true" class="input-large input-releaseFeaturing input-multiple inputString inputBehavior-2 form-control" name="featuring[]"  id="f_featuring" type="text" value="" tabindex="3" autocomplete="off">
+									<span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-releaseFeaturing-0"></span>
+									
+								</div>
+							</div>
+						</div>
+						<div class="col-sm-2 divAppend">
+							<span class="append-input">
+								<a href="javascript:;" class="addFieldLink" data-selector="input-releaseFeaturing">
+									<span class="glyphicon glyphicon-plus-sign" onclick="addFieldFeaturing()"></span>
+								</a>
+							</span>
+						</div>
+                       
+                    </div>
+                    
+                    <div class="form-group form-group-sm">
+                        <div class="col-sm-3 control-label">
+                            <label class=" input-required behavior-2" id="label-easyEntryEditForm-idGenre-0" for="mainGenre">Genre</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> *</span> </span>
+                        </div>
+                        <div class="col-sm-7">
+                            <select  type="select"  id="mainGenre" class="input-large inputInt inputBehavior-2 select2" name="mainGenre" tabindex="6">
+                                <option value="0">- Select a genre -</option>
+								<option value="African">African</option>
+								<option value="Alternative">Alternative</option>
+								<option value="Arabic">Arabic</option>
+								<option value="Asian">Asian</option>
+								<option value="Blues">Blues</option>
+								<option value="Brazilian">Brazilian</option>
+								<option value="Children Music">Children Music</option>
+								<option value="Christian & Gospel">Christian & Gospel</option>
+								<option value="Classical">Classical</option>
+								<option value="Country">Country</option>
+								<option value="Dance">Dance</option>
+								<option value="Easy Listening">Easy Listening</option>
+								<option value="Electronic">Electronic</option>
+								<option value="Folk">Folk</option>
+								<option value="Hip Hop/Rap">Hip Hop/Rap</option>
+								<option value="Indian">Indian</option>
+								<option value="Jazz">Jazz</option>
+								<option value="Latin">Latin</option>
+								<option value="Metal">Metal</option>
+								<option value="Pop">Pop</option>
+								<option value="R&B/Soul">R&B/Soul</option>
+								<option value="Reggae">Reggae</option>
+								<option value="Relaxation">Relaxation</option>
+								<option value="Rock">Rock</option>
+								<option value="Various">Various</option>
+								<option value="World Music / Regional Folklore">World Music / Regional Folklore</option>
+                                
+                            </select><span style="display:none" class="form-input-error help-inline control-label" rel="mainGenre"></span></div>
+                        <div class="col-sm-2 divAppend"><span class="append-input">
+                            </span>
+                        </div>
+                    </div>
+                    <div class="form-group form-group-sm">
+                        <div class="col-sm-3 control-label">
+                            <label class=" input-required behavior-2" id="label-easyEntryEditForm-subgenre-0" for="easyEntryEditForm-subgenre-0">Subgenre</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> *</span> </span>
+                        </div>
+                        <div class="col-sm-7">
+                            <select  type="select"  id="subgenre" class="input-large inputInt inputBehavior-2  select2" name="subgenre" tabindex="7">
+                                <option value="0">- Select a sub-genre -</option>
+                            </select><span style="display:none" class="form-input-error help-inline control-label" rel="subgenre"></span></div>
+                        <div class="col-sm-2 divAppend"></div>
+                    </div>
+                   
+                    <div class="form-group form-group-sm">
+                        <div class="col-sm-3 control-label">
+                            <label class=" input-required behavior-2" id="label-easyEntryEditForm-idLabel-0" for="labels">Label name</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> *</span> <span class="label-tip"><a href="javascript:;" data-html="true" data-placement="top" title="" class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip" data-original-title="<div style=&quot;text-align: left;&quot;>Make sure the label spelling is the same for every release, and please use the exact spelling spelt as authorised by some pre-authorisation platforms (such as Beatport).</div>"><span class="glyphicon glyphicon-question-sign"></span></a>
+                            </span>
+                            </span>
+                        </div>
+                        <div class="col-sm-7">
+                            <select  type="select"  class="input-large inputInt inputBehavior-2 select2" id="labels" name="labels" tabindex="10">
+                                <option value="0">- Select a label -</option>
+                                
+                            </select><span style="display:none" class="form-input-error help-inline control-label" rel="select-idLabel"></span></div>
+                        <div class="col-sm-2 divAppend"></div>
+                    </div>
+					<div class="form-group form-group-sm new_label_name hide">
+                        <div class="col-sm-3 control-label">
+                            <label class=" input-required behavior-1" id="label-easyEntryEditForm-title-0" for="title">New label name</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"></span> 
+                            </span>
+                        </div>
+                        <div class="col-sm-7">
+                            <input class="input-large inputString inputBehavior-1 form-control" name="new_label_name" id="new_label_name" type="text" value="" tabindex="1"><span style="display:none" class="form-input-error help-inline control-label" rel="New label name"></span></div>
+                        <div class="col-sm-2 divAppend"></div>
+                    </div>
+					<div class="form-group form-group-sm">
+                        <div class="col-sm-3 control-label">
+                            <label class=" input-required behavior-2" id="label-easyEntryEditForm-idLabel-0" for="releasing_network">RMS Network</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> *</span> <span class="label-tip"><a href="javascript:;" data-html="true" data-placement="top" title="" class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip" data-original-title="<div style=&quot;text-align: left;&quot;>Make sure the Releasing Network spelling is the same for every release, and please use the exact spelling spelt as authorised by some pre-authorisation platforms (such as Beatport).</div>"><span class="glyphicon glyphicon-question-sign"></span></a>
+                            </span>
+                            </span>
+                        </div>
+                        <div class="col-sm-7">
+                            <select  type="select" class="input-large inputInt inputBehavior-2 select2" id="releasing_network" name="releasing_network" tabindex="10">
+                                <option value="0">- Select a Releasing Network -</option>
+                               
+                                
+                            </select><span style="display:none" class="form-input-error help-inline control-label" rel="releasing_network"></span></div>
+                        <div class="col-sm-2 divAppend"></div>
+                    </div>
+                    
+                    <div class="form-group form-group-sm">
+                        <div class="col-sm-3 control-label">
+                            <label class=" input-required behavior-2" id="label-easyEntryEditForm-albumFormat-0" for="albumFormat">Format</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> *</span> <span class="label-tip"><a href="javascript:;" data-html="true" data-placement="top" title="" class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip" data-original-title="<div style=&quot;text-align: left;&quot;>Single: 1-2 Tracks, EP: 3-6 Tracks, Album: Ab 7 Tracks</div>"><span class="glyphicon glyphicon-question-sign"></span></a>
+                            </span>
+                            </span>
+                        </div>
+                        <div class="col-sm-7">
+                            <select  type="select"  class="input-large inputString inputBehavior-2 select2" name="albumFormat" id="albumFormat" tabindex="12">
+                                <option value="">- Select a format -</option>
+                                <option value="SINGLE">SINGLE</option>
+                                <option value="EP">EP</option>
+                                <option value="ALBUM">ALBUM</option>
+                            </select><span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-albumFormat-0"></span></div>
+                        <div class="col-sm-2 divAppend"></div>
+                    </div>
+                    <div class="form-group form-group-sm">
+                        <div class="col-sm-3 control-label">
+                            <label class=" input-required behavior-2" id="label-easyEntryEditForm-physicalReleaseDate-0" for="physicalReleaseDate">Physical/Original release date</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> *</span> <span class="label-tip"><a href="javascript:;" data-html="true" data-placement="top" title="" class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip" data-original-title="<div style=&quot;text-align: left;&quot;>Indicate the original release date. If may be the release date of the physical version for instance. If there is none, use the same day as your digital release date.</div>"><span class="glyphicon glyphicon-question-sign"></span></a>
+                            </span>
+                            </span>
+                        </div>
+                        <div class="col-sm-7">
+                            <input class="input-large inputDate inputBehavior-2 form-control" autocomplete="off" name="physicalReleaseDate" id="physicalReleaseDate" type="text" value="" tabindex="13"><span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-physicalReleaseDate-0"></span></div>
+                        <div class="col-sm-2 divAppend"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-5 easyEntryCol">
+                <div id="release-col2" class="">
+                    <div class="form-group form-group-sm">
+                        <div class="col-sm-3 control-label">
+                            <label class=" input-required behavior-2" id="label-easyEntryEditForm-pLine-0" for="pLine">℗ line</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> *</span> <span class="label-tip"><a href="javascript:;" data-html="true" data-placement="top" title="" class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip" data-original-title="<div style=&quot;text-align: left;&quot;>The producer of the release <font color=&quot;#000000&quot;>(℗) </font> is the rightowner that financed the recording of the track.<br /><br />The cover producer <font color=&quot;#000000&quot;>(©) </font>is the rightowner that financed the production of the artwork/packaging.</div>"><span class="glyphicon glyphicon-question-sign"></span></a>
+                            </span>
+                            </span>
+                        </div>
+                        <div class="col-sm-7">
+                            <input class="input-large inputString inputBehavior-2 form-control" name="pLine" id="pLine" type="text" value="" tabindex="14"><span style="display:none" class="form-input-error help-inline control-label" rel="pLine"></span></div>
+                        <div class="col-sm-2 divAppend"></div>
+                    </div>
+                    <div class="form-group form-group-sm">
+                        <div class="col-sm-3 control-label">
+                            <label class=" input-required behavior-2" id="label-easyEntryEditForm-cLine-0" for="cLine">© line</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> *</span> <span class="label-tip"><a href="javascript:;" data-html="true" data-placement="top" title="" class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip" data-original-title="<div style=&quot;text-align: left;&quot;>Visual rights owner. Enter the name the artwork copyright owner. e.g. &quot;YourLabelName&quot;</div>"><span class="glyphicon glyphicon-question-sign"></span></a>
+                            </span>
+                            </span>
+                        </div>
+                        <div class="col-sm-7">
+                            <input class="input-large inputString inputBehavior-2 form-control" name="cLine" id="cLine" type="text" value="" tabindex="15"><span style="display:none" class="form-input-error help-inline control-label" rel="cLine"></span></div>
+                        <div class="col-sm-2 divAppend"></div>
+                    </div>
+                    <div class="form-group form-group-sm">
+                        <div class="col-sm-3 control-label">
+                            <label class=" input-required behavior-2" id="label-easyEntryEditForm-productionYear-0" for="productionYear">Production Year</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="color: red;"> *</span> <span class="label-tip"><a href="javascript:;" data-html="true" data-placement="top" title="" class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip" data-original-title="<div style=&quot;text-align: left;&quot;>The year in which the release has been produced and recorded. If more than one, please indicate the final year of production.</div>"><span class="glyphicon glyphicon-question-sign"></span></a>
+                            </span>
+                            </span>
+                        </div>
+                        <div class="col-sm-7">
+                            <select  type="select"  class="input-large inputInt inputBehavior-2 select2" name="productionYear" id="productionYear" tabindex="16">
+                                <option value="0">- Select a year -</option>
+                                <?php 
+									for($i=(date('Y')+1);$i>=1900;$i--)
+									{
+										echo '<option value="'.$i.'">'.$i.'</option>';
+									}
+								?>
+                            </select><span style="display:none" class="form-input-error help-inline control-label" rel="productionYear"></span></div>
+                        <div class="col-sm-2 divAppend"></div>
+                    </div>
+                    <div class="form-group form-group-sm">
+                        <div class="col-sm-3 control-label">
+                            <label class=" behavior-2" id="label-easyEntryEditForm-upc-0" for="upc">UPC/EAN</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="visibility: hidden;"> *</span> <span class="label-tip"><a href="javascript:;" data-html="true" data-placement="top" title="" class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip" data-original-title="<div style=&quot;text-align: left;&quot;>UPCs are barcodes.<br /><br />If you don't have a UPC, or it is less than 13 characters, leave the field empty and we will generate one for you.</div>"><span class="glyphicon glyphicon-question-sign"></span></a>
+                            </span>
+                            </span>
+                        </div>
+                        <div class="col-sm-7">
+                            <input class="input-large inputUpc inputBehavior-2 form-control" name="upc" id="upc" type="text" value="" tabindex="17"><span style="display:none" class="form-input-error help-inline control-label" rel="upc"></span></div>
+                        <div class="col-sm-2 divAppend"></div>
+                    </div>
+					<div class="form-group form-group-sm">
+                        <div class="col-sm-3 control-label">
+                            <label class=" behavior-2" id="label-easyEntryEditForm-upc-0" for="pcn">Producer catalogue number</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="visibility: hidden;"> *</span> <span class="label-tip">
+                            </span>
+                            </span>
+                        </div>
+                        <div class="col-sm-7">
+                            <input class="input-large inputUpc inputBehavior-2 form-control" name="pcn" id="pcn" type="text" value="" tabindex="17"><span style="display:none" class="form-input-error help-inline control-label" rel="pcn"></span></div>
+                        <div class="col-sm-2 divAppend"></div>
+                    </div>
+                   <div class="form-group form-group-sm hide">
+						<div class="col-sm-3 control-label">
+							<label class=" behavior-2" id="label-easyEntryEditForm-idInstrumental-0" for="easyEntryEditForm-idInstrumental-0">Do you want content id</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="visibility: hidden;"> *</span> <span class="label-tip"><a href="javascript:;" data-html="true" data-placement="top" title="" class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip" data-original-title="<div style=&quot;text-align: left;&quot;>Do you want content id?</div>"><span class="glyphicon glyphicon-question-sign"></span></a>
+                            </span>
+                            </span>
+						</div>
+						<div class="col-sm-7">
+							<label class="radio-inline">
+								<input type="radio" class="input-large inputInt inputBehavior-2" name="have_content_id" id="have_content_id-0" value="1" tabindex="9"> Yes</label>
+							<label class="radio-inline">
+								<input type="radio" class="input-large inputInt inputBehavior-2" name="have_content_id" id="have_content_id-1" value="0" tabindex="10" checked="checked"> No</label>
+						</div>
+						<div class="col-sm-2 divAppend"></div>
+					</div>
+					<div class="form-group form-group-sm">
+						<div class="row">
+						<div class="col-sm-1"></div>
+                        <div class="col-sm-9 ">
+                            <label class=" behavior-2" id="label-easyEntryEditForm-remark-0" for="remark" style="margin-left:10px;">Special Instructions for Your Release Approver &nbsp;</label><span style="position: absolute; white-space: nowrap; z-index: 100;"><span style="visibility: hidden;"> </span> <span class="label-tip"><a href="javascript:;" data-html="true" data-placement="top" title="" class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip" data-original-title="<div style=&quot;text-align: left;&quot;>Please include any special request for your label manager that this release required like PDF booklet delivery or an instant grat.</div>"><span class="glyphicon glyphicon-question-sign"></span></a>
+                            </span>
+                            </span>
+						</div>
+						</div class="row">
+						 <div class="col-sm-1"></div>
+                        <div class="col-sm-9">
+                            <textarea class="input-large inputString inputBehavior-2 form-control" name="remark" id="remark" type="text" value="" tabindex="18" placeholder="IMPORTANT: If you have a Timed Release, Apple Digital Master email address, digital booklet or other operational requests for your Release Approver, include your instructions here.Please note, marketing information should be included in the Project - Marketing Highlights section. Marketing info included here will not be used."></textarea><span style="display:none" class="form-input-error help-inline control-label" rel="remark"></span></div>
+                           <div class="col-sm-2 divAppend"></div>
+						</div>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+   <div id="easyEntryAssetsModal" class="modal fade" aria-hidden="false" style="display: none;">
+
+<div class="modal-dialog modal-lg">
+	<div class="modal-content">
+
+		<div class="modal-header">
+		    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+		    <h4 class="modal-title coverModal-title">Update the cover</h4>
+		</div>
+
+		<div class="modal-body">
+
+			<div class="row">
+
+				<div class="col-md-9" id="rightPart">
+<div id="mainContainer">
+	
+	
+		<form enctype="multipart/form-data" method="post" action="javascript:;" id="uploadForm">
+		
+		<div id="uploadedFile"><input class=" inputFile inputBehavior-1" name="uploadedFile" id="uploadForm-uploadedFile-0" type="file" accept=".jpeg,.jpg">
+</div>
+	
+	
+		<div id="uploadDescription">
+			<p></p><p>Your cover must be:<br><strong>- Size: <span>1500*1500 or 3000*3000 pixels</span><br>- Format: <span>.jpeg , .jpg</span></strong></p><p>If your cover does not upload, please click on <https: www.pixlr.com=""></https:> to resize your artwork.</p><p><strong>Warning:</strong> your cover must not contain Internet address, e-mail address, barcode, price, any info related to a physical or digital support, any info limited in time, any info that could mislead a client, or contains outrageous or explicit material.&nbsp;</p><p></p>
+		</div>
+	
+	
+		<input class=" inputInt inputBehavior-1 form-control" name="idPendingAlbum" id="uploadForm-idPendingAlbum-0" type="hidden" value="6965327">
+		<input class=" inputInt inputBehavior-1 form-control" name="startUploadTs" id="uploadForm-startUploadTs-0" type="hidden" value="">
+	</form>
+	
+	<div id="previewContainer"></div>
+	
+	<div class="clearfix"></div><br>
+	
+		
+	
+	
+</div>
+
+
+
+</div>
+
+				<div class="col-md-3" id="leftPart">
+					<div class="row">
+						<div class="leftPart-container col-md-12">
+							<div id="coverContainer" class="inline-block">
+								<!-- <img src="/img/noCover.png" alt="Cover unavailable" class='img-thumbnail'/> -->
+								<img src="public/img/cover.png" alt="Cover unavailable" class="img-thumbnail">
+								<p id="coverDescription" class="text-center">Current cover</p>
+							</div>
+							<br>
+
+							<p>
+								<strong>Artist :</strong><br><span id="um_artist_name"></span></p>
+							<br>
+
+							<p>
+								<strong class="text-bold">Title :</strong><br>
+								<span id="um_title"></span></p>
+
+						</div>
+					</div>
+
+
+				</div>
+
+			</div>
+
+		</div>
+
+		<div class="modal-footer">
+			<table class="footerButtonsTable">
+				<tbody><tr>
+					<td class="text-left coverModal-leftButtons"></td>
+					<td class="text-right coverModal-rightButtons"><button class="btn btn-primary" id="display_preview">Display the preview</button></td>
+					<button id="buttonSaveUploadImage" class="btn btn-primary hide">Save</button>
+				</tr>
+			</tbody></table>
+		</div>
+
+	</div> <!-- end modal-content -->
+</div> <!-- end modal-dialog -->
+<!-- CSS -->
+     
+     
+<!-- Dropdown popup -->
+<div id="ap-spot-pop" class="ap-pop ap-pop--dropdown hidden" role="dialog" aria-modal="true" aria-labelledby="ap-pop-name">
+  <div class="ap-pop-head">
+    <div class="ap-pop-title"><strong>Select Spotify Profile</strong></div>
+    <button class="ap-pop-close" type="button" aria-label="Close">&times;</button>
+  </div>
+
+  <div class="ap-pop-body">
+    <!-- Auto-search ke results (radio) -->
+    <ul id="ap-pop-results" class="ap-results" role="listbox" aria-live="polite"></ul>
+
+    <!-- Divider -->
+    <div style="height:1px;background:#e5e7eb;margin:10px 0;"></div>
+
+    <!-- NEW: Create new profile -->
+    
+  <label class="ap-row-lab">
+    <input type="radio" name="apPick" value="__new__">
+    <div style="flex:1">
+      <strong>Create new Spotify profile</strong>
+    </div>
+  </label>
+
+
+    <!-- Action buttons -->
+    <div class="ap-actions" style="margin-top:1px;">
+      <button class="btn btn-link ap-pop-close" type="button">Cancel</button>
+      <button id="ap-link-save" class="btn btn-primary" type="button">Save</button>
+    </div>
+  </div>
+</div>
+
+
+
+  
+     
+<style>
+  
+
+  
+  
+.modal-header h3
+{
+	margin : 5px inherit;
+}
+
+#rightPart
+{
+	/*padding-left: 30px;*/
+	padding-top : 10px;
+}
+
+#rightPart h2
+{
+	position : absolute;
+	top : -70px;
+}
+
+.leftPart-container
+{
+	overflow-y  : auto;
+	overflow-x  : hidden;
+	/*padding-top : 15px !important;*/
+}
+
+.modal-customHeader
+{
+	margin-bottom : 25px;
+}
+
+.footerButtonsTable
+{
+	width : 100%;
+}
+
+#coverContainer img
+{
+	/*display: inline-block;*/
+	width : 100%;
+}
+.removemultifield
+{
+	position: absolute;
+    right: 20px;
+    margin-top: 8px;
+}
+
+</style>
+
+
+<script type="text/javascript">
+
+	 $("#physicalReleaseDate").datetimepicker({
+            format: "DD-MM-YYYY"
+     });
+	 
+	 $('#mainGenre').change(function(){
+		if($(this).val() == 0)
+		{
+			 $('#subgenre').html('<option value="0">- Select a sub-genre -</option>');
+		}
+		else
+		{
+			
+			var objFormData={
+				genre : $(this).val()
+			}
+			populateDependentOptionValue('subgenre',"<?php echo $this->url('newrelease',array("action" => "getsubgenre"))?>",objFormData,'Select a sub-genre');
+			
+		}
+	
+	 });
+	
+	 
+	 $('#uploadForm-uploadedFile-0').change(function(){
+		$('#display_preview').prop('disabled',false); 
+	 });
+	 $('#deleteCoverLink').click(function(){
+		 $('#deleteCoverModal').modal('show');
+	 });
+	 
+	 $('#display_preview').click(function(){
+		  // Get the selected file
+		var file = $('#uploadForm-uploadedFile-0')[0].files[0];
+		
+		// Check if a file is selected
+		if (file) {
+			// Check if the selected file is an image
+			if (file.type && file.type.indexOf('image') === -1) {
+				alert('Please select an image file.');
+				return;
+			}
+			if (!file.type.match('image/jpeg') && !file.type.match('image/jpg')) {
+				alert('Please select a .jpg or .jpeg');
+				return;
+			}
+
+			 // Create a FileReader object to read the file
+			var reader = new FileReader();
+			
+			// Set the onload event handler
+			reader.onload = function(event) {
+				// Create an Image object to get the dimensions of the image
+				var img = new Image();
+				img.src = event.target.result;
+				img.onload = function() {
+					// Check the dimensions of the image
+					var width = this.width;
+					var height = this.height;
+					if ((width !== 1500 || height !== 1500) && (width !== 3000 || height !== 3000) && (width !== 1440 || height !== 1440) && (width !== 6000 || height !== 6000)) {
+						alert('The image dimensions are not correct.');
+						return;
+					}
+					// Display the image preview
+					$('#uploadForm').addClass('hide');
+					$('#display_preview').addClass('hide');
+					$('#previewContainer').html('<img src="' + event.target.result + '" alt="Image preview">');
+					$('#buttonSaveUploadImage').removeClass('hide');
+					
+					$('#buttonSaveUploadImage').click(function(){
+			
+						var formData = new FormData();
+							formData.append('file', file);
+							$.ajax({
+								url: '<?php echo $this->url('newrelease', array('action'=>'uploadimg'));?>', 
+								type: 'POST',
+								data: formData,
+								contentType: false,
+								processData: false,
+								success: function(response) {
+									 response = JSON.parse(response);
+									 $('#coverOfThisAlbum').attr('src','public/uploads/'+response.file_name);
+									 $("#easyEntryAssetsModal").modal('hide');
+									 $('#filehidden').val(response.file_name);
+									 $('#upload_cover_text').html('Upload cover');
+									 $('#deleteCoverLink').addClass('hide');
+								},
+								error: function(xhr, status, errorThrown) {
+									// Handle upload error
+									console.error('Upload error:', status, errorThrown);
+								}
+						});
+					});
+				};
+			};
+			
+			// Read the file as a data URL
+			reader.readAsDataURL(file);
+		}
+		
+		
+	 });
+	
+	function updateCover()
+	{
+		var url = "";
+		var imgSrc = "";
+
+		setTimeout(function(){
+			$.get(url, function(data){
+
+				$("#releaseCover").replaceWith(data);
+				bindUploadCover();
+				
+
+				$("#releaseCover img").attr("src", imgSrc);
+			});
+		}
+		,1000);
+
+	}
+
+	
+
+</script>
+</div>
+    <div id="easyEntryAssetsPopover"></div>
+    <div id="easyEntryArtistIdModal" class="modal fade" aria-hidden="true"></div>
+    <div id="focusTrackModal" class="modal fade" aria-hidden="true"></div>
+    <div id="madeForKidsGuidelinesModal" class="modal fade" aria-hidden="true"></div>
+
+</div>
+
+<div id="deleteCoverModal" class="modal fade">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-body"><p>Are you sure you want to delete this cover ?</p></div>
+			<div class="modal-footer"><a href="#" class="btn btn-default closedeleteCoverModal">Close</a><a href="javascript:;" class="btn btn-primary" id="deleteCoverImage">Delete</a></div>
+		</div>
+	</div>
+</div>
+
+<?php } ?>
+
+<script type="text/javascript">
+  /* ===== Suggestion gating (show only after full name + pause) ===== */
+const MIN_FULLNAME_CHARS = 3;     // jitna chaho badha do (e.g., 4)
+const TRIGGER_IDLE_MS     = 1300; // 1.3s pause; 2000 karoge to 2s ho jayega
+
+let LAST_KEY      = '';
+let SUG_IDLE_TMR  = null;
+let SUG_VER       = 0;   // out-of-order responses ignore karne ke liye
+let lastXHR       = null;
+
+// Enter/Space capture (bas key track karne ke liye)
+$(document).on('keydown', function(e){ LAST_KEY = e.key || ''; });
+
+// Strict nahi rakha: idle + min length hi main guard hai
+function isLikelyFullName(q) {
+  const s = (q || '').trim();
+  if (s.length < MIN_FULLNAME_CHARS) return false;
+  return true;
+}
+
+// Abortable, versioned AJAX (race-proof)
+function safeArtistSearch($input, query, $listRef){
+  // cancel previous inflight
+  if (lastXHR && lastXHR.readyState !== 4) {
+    try { lastXHR.abort(); } catch(_) {}
+  }
+  const myVer = ++SUG_VER;
+
+  lastXHR = $.ajax({
+    url: '<?php echo $this->url('newrelease', array("action"=>"artistSuggestionList")); ?>',
+    type: 'POST',
+    data: { query },
+    success: function(response){
+      // stale response? ignore
+      if (myVer !== SUG_VER) return;
+
+      let $list = $listRef && $listRef.length ? $listRef : $input.siblings('.suggestion-list');
+      if (!$list.length) {
+        $input.after('<ul class="suggestion-list">' + response + '</ul>');
+        $list = $input.siblings('.suggestion-list');
+      } else {
+        $list.html(response);
+      }
+      decorateSuggestions($list);
+    },
+    error: function(xhr){
+      if (xhr && xhr.statusText === 'abort') return;
+      // optionally console.warn
+    }
+  });
+}
+
+// ---------- SVG helpers (no DOM dependency) ----------
+const ICON_ADD    = '/public/img/addlink.png';     // + left/big (tumhara)
+const ICON_LINKED = '/public/img/likedid.png';  // ✓ left (tumhara)
+
+function svgPlus(){
+  return `<img src="${ICON_ADD}" class="ap-ic" width="18" height="18" alt="Add on Spotify">`;
+}
+function svgLinked(){
+  return `<img src="${ICON_LINKED}" class="ap-ic" width="18" height="18" alt="Spotify linked">`;
+}
+
+/* ===================== NEW HELPERS ===================== */
+
+// right icon ko Spotify link me swap karo
+function setRowSpotifyIcon($li, url){
+  const right = $li.find('.ap-right');
+  if(!right.length) return;
+  $li.data('spotify-url', url).data('spotify-id', (url||'').split('/').pop());
+  right.html(
+    `<a class="ap-mini-spotify" href="${url}" title="Open on Spotify">${svgLinked()}</a>`
+  );
+}
+
+// LI se clean name nikaalo (list me “Add "X" as new artist” jaisa text ho sakta hai)
+function liCleanName($li){
+  let name = $li.data('name') || $li.find('.ap-title').text().trim() || $li.text().trim();
+  return (name||'')
+    .replace(/^➕\s*Add\s*[“"]?/i,'')
+    .replace(/[”"]?\s*as\s*new\s*artist\s*$/i,'')
+    .trim();
+}
+function norm(s){ return (s||'').toString().trim().replace(/\s+/g,' ').toLowerCase(); }
+
+// server se Spotify info hydrate (DB me link hua ho to + ki jagah icon)
+function hydrateSuggestionIcons($ul){
+  if(!$ul || !$ul.length) return;
+
+  const need = [];
+  const seen = new Set();
+
+  $ul.find('li.suggestion-item').each(function(){
+    const $li = $(this);
+    if ($li.data('spotify-url') || $li.data('spotify-id')) return; // already has
+    const nm = liCleanName($li);
+    if (nm && !seen.has(norm(nm))){
+      seen.add(norm(nm));
+      need.push({ name: nm, $li });
+    }
+  });
+
+  if(!need.length) return;
+
+  // per-name lookup (same endpoint jo inputs hydrate karta hai)
+  need.forEach(item => {
+    $.post('<?php echo $this->url("newrelease", array("action"=>"lookupArtistByName")); ?>', { name: item.name })
+      .done(res=>{
+        try{ if(typeof res==='string') res = JSON.parse(res); }catch(_){}
+        if(res && res.exists && res.has_spotify && res.spotify_url){
+          setRowSpotifyIcon(item.$li, res.spotify_url);
+        }
+      });
+  });
+}
+
+// linkSpotify AJAX success ke turant baad open list row ko update kar do
+$(document).ajaxSuccess(function(_e, xhr, settings){
+  try{
+    if(!settings || !settings.url) return;
+    if(settings.url.indexOf('linkSpotifyToArtist') === -1) return;
+
+    // parse POST body (urlencoded)
+    const q = {};
+    (settings.data || '').toString().split('&').forEach(kv=>{
+      const [k,v=''] = kv.split('=');
+      if(k) q[decodeURIComponent(k)] = decodeURIComponent(v.replace(/\+/g,' '));
+    });
+    const spid = q.spotify_id;
+    const name = q.name;
+    if(!spid || !name) return;
+
+    const url = `https://open.spotify.com/artist/${spid}`;
+    $('.suggestion-list .suggestion-item').each(function(){
+      const $li = $(this);
+      if(norm(liCleanName($li)) === norm(name)){
+        setRowSpotifyIcon($li, url);
+      }
+    });
+  }catch(_){}
+});
+
+/* ===================== /NEW HELPERS ===================== */
+
+
+// ---------- Suggestion list decorate (icon on right) ----------
+function decorateSuggestions($ul){
+  if(!$ul || !$ul.length) return;
+
+  const $items = $ul.find('li').addClass('suggestion-item');
+  $items.each(function(){
+    const $li = $(this);
+    if ($li.find('.ap-right').length) return;
+
+    const id   = parseInt($li.data('artist-id')||0,10);
+    const name = $li.data('name') || $li.text().trim();
+    const sid  = $li.data('spotify-id') || '';
+    const surl = $li.data('spotify-url') || (sid ? `https://open.spotify.com/artist/${sid}` : '');
+
+    const right = $('<span class="ap-right" style="margin-left:auto;display:inline-flex;align-items:center"></span>');
+    if (surl){
+      right.append(`<a class="ap-mini-spotify" href="${surl}" title="Open on Spotify">${svgLinked()}</a>`);
+    } else {
+      right.append(
+        `<button type="button" class="ap-btn ap-linker" data-artist-id="${id}" data-artist-name="${$('<div>').text(name).html()}" title="Link Spotify">
+           ${svgPlus()}
+         </button>`
+      );
+    }
+    $li.css({display:'flex', alignItems:'center', gap:'8px'}).append(right);
+  });
+
+  // icons inert inside list
+  $(document)
+    .off('click.suggicon', '.suggestion-list .ap-mini-spotify, .suggestion-list .ap-linker')
+    .on('click.suggicon',  '.suggestion-list .ap-mini-spotify, .suggestion-list .ap-linker', function(e){
+      e.preventDefault(); e.stopPropagation(); return false;
+    });
+
+  // ✅ NEW: DB ke hisaab se rows ko hydrate karo (taaki Spotify icon aa jaye)
+  hydrateSuggestionIcons($ul);
+}
+
+// ---------- Bind events for input + list selection ----------
+function bindSuggestionEvent() {
+  $('.input-releaseArtist')
+    .off('.sugg') // namespace clean
+    .on('input.sugg', function () {
+      const $input = $(this);
+      const query  = ($input.val() || '');
+      let   $list  = $input.siblings('.suggestion-list');
+
+      // 🧹 typing ke dauran list hata do
+      if ($list && $list.length) $list.remove();
+
+      // tumhara picked-name logic (unchanged)
+      const pickedName = ($input.data('picked-name')||'').toString().trim();
+      const sameAsPicked = pickedName && (query.trim().toLowerCase() === pickedName.toLowerCase());
+      if (!sameAsPicked) {
+        $input.data('picked', false)
+              .removeData('spotify-url')
+              .removeData('artist-id')
+              .removeData('picked-name');
+        $input.parent().find('.ap-inp-ico').remove();
+        $input.css('padding-right','');
+      } else {
+        ensureInputIcon($input, {
+          picked: true,
+          name: pickedName,
+          url:  $input.data('spotify-url') || '',
+          id:   $input.data('artist-id')   || 0
+        });
+      }
+
+      // ⏱️ idle timer reset
+      if (SUG_IDLE_TMR) { clearTimeout(SUG_IDLE_TMR); SUG_IDLE_TMR = null; }
+
+      // Minimum characters se kam ho to bilkul mat dikhana
+      if (!isLikelyFullName(query)) return;
+
+      // ✅ User ruk jaaye TRIGGER_IDLE_MS → tabhi suggestions lao
+      SUG_IDLE_TMR = setTimeout(function(){
+        // Enter press ki zarurat nahi; idle + min length enough
+        safeArtistSearch($input, query.trim(), $list);
+        LAST_KEY = '';
+      }, TRIGGER_IDLE_MS);
+    })
+    .on('focus.sugg', function () {
+      // 🚫 Focus par kuch mat dikhana; pehle ALL_LIST yahin load hota tha—ab disable
+      // (agar kabhi zarurat ho, Enter ke baad hi dikhao)
+    });
+}
+
+// init
+bindSuggestionEvent();
+
+
+// initial icon (edit mode): only if already linked/has id
+$(function(){
+  const $main = $('#f_release_artist');
+  const initialName = ($main.val()||'').trim();
+  const initialUrl  = $main.data('spotify-url')||'';
+  const initialId   = parseInt($main.data('artist-id')||0,10);
+
+  if(initialName && (initialUrl || initialId)){
+    $main.data('picked', true);
+    ensureInputIcon($main, { picked:true, name:initialName, url:initialUrl, id:initialId });
+  }else{
+    $main.data('picked', false);
+    ensureInputIcon($main, { picked:false });
+  }
+
+  // keep popup outside any overflow parents
+  $('#ap-spot-pop').appendTo('body');
+});
+
+  
+  
+ 	function removeField(button) {
+		var div = button.parentNode;
+		div.parentNode.remove(div);
+	}
+	function addFieldArtist() {
+		
+		
+		
+		if($('#artist-fields input').length < "<?php echo $user_artist_cnt;?>" || <?php echo $user_artist_cnt;?> == 0)
+		{
+			var newInputGroup = '<div style="display:flex;margin-top:5px;flex-direction: column;"><input data-tags="true" class="input-large input-releaseArtist input-multiple inputString inputBehavior-2 form-control" name="releaseArtist[]" type="text" value="" tabindex="3" autocomplete="off"><span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-releaseArtist-0"></span><a href="javascript:;" class="addFieldLink removemultifield" data-selector="input-releaseArtist"><span class="glyphicon glyphicon-minus-sign" onclick="removeField(this)"></span></a></div>';
+			$('#artist-fields').append(newInputGroup);
+			bindSuggestionEvent();
+		}
+	}
+	function addFieldFeaturing()
+	{
+		
+		var newInputGroup = '<div style="display:flex;margin-top:5px"><input data-tags="true" class="input-large input-releaseFeaturing input-multiple inputString inputBehavior-2 form-control" name="featuring[]" type="text" value="" tabindex="3" autocomplete="off"><span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-releaseArtist-0"></span><a href="javascript:;" class="addFieldLink removemultifield" data-selector="input-releaseFeaturing"><span class="glyphicon glyphicon-minus-sign" onclick="removeField(this)"></span></a></div>';
+		$('#featuring-fields').append(newInputGroup);
+	}
+    $(document).ready(function () {
+		acl_PRINT=0;
+		var formChanged = false;
+		var approved_flag = false;
+		
+		<?php
+			if($_GET['msg'] == 'yes')
+			{
+				?>
+					 mySmallAlert('Save Record', 'Data Saved successfully', 1);
+				<?php
+			}
+		?>
+		
+		function linkify(text) {
+        var urlPattern = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+        return text.replace(urlPattern, '<a href="$1" target="_blank">$1</a>');
+    }
+
+
+		<?php
+			if($this->STATUS == 'draft' && $this->rejected_flag == '1')
+			{
+				?> 
+					var rejectReason = `<?php echo nl2br(addslashes($this->reject_reason)); ?>`;
+					$('.bs-alert-message').html(
+							'<i class="fa fa-warning" style="font-size:15px;margin-right:20px;"></i>' + linkify(rejectReason)
+						);
+					$('#bs-main-alert').addClass('bs-alert-left bs-alert-danger');
+					$('#bs-main-alert').attr('style','display:block;');
+				<?php
+			}
+		?>
+		
+		
+	 $('.closedeleteCoverModal').click(function(){
+		 $('#deleteCoverModal').modal('hide');
+	 });
+	 
+	 $('#deleteCoverImage').click(function(){
+		$('#coverOfThisAlbum').attr('src','public/img/noCover.png'); 
+		 $('#coverContainer img').attr('src','public/img/cover.png');
+		 $('#upload_cover_text').html('Upload cover');
+		 $('#deleteCoverLink').addClass('hide');
+		 $('#deleteCoverModal').modal('hide');
+		 $('#filehidden').val('');
+	 });
+
+		// Listen for changes in the form fields
+		$('input, select,textarea').change(function() {
+			formChanged = true;
+		});
+
+		// Listen for form submission or clicks on save button
+		$('#btnSave').click(function() {
+			// Perform actions to save the form data
+			formChanged = false; // Reset the flag after saving
+		});
+		$('#btnNew').click(function() {
+			// Perform actions to save the form data
+			formChanged = false; // Reset the flag after saving
+		});
+		
+		$(window).on('beforeunload', function() {
+			 if (formChanged) 
+			 {
+				//$("#frmForm").submit();
+				
+				//return 'are you sure';
+			 }
+		});
+	
+        $("#btnSave").click(function (e) {
+            e.stopPropagation();
+            $("#frmForm").submit();
+        });
+		
+		$("#btnApprove").click(function (e) {
+            e.stopPropagation();
+			
+			$.SmartMessageBox({
+
+					title  : "Alert!",
+		
+					content: "Do you really want to approve this release ?",
+		
+					buttons: '[Yes][No]'
+		
+				}, function (ButtonPressed) {
+		
+					if (ButtonPressed === "Yes") {
+						approved_flag = true;
+						$("#frmForm").submit();
+								
+					}
+					if (ButtonPressed === "No") {
+		
+					}
+		
+				});
+				
+			
+        });
+		
+		
+		function setErrorMsg(field,msg)
+		{
+			$('#'+field).parents('.form-group').find('label').addClass('labelError');
+			$('#'+field).addClass('inputError');
+			$('#'+field).parents('.form-group').find(".form-input-error").text(msg);
+			$('#'+field).parents('.form-group').find(".form-input-error").removeAttr('style');
+			$('#'+field).parents('.form-group').addClass('has-error'); 
+		}
+		function removeErrorMsg()
+		{
+			$('input,select,textarea').parents('.form-group').find('label').removeClass('labelError');
+			$('input,select,textarea').removeClass('inputError');
+			$('input,select,textarea').parents('.form-group').find(".form-input-error").text('');
+			$('input,select,textarea').parents('.form-group').find(".form-input-error").attr('style','display:none;');
+			$('input,select,textarea').parents('.form-group').removeClass('has-error'); 
+		}
+		
+		<?php
+			if($_SESSION['user_id'] == '0' || $_SESSION['STAFFUSER'] == '1')
+			{
+		?>
+				/*populateOptionValue('user_id',"<?php echo $this->url('user',array("action" => "getStaff"))?>",'Select a User');
+				
+				$('#user_id').change(function(){
+					
+					var objFormData={
+						user_id : $(this).val()
+					}
+					populateDependentOptionValue('labels',"<?php echo $this->url('labels',array("action" => "getlabels"))?>",objFormData,'Select a label');
+					populateDependentOptionValue('releasing_network',"<?php echo $this->url('releasingnetwork',array("action" => "getreleasingnetwork"))?>",objFormData,'Select a Releasing Network');
+				});*/
+				populateOptionValue('labels',"<?php echo $this->url('labels',array("action" => "getlabels"))?>",'Select a label');
+				populateOptionValue('releasing_network',"<?php echo $this->url('releasingnetwork',array("action" => "getreleasingnetwork"))?>",'Select a Releasing Network');
+				
+				$('#labels').change(function(){
+					if($(this).val() == 'create-new')
+					{
+						$('#new_label_name').val('');
+						$('.new_label_name').removeClass('hide');
+					}
+					else
+					{
+						$('#new_label_name').val('');
+						$('.new_label_name').addClass('hide');
+					}
+				});
+		<?php
+			}
+			else
+			{
+		?>
+				var objFormData={
+						user_id :'<?php echo $_SESSION['user_id'];?>'
+				}
+				populateDependentOptionValue('labels',"<?php echo $this->url('labels',array("action" => "getlabels"))?>",objFormData,'Select a label');
+				populateDependentOptionValue('releasing_network',"<?php echo $this->url('releasingnetwork',array("action" => "getreleasingnetwork"))?>",objFormData,'Select a Releasing Network');
+				
+				<?php
+					if($_SESSION['USER_TYPE'] == 'Enterprise')
+					{
+						?>
+						$('#labels').change(function(){
+							if($(this).val() == 'create-new')
+							{
+								$('#new_label_name').val('');
+								$('.new_label_name').removeClass('hide');
+							}
+							else
+							{
+								$('#new_label_name').val('');
+								$('.new_label_name').addClass('hide');
+							}
+						});
+						<?php
+					}
+				?>
+				
+		<?php	
+			}
+		?>
+		
+		
+		<?php
+			if($_GET['edit'] > 0)
+			{
+				
+				?>
+				
+				setTimeout(function(){
+					iActiveID = '<?php echo $_GET['edit'];?>';
+				
+					//empty the form fields
+					clearForm("frmForm");
+					cPopulateEditEntries(iActiveID, "<?php echo $this->url('newrelease', array('action'=>'getrec'));?>");
+					glbControlEnable(true);
+					formChanged = false; 
+					approved_flag=false;
+					
+					<?php
+						if(isset($_GET['show_error']))
+						{
+						?>
+							setTimeout(function(){
+								$("#btnSave").trigger('click');
+							},2100)
+							
+						<?php
+						}
+					?>
+				},500);
+				
+				<?php
+			}
+		?>
+		
+        $("#frmForm").validate(
+            {
+                submitHandler: function (form) {
+					removeErrorMsg();
+                    var is_required=false;
+                   <?php
+						/*if($_SESSION['user_id'] == '0')
+						{
+					?>
+							if ($("#user_id").val() == '0') {
+								setErrorMsg('user_id','This field is required');
+								is_required=true;
+							}
+					<?php
+						}*/
+					?>
+					if ($("#title").val() == '') {
+                        setErrorMsg('title','This field is required');
+                        is_required=true;
+                    }
+					
+					if ($("#new_label_name").val() != '') {
+						var isDuplicate = fn_validate_duplicate($("#new_label_name").val(), "tbl_label", "name", "<?php echo $this->url('labels', array('action'=>'validateduplicate'));?>");
+						if (isDuplicate) {
+							is_required=true;
+							setErrorMsg('new_label_name','Label already exists');
+						}
+                        
+                    }
+					
+					if ($("#pcn").val() != '') {
+							
+						var objFormData =
+						{
+							pcn : $('#pcn').val(),
+							id : "<?php echo $_GET['edit']; ?>"
+						};
+						
+						
+						var objMyPost = AJAX_Post("<?php echo $this->url('newrelease', array('action'=>'checkDuplicatePcn'));?>", objFormData);
+						if (objMyPost.ERR_NO === 0) {
+							
+							if (objMyPost.DATA.DBStatus === 'EXIST') {
+								
+								setErrorMsg('pcn','Duplicate Producer catalogue number');
+								is_required=true;
+							}
+						}							
+					}
+					
+					<?php
+					if(isset($_GET['show_error']))
+					{
+					?>
+					
+					
+						if ($("#f_release_artist").val() == '') {
+							setErrorMsg('f_release_artist','This field is required');
+							is_required=true;
+						}
+						if ($("#mainGenre").val() == '0') {
+							setErrorMsg('mainGenre','This field is required');
+							is_required=true;
+						}
+						if ($("#subgenre").val() == '0') {
+							setErrorMsg('subgenre','This field is required');
+							is_required=true;
+						}
+						if ($("#labels").val() == '0') {
+							setErrorMsg('labels','This field is required');
+							is_required=true;
+						}
+						if ($("#releasing_network").val() == '0') {
+							setErrorMsg('releasing_network','This field is required');
+							is_required=true;
+						}
+						if ($("#albumFormat").val() == '0') {
+							setErrorMsg('albumFormat','This field is required');
+							is_required=true;
+						}
+						if ($("#physicalReleaseDate").val() == '') {
+							setErrorMsg('physicalReleaseDate','This field is required');
+							is_required=true;
+						}
+						if ($("#pLine").val() == '') {
+							setErrorMsg('pLine','This field is required');
+							is_required=true;
+						}
+						if ($("#cLine").val() == '') {
+							setErrorMsg('cLine','This field is required'); 
+							is_required=true;
+						}
+						if ($("#productionYear").val() == '0') {
+							setErrorMsg('productionYear','This field is required');
+							is_required=true;
+						}
+						if ($("#filehidden").val() == '') {
+							$('#releaseCover').addClass('cover-error');
+							$('#releaseCover img').addClass('bg-danger');
+							is_required=true;
+						}
+						
+						
+					<?php
+					}
+				?>
+					
+					if(is_required)
+						return;
+					
+                    var $form = $('#frmForm');
+                    var objMasterData = $form.serializeObject();
+                    if (strActionMode == 'ADD')
+                        $.extend(objMasterData, { MASTER_KEY_ID: 0});
+                    else
+                        $.extend(objMasterData, { MASTER_KEY_ID: iActiveID});
+					
+                    objMasterData = JSON.stringify(objMasterData);
+                    var objFormData =
+                    {
+                        pAction    : strActionMode,
+                        FORM_DATA: objMasterData,
+						approved : approved_flag 
+                    };
+					
+					$('.nf-loader').removeClass('hide');
+					$('#btnSave').addClass('hide');
+                    var objMyPost = AJAX_Post("<?php echo $this->url('newrelease', array('action'=>'save'));?>", objFormData);
+                    if (objMyPost.ERR_NO === 0) {
+						approved_flag=false;
+						$('.nf-loader').addClass('hide');
+						$('#btnSave').removeClass('hide');
+                        if (objMyPost.DATA.DBStatus === 'OK') {
+                            strActionMode = "EDIT";
+                           // mySmallAlert('Save Record', 'Data Saved successfully', 1);
+                            iActiveID = objMyPost.DATA.MY_ID;
+							
+							<?php
+								if($_GET['edit'] == '')
+								{
+							?>
+								//setTimeout(function(){
+									window.location.href = window.location.href+'?edit='+iActiveID+'&msg=yes';
+								//},3000);
+							<?php }
+							else
+							{
+								?>
+								mySmallAlert('Save Record', 'Data Saved successfully', 1);
+								<?php
+							}
+							?>
+							
+                            
+                        }
+                    }
+                    else {
+                        myAlert('Error...!', 'There was an error', 0);
+						
+                    }
+                }
+            });
+    
+  
+	
+
+  /*
+  * if the user choose as compilation, put Various Artists as artist
+  */
+    
+    bindUploadCover();
+    
+
+    var toHide = [];
+
+    if (typeof(isClassical) !== 'undefined' && isClassical) {
+        toHide = ['.input-releaseArtist', '.input-featuring', '.isCompilCb'];
+    } else {
+        toHide = ['.input-composer', '.input-orchestra', '.input-conductor', '.input-soloist', '.input-singer'];
+    }
+
+    $.each(toHide, function(i,selector){
+        $(selector).parents('.form-group').hide();
+        $(selector).prop('disabled', true);
+    });
+
+    /*******************************************************
+    * ADD ARTIST LINK
+    *******************************************************/
+   
+
+    $(".input-multiple-blur").not(".no-blur").blur(function(){
+        if ($(this).val() == "") {
+            $(this).parents(".form-group").hide("slow", function(){ $(this).remove(); });
+            if ($(this).get(0).hasAttribute('data-rel')){
+                $("#"+$(this).attr('data-rel')).parents(".form-group").hide("slow", function(){ $(this).remove(); });
+            }
+        }
+    });
+
+  
+
+    var now = new Date();
+    var month = now.getMonth() + 1;
+    var day = now.getDate() - 1;
+    /*if(month < 10 ) month = "0" + month;
+    if(day < 10 ) day = "0" + day;*/
+
+    var minDate = new Date(now.getFullYear(), (month < 10 ? '0' + (month-1) : (month-1)), (day < 10 ? '0' + (day-1) : (day-1)));
+
+    $("#digitalReleaseDate").datepicker("option", "minDate", minDate );
+
+  
+});
+
+ function cPopulateEditEntries(iID,strURL) {
+        iActiveID = iID;
+        var arrForms=[]; // Keep Form Values
+        var strElementType; // Keep element type
+        var objFormData =
+        {
+            pAction: 'GETREC',
+            KEY_ID : iActiveID
+        };
+		strActionMode = 'EDIT';
+        var objMyPost = AJAX_Post(strURL, objFormData);
+		
+        if (objMyPost.ERR_NO === 0) {
+            if (objMyPost.DATA.DBStatus === 'OK') {
+              
+                
+                //populate master Records
+                arrForms=objMyPost.DATA.data[0];
+                $.each( arrForms, function( key, value ) { 
+				
+					 if(key == 'releaseArtist')
+					 {
+						 for(var i=0;i<value.length;i++)
+						 {
+							 if(i == 0)
+							 {
+								 $('#f_release_artist').val(value[i]);
+							 }
+							 else
+							 {
+								 var newInputGroup = '<div style="display:flex;margin-top:5px"><input data-tags="true" class="input-large input-releaseArtist input-multiple inputString inputBehavior-2 form-control" name="releaseArtist[]" type="text" value="'+value[i]+'" tabindex="3" autocomplete="off"><span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-releaseArtist-0"></span><a href="javascript:;" class="addFieldLink removemultifield" data-selector="input-releaseArtist"><span class="glyphicon glyphicon-minus-sign" onclick="removeField(this)"></span></a></div>';
+								$('#artist-fields').append(newInputGroup);
+							 }
+						 }
+					 }
+					 if(key == 'featuring')
+					 {
+						 for(var i=0;i<value.length;i++)
+						 {
+							 if(i == 0)
+							 {
+								 $('#f_featuring').val(value[i]);
+							 }
+							 else
+							 {
+								var newInputGroup = '<div style="display:flex;margin-top:5px"><input data-tags="true" class="input-large input-releaseFeaturing input-multiple inputString inputBehavior-2 form-control" name="featuring[]" type="text" value="'+value[i]+'" tabindex="3" autocomplete="off"><span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-releaseArtist-0"></span><a href="javascript:;" class="addFieldLink removemultifield" data-selector="input-releaseFeaturing"><span class="glyphicon glyphicon-minus-sign" onclick="removeField(this)"></span></a></div>';
+								$('#featuring-fields').append(newInputGroup);
+							 }
+						 }
+					 }
+					 if(key == 'cover_img')
+					 {
+						 $('#filehidden').val(value);
+						 if(value != '')
+						 {
+							$('#coverOfThisAlbum').attr('src','public/uploads/'+value);
+							$('#coverContainer img').attr('src','public/uploads/'+value);
+							$('#upload_cover_text').html('Change');
+							$('#deleteCoverLink').removeClass('hide');
+						 }
+						 else
+						 {
+							 $('#coverOfThisAlbum').attr('src','public/img/noCover.png'); 
+							 $('#coverContainer img').attr('src','public/img/cover.png');
+							 $('#upload_cover_text').html('Upload cover');
+							 $('#deleteCoverLink').addClass('hide');
+						 }
+					 }
+					  if(key == 'have_content_id')
+					 {
+						if(value == '1')
+							$('#have_content_id-0').prop('checked',true);
+						if(value == '0')
+							$('#have_content_id-1').prop('checked',true);
+					 }
+                    if ($("#"+key).length > 0) {  // check if exists or not
+                        strElementType= $("#"+key).attr("type");
+						
+					
+                        if(strElementType == "hidden") {  // if textbox
+                            $("#" + key).val(value);
+                            $("#spanRefNo").html(value);
+                        }
+                        else  if(strElementType == "text") {  // if textbox
+                            $("#" + key).val(value);
+                        }
+						else  if(strElementType == "number") {  // if textbox
+                            $("#" + key).val(value);
+                        }
+						else  if(strElementType == "password") {  // if textbox
+                            $("#" + key).val(value);
+                        }
+                        else if($("#"+key).attr("name") == "descriptions") {  // if textarea
+                            $("textarea#"+key).text(value);
+                        }
+                        else if(strElementType == "select") {  // if Select Box	
+							/*if(key == 'labels' || key == 'releasing_network')
+							{
+								setTimeout(function(){
+									$("#" + key).select2("val",value);
+								},2000)
+								
+							}
+							else*/
+								$("#" + key).select2("val",value).trigger('change');
+                        }
+                        else if(strElementType == "multiselect") {  // if Select Box with multi select
+                            var arrValues = $.parseJSON(stripslashes(value));
+                            $("#" + key).select2("val", arrValues);
+                        }
+                    }
+                });
+              bindSuggestionEvent();                // naye inputs par events re-bind
+setTimeout(hydrateSpotifyIcons, 0);
+				
+            }
+        }
+        else {
+            mySmallAlert('Error...!', 'There was an error', 0);
+        }
+    }
+// 1) Helper — saved artist names se Spotify icon lagao
+$(function(){ hydrateSpotifyIcons(); });
+
+function bindUploadCover()
+{
+    /*
+    * update cover
+    */
+    $("#uploadCoverLink").click(function(e){
+        e.preventDefault();
+		
+		$('#display_preview').prop('disabled',true);
+		
+		$('#uploadForm').removeClass('hide');
+		$('#display_preview').removeClass('hide');
+		$('#previewContainer').html('');
+		$('#buttonSaveUploadImage').addClass('hide');
+
+        var releaseId = $(this).attr("data-id");
+
+        $("#easyEntryAssetsModal").modal();
+		
+		 var artists = $('input[name="releaseArtist[]"]').map(function() {
+			var value = $(this).val().trim(); // Get the trimmed value of each input field
+			return value !== '' ? value : null; // Return the value if not blank, otherwise null
+		}).get(); // Convert jQuery object to an array
+
+		// Remove null values from the array
+		artists = artists.filter(function(value) {
+			return value !== null;
+		});
+		 var artistsString = artists.join(', ');
+		$('#um_artist_name').html(artistsString);
+		$('#um_title').html($('#title').val());
+    });
+}
+
+
+</script>
+
+
+<script>
+// Saved artist names ke liye Spotify icon hydrate karega
+function hydrateSpotifyIcons(){
+  $('input[name="releaseArtist[]"]').each(function () {
+    const $inp  = $(this);
+    const name  = ($inp.val() || '').trim();
+    if (!name) return;
+
+    $.post('<?php echo $this->url("newrelease", array("action"=>"lookupArtistByName")); ?>', { name: name })
+      .done(function (res) {
+        try { if (typeof res === 'string') res = JSON.parse(res); } catch(_) {}
+
+        if (!res || !res.exists) return;
+
+        if (res.has_spotify && res.spotify_url) {
+          $inp
+            .data('artist-id', res.id)
+            .data('spotify-url', res.spotify_url)
+            .data('picked', true)            // ✅ remember picked state
+            .data('picked-name', name);      // ✅ remember picked name
+
+          ensureInputIcon($inp, {
+            picked: true, name: name, url: res.spotify_url, id: res.id
+          });
+        } else if (res.id) {
+          // artist mila but spotify link nahi
+          $inp
+            .data('artist-id', res.id)
+            .data('picked', true)            // ✅ remember picked state
+            .data('picked-name', name);      // ✅ remember picked name
+
+          ensureInputIcon($inp, {
+            picked: true, name: name, url: '', id: res.id
+          });
+        }
+      });
+  });
+}
+
+</script>
+
+
+
+<!-- Floating FAQ Help Button -->
+<div id="faqBotWrapper">
+  <!-- ✅ First-time robot animation -->
+  <div id="faqIntroAnimation">
+    <dotlottie-wc 
+      src="https://lottie.host/a54e24d2-af27-4ff5-a7d5-5aeb08ccfcbc/ZNiqJEiXDN.lottie" 
+      speed="1" 
+      autoplay 
+      loop 
+      style="width: 140px; height: 140px;">
+    </dotlottie-wc>
+  </div>
+</div>
+
+<!-- ✅ Lottie Loader -->
+<script type="module" src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.6.2/dist/dotlottie-wc.js"></script>
+
+<!-- ✅ Animation CSS (scoped to ids/classes used) -->
+<style>
+  
+
+
+  /* ✅ Animation */
+  #faqIntroAnimation {
+    position: fixed;
+    bottom: 60px;
+    right: 60px;
+    width: 80px;
+    height: 80px;
+    
+    pointer-events: none;
+    animation: appearBot 0.8s ease-out forwards;
+  }
+  @keyframes appearBot {
+    0% { opacity: 0; transform: translateX(80px) scale(0.8); filter: blur(8px); }
+    50% { opacity: 0.8; transform: translateX(-10px) scale(1.05); filter: blur(3px); }
+    100% { opacity: 1; transform: translateX(0) scale(1); filter: blur(0); }
+  }
+  @keyframes disappearBot {
+    0% { opacity:1; transform:translateX(0); filter:blur(0); }
+    40% { filter:blur(2px); }
+    70% { filter:blur(5px); }
+    100% { opacity:0; transform:translateX(120px); filter:blur(8px); visibility:hidden; }
+  }
+</style>
+
+<!-- ✅ Animation JS -->
+<script>
+  // Show Lottie each load, then slide it out
+  window.addEventListener('DOMContentLoaded', () => {
+    const anim = document.getElementById('faqIntroAnimation');
+    setTimeout(() => { if (anim) anim.style.animation = 'disappearBot 0.5s ease-in-out forwards'; }, 6000);
+  });
+  
+  
+(function($){
+  const esc = s => $('<div>').text(s||'').html();
+  const pop = () => $('#ap-spot-pop');
+  let anchorInput = null;
+
+  // --- popup ko input ke neeche RIGHT me chipkao
+  function positionPop($anchor){
+    const $p = pop(); if(!$p.length || !$anchor?.length) return;
+    const off = $anchor.offset();
+    const aW  = $anchor.outerWidth();
+    const pW  = $p.outerWidth() || 520;
+    const top = off.top + $anchor.outerHeight() + 6;
+
+    // right aligned: anchorRight - popupWidth
+    let left = off.left + aW - pW;
+    // viewport clamp
+    const vw = $(window).width(), sx = $(window).scrollLeft();
+    left = Math.max(10 + sx, Math.min(left, sx + vw - pW - 10));
+
+    $p.css({ top, left });
+  }
+
+  // --- input icon: sirf selection ke baad dikhana
+  function ensureInputIcon($input, data){
+    if(!$input?.length) return;
+    if(!$input.parent().hasClass('ap-inp-wrap')) $input.wrap('<div class="ap-inp-wrap"></div>');
+    const $wrap = $input.parent();
+    $wrap.find('.ap-inp-ico').remove();
+
+    const show = !!(data?.url || data?.picked);
+    if(!show) return;
+
+    const url = data?.url || '';
+    const id  = data?.id || 0;
+    const nm  = esc(data?.name || $input.val() || '');
+    const $ico = $('<span class="ap-inp-ico"></span>');
+    if(url){
+      $ico.html(`<a href="${url}" target="_blank" title="Open on Spotify">${svgLinked()}</a>`);
+    }else{
+      $ico.html(`<button type="button" class="ap-btn ap-open" data-artist-id="${id}" data-artist-name="${nm}" title="Link Spotify">${svgPlus()}</button>`);
+    }
+    $wrap.append($ico);
+  }
+  window.ensureInputIcon = ensureInputIcon;
+window.anchorInput = null;
+  // --- OPEN: auto-search chalao (input ke naam se)
+  function openSpotifyDropdown(name, $anchor){
+    const $p = pop(); if(!$p.length) return;
+    window.anchorInput = $anchor && $anchor[0];
+    anchorInput = $anchor?.length ? $anchor : $('#f_release_artist');
+
+    const qName = (name || anchorInput.val() || '').trim();
+    $('#ap-pop-name').text(qName || 'Select artist on Spotify');
+    $('#ap-pop-results').html('<li>Searching…</li>');
+
+    $p.removeClass('hidden');
+    positionPop(anchorInput);
+    doSearch(qName);
+  }
+  // (optional global)
+  window.openSpotifyPopup = (name)=>openSpotifyDropdown(name, $('#f_release_artist'));
+
+  $(window).on('resize scroll', ()=>{ if(!pop().hasClass('hidden') && anchorInput) positionPop(anchorInput); });
+
+  // Close
+  $(document).off('click','.ap-pop-close').on('click','.ap-pop-close', ()=> pop().addClass('hidden'));
+
+  // --- Spotify search (auto)
+  // --- Spotify search (auto)
+function doSearch(q){
+  const query = (q || (anchorInput?.val()||'')).trim();
+  if(!query){ $('#ap-pop-results').html('<li>Type an artist name first</li>'); return; }
+
+  // ✅ USE ZF URL HELPER (same as artistSuggestionList)
+  $.getJSON('<?php echo $this->url("newrelease", ["action" => "searchArtistSpotify"]); ?>', 
+            { q: query })
+   .done(function(res){
+      const items = res?.items || [];
+      if(!items.length){
+        $('#ap-pop-results').html('<li>No results</li>');
+        return;
+      }
+      const esc = s => $('<div>').text(s||'').html();
+      const lis = items.map(it => `
+        <li>
+          <label class="ap-row-lab">
+            <input type="radio" name="apPick" value="${it.id}">
+            <img src="${it.image||''}" alt="">
+            <div style="flex:1">
+              <div><strong>${esc(it.name)}</strong></div>
+              <div style="font-size:12px;color:#6b7280">
+                pop: ${it.pop??'-'} • followers: ${it.followers??'-'}
+              </div>
+            </div>
+          </label>
+        </li>
+      `).join('');
+      $('#ap-pop-results').html(lis);
+   })
+   .fail(function(xhr){
+      let msg = 'Error contacting Spotify.';
+      try{
+        const j = JSON.parse(xhr.responseText||'{}');
+        if (j.error) msg = j.error;
+      }catch(_){}
+      $('#ap-pop-results').html(`<li style="color:#b91c1c">${msg}</li>`);
+   });
+}
+
+
+ // --- Save (radio required)
+$(document).off('click','#ap-link-save').on('click','#ap-link-save', function(){
+  console.log('[ap-link-save] clicked');  
+  const spid = $('input[name="apPick"]:checked').val();
+  console.log('[ap-link-save] spid=', spid);
+
+  // 🟡 Case 1: Create new Spotify profile
+  if (spid === '__new__') {
+    const $inp = (window.anchorInput && $(window.anchorInput)) || $('#f_release_artist');
+    const name = ($inp.val() || '').trim();
+    const artistId = parseInt($inp.data('artist-id') || 0, 10) || 0;
+
+    $.ajax({
+      url: '<?php echo $this->url("newrelease", ["action" => "linkSpotifyToArtist"]); ?>',
+      type: 'POST',
+      dataType: 'json',
+      data: {
+        artist_id: artistId,
+        name: name,
+        create_new: 1
+      }
+    })
+    .done(function(res){
+      console.log('[linkSpotify] create_new done:', res);
+      mySmallAlert && mySmallAlert('Created', 'New Spotify profile marked successfully', 1);
+      ensureInputIcon($inp, { picked:true, name:name, url:'', id:artistId });
+      $('#ap-spot-pop').addClass('hidden');
+    })
+    .fail(function(xhr){
+      var msg = 'Failed to mark as new.';
+      try { msg = (xhr.responseJSON && xhr.responseJSON.error) || msg; } catch(_){}
+      alert(msg);
+    });
+    return;
+  }
+
+  // 🟢 Case 2: Normal existing Spotify profile link
+  if(!spid){ alert('Please select an artist.'); return; }
+
+  if (typeof linkSpotify === 'function') {
+    linkSpotify(spid);   // server link + chip/icon refresh tumhare code me hai
+  } else {
+    // Frontend fallback: bas icon laga do
+    const url = `https://open.spotify.com/artist/${spid}`;
+    const $inp = anchorInput || $('#f_release_artist');
+    ensureInputIcon($inp, { picked:true, name:$inp.val(), url, id:0 });
+  }
+
+  $('#ap-spot-pop').addClass('hidden');
+});
+
+
+  // --- + icon (main input) par open + auto-search
+  $(document).off('click','.ap-inp-ico .ap-open').on('click','.ap-inp-ico .ap-open', function(e){
+    e.preventDefault(); e.stopPropagation();
+    const $inp = $(this).closest('.ap-inp-wrap').find('.input-releaseArtist');
+    openSpotifyDropdown(($inp.val()||''), $inp);
+  });
+
+  // --- Suggestion list: icon inert; row select → icon update
+  $(document)
+    .off('click.suggicon', '.suggestion-list .ap-mini-spotify, .suggestion-list .ap-linker')
+    .on('click.suggicon',  '.suggestion-list .ap-mini-spotify, .suggestion-list .ap-linker', e=>{
+      e.preventDefault(); e.stopPropagation();
+    });
+
+  $(document)
+  .off('click', '.suggestion-item')
+  .on('click', '.suggestion-item', function (e) {
+    if ($(e.target).closest('a,.ap-linker').length) return;
+
+    const $li    = $(this);
+    const $list  = $li.closest('.suggestion-list');
+    const $input = $list.siblings('.input-releaseArtist');
+
+    let name = $li.data('name') || $li.find('.ap-title').text().trim() || $li.text().trim();
+    name = name.replace(/^➕\s*Add\s*[“"]?/i,'').replace(/[”"]?\s*as\s*new\s*artist\s*$/i,'').trim();
+
+    const artistId = parseInt($li.data('artist-id') || 0, 10);
+    const sid      = $li.data('spotify-id') || '';
+    const surl     = $li.data('spotify-url') || (sid ? `https://open.spotify.com/artist/${sid}` : '');
+
+    // store and show selection
+    $input.val(name);
+    $input.data('picked', true)
+    .data('picked-name', name) 
+          .data('artist-id', artistId)
+          .data('spotify-url', surl);
+
+    ensureInputIcon($input, { picked:true, name, url:surl, id:artistId });
+    $('.suggestion-list').remove();
+    $input.trigger('change');
+
+    // NEW ► persist link if suggestion already knows the Spotify ID
+    if (sid) {
+      window.anchorInput = $input[0];   // so linkSpotify knows which input to update
+      linkSpotify(sid);
+    }
+  });
+
+
+})(jQuery);
+
+window.linkSpotify = function (spid) {
+  // jis input se popup khula tha, use pakdo
+  var $inp = (window.anchorInput && $(window.anchorInput)) || $('#f_release_artist');
+
+  var name     = ($inp.val() || '').trim();
+  var artistId = parseInt($inp.data('artist-id') || 0, 10) || 0;
+
+  $.ajax({
+    url: '<?php echo $this->url("newrelease", ["action" => "linkSpotifyToArtist"]); ?>',
+    type: 'POST',
+    dataType: 'json',
+    data: {
+      artist_id: artistId,   // 0 ho to bhi bhej do (server resolve/create kar sakta hai)
+      name: name,
+      spotify_id: spid
+    }
+  })
+  .done(function (res) {
+  const url = 'https://open.spotify.com/artist/' + spid;
+  const newId = (res && (res.artist_id || (res.artist && res.artist.id))) || null;
+
+  $inp.data('spotify-url', url);
+  if (newId) $inp.data('artist-id', parseInt(newId,10));
+
+  ensureInputIcon($inp, { picked:true, name:name, url:url, id: ($inp.data('artist-id')||0) });
+  mySmallAlert && mySmallAlert('Linked', 'Spotify artist linked successfully', 1);
+})
+  .fail(function (xhr) {
+     console.log('[linkSpotify] FAIL:', xhr.status, xhr.responseText); 
+    var msg = 'Link failed';
+    try { msg = (xhr.responseJSON && (xhr.responseJSON.error || xhr.responseJSON.message)) || msg; } catch(_){}
+    if (typeof myAlert === 'function') myAlert('Error', msg, 0); else alert(msg);
+  });
+};
+
+</script>
+
+
+<!-- ===== PDA Ditto-style Chat Dock (Intercom / Ditto lookalike) ===== -->
+<script>
+(() => {
+  // ---------- CONFIG ----------
+  const CFG = {
+    heroImg: "https://downloads.intercomcdn.com/i/o/rsifqopp/650685/8270e016160407676c1c5967a3a7/e9b78e28d612e893edba215f6a260f45.png",
+    z: 1030 // was 2147483647; keep high but safer for site
+  };
+
+  // ---------- MOUNT ----------
+  const root = document.createElement('div');
+  root.id = 'pda-ditto-clone';
+  root.style.all = 'initial';
+  document.body.appendChild(root);
+
+  // Inject runtime CSS variables (safe whether CSS is inline or external)
+  root.style.setProperty('--hero-img', `url('${CFG.heroImg}')`);
+  root.style.setProperty('--z', String(CFG.z));
+  root.style.setProperty('--z-panel', String(CFG.z - 1));
+
+  root.innerHTML = `
+  <style>
+    /* Vars scoped to widget root */
+    #pda-ditto-clone{
+      --p:#6F3FF5; --p2:#7C3AED; --text:#101828; --mut:#667085; --bd:#E7E8F2; --bg:#fff;
+      --r:22px; --shadow:0 30px 70px rgba(24,19,60,.28);
+      --hero-img: var(--hero-img); /* set by JS above */
+      --lav:#EEE9FF;
+      --z: var(--z);               /* set by JS above */
+      --z-panel: var(--z-panel);   /* set by JS above */
+    }
+    #pda-ditto-clone, #pda-ditto-clone * {
+      box-sizing:border-box; font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif
+    }
+
+    /* FAB */
+    #pda-ditto-clone .pdaFab {
+      all: initial;
+      position: fixed;
+      right: 22px;
+      bottom: -15px;
+      width: 58px;
+      height: 58px;
+      border-radius: 30px 30px 0 0; /* 4-corner control */
+      background: linear-gradient(135deg, #7d2492, #cd4ffa);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      box-shadow: 0 22px 48px rgba(111, 63, 245, .45);
+      border: 2px solid #fff;
+      transition: transform .18s ease, filter .18s ease;
+      z-index: ${CFG.z};
+    }
+    #pda-ditto-clone .pdaFab:hover{ transform:translateY(-3px) scale(1.06); filter:brightness(1.06) }
+/* PANEL (fixed pointer-events toggling) */
+#pda-ditto-clone .pdaPanel {
+  /* all: initial;  <-- optional; rakhna hai to rakh lo */
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-panel);
+  pointer-events: none;           /* default: no clicks when hidden */
+}
+
+/* when open or during closing animation, allow clicks inside */
+#pda-ditto-clone .pdaPanel.open,
+#pda-ditto-clone .pdaPanel.closing {
+  pointer-events: auto;
+}
+
+#pda-ditto-clone .pdaSheet {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  width: min(390px, 90vw);
+  max-height: 75vh;
+  background: var(--bg);
+  border-radius: var(--r);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  display: grid;
+  grid-template-rows: auto 1fr auto auto;
+  transform-origin: bottom right;
+  opacity: 0;
+  transform: scale(0.85) translateY(30px);
+  /* pointer-events: auto;  <-- ab zaroorat nahi (parent se mil jayega) */
+}
+
+@media (max-width: 560px) {
+  #pda-ditto-clone .pdaSheet { left: 10px; right: 10px; width: calc(100vw - 20px); }
+}
+
+   
+    #pda-ditto-clone .pdaPanel.open .pdaSheet { animation: growUp 0.35s cubic-bezier(.2,.8,.16,1) forwards; }
+    #pda-ditto-clone .pdaPanel.closing .pdaSheet { animation: shrinkDown 0.25s ease forwards; }
+    @keyframes growUp {
+      0% { opacity:0; transform:scale(.85) translateY(30px); }
+      70% { opacity:1; transform:scale(1.02) translateY(0); }
+      100%{ opacity:1; transform:scale(1) translateY(0); }
+    }
+    @keyframes shrinkDown {
+      0% { opacity:1; transform:scale(1) translateY(0); }
+      100%{ opacity:0; transform:scale(.85) translateY(30px); }
+    }
+
+    /* ===== HERO HEADER (IMAGE) ===== */
+    #pda-ditto-clone .pdaHeroHeader{ position:relative; height:230px; overflow:hidden; isolation:isolate; }
+    #pda-ditto-clone .pdaHeroHeader::before{
+      content:""; position:absolute; inset:0; background-image: var(--hero-img);
+      background-repeat:no-repeat; background-size:100% auto; background-position:left top; z-index:0;
+    }
+    #pda-ditto-clone .pdaHeroBrand{ position:absolute; left:30px; top:30px; color:#fff; font-weight:400; letter-spacing:.12em; text-shadow:0 2px 8px rgba(0,0,0,.2) }
+    #pda-ditto-clone .pdaHeroText{ position:absolute; left:30px; bottom:42px; color:#fff }
+    #pda-ditto-clone .pdaHeroText h3{ margin:0 0 6px; font-size:28px; line-height:1.1; font-weight:600; color:#fff; }
+    #pda-ditto-clone .pdaHeroText p{ margin:0; opacity:.92; font-size:18px; color:#fff; }
+    #pda-ditto-clone .pdaHeaderCurve{ position:absolute; left:0; right:0; bottom:-28px; height:28px; background:#fff; border-radius:28px 28px 0 0; box-shadow:0 -10px 24px rgba(0,0,0,.06) inset }
+    #pda-ditto-clone .pdaMini{
+      position:absolute; right:14px; top:14px; width:44px; height:44px; border-radius:14px; border:0;
+      background:rgba(255,255,255,.18); backdrop-filter:saturate(140%) blur(6px); color:#fff; display:grid; place-items:center;
+      box-shadow:0 6px 18px rgba(0,0,0,.15); cursor:pointer;
+    }
+
+    /* BODY */
+    #pda-ditto-clone .pdaBody{ padding:14px; overflow:auto }
+    #pda-ditto-clone .pdaBody::-webkit-scrollbar{ width:8px }
+    #pda-ditto-clone .pdaBody::-webkit-scrollbar-thumb{ background:#E3DFFF; border-radius:10px }
+
+    #pda-ditto-clone .card{ background:#fff; border:1px solid var(--bd); border-radius:18px; box-shadow:0 16px 36px rgba(0,0,0,.06) }
+    #pda-ditto-clone .ctaWrap{ padding:14px; border:0; box-shadow:none; background:transparent }
+    #pda-ditto-clone .cta{
+      width:100%; border:0; border-radius:16px; padding:14px 16px; font-weight:500; cursor:pointer; background:#fff; color:#111;
+      display:flex; align-items:center; justify-content:space-between; gap:10px; box-shadow:0 8px 24px rgba(17,12,46,.12);
+    }
+    #pda-ditto-clone .pill{ width:38px; height:38px; border-radius:12px; background:linear-gradient(135deg,var(--p),var(--p2)); color:#fff; display:grid; place-items:center; box-shadow:0 6px 16px rgba(111,63,245,.35) }
+
+    /* SEARCH */
+    #pda-ditto-clone .searchCard{ margin-top:1px; padding:2px 0 0; border:0; box-shadow:none; background:transparent }
+    #pda-ditto-clone .searchPill{ position:relative }
+    #pda-ditto-clone .searchPill input{
+      width:100%; height:44px; border:1.5px solid #ECECF6; border-radius:12px; background:#fff;
+      padding:0 44px 0 42px; outline:none; transition:box-shadow .15s ease, border-color .15s ease;
+      font-size:14px; color:#191b26; box-shadow:0 6px 18px rgba(17,12,46,.06);
+    }
+    #pda-ditto-clone .searchPill input:focus{ border-color:#CFC7FF; box-shadow:0 0 0 4px rgba(111,63,245,.15) }
+    #pda-ditto-clone .lens, #pda-ditto-clone .glass{ position:absolute; top:50%; transform:translateY(-50%); font-size:0 }
+    #pda-ditto-clone .lens{ left:14px } #pda-ditto-clone .glass{ right:12px }
+    #pda-ditto-clone .icon{ width:18px; height:18px; display:block; color:#98A2B3 }
+    #pda-ditto-clone .icon.accent{ color:#6F3FF5 }
+
+    /* QUICK list (scoped li fix) */
+    #pda-ditto-clone .quick{ list-style:none; margin:12px 0 0; padding:0; max-height:220px; overflow:auto; border-radius:14px }
+    #pda-ditto-clone .quick li{ border-bottom:1px solid #ffffff; }
+    #pda-ditto-clone li { color:#9d9d9d; font-size:13px; line-height:18px; }
+    #pda-ditto-clone .quick a{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 10px; color:#707070; text-decoration:none; border-radius:12px }
+    #pda-ditto-clone .quick a .mute{ color:#9AA4B2; font-weight:700 }
+    #pda-ditto-clone .quick a:hover{ background:#F6F5FF }
+
+    /* NEWS (scoped) */
+    #pda-ditto-clone .newsRow{ border:0; border-radius:18px; overflow:hidden; margin-top:12px; box-shadow:0 8px 24px rgba(17,12,46,.08) }
+    #pda-ditto-clone .newsCard{ display:flex; gap:12px; padding:10px; align-items:center; text-decoration:none; color:inherit; border-radius:10px; transition:all .3s ease; }
+    #pda-ditto-clone .newsImg{ width:96px; height:60px; border-radius:12px; overflow:hidden; background:#ddd }
+    #pda-ditto-clone .newsImg img{ width:100%; height:100%; object-fit:cover; border-radius:8px; transition:transform .3s ease; }
+    #pda-ditto-clone .newsMeta{ font-size:12px; color:#6F3FF5; font-weight:600 }
+    #pda-ditto-clone .newsTitle{ font-size:15px; font-weight:600; margin-top:2px }
+    #pda-ditto-clone .mute{ font-size:12px; color:#666 }
+    #pda-ditto-clone .newsCard:hover{ background:#f9f7ff; box-shadow:0 8px 20px rgba(111,63,245,.15); transform:translateY(-3px); }
+    #pda-ditto-clone .newsCard:hover .newsImg img{ transform:scale(1.05); }
+
+    /* Tabs (scoped) */
+    #pda-ditto-clone .tabs{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; padding:12px; background:#fff; position:relative; border-radius:22px; box-shadow:0 -6px 24px rgba(17,12,46,.06); margin-bottom:5px; border-radius:0 !important; }
+    #pda-ditto-clone .tabs button{
+      all:initial; border-radius:16px; padding:1px 1px; cursor:pointer; color:#3b3b44;
+      display:flex; flex-direction:column; align-items:center; gap:6px; font:14px Inter, system-ui; text-align:center;
+    }
+    #pda-ditto-clone .tabs button svg{ width:18px; height:18px }
+    #pda-ditto-clone .tabs button.active{ color:#6F3FF5 }
+
+    /* Skeleton (scoped) */
+    #pda-ditto-clone .skeleton { position: relative; overflow: hidden; background: #eee; border-radius: 8px; }
+    #pda-ditto-clone .skeleton::after {
+      content:""; position:absolute; inset:0; transform: translateX(-100%);
+      background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.6) 50%, rgba(255,255,255,0) 100%);
+      animation: shimmer 1.3s infinite;
+    }
+    @keyframes shimmer { 100% { transform: translateX(100%); } }
+    #pda-ditto-clone .skeleton-line { height: 10px; border-radius: 6px; }
+    #pda-ditto-clone .skeleton-gap { height: 8px; }
+    #pda-ditto-clone .skeleton-quick li{ display:flex; gap:10px; padding:12px 10px; }
+    #pda-ditto-clone .skeleton-dot{ width:18px; height:18px; border-radius:6px; }
+    #pda-ditto-clone .skeleton-news .row{ display:flex; gap:12px; padding:10px; }
+    #pda-ditto-clone .skeleton-thumb{ width:96px; height:60px; border-radius:12px; }
+    #pda-ditto-clone .hide{ display:none !important; }
+  </style>
+
+  <!-- FAB -->
+  <button class="pdaFab" id="pdaFab" aria-label="Open support">
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round">
+      <path d="M7 8h10M7 12h7M5 20l3-3h9a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7A3 3 0 0 0 4 7v10a3 3 0 0 0 1 3z"/>
+    </svg>
+  </button>
+
+  <!-- PANEL -->
+  <div class="pdaPanel" id="pdaPanel" aria-hidden="true">
+    <div class="pdaSheet">
+      <!-- HERO -->
+      <div class="pdaHeroHeader">
+        <button class="pdaMini" id="pdaMini" aria-label="Close">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+        <div class="pdaHeroBrand">PRIME</div>
+        <div class="pdaHeroText">
+          <h3>Hi there.</h3>
+          <p>How can we help?</p>
+        </div>
+        <div class="pdaHeaderCurve"></div>
+      </div>
+
+      <!-- BODY -->
+      <section class="pdaBody">
+        <div class="searchCard">
+          <div class="searchPill">
+            <span class="lens">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+            </span>
+            <input type="text" id="pdaSearch" placeholder="Search for help"/>
+            <span class="glass">
+              <svg class="icon accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h16"/></svg>
+            </span>
+          </div>
+
+          <!-- Skeleton FAQ -->
+          <ul id="quickListSkeleton" class="skeleton-quick">
+            ${Array.from({length:5}).map(()=>`
+              <li>
+                <div class="skeleton skeleton-dot"></div>
+                <div style="flex:1">
+                  <div class="skeleton skeleton-line" style="width:75%"></div>
+                  <div class="skeleton-gap"></div>
+                  <div class="skeleton skeleton-line" style="width:45%"></div>
+                </div>
+              </li>
+            `).join('')}
+          </ul>
+
+          <ul class="quick hide" id="quickList">
+            <li><a href="https://www.primebackstage.in/faq/article/31"><span class="q">How do I create a new release?</span><span class="mute">›</span></a></li>
+            <li><a href="https://www.primebackstage.in/faq/category/26"><span class="q">Most Common Reasons for Track Rejection!</span><span class="mute">›</span></a></li>
+            <li><a class="active" href="https://www.primebackstage.in/faq/article/42"><span class="q">What format should my artwork be in?</span><span class="mute">›</span></a></li>
+            <li><a href="https://www.primebackstage.in/faq/article/39"><span class="q">What should I enter for the C Line & P Line?</span><span class="mute">›</span></a></li>
+            <li><a href="https://www.primebackstage.in/faq/article/96"><span class="q">How can I pitch my songs for promotion?</span><span class="mute">›</span></a></li>
+          </ul>
+        </div>
+
+        <div class="newsRow">
+          <a href="https://www.primebackstage.in/faq/article/111" class="newsCard">
+            <div class="newsImg">
+              <img src="https://downloads.intercomcdn.com/i/o/rsifqopp/1452204507/4554922cdf3e00dd07d2fbaabac8/Whatsapp_Store-Page_Press-Update.jpg?expires=1754995500&signature=5a4053f3b29cffc4bbd5e278e8a242f494a3f79c10b7e9eef7cd4196030a7812&req=dSQiFMt%2BmYRfXvMW1HO4zWvS25up4hXXk1L9VGnRmC4XuNb4GaHhoq6FmE%2Bi%0ADk4EXGQ%3D%0A" alt="">
+            </div>
+            <div>
+              <div class="newsMeta">New Store</div>
+              <div class="newsTitle">Upload your tracks to WhatsApp</div>
+              <div class="mute" style="font-size:12px">Read more ➜</div>
+            </div>
+          </a>
+
+          <a href="https://www.primebackstage.in/promotion" class="newsCard">
+            <div class="newsImg">
+              <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYQZ5P3ugmQZ1UkipSgg4HnHxOY0evgT3YeLw03QhQt8zEjzDSCbN9E1BcdsfG9M4pM4s&usqp=CAU" alt="">
+            </div>
+            <div>
+              <div class="newsMeta">New Service</div>
+              <div class="newsTitle">Ready to Join a YouTube MCN?</div>
+              <div class="mute" style="font-size:12px">Join Now ➜</div>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- Tabs -->
+      <nav class="tabs" id="pdaTabs">
+        <button class="active" data-go="home">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M9 22V12h6v10"/></svg>
+          <span>Home</span>
+        </button>
+        <button data-go="messages">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a4 4 0 0 1-4 4H7l-4 4V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg>
+          <span>Support Tickets</span>
+        </button>
+        <button data-go="help">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2-3 4"/><path d="M12 17h.01"/></svg>
+          <span>Help</span>
+        </button>
+        <button data-go="news">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+          <span>News</span>
+        </button>
+      </nav>
+    </div>
+  </div>
+  `;
+
+  // ---------- JS (scoped to widget) ----------
+  const $ = sel => root.querySelector(sel);
+  const fab    = $('#pdaFab');
+  const panel  = $('#pdaPanel');
+  const mini   = $('#pdaMini');
+  const tabs   = $('#pdaTabs');
+  const search = $('#pdaSearch');
+  const quick  = $('#quickList');
+  const quickSkel = $('#quickListSkeleton');
+
+  function showSkeleton() {
+    if (quickSkel) quickSkel.classList.remove('hide');
+    if (quick) quick.classList.add('hide');
+  }
+  function hideSkeleton() {
+    if (quickSkel) quickSkel.classList.add('hide');
+    if (quick) quick.classList.remove('hide');
+  }
+
+  const open = () => {
+    panel.classList.add('open');
+    panel.setAttribute('aria-hidden','false');
+    if (fab) fab.style.display='none';
+    showSkeleton();
+    setTimeout(hideSkeleton, 1000);
+  };
+  const close = () => {
+    panel.classList.remove('open');
+    panel.classList.add('closing');
+    setTimeout(() => {
+      panel.classList.remove('closing');
+      panel.setAttribute('aria-hidden','true');
+      if (fab) fab.style.display='grid';
+    }, 250);
+  };
+
+  if (fab)  fab.addEventListener('click', open);
+  if (mini) mini.addEventListener('click', close);
+
+  if (tabs) {
+    tabs.addEventListener('click', e=>{
+      const b = e.target.closest('button[data-go]');
+      if(!b) return;
+      tabs.querySelectorAll('button').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      // Navigation (scoped)
+      const dest = b.getAttribute('data-go');
+      if (dest === 'messages') location.href = "https://www.primebackstage.in/tickets";
+      if (dest === 'help')     location.href = "https://www.primebackstage.in/faq";
+      if (dest === 'news')     location.href = "https://www.whatsapp.com/channel/0029VaXU4WWLtOjGnXeqFJ3h";
+    });
+  }
+
+  if (search && quick){
+    search.addEventListener('input', ()=>{
+      const q = search.value.toLowerCase();
+      quick.querySelectorAll('li').forEach(li=>{
+        li.style.display = li.textContent.toLowerCase().includes(q) ? '' : 'none';
+      });
+    });
+  }
+
+  try {
+    if (new URLSearchParams(location.search).get('openChat') === '1') open();
+  } catch {}
+})();
+</script>
+<!-- ===== /PDA Ditto-style Chat Dock ===== -->
+
+<!-- (Optional) extra scoped styles block — keeps any later overrides safe -->
+<style>
+#pda-ditto-clone .newsCard {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 10px;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+#pda-ditto-clone .newsImg img {
+  border-radius: 8px;
+  transition: transform 0.3s ease;
+}
+#pda-ditto-clone .newsMeta { font-size: 12px; color: #6F3FF5; font-weight: 600; }
+#pda-ditto-clone .newsTitle { font-size: 15px; font-weight: 600; margin-top: 2px; }
+#pda-ditto-clone .mute { font-size: 12px; color: #666; }
+#pda-ditto-clone .newsCard:hover {
+  background: #f9f7ff;
+  box-shadow: 0 8px 20px rgba(111, 63, 245, 0.15);
+  transform: translateY(-3px);
+}
+#pda-ditto-clone .newsCard:hover .newsImg img { transform: scale(1.05); }
+  
+</style>

@@ -1,0 +1,233 @@
+<style>
+.max-w-sm{max-width:400px !important;} 
+body {
+    font-family: "Open Sans" !important; 
+	
+}
+html {
+    font-size: 14px; /* Default font size */
+}
+.rounded-full {
+   
+    padding: .5rem 2.5rem;
+    font-size: 14px!important; 
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+	    
+    
+}
+button{
+ color: #fff;
+}
+
+</style>
+<div class="flex justify-center">
+        <div class="max-w-sm mx-6">
+            <div class="mx-16 mt-12">
+				<a href="<?php echo $this->url("login",array('action' => 'index'))?>">
+					<img alt="Company Logo" id="logo" class="" src="<?php echo $this->basePath(); ?>/public/img/backstage-logo.png">
+				</a>
+            </div>
+            <div id="api" data-name="SelfAsserted" class="mt-10">
+    <div class="intro text-center">Set a new password</div><div id="infoStep4" class="mt-4 h-32 text-sm " style="display: block;">
+                            <div class="text-gray-700">In order to protect your account, your new password should be with:</div>
+                            <div id="infoLettersError" class="text-yellow-600 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 text-yellow-600" width="16" height="16" fill="none" viewBox="0 0 16 16"><path fill="#E76E3C" fill-rule="evenodd" d="M12.667 4.267l-.934-.934L8 7.067 4.267 3.333l-.934.934L7.067 8l-3.734 3.733.934.934L8 8.933l3.733 3.734.934-.934L8.933 8l3.734-3.733z" clip-rule="evenodd"></path></svg>
+                                <span>At least 8 characters</span>
+                            </div>
+                            <div id="infoLettersOk" class="text-green-600 flex items-center" style="display: none;">
+                                <svg width="16" height="16" fill="none" class="mr-1 text-green-600" xmlns="http://www.w3.org/2000/svg"><path d="M6.126 9.96 4.04 7.873l-.708.708 2.793 2.792 6-6-.708-.707-5.292 5.292z" fill="#205E3B"></path></svg>
+                                <span>At least 8 characters</span>
+                            </div>
+                            <div id="infoLowerError" class="text-yellow-600 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 text-yellow-600" width="16" height="16" fill="none" viewBox="0 0 16 16"><path fill="#E76E3C" fill-rule="evenodd" d="M12.667 4.267l-.934-.934L8 7.067 4.267 3.333l-.934.934L7.067 8l-3.734 3.733.934.934L8 8.933l3.733 3.734.934-.934L8.933 8l3.734-3.733z" clip-rule="evenodd"></path></svg>
+                                <span>At least 1 lowercase letter</span>
+                            </div>
+                            <div id="infoLowerOk" class="text-green-600 flex items-center" style="display: none;">
+                                <svg width="16" height="16" fill="none" class="mr-1 text-green-600" xmlns="http://www.w3.org/2000/svg"><path d="M6.126 9.96 4.04 7.873l-.708.708 2.793 2.792 6-6-.708-.707-5.292 5.292z" fill="#205E3B"></path></svg>
+                                <span>At least 1 lowercase letter</span>
+                            </div>
+                            <div id="infoCapitalError" class="text-yellow-600 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 text-yellow-600" width="16" height="16" fill="none" viewBox="0 0 16 16"><path fill="#E76E3C" fill-rule="evenodd" d="M12.667 4.267l-.934-.934L8 7.067 4.267 3.333l-.934.934L7.067 8l-3.734 3.733.934.934L8 8.933l3.733 3.734.934-.934L8.933 8l3.734-3.733z" clip-rule="evenodd"></path></svg>
+                                <span>At least 1 capital letter</span>
+                            </div>
+                            <div id="infoCapitalOk" class="text-green-600 flex items-center" style="display: none;">
+                                <svg width="16" height="16" fill="none" class="mr-1 text-green-600" xmlns="http://www.w3.org/2000/svg"><path d="M6.126 9.96 4.04 7.873l-.708.708 2.793 2.792 6-6-.708-.707-5.292 5.292z" fill="#205E3B"></path></svg>
+                                <span>At least 1 capital letter</span>
+                            </div>
+                            <div id="infoNumberError" class="text-yellow-600 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 text-yellow-600" width="16" height="16" fill="none" viewBox="0 0 16 16"><path fill="#E76E3C" fill-rule="evenodd" d="M12.667 4.267l-.934-.934L8 7.067 4.267 3.333l-.934.934L7.067 8l-3.734 3.733.934.934L8 8.933l3.733 3.734.934-.934L8.933 8l3.734-3.733z" clip-rule="evenodd"></path></svg>
+                                <span>At least 1 number<span>
+                            </span></span></div>
+                            <div id="infoNumberOk" class="text-green-600 flex items-center" style="display: none;">
+                                <svg width="16" height="16" fill="none" class="mr-1 text-green-600" xmlns="http://www.w3.org/2000/svg"><path d="M6.126 9.96 4.04 7.873l-.708.708 2.793 2.792 6-6-.708-.707-5.292 5.292z" fill="#205E3B"></path></svg>
+                                <span>At least 1 number<span>
+                            </span></span></div>
+                        </div>
+						
+    <form action="JavaScript:void(0);">
+      <div id="passwordEntryMismatch" class="error pageLevel" style="display: none;" aria-hidden="true">The password entry fields do not match. Please enter the same password in both fields and try again.</div>
+      <div id="requiredFieldMissing" class="error pageLevel" style="display: none;" aria-hidden="true">A required field is missing. Please fill out all required fields and try again.</div>
+      <div id="fieldIncorrect" class="error pageLevel" style="display: none;" aria-hidden="true">One or more fields are filled out incorrectly. Please check your entries and try again.</div>
+      <div id="claimVerificationServerError" class="error pageLevel" style="display: none;" aria-hidden="true"></div>
+      <div class="attr mt-8" id="attributeList">
+        <ul class="mt-8">
+          <li class="Password">
+            <div class="attrEntry relative mb-6">
+
+              <label for="newPassword" class="hidden cursor-text text-gray-dark absolute left-11 top-2 text-xs" style="pointer-events: none;">New password</label>
+
+              <div class="error itemLevel hidden" role="alert"></div>
+
+
+
+              <div id="inputwrapper" class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="mr-2" width="24" height="24" fill="none" viewBox="0 0 24 24"><path fill="#C4C4C4" d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6h1.9c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm0 12H6V10h12v10z"></path></svg><input id="newPassword" class="textInput border-b-2 w-full px-4 cursor-text text-sm pt-4 pb-4 border-gray-border text-gray-dark" type="password" placeholder="New password" aria-label="Nouveau mot de passe" pattern="^((?=.*[a-z])(?=.*[A-Z])(?=.*\d)|(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9])|(?=.*[a-z])(?=.*\d)(?=.*[^A-Za-z0-9])|(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]))([A-Za-z\d@#$%^&amp;*\-_+=[\]{}|\\:',?/`~&quot;();!]|\.(?!@)){8,64}$" aria-required="true"></div><div id="errorInput" class="h-4 mt-1 ml-8"><div class="hidden text-xs text-red-700"></div></div><div id="errorInput" class="h-4 mt-1 ml-8"><div class="hidden text-xs text-red-700"></div></div>
+
+              <a href="javascript:void(0)" data-help="Entrez un nouveau mot de passe" class="helpLink tiny hidden" style="display: none;">What is this?</a>
+            </div>
+          </li>
+          <li class="Password">
+            <div class="attrEntry relative mb-6">
+
+              <label for="reenterPassword" class="hidden cursor-text text-gray-dark absolute left-11 top-2 text-xs" style="pointer-events: none;">Confirm new password</label>
+
+              <div class="error itemLevel hidden" role="alert"></div>
+
+              <div id="inputwrapper" class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="mr-2" width="24" height="24" fill="none" viewBox="0 0 24 24"><path fill="#C4C4C4" d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6h1.9c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm0 12H6V10h12v10z"></path></svg><input id="reenterPassword" class="textInput border-b-2 w-full px-4 cursor-text text-sm pt-4 pb-4 border-gray-border text-gray-dark" type="password" placeholder="Confirm new password" aria-label="Confirmez le nouveau mot de passe" pattern="^((?=.*[a-z])(?=.*[A-Z])(?=.*\d)|(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9])|(?=.*[a-z])(?=.*\d)(?=.*[^A-Za-z0-9])|(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]))([A-Za-z\d@#$%^&amp;*\-_+=[\]{}|\\:',?/`~&quot;();!]|\.(?!@)){8,64}$" aria-required="true"></div><div id="errorInput" class="h-4 mt-1 ml-8"><div class="hidden text-xs text-red-700"></div></div>
+
+              <a href="javascript:void(0)" data-help="Confirmez le nouveau mot de passe" class="helpLink tiny hidden" style="display: none;">What is this?</a>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="buttons flex mt-10 justify-between">
+        <a id="cancel" href="" class="mb-8 bg-white border uppercase text-sm border-blue-500 text-blue-500 py-2 px-10 rounded-full" style="">Cancel</a><button id="submit" type="submit" form="attributeVerification" aria-label="Continue" disabled="" class="mb-8 rounded-full" style="">APPLY</button>
+        
+      </div>
+
+     
+    </form>
+  </div>
+		</div>
+    </div>
+	
+	<script>
+	 $(document).ready(function () {
+		 
+			const regexLetters = new RegExp(/^.{8,}$/);
+            const regexLower = new RegExp(/^(?=.*[a-z]).{1,}$/);
+            const regexCapital = new RegExp(/^(?=.*[A-Z]).{1,}$/);
+            const regexNumber = new RegExp(/^(?=.*\d).{1,}$/);
+            const regexGlobal = new RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/);
+		
+			// Events
+			$('input[type="text"],input[type="password"]').focus(function() {
+				$(this).closest('.attrEntry').find('label').removeClass("text-gray-dark text-red-700 hidden").addClass("text-blue-500");
+				$(this).attr("placeholder", "");
+				$(this).removeClass("pt-4 pb-4 border-gray-border border-red-700").addClass("pt-6 pb-2 border-blue-500");
+			});
+			$('input[type="text"],input[type="password"]').focusout(function() {
+				$(this).closest('.attrEntry').find('label').removeClass("text-blue-500").addClass("text-gray-dark");
+				$(this).removeClass("border-blue-500").addClass("border-gray-border");
+				if($(this).val() == '')
+				{
+					$(this).closest('.attrEntry').find('label').addClass("text-gray-dark text-red-700 hidden").removeClass("text-blue-500");
+					$(this).attr("placeholder", $(this).closest('.attrEntry').find('label').text());
+					$(this).addClass("pt-4 pb-4 border-gray-border border-red-700").removeClass("pt-6 pb-2 border-blue-500");
+					$('#continue').removeClass('-enabled');
+					$('#continue').attr('disabled',true);
+				}
+			});
+			/*$('input[type="password"]').keyup(function(){
+				if($(this).val() != '')
+				{
+					$('#continue').addClass('-enabled');
+					$('#continue').removeAttr('disabled');
+					
+				}
+				else
+				{
+					$('#continue').removeClass('-enabled');
+					$('#continue').attr('disabled',true);
+				}
+				
+				
+			
+			});*/
+			
+			$('input[type="password"]').on('keyup input change', function() {
+				var newPassword = $('#newPassword').val();
+				var allow=true;
+				if(regexLetters.test(newPassword)) {
+					$('div#infoLettersError').hide()
+					$('div#infoLettersOk').show()
+				} else {
+					$('div#infoLettersError').show()
+					$('div#infoLettersOk').hide();
+					allow=false;
+				}
+				if(regexNumber.test(newPassword)) {
+					$('div#infoNumberError').hide()
+					$('div#infoNumberOk').show()
+				} else {
+					$('div#infoNumberError').show()
+					$('div#infoNumberOk').hide();
+					allow=false;
+				}
+				if(regexCapital.test(newPassword)) {
+					$('div#infoCapitalError').hide()
+					$('div#infoCapitalOk').show()
+				} else {
+					$('div#infoCapitalError').show()
+					$('div#infoCapitalOk').hide();
+					allow=false;
+				}
+				if(regexLower.test(newPassword)) {
+					$('div#infoLowerError').hide()
+					$('div#infoLowerOk').show()
+				} else {
+					$('div#infoLowerError').show()
+					$('div#infoLowerOk').hide();
+					allow=false;
+				}
+				
+				
+				if(allow == true && ($('#newPassword').val() == $('#reenterPassword').val()))
+				{
+					$('#submit').addClass('-enabled');
+					$('#submit').removeAttr('disabled');
+				}
+				else
+				{
+					$('#submit').removeClass('-enabled');
+					$('#submit').attr('disabled',true);
+				}
+				
+				
+				
+				
+			});
+			
+			
+			$('#submit').click(function(){
+				
+				var objFormData =
+				{
+					password: $('#newPassword').val()
+				};
+				var objMyPost = AJAX_Post("<?php echo $this->url('settings', array('action'=>'changePassword'));?>", objFormData);
+				if (objMyPost.ERR_NO === 0) {
+					if (objMyPost.DATA.DBStatus === 'OK') {
+						
+						mySmallAlert('Save Record', 'Password changed successfully', 1);
+						
+					}
+				}
+				else {
+					mySmallAlert('Error...!', 'There was an error', 0);
+				}
+			});
+			
+			
+	});	
+	</script>

@@ -1,0 +1,410 @@
+<link rel="stylesheet" type="text/css" href="<?php echo $this->basePath(); ?>/public/css/index.min.css">
+<link rel="stylesheet" type="text/css" href="<?php echo $this->basePath(); ?>/public/css/anlytics_view.css">
+
+
+ <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+ <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+	
+	
+		<div class="col-xs-12 buttonActions" style="margin-top:15px;">
+			<div class="headerContentPage">
+				<span class="headerCoverBlock">
+					<span class="headerCover"><img src="<?php echo $this->coverIMG;?>" width="90" loading="lazy"></span>
+				</span>
+				<span class="headerInfosBlock">
+					<div class="col-sm-4 headerPageInfoCol">
+							<span class="headerSongName"><a href="<?php echo $this->url('releases',array("action" => "view"));?>?id=<?php echo $this->ID;?>" target="_blank"><?php echo $this->SongName; ?></a><span class="headerIsrc"> (<?php echo $this->ISRC; ?>)</span></span><br>
+							<span class="headerArtistName"><a href="javascript:;"><?php echo $this->releaseArtist; ?></a></span><br>
+							<span class="headerAlbumName text-muted"><span class="text-lowercase">From</span> <a href="javascript:;"><?php echo $this->releaseTitle; ?> (<?php echo $this->UPC; ?>)</a></span><br>
+												<span class="header-album-release text-muted"> Release : <?php echo $this->releaseDate; ?></span>
+									</div>
+					<div class="col-sm-8 headerPageFiltersCol buttonActions">
+						
+					</div>
+				</span>
+			</div>
+		</div>
+	
+<div class="">
+	
+    <div id="bs-main-content" class="col-md-7">
+		<div class="row row-full" style="">
+			<div style="width: 100%;">
+
+<div class="blvds-custom-grid" style="padding-bottom: 1.75rem;">
+    <div class="audioStreams blvds-custom-grid-col-12 blvds-bg-white" style="padding: 0px 20px;">
+        <div class="audioStream" data-testid="as-container" style="margin-top: 20px;">
+            <h1 style="font-size: 2.4rem; font-weight: bold; padding-bottom: 20px; flex-grow: 0;">Your streaming performance</h1>
+            <div class="header__top svelte-ucrmon">
+                <div class="header__topLeft svelte-ucrmon">
+                    <div class="header__title blvds-format-h6 blvds-text-gray-700 svelte-ucrmon">Audio streams</div>
+                    <div class="header__date blvds-format-t4 blvds-text-gray-700 svelte-ucrmon"></div>
+                </div>
+                <div class="header__seeMore svelte-ucrmon"><a href="javascript:;" class="a-button -Tertiary -interactive -isRounded -noPadding svelte-1ilua7d" aria-disabled="false"></a></div>
+            </div>
+            <canvas id="myChart" width="400" height="160"></canvas>
+	   </div>
+    </div>
+</div>
+
+			</div>
+		</div>
+	</div>
+	<div id="bs-main-content" class="col-md-5">
+		<div class="row row-full" style="">
+			<div style="width: 100%;padding-top:50px;">
+
+<div class="blvds-custom-grid" style="padding-bottom: 1.75rem;">
+    <div class="audioStreams blvds-custom-grid-col-12 blvds-bg-white" style="padding: 0px 20px;">
+        <div class="audioStream" data-testid="as-container" style="margin-top: 20px;">
+            <h1 style="font-size: 2.4rem; font-weight: bold; padding-bottom: 20px; flex-grow: 0;"></h1>
+            <div class="header__top svelte-ucrmon">
+                <div class="header__topLeft svelte-ucrmon">
+                    <div class="header__title blvds-format-h6 blvds-text-gray-700 svelte-ucrmon">Store</div>
+                    <div class="header__date blvds-format-t4 blvds-text-gray-700 svelte-ucrmon"></div>
+                </div>
+                <div class="header__seeMore svelte-ucrmon"><a href="javascript:;" class="a-button -Tertiary -interactive -isRounded -noPadding svelte-1ilua7d" aria-disabled="false"></a></div>
+            </div>
+            <div id="myDonutChart"></div>
+	   </div>
+    </div>
+</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+<div id="catalogContent" style="margin-top:20px;">
+  
+  
+  <table id="tblMasterList" class="table dataTable no-footer" width="100%">
+
+
+
+
+<col width="10%">
+<col width="20%">
+<col width="10%">
+<col width="15%">
+<col width="15%">
+<col width="15%">
+<col width="15%">
+
+                <thead>
+
+                <tr>
+
+                    <td></td>
+					<th><?php echo $this->translate(''); ?></th>
+					<th><?php echo $this->translate('Stores'); ?></th>
+					<th><?php echo $this->translate('%'); ?></th>
+					<th><?php echo $this->translate('Audio Streams'); ?></th>
+					<th><?php echo $this->translate('Creations'); ?></th>
+					<th><?php echo $this->translate('Revenue'); ?></th>
+					<th><?php echo $this->translate('Sales Month'); ?></th>
+
+
+                </tr>
+
+                </thead>
+
+                <tbody>
+
+					
+
+                </tbody>
+
+  </table>
+ </div>
+<script>
+        var ctx = document.getElementById('myChart').getContext('2d');
+
+        // Create gradient
+        var gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(54, 162, 235, 0.2)');
+        gradient.addColorStop(1, 'rgba(54, 162, 235, 0)');
+
+        var data = {
+            labels: <?php echo json_encode($this->MONTH_NAME);?>/*['May 25', 'May 26', 'May 27', 'May 28', 'May 29', 'May 30', 'May 31']*/,
+            datasets: [{
+                label: 'Audio Streams',
+                data: <?php echo json_encode($this->MONTH_DATA);?>/*[6042, 5789, 6065, 6351, 6403, 6807, 7172]*/,
+                backgroundColor: gradient,
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 3,
+                pointBackgroundColor: 'rgba(54, 162, 235, 1)',
+                fill: true,
+                tension: 0.4
+            }]
+        };
+
+        var options = {
+            plugins: {
+                legend: {
+                    display: false // Hide the legend
+                }
+            },
+            scales: {
+                 y: {
+					beginAtZero: true,
+					ticks: {
+						stepSize: 1000,
+						color: '#888',
+						callback: function(value) {
+							if (value >= 1000000) {
+								return (value / 1000000).toFixed(1) + 'M'; // Millions
+							} else if (value >= 1000) {
+								return (value / 1000).toFixed(1) + 'K'; // Thousands
+							}
+							return value; // Values below 1000 remain as-is
+						}
+					},
+					grid: {
+						color: '#e0e0e0'
+					}
+				},
+                x: {
+                    ticks: {
+                        color: '#888'
+                    },
+                    grid: {
+                        display: false
+                    }
+                }
+            },
+            elements: {
+                line: {
+                    tension: 0.4 // smoothes the line
+                },
+                point: {
+                    radius: 3, // size of the data point circles
+                    hitRadius: 10,
+                    hoverRadius: 5
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: true
+        };
+
+        var myChart = new Chart(ctx, {
+            type: 'line',
+            data: data,
+            options: options
+        });
+</script>
+<script>
+        document.addEventListener('DOMContentLoaded', function () {
+            Highcharts.chart('myDonutChart', {
+                chart: {
+                    type: 'pie',
+                    height: 320,
+                    spacing: [10, 10, 10, 10]
+                },
+                title: {
+                    text: '',
+                    align: 'center',
+                    verticalAlign: 'middle',
+                    style: {
+                        fontSize: '16px'
+                    }
+                },
+                tooltip: {
+                    pointFormat: '{series.name}: <b>{point.percentage:.2f}%</b><br>Audio streams: {point.y}'
+                },
+                accessibility: {
+                    point: {
+                        valueSuffix: '%'
+                    }
+                },
+                plotOptions: {
+                    pie: {
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        innerSize: '80%', // Donut style
+                        dataLabels: {
+                            enabled: false
+                        },
+                        showInLegend: true
+                    }
+                },
+                series: [{
+                    name: 'Share',
+                    colorByPoint: true,
+                    data: <?php echo json_encode($this->store_data);?>,
+					
+					/*[{
+                        name: 'Spotify',
+                        y: 5000,
+                        color: '#22B14C', // Spotify color
+                    }, {
+                        name: 'Saavn',
+                        y: 1500,
+                        color: '#03A9F4', // Saavn color
+                    }, {
+                        name: 'Apple Music',
+                        y: 3000,
+                        color: '#C0C0C0', // Apple Music color
+                    }, {
+                        name: 'Amazon.com',
+                        y: 1139,
+                        color: '#FF9800', // Amazon.com color
+                    }, {
+                        name: 'Others',
+                        y: 2000,
+                        color: '#2C3E50' // Others color
+                    }]*/
+                }],
+                legend: {
+                    align: 'center',
+                    verticalAlign: 'bottom',
+                    layout: 'horizontal',
+                    itemStyle: {
+                        fontSize: '14px'
+                    }
+                }
+            });
+        });
+		
+		
+		 var pagefunction = function () {
+        //console.log("cleared");
+        /* // DOM Position key index //
+         l - Length changing (dropdown)
+         f - Filtering input (search)
+         t - The Table! (datatable)
+         i - Information (records)
+         p - Pagination (paging)
+         r - pRocessing
+         < and > - div elements
+         <"#id" and > - div with an id
+         <"class" and > - div with a class
+         <"#id.class" and > - div with an id and class
+         Also see: http://legacy.datatables.net/usage/features
+         */
+        /* BASIC ;*/
+        var responsiveHelper_dt_basic = undefined;
+        var responsiveHelper_datatable_fixed_column = undefined;
+        var responsiveHelper_datatable_col_reorder = undefined;
+        var responsiveHelper_datatable_tabletools = undefined;
+        var breakpointDefinition = {
+            tablet: 1024,
+            phone: 480
+        };
+		var deleteact=acl_DELETE;
+        /* TABLETOOLS */
+        oTable = $("#tblMasterList").dataTable(
+            {
+                "bAutoWidth": false,
+                "bLengthChange": false,
+                "sDom": "<'dt-toolbar'<'col-xs-12 col-sm-6 hidden-xs'i><'col-sm-6 col-xs-12 hidden-xs'<'toolbar'>>>" +
+                    "t" +
+                    "<'dt-toolbar-footer'<><'col-xs-12 col-sm-6'p>>",
+                "bProcessing": true,
+                "bServerSide": true,
+				
+                "autoWidth" : true,
+				"infoCallback": function(settings, start, end, max, total, pre) {
+					//return total + " results found";
+				},
+                "preDrawCallback" : function() {
+                    // Initialize the responsive datatables helper once.
+                    if (!responsiveHelper_dt_basic) {
+                        responsiveHelper_dt_basic = new ResponsiveDatatablesHelper($('#tblMasterList'), breakpointDefinition);
+                    }
+                },
+                "rowCallback" : function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+					
+					
+                    responsiveHelper_dt_basic.createExpandIcon(nRow);
+                },
+                "drawCallback" : function(oSettings) {
+                    responsiveHelper_dt_basic.respond();
+                },
+                "fnServerParams": function (aoData) {
+                    aoData.push({ "name": "id", "value": "" },{ "name": "from_month", "value": "<?php echo $_GET['from_month']?>" },{ "name": "to_month", "value": "<?php echo $_GET['to_month']?>" },{ "name": "release_id", "value": "<?php echo $_GET['id']?>" });
+                },
+                "sAjaxSource": "<?php echo $this->url('analytics', array('action'=>'list2'));?>",
+                "aoColumns": [
+                    { "bSearchable": false, "bVisible": false },
+                    
+                    null,
+                    null,
+					null,
+                    null,
+					null,
+                    null,
+					null,
+                    
+                ],
+                "columnDefs": [
+                    { className: "hidden", "targets": [ 0 ] }
+                ]
+            });
+        /* END TABLETOOLS */
+		$('.dataTables_filter input').attr("placeholder", "Search");
+		
+		//$(".dataTables_filter label").addClass('right');
+        //fnEdit("<?php echo $this->url('analytics', array('action'=>'getrec'));?>");
+        //fnView("<?php echo $this->url('analytics', array('action'=>'getrec'));?>");
+        //fnDelete("<?php echo $this->url('analytics', array('action'=>'delete'));?>");
+		
+		//fnDelete("<?php echo $this->url('analytics', array('action'=>'delete'));?>");
+        var strUrl = "<?php echo $this->url('analytics', array('action'=>'getrec'));?>";
+        //Function Used for Edit
+
+		$('#delete_release').click(function(){
+				
+					var objFormData =
+					{
+						pAction: 'DELETE',
+						KEY_ID : $('#delete_release').attr('release_id')
+					};
+					var objMyPost = AJAX_Post("<?php echo $this->url('releases', array('action'=>'delete'));?>", objFormData);
+					if (objMyPost.ERR_NO === 0) {
+						if (objMyPost.DATA.DBStatus === 'OK') {
+							oTable.fnDraw();
+							$('#warningConfirmationPopin').modal('hide');
+							mySmallAlert('Success', 'Deleted successfully', 1);
+						}
+						
+						else {
+							mySmallAlert('Error...!', 'There was an error', 0);
+						}
+					}
+		});
+		oTable.delegate('a.delete', 'click', function (e) {
+            e.preventDefault();
+            iActiveID = $(this).attr("row-id");
+			var r_title= $(this).attr("row-title");
+			
+			$('#warningConfirmationPopin').modal('show');
+			$('#delete_release_title').html(r_title);
+			$('.chkConfirm').prop('checked',false);
+			$('#delete_release').attr('style','display:none');
+			$('#delete_release').attr('release_id',iActiveID);
+			
+        });
+		$('.chkConfirm').click(function(){
+			if($(this).prop('checked') == true)
+			{
+				$('#delete_release').attr('style','display:block');
+			}
+			else
+				$('#delete_release').attr('style','display:none');
+		})
+    };
+</script>
+<script>
+    // load Page related plugins
+                loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatables/jquery.dataTables.min.js", function () {
+                    loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatables/dataTables.colVis.min.js", function () {
+                        loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatables/dataTables.tableTools.min.js", function () {
+                            loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatables/dataTables.bootstrap.min.js", function () {
+                                loadScript("<?php echo $this->basePath();?>/public/v1.6.1/js/plugin/datatable-responsive/datatables.responsive.min.js", pagefunction)
+                            });
+                        });
+        });
+    });
+ </script>

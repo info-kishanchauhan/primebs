@@ -1,0 +1,743 @@
+
+<style>
+  .profile-container { max-width: 1400px; margin: 60px auto; background: white; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.05); padding: 40px 50px; font-family: 'Inter', sans-serif; }
+  .profile-header { display: flex; align-items: center; margin-bottom: 30px; }
+  
+  .profile-avatar { width: 60px; height: 60px; background-color: #6b44cb; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 600; margin-right: 20px; }
+  .form-section input, .form-section select, .form-section textarea { width: 100%; padding: 10px; margin-top: 5px; border-radius: 6px; border: 1px solid #d1d5db; margin-bottom: 15px; }
+  .status-block { background: #f9fafb; border-left: 4px solid #cbd5e1; padding: 15px; margin-top: 30px; border-radius: 8px; font-size: 14px; color: #1e293b; }
+  .status-active { background: #dcfce7; color: #166534; }
+  .status-rejected { background: #fee2e2; color: #991b1b; }
+  .admin-controls { margin-top: 40px; padding: 20px; border-top: 1px dashed #ccc; }
+  .field-box { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px 16px; margin-bottom: 15px; }
+  .field-label { font-size: 13px; color: #6b7280; margin-bottom: 4px; }
+  .field-value { font-weight: 500; font-size: 15px; color: #111827; }
+</style>
+
+<!-- TOOLTIP STYLE -->
+<style>
+
+#bs-main {
+  background-color: #f7f7f8 !important;
+}
+
+.field-label {
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  margin-top: 18px;
+  font-family: 'Inter', sans-serif;
+}
+
+.tooltip-icon {
+  margin-left: 6px;
+  background: #0087f5;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: bold;
+  width: 15px;
+  height: 15px;
+  text-align: center;
+  border-radius: 50%;
+  line-height: 16px;
+  cursor: pointer;
+  position: relative;
+}
+
+.tooltip-icon:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: -38px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #111;
+  color: #fff;
+  padding: 6px 10px;
+  font-size: 12px;
+  white-space: nowrap;
+  border-radius: 6px;
+  z-index: 1000;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+</style>
+
+<style>
+.grid-boxed-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+.grid-boxed-fields .field-box {
+  margin-bottom: 0;
+}
+  
+</style>
+
+
+
+<?php
+$showInfoBlock = ($_SESSION['STAFFUSER'] != '1' && $_SESSION['user_id'] != 0); // User only
+
+if ($showInfoBlock):
+
+  $user = $this->user;
+
+  $companyName   = $user['company_name'] ?? 'Not Provided';
+  $accountType   = $user['user_type'] ?? '—';
+  $network       = $user['releasing_network'] ?? '—'; // 🔄 change to currency if needed
+  $userId        = str_pad($user['id'], 5, '0', STR_PAD_LEFT);
+  $method        = $user['payment_method'] ?? '—';
+  $countryCode   = strtolower(trim($user['isoCountry'] ?? ''));
+  $flagUrl       = 'http://www.primebackstage.in/public/img/flags/' . $countryCode . '.png';
+
+  $countryMap = [
+    'in' => 'India',
+    'us' => 'United States',
+    'pk' => 'Pakistan',
+    'gb' => 'United Kingdom',
+    'fr' => 'France',
+    'de' => 'Germany',
+    'bd' => 'Bangladesh',
+    'ca' => 'Canada',
+    'ae' => 'United Arab Emirates',
+    'sa' => 'Saudi Arabia'
+  ];
+  $countryFullName = $countryMap[$countryCode] ?? strtoupper($countryCode);
+?>
+
+<div style="
+  display: flex;
+  flex-wrap: wrap;
+  gap: 28px;
+  justify-content: space-between;
+  align-items: flex-start;
+  background: linear-gradient(135deg, #1f2937 0%, #2b3552 100%);
+  color: #f8fafc;
+  padding: 24px 32px;
+  border-radius: 5px;
+  margin-bottom: 0;
+  font-family: 'Inter', sans-serif;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
+  transition: all 0.3s ease;
+">
+
+ <!-- YouTube Channels -->
+<div style="flex: 1; min-width: 200px;">
+  <div style="font-size: 13px; color: #cbd5e1; margin-bottom: 4px;">YouTube Channels</div>
+  <div style="font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+    Not linked yet
+    <span style="background:#fff;padding:2px 4px;border-radius:4px;display:inline-flex;align-items:center;">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/Logo_of_YouTube_%282015-2017%29.svg" alt="YouTube" style="height:14px;">
+    </span>
+    <span class="tooltip-icon" data-tooltip="You haven't attached any channel yet.">?</span>
+  </div>
+</div>
+
+
+  <!-- Account Name -->
+  <div style="flex: 1; min-width: 200px;">
+    <div style="font-size: 13px; color: #cbd5e1; margin-bottom: 4px;">Account Name</div>
+    <div style="font-size: 16px; font-weight: 600; display: flex; align-items: center;">
+      <?= htmlspecialchars($companyName) ?>
+      <span class="tooltip-icon" data-tooltip="Your Label/band Name.">?</span>
+    </div>
+  </div>
+
+  <!-- Account ID -->
+  <div style="flex: 1; min-width: 200px;">
+    <div style="font-size: 13px; color: #cbd5e1; margin-bottom: 4px;">Account ID</div>
+    <div style="font-size: 16px; font-weight: 600; display: flex; align-items: center;">
+      PDA|<?= $userId ?>
+      <span class="tooltip-icon" data-tooltip="Your unique system ID used in support and payouts.">?</span>
+    </div>
+  </div>
+
+  <!-- Country -->
+  <div style="flex: 1; min-width: 200px;">
+    <div style="font-size: 13px; color: #cbd5e1; margin-bottom: 4px;">Country</div>
+    <div style="font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+      <?php if (!empty($countryCode)): ?>
+        <img src="<?= $flagUrl ?>" alt="<?= $countryFullName ?>" style="height: 14px; border-radius: 2px;">
+      <?php endif; ?>
+      <?= htmlspecialchars($countryFullName) ?>
+      <span class="tooltip-icon" data-tooltip="Based on your payout profile">?</span>
+    </div>
+  </div>
+
+  <!-- Account Type -->
+  <div style="flex: 1; min-width: 200px;">
+    <div style="font-size: 13px; color: #cbd5e1; margin-bottom: 4px;">Account Type</div>
+    <div style="font-size: 16px; font-weight: 600; display: flex; align-items: center;">
+      <?= htmlspecialchars($accountType) ?>
+      <span class="tooltip-icon" data-tooltip="Shows if you’re Label/Artist/Enterprise.">?</span>
+    </div>
+  </div>
+
+<!-- Network -->
+<div style="flex: 1; min-width: 200px;">
+  <div style="font-size: 13px; color: #cbd5e1; margin-bottom: 4px;">Network</div>
+  <div style="font-size: 16px; font-weight: 600; display: flex; align-items: center;">
+    <?= htmlspecialchars($this->network ?? '—') ?>
+    <span class="tooltip-icon" data-tooltip="Your YouTube Channel Will Be Attached With">?</span>
+  </div>
+</div>
+
+
+
+
+</div>
+
+<?php endif; ?>
+
+
+<div style="
+  margin-top: -16px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-top: none;
+  padding: 14px 24px;
+            
+  border-radius: 0 0 16px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: #991b1b;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+">
+  
+  <div style="font-size: 14px; color: #7f1d1d;">
+  ⚠️ Please read the 
+  <a href="https://www.primebackstage.in/faq/youtube-mcn" target="_blank" style="color: #b91c1c; text-decoration: underline; font-weight: 600;">
+    YouTube MCN FAQ
+  </a> carefully before applying.
+</div>
+   </div>
+
+
+<div class="profile-container <?= $isAdmin ? 'admin-profile' : '' ?>">
+<div class="profile-header">
+    <div class="profile-avatar" style="padding: 6px;">
+  <img src="<?= $this->basePath(); ?>/public/img/store2/YouTube%20Audio%20Tier.png" alt="YouTube" style="width: 100%; height: auto;">
+</div>
+
+    <div>
+      <h2>YouTube Services</h2>
+      <p>Submit a YouTube Channel request to join our multi-channel Network. </p>
+    </div>
+  </div>
+
+  <!-- UI Tabs Styled like Backstage -->
+ <div class="toggle-tabs">
+  <div id="tab-mcn" class="tab active" onclick="switchTab('mcn')">YouTube MCN</div>
+  <div id="tab-video" class="tab" onclick="switchTab('video')">VEVO</div>
+</div>
+
+  <!-- Banking Section -->
+  <div id="mcn-section" class="tab-section" style="display: block;">
+
+  
+    
+
+<?php if (!empty($_SESSION['mcn_success'])): ?>
+  <div id="mcnSuccessMsg" style="
+    background-color: #e8fdf5;
+    color: #047857;
+    padding: 14px 18px;
+    border-left: 5px solid #10b981;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    opacity: 1;
+    transition: opacity 0.5s ease;
+  ">
+    ✅ Your YouTube channel request has been submitted successfully.
+  </div>
+  <script>
+    setTimeout(() => {
+      const msg = document.getElementById("mcnSuccessMsg");
+      if (msg) {
+        msg.style.opacity = "0";
+        setTimeout(() => msg.remove(), 500);
+      }
+    }, 4000);
+  </script>
+  <?php unset($_SESSION['mcn_success']); ?>
+<?php endif; ?>
+
+
+    
+   <!-- ✅ dotLottie Web Component Loader -->
+<script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.6.2/dist/dotlottie-wc.js" type="module"></script>
+
+<!-- ✅ MCN Join Block -->
+<div id="noPayoutWarning" style="background: #f9fafb; border: 1px solid #dbeafe; padding: 30px; border-radius: 16px; margin-bottom: 30px; display: flex; align-items: center; gap: 20px;">
+  
+  <dotlottie-wc 
+    src="https://lottie.host/553f3e37-9543-4646-ac1f-4850b0fdce39/PDxXqqVJ2L.lottie" 
+    style="width: 90px; height: 90px;" 
+    autoplay 
+    loop>
+  </dotlottie-wc>
+
+  <div style="flex-grow:1;">
+    <h3 style="margin:0 0 10px; color:#1e3a8a;">👋 Ready to Join a YouTube MCN?</h3>
+    <p style="margin: 0 0 15px; color: #475569;">Wondering if your channel can earn more? Check MCN access now.</p>
+    <button onclick="window.location.href='/promotion/attachmcn'" style="background:#3b82f6; color:white; padding:10px 20px; border:none; border-radius:8px; font-weight:600; cursor:pointer;">
+    + Attach Your Channel
+  </button>
+  </div>
+</div>
+
+    
+    
+
+    <!-- Visual Steps -->
+
+  <div id="howItWorks" style="margin-bottom: 40px; font-family: 'Inter', sans-serif; box-shadow: 0 8px 24px rgba(0,0,0,0.03);">
+  <div class="payoneer-guide">
+    <div class="payoneer-guide" style="background: #eff6ff; border-radius: 16px; padding: 30px 40px; margin-bottom: 40px; font-family: 'Inter', sans-serif; box-shadow: 0 6px 24px rgba(0,0,0,0.05); font-size: 15px; line-height: 1.65; color: #1e293b;">
+      <h3 class="payoneer-title" style="font-size: 20px; color: #111827; margin-bottom: 16px;">📺 Join YouTube MCN via Prime Digital Arena</h3>
+      <p style="margin-bottom: 20px;">
+        Become part of our YouTube Multi-Channel Network (MCN) to unlock rights management, enhanced monetization, and official support. Here’s how you can get started:
+      </p>
+
+      <div class="payoneer-steps">
+        <div class="step" style="display:flex; gap:20px; margin-bottom: 18px;">
+          <div class="step-number" style="font-size:18px; font-weight:700; color:#3b82f6; width:30px;">01</div>
+          <div>
+            <strong>Meet the Eligibility Requirements</strong>
+            <p style="margin:6px 0;">
+              To qualify for MCN attachment:
+              <ul style="margin-left: 20px; list-style: disc;">
+                <li>Minimum <strong>1,000 subscribers</strong></li>
+                <li><strong>Monetization enabled</strong> (YouTube Partner Program)</li>
+                <li>No <strong>active Community Guideline strikes</strong></li>
+                <li>Minimum <strong>$400+ revenue</strong> in the last 30 days</li>
+                <li>Original content (no reused compilations or policy-violating uploads)</li>
+              </ul>
+            </p>
+          </div>
+        </div>
+
+        <div class="step" style="display:flex; gap:20px; margin-bottom: 18px;">
+          <div class="step-number" style="font-size:18px; font-weight:700; color:#3b82f6; width:30px;">02</div>
+          <div>
+            <strong>Submit Your Channel</strong>
+            <p style="margin:6px 0;">
+              Fill the <a href="" style="color:#3b82f6;font-weight:600;text-decoration:underline;">MCN Request Form</a> with your channel link and monthly earnings screenshot.
+            </p>
+          </div>
+        </div>
+
+        <div class="step" style="display:flex; gap:20px; margin-bottom: 18px;">
+          <div class="step-number" style="font-size:18px; font-weight:700; color:#3b82f6; width:30px;">03</div>
+          <div>
+            <strong>Get Audited</strong>
+            <p style="margin:6px 0;">Our team will review your content, earnings, policy compliance, and growth pattern.</p>
+          </div>
+        </div>
+
+        <div class="step" style="display:flex; gap:20px;">
+          <div class="step-number" style="font-size:18px; font-weight:700; color:#3b82f6; width:30px;">04</div>
+          <div>
+            <strong>Accept YouTube Invite</strong>
+            <p style="margin:6px 0;">If approved, you’ll receive an invite in YouTube Studio. Accept it to officially join our MCN and enjoy CMS benefits.</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 24px; font-size: 14px;">
+        <a href="https://support.google.com/youtube/answer/2737059" target="_blank" class="payoneer-learn-btn" style="color:#15803d; font-weight: 500;">Learn More on YouTube Help Center →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+         
+
+<?php if (!empty($mcnChannels)) : ?>
+
+  <style>
+.section-card {
+  overflow: visible !important;
+  position: relative;
+  z-index: 1;
+}
+
+.dropdown-container {
+  position: relative;
+  z-index: 9999 !important;
+}
+
+.dropdown-toggle {
+  background: #f3f4f6;
+  padding: 6px 14px;
+  font-size: 13px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  cursor: pointer;
+  z-index: 1;
+  position: relative;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  min-width: 120px;
+  z-index: 99999 !important; /* VERY HIGH */
+}
+
+.dropdown-menu a {
+  
+  padding: 10px 16px;
+  text-decoration: none;
+  
+  font-size: 15px;
+}
+
+   
+    table th, table td {
+  padding: 14px 24px;
+  word-wrap: break-word;
+  white-space: normal;
+}
+
+  </style>
+
+ <div class="section-card" style="margin-top: 30px; padding: 0; width: 100%; max-width: none;">
+  <div style="padding: 30px 40px 10px;">
+    <h3 style="margin:0; font-size: 20px; font-weight: 600;">📺 Your Submitted Channels</h3>
+  </div>
+
+  <div style="width: 100%;">
+    <table style="width: 100%; border-collapse: collapse; font-size: 14px; table-layout: fixed;">
+      <?php
+$hasRejection = false;
+foreach ($mcnChannels as $chk) {
+  if (strtolower($chk['status']) === 'rejected') {
+    $hasRejection = true;
+    break;
+  }
+}
+?>
+
+        <thead style="background: #f9fafb; border-bottom: 1px solid #e2e8f0;">
+          <tr>
+            <th style="text-align: left; padding: 14px 24px;">#</th>
+            <th style="text-align: left; padding: 14px 24px;">Store</th>
+            <th style="text-align: left; padding: 14px 24px;">Channel URL</th>
+            <th style="text-align: left; padding: 14px 24px;">Channel Type</th>
+            <th style="text-align: left; padding: 14px 24px;">MCN Network</th>
+            <th style="text-align: left; padding: 14px 24px;">Status</th>
+            <th style="text-align: left; padding: 14px 24px;">Submitted</th>
+            <th style="text-align: left; padding: 14px 24px;">
+             <?= $hasRejection ? 'Reason' : 'Action' ?>
+          </tr>
+        </thead>
+        <tbody>
+          <?php $i = 1; foreach ($mcnChannels as $row): ?>
+            <?php $status = strtolower($row['status']); ?>
+            <tr style="background: #fff7f7; border-bottom: 1px solid #f3f4f6;">
+              <td style="padding: 14px 24px;"><?= $i++ ?></td>
+              <td style="padding: 14px 24px;">
+                <img src="<?= $this->basePath(); ?>/public/img/store2/YouTube%20Audio%20Tier.png" alt="YouTube" style="height: 18px;">
+              </td>
+              <td style="padding: 14px 24px;">
+                <a href="<?= htmlspecialchars($row['channel_url']) ?>" target="_blank" style="color: #3b82f6; text-decoration: underline; font-weight: 500;">
+                  <?= htmlspecialchars($row['channel_url']) ?>
+                </a>
+              </td>
+              <td style="padding: 14px 24px;"><?= htmlspecialchars($row['channel_type'] ?? '—') ?></td>
+              <td style="padding: 14px 24px;"><?= htmlspecialchars($row['mcn_network'] ?? 'Belive Music') ?></td>
+              <td style="padding: 14px 24px;">
+                <?php
+                  if ($status === 'approved') {
+                    echo '<span style="color: #16a34a; font-weight: 600;">Attached</span>';
+                  } elseif ($status === 'rejected') {
+                    echo '<span style="color: #dc2626; font-weight: 600;">Rejected</span>';
+                  } else {
+                    echo '<span style="color: #f59e0b; font-weight: 600;">Pending</span>';
+                  }
+                ?>
+              </td>
+              <td style="padding: 14px 24px;"><?= date('d M Y', strtotime($row['created_at'])) ?></td>
+              <td style="padding: 14px 24px; position: relative; z-index: 1;">
+  <?php if ($status === 'pending' || $status === 'approved') : ?>
+    <div class="dropdown-container">
+      <button type="button" class="dropdown-toggle">Manage ⏷</button>
+      <div class="dropdown-menu">
+        <?php if ($status === 'pending') : ?>
+          <a href="/promotion/cancelmcn?id=<?= $row['id'] ?>" onclick="return confirm('Cancel this request?')">Cancel</a>
+        <?php elseif ($status === 'approved') : ?>
+          <a href="/promotion/detachmcn?id=<?= $row['id'] ?>" onclick="return confirm('Detach this channel?')">Detach</a>
+        <?php endif; ?>
+      </div>
+    </div>
+  <?php elseif ($status === 'rejected'): ?>
+    <div style="color: #dc2626; max-width: 250px; word-wrap: break-word;">
+      <?= htmlspecialchars($row['rejection_reason'] ?? 'No reason provided') ?>
+    </div>
+  <?php else: ?>
+    <span style="color: #9ca3af;">—</span>
+  <?php endif; ?>
+</td>
+
+            </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+<script>
+  let currentOpenDropdown = null;
+
+  document.addEventListener('click', function (e) {
+    const toggle = e.target.closest('.dropdown-toggle');
+
+    if (toggle) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const container = toggle.closest('.dropdown-container');
+      const menu = container.querySelector('.dropdown-menu');
+
+      // Close previously open dropdown
+      if (currentOpenDropdown && currentOpenDropdown !== menu) {
+        currentOpenDropdown.style.display = 'none';
+      }
+
+      // Toggle current dropdown
+      if (menu.style.display === 'block') {
+        menu.style.display = 'none';
+        currentOpenDropdown = null;
+      } else {
+        menu.style.display = 'block';
+        currentOpenDropdown = menu;
+      }
+    } else {
+      // Click outside closes dropdown
+      if (currentOpenDropdown) {
+        currentOpenDropdown.style.display = 'none';
+        currentOpenDropdown = null;
+      }
+    }
+  });
+
+  // Close on ESC key
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && currentOpenDropdown) {
+      currentOpenDropdown.style.display = 'none';
+      currentOpenDropdown = null;
+    }
+  });
+</script>
+
+
+
+<?php endif; ?>
+
+
+
+      </div>
+
+ <style>
+
+.toggle-tabs {
+  display: flex;
+  border-bottom: 2px solid #e5e7eb;
+  margin-bottom: 30px;
+}
+
+.tab {
+  padding: 14px 24px;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.tab.active {
+  color: #1f2937;
+  border-color: #3b82f6;
+}
+
+.tab-section {
+  animation: fadeIn 0.25s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.section-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 30px 40px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+}
+
+.form-section {
+  margin-top: 20px;
+}
+
+.form-label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: #374151;
+  font-size: 14px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  background: #f9fafb;
+}
+
+.submit-btn {
+  background-color: #3b82f6;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+          
+          .grid-boxed-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.field-box {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 12px 16px;
+}
+
+.field-label {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.field-value {
+  font-weight: 500;
+  font-size: 15px;
+  color: #111827;
+}
+
+</style>
+
+  <div id="video-section" class="tab-section" style="display: block;">
+  <!-- ✅ dotLottie Web Component Loader -->
+<script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.6.2/dist/dotlottie-wc.js" type="module"></script>
+
+<!-- ✅ MCN Join Block -->
+<div id="noPayoutWarning" style="background: #f9fafb; border: 1px solid #dbeafe; padding: 30px; border-radius: 16px; margin-bottom: 30px; display: flex; align-items: center; gap: 20px;">
+  
+  <dotlottie-wc 
+    src="https://lottie.host/553f3e37-9543-4646-ac1f-4850b0fdce39/PDxXqqVJ2L.lottie" 
+    style="width: 90px; height: 90px;" 
+    autoplay 
+    loop>
+  </dotlottie-wc>
+
+  <div style="flex-grow:1;">
+    <h3 style="margin:0 0 10px; color:#1e3a8a;">👋 Ready to Upload a Music Video on VEVO!</h3>
+    <p style="margin: 0 0 15px; color: #475569;">VEVO is the primary platform for your official music video content. All content must be distributed through VEVO when eligible.</p>
+    <button onclick="window.location.href='/promotion/'" style="background:#3b82f6; color:white; padding:10px 20px; border:none; border-radius:8px; font-weight:600; cursor:pointer;">
+    + Upload Video
+  </button>
+  </div>
+</div>
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+  <!-- ✅ Footer -->
+<div style="
+  margin-top: 80px;
+  padding: 30px 40px;
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: #6b7280;
+  text-align: center;
+">
+  <div style="margin-bottom: 10px;">
+    Need help? <a href="https://www.primebackstage.in/tickets" style="color: #3b82f6; text-decoration: none; font-weight: 500;">Contact Support</a> or visit our <a href="https://www.primebackstage.in/faq" style="color: #3b82f6; text-decoration: none; font-weight: 500;">FAQ</a>.
+  </div>
+  <div style="font-size: 13px; color: #9ca3af;">
+    &copy; <?php echo date('Y'); ?> Prime Digital Arena. All rights reserved.
+  </div>
+</div>
+       
+<script>
+function switchTab(tab) {
+  // Toggle content sections
+  const mcn = document.getElementById('mcn-section');
+  const video = document.getElementById('video-section');
+
+  if (mcn) mcn.style.display = (tab === 'mcn') ? 'block' : 'none';
+  if (video) video.style.display = (tab === 'video') ? 'block' : 'none';
+
+  // Toggle active tab classes
+  const tabMcn = document.getElementById('tab-mcn');
+  const tabVideo = document.getElementById('tab-video');
+
+  if (tabMcn) tabMcn.classList.remove('active');
+  if (tabVideo) tabVideo.classList.remove('active');
+
+  const selectedTab = document.getElementById('tab-' + tab);
+  if (selectedTab) selectedTab.classList.add('active');
+}
+
+// Optional: Auto-switch to "video" tab if returning from submission
+document.addEventListener("DOMContentLoaded", function () {
+  const url = new URL(window.location.href);
+  if (url.searchParams.get("tab") === "video") {
+    switchTab("video");
+  } else {
+    switchTab("mcn"); // Default
+  }
+});
+</script>
+

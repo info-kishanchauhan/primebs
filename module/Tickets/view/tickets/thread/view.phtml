@@ -1,0 +1,743 @@
+<?php
+/** @var \Zend\View\Renderer\PhpRenderer $this */
+$this->headTitle('Account • Support');
+?>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+
+<style>
+  /* ===== WhatsApp-like centered status/date pill ===== */
+.sys-sep{
+  display:flex; justify-content:center; margin:14px 0;
+}
+.sys-sep > span{
+  font:600 12px/1.1 'Inter', sans-serif;
+  color:#475569;
+  background:#eef2f7;           /* soft gray like WhatsApp date pill */
+  border:1px solid #e2e8f0;
+  border-radius:999px;
+  padding:6px 10px;
+  box-shadow:0 2px 6px rgba(15,23,42,.04);
+  letter-spacing:.2px;
+}
+/* optional: wallpaper dots thode soft */
+.thread::after{ opacity:.18; }   /* pehle .25 tha */
+
+  /* Gradient hairline (premium look) */
+.thread .msg .bar{
+  border-bottom: none;
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+}
+.thread .msg .bar::after{
+  content:"";
+  position:absolute; left:0; right:0; bottom:0; height:1px;
+  background: linear-gradient(90deg, rgba(2,6,23,0), rgba(2,6,23,.12), rgba(2,6,23,0));
+}
+
+  /* ==== Underline below name + "Reply via email" row ==== */
+.thread .msg .bar{
+  position: relative;
+  padding-bottom: 8px;   /* space above the line */
+  margin-bottom: 10px;   /* space below the line */
+  border-bottom: 1px dashed #e5e7eb; /* default */
+}
+
+/* Optional: role-based subtle tint to match bubble accents */
+.thread .msg.user .bar{
+  border-bottom-color: #cfe8ff;  /* light blue to match user bubble */
+}
+.thread .msg.admin .bar{
+  border-bottom-color: #e9d5ff;  /* light violet to match admin bubble */
+}
+
+/* If you prefer solid line instead of dashed, uncomment this:
+.thread .msg .bar { border-bottom-style: solid; }
+*/
+
+   /* ===== Notice bar (above hero) ===== */
+.notice-bar{ 
+  font-family:var(--font); 
+}
+.notice-bar .nb-wrap{
+  display:flex; align-items:flex-start; gap:10px;
+  padding:15px 12px;
+  border:1px solid var(--line);
+  background:#0b1220; color:#e5e7eb;
+  box-shadow:0 4px 14px rgba(15,23,42,.06);
+  border-radius:3px; /* same as cards */
+}
+/* Color variants (set via data-type="info|warn|ok") */
+.notice-bar[data-type="info"] .nb-wrap{
+  background:linear-gradient(180deg, #404040, #3b3b3b);
+}
+.notice-bar[data-type="warn"] .nb-wrap{
+  background:#2a1412; color:#fce7e7; border-color:#7f1d1d;
+}
+.notice-bar[data-type="ok"] .nb-wrap{
+  background:#0f1f14; color:#dcfce7; border-color:#14532d;
+}
+/* Icon, text, close */
+.nb-ico{ 
+  flex:0 0 auto; width:18px; height:18px; 
+  margin-top:2px; opacity:.9; 
+}
+.nb-text{
+  font:600 12.5px/1.55 var(--font); 
+  letter-spacing:.2px;
+}
+.nb-text b{ color:#fff; font-weight:800; }
+.nb-close{
+  margin-left:auto; 
+  background:transparent; border:0; 
+  color:#cbd5e1; font-weight:700;
+  line-height:1; font-size:16px; 
+  cursor:pointer; 
+  padding:2px 6px; border-radius:4px;
+  transition:background .18s ease, color .18s ease, transform .18s ease;
+}
+.nb-close:hover{ background:rgba(255,255,255,.06); color:#fff; }
+.nb-close:active{ transform:scale(.96); }
+/* ========= THEME ========= */
+:root{
+  --bg:#f7f6fb; --surface:#ffffff; --ink:#0f172a; --ink-2:#334155; --muted:#64748b;
+  --line:#e5e7ef; --line-2:#edf0f6; --shadow:0 10px 30px rgba(17,24,39,.06);
+  --violet:#7c3aed; --violet-50:#f5f3ff; --violet-200:#ddd6fe;
+  --green-50:#ecfdf5; --green-200:#bbf7d0;
+  --radius-xl:16px; --radius-lg:14px; --radius:12px; --radius-sm:10px;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Inter',sans-serif;color:var(--ink);background:
+  radial-gradient(1000px 280px at 25% -10%, #f0eaff 0%, rgba(240,234,255,0) 60%),
+  radial-gradient(900px 260px at 85% -12%, #ffe9f8 0%, rgba(255,233,248,0) 60%),
+  var(--bg);}
+/* ========= LAYOUT ========= */
+.page{max-width:1360px;margin:28px auto 80px;padding:0 12px;}
+.toolbar{display:flex;align-items:center;gap:8px;margin-bottom:16px}
+.spacer{flex:1}
+/* Buttons */
+.iconbtn,.btn{
+  height:36px;border:1px solid var(--line);background:#fff;border-radius:10px;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;
+  padding:0 12px; box-shadow:var(--shadow); font-weight:600; text-decoration:none; color:inherit;
+}
+.iconbtn{min-width:36px;padding:0}
+.btn--primary{background:linear-gradient(180deg,#7c3aed,#6d28d9);color:#fff;border-color:#6d28d9;}
+.iconbtn svg{width:16px;height:16px;color:#1f2937}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-xl);box-shadow:var(--shadow)}
+/* ========= ACCOUNT HEADER ========= */
+.header{display:flex;align-items:flex-start;gap:16px;padding:18px}
+.logo{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+  font-weight:800;color:#5825d7;background:linear-gradient(135deg,#ffe8b6,#ffb8a1);border:1px solid #ffe1c4;}
+.account-meta{flex:1}
+.title{display:flex;align-items:center;gap:8px;font-size:20px;font-weight:800}
+  .subtitle{display:flex;align-items:center;gap:8px;font-size:20px;font-weight:600}
+.dot{width:8px;height:8px;border-radius:999px;background:#ef4444}
+.kv-row{display:flex;flex-wrap:wrap;gap:14px;margin-top:10px}
+.kv{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-2)}
+.kv .k{color:var(--muted)}
+.kv .chip{padding:6px 10px;border-radius:10px;background:#f8fafc;border:1px solid var(--line);font-weight:600}
+/* ========= TABS ========= */
+.tabs{display:flex;gap:8px;padding:12px 6px 2px}
+.tab{padding:8px 12px;border-radius:10px;font-weight:600;color:#616b7b;display:inline-flex;align-items:center;gap:8px;border:1px solid transparent}
+.tab svg{width:18px;height:18px;color:#667085}
+.tab.active{background:var(--violet-50);color:#5b21b6;border-color:#e7e5ff}
+/* ========= LIST & THREAD ========= */
+.list{border:1px solid var(--line);border-radius:var(--radius-xl);background:#fff;overflow:hidden}
+.thread-head{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;backdrop-filter:blur(6px);
+  background:rgba(255,255,255,.85);border:1px solid rgba(2,6,23,.06);margin-bottom:10px}
+.thread-title{font-weight:800; font-size: 15;}
+.assign{font-size:12px;color:#64748b}
+.state{margin-left:auto;display:flex;align-items:center;gap:8px}
+.count{width:36px;height:24px;border:1px solid var(--line);border-radius:8px;background:#f8fafc;display:flex;align-items:center;justify-content:center;font-weight:700;color:#475569}
+.badge-new{background:var(--green-50);color:#15803d;border:1px solid var(--green-200);padding:4px 8px;border-radius:999px;font-weight:700;font-size:12px}
+/* ===== WhatsApp-like chat canvas ===== */
+.thread{
+  position:relative;border:1px solid #e0e0e0;background:transparent;padding:18px;border-radius:var(--radius-xl);overflow:hidden;
+}
+.thread::before{
+  content:"";position:absolute;inset:0;border-radius:var(--radius-xl);
+  background:
+    radial-gradient(1200px 400px at 15% -10%, rgba(124,58,237,.08), rgba(124,58,237,0) 60%),
+    radial-gradient(900px 380px at 90% -12%, rgba(16,185,129,.07), rgba(16,185,129,0) 58%),
+    #e9edef;
+}
+.thread::after{
+  content:"";position:absolute;inset:0;border-radius:var(--radius-xl);opacity:.25;
+  background-image:radial-gradient(#000 0.6px,transparent 0.6px),radial-gradient(#000 0.6px,transparent 0.6px);
+  background-size:18px 18px,18px 18px;background-position:0 0,9px 9px;mix-blend-mode:soft-light;pointer-events:none;
+}
+.thread *{position:relative;z-index:1}
+/* ===== Bubbles ===== */
+.thread .msg{max-width:78%;padding:12px 14px;border-radius:18px;border:1px solid rgba(15,23,42,.06);
+  box-shadow:0 6px 20px rgba(2,6,23,.05);backdrop-filter:blur(6px);background:rgba(255,255,255,.9);margin:12px 6px;}
+.msg.user{margin-right:auto;margin-left:6px;margin-top: 40px; background:rgba(255,255,255,.85);border-left:4px solid #38bdf8;}
+.msg.admin{margin-left:auto;margin-right:6px;margin-top: 40px; border-right:4px solid #7c3aed;}
+.msg .bar{gap:6px;color:#667085;font-size:12px;margin-bottom:6px;display:flex;align-items:center}
+.msg .chip{background:rgba(255,255,255,.7);border:1px solid rgba(2,6,23,.08);padding:3px 8px;border-radius:999px;font-weight:600}
+.msg.user .chip:nth-child(2){background:#e8f4ff;border-color:#cfe8ff;color:#075985}
+.msg.admin .chip:nth-child(2){background:#f3e8ff;border-color:#e9d5ff;color:#6b21a8}
+.msg .body{font-size:14px;color:#0b1324;line-height:1.6}
+.msg .bar .spacer+span{opacity:.7;font-variant-numeric:tabular-nums}
+.reply-attachments{margin-top:10px;padding-top:8px;border-top:1px dashed rgba(2,6,23,.12)}
+.reply-attachments ul{margin:6px 0 0;padding:0 0 0 16px}
+.btn-mini{display:inline-block;margin:6px 6px 0 0;padding:3px 8px;border:1px solid rgba(2,6,23,.12);
+  border-radius:8px;background:#f8fafc;font-size:12px;text-decoration:none;color:#0f172a;}
+.footer-gap{height:20px}
+/* Export dropdown */
+.export-wrap{position:relative}
+.export-menu{position:absolute;right:0;top:40px;z-index:50;background:#fff;border:1px solid var(--line);
+  border-radius:10px;box-shadow:var(--shadow);min-width:200px;padding:6px}
+.export-menu button{width:100%;text-align:left;background:#fff;border:none;padding:8px 10px;border-radius:8px;font-weight:600;cursor:pointer}
+.export-menu button:hover{background:#f3f4f6}
+/* small helpers */
+svg{display:block}
+</style>
+
+<!-- ======= SVG SPRITE (icons) ======= -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+  <symbol id="ic-left" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="ic-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="ic-expand" viewBox="0 0 24 24"><path d="M15 3h6v6M21 3l-7 7M9 21H3v-6M3 21l7-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="ic-globe" viewBox="0 0 24 24"><path d="M12 21a9 9 0 100-18 9 9 0 000 18zm0-16c-2.8 0-5 3.6-5 8s2.2 8 5 8 5-3.6 5-8-2.2-8-5-8zM3.5 12h17" stroke="currentColor" stroke-width="2" fill="none"/></symbol>
+  <symbol id="ic-chat" viewBox="0 0 24 24"><path d="M4 5h16v10H7l-3 3V5z" fill="currentColor"/></symbol>
+  <symbol id="ic-support" viewBox="0 0 24 24"><path d="M12 3a9 9 0 019 9v5a2 2 0 01-2 2h-4v-6h5v-1a8 8 0 10-16 0v1h5v6H5a2 2 0 01-2-2v-5a9 9 0 019-9z" fill="currentColor"/></symbol>
+</svg>
+
+<div class="page">
+
+  <!-- ===== Toolbar ===== -->
+  <div class="toolbar">
+    <a class="btn" href="https://www.primebackstage.in/tickets">
+      <svg width="16" height="16"><use href="#ic-left"/></svg> Back
+    </a>
+
+    <div class="spacer"></div>
+
+    <!-- Export dropdown -->
+    <div class="export-wrap">
+      <button type="button" class="btn" id="btnExport">
+        <svg width="16" height="16"><use href="#ic-plus"/></svg>Export
+      </button>
+      <div class="export-menu" id="exportMenu" hidden>
+        <button type="button" data-kind="txt">Export as TXT</button>
+        <button type="button" data-kind="html">Export as HTML</button>
+        <button type="button" data-kind="print">Print / Save as PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Account header card ===== -->
+  <div class="card header">
+    <div class="logo">S</div>
+
+    <div class="account-meta">
+      <div class="title"><?php echo htmlspecialchars($ticket['user_name']); ?><span>|</span>
+      <div class="subtitle">Ticket #<?php echo htmlspecialchars($this->ticket['id']); ?> — <?php echo htmlspecialchars($this->ticket['title']); ?><span class="dot"></span></div></div>
+
+      <div class="kv-row">
+        <div class="kv"><span class="k">Created on</span> <span class="chip"><?php echo date('d M Y', strtotime($this->ticket['created_at'])); ?></span></div>
+        <div class="kv"><span class="k">Status</span> <span class="chip"><?php echo ucfirst($this->ticket['status']); ?></span></div>
+        <div class="kv"><span class="k">Priority</span> <span class="chip" style="color:#16a34a"><?php echo ucfirst($this->ticket['priority']); ?></span></div>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <span class="btn" title="Website"><svg width="16" height="16"><use href="#ic-globe"/></svg></span>
+    </div>
+  </div>
+
+  <!-- ===== Tabs ===== -->
+  <div class="tabs">
+    <div class="tab"><svg width="16" height="16"><use href="#ic-chat"/></svg> Communications</div>
+    <div class="tab active"><svg width="16" height="16"><use href="#ic-support"/></svg> Support</div>
+  </div>
+
+  <!-- ===== Thread ===== -->
+  <br>
+  <div class="thread" id="chatThread"
+       data-ticket-id="<?php echo (int)$this->ticket['id']; ?>"
+       data-ticket-title="<?php echo htmlspecialchars($this->ticket['title']); ?>">
+
+<?php
+// ===================== LIVE MESSAGE COUNT + NEW BADGE (PHP PRE-CALC) =====================
+$initialMsgCount = !empty($this->ticket['message']) ? 1 : 0;
+$replyCount      = !empty($this->replies) ? count($this->replies) : 0;
+$totalMsgs       = $initialMsgCount + $replyCount;
+
+$hasNew = false;
+if (!empty($this->ticket['status']) && strtolower($this->ticket['status']) === 'new') {
+  $hasNew = true;
+} else if (!empty($this->replies)) {
+  foreach ($this->replies as $r) {
+    if (!empty($r['is_new']) || (!empty($r['new']) && $r['new'])) { $hasNew = true; break; }
+  }
+}
+if (!$hasNew && !empty($this->ticket['new_reply'])) { $hasNew = true; }
+?>
+
+    <div class="thread-head">
+      <div>
+        <div class="thread-title">Ticket ID : <?php echo htmlspecialchars($this->ticket['id']); ?></div>
+        <div class="assign">Assigned to: <strong>Support Team</strong></div>
+      </div>
+      <div class="state">
+        <?php if ($hasNew): ?>
+          <span class="badge-new" id="badgeNew">New</span>
+        <?php else: ?>
+          <span class="badge-new" id="badgeNew" style="display:none">New</span>
+        <?php endif; ?>
+        <div class="count" id="msgCount"><?php echo (int)$totalMsgs; ?></div>
+        <span class="btn" title="Expand"><svg width="18" height="18"><use href="#ic-expand"/></svg></span>
+      </div>
+    </div>
+
+<!-- ===== Top Notice (above hero) ===== -->
+<div class="notice-bar" id="releaseNotice" role="status" aria-live="polite" data-type="info">
+  <div class="nb-wrap">
+    <svg class="nb-ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M12 2a10 10 0 1 0 .001 20.001A10 10 0 0 0 12 2Zm0 7.25a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5Zm1.25 8.25h-2.5v-7h2.5v7Z"/>
+    </svg>
+    <div class="nb-text">
+      <b>Note:</b> These are threads — you cannot reply from here.  
+      Please respond via email only.  
+      This section exists just to ensure that no replies are missed.
+    </div>
+    <button class="nb-close" type="button" aria-label="Dismiss">×</button>
+  </div>
+</div>
+    
+    
+
+<?php
+$ESC = function($v){ return nl2br(htmlspecialchars((string)$v)); };
+
+// (reuse) attachment URL resolver
+$attHrefName = function($att, $basePath){
+  $url = isset($att['web_url']) ? (string)$att['web_url'] : '';
+  if ($url === '' && !empty($att['file_path'])) {
+    $abs     = (string)$att['file_path'];
+    $docroot = '/home/primebackstage/htdocs/www.primebackstage.in/public';
+    $rel     = str_replace($docroot, '', $abs);
+    if ($rel === $abs) { $base = '/home/primebackstage/htdocs/www.primebackstage.in'; $rel = str_replace($base, '', $abs); }
+    if ($rel !== '' && $rel[0] !== '/') $rel = '/' . ltrim($rel, '/');
+    $url = $rel;
+  }
+  if ($url !== '' && strpos($url, '/uploads/') === 0) { $url = '/public' . $url; }
+  if ($url !== '' && strpos($url, '/publicuploads/') === 0) {
+    $url = '/public/uploads/' . ltrim(substr($url, strlen('/publicuploads/')), '/');
+  }
+  $href = (strpos($url,'http')===0) ? $url : $this->basePath().$url;
+  $name = !empty($att['file_name']) ? $att['file_name'] : ($url !== '' ? basename($url) : 'file');
+  return [$url,$href,$name];
+};
+
+// helper: safe ISO for JS
+$toIso = function($raw){
+  if (!$raw) return '';
+  if (is_string($raw)) $raw = preg_replace('/\.\d+$/', '', $raw); // drop micros if any
+  $t = strtotime($raw);
+  return $t ? gmdate('c', $t) : ''; // UTC ISO
+};
+?>
+<?php
+  // === WhatsApp-style: OPENED pill at top ===
+  $openedAt = $this->ticket['created_at'] ?? '';
+  if ($openedAt):
+?>
+  <div class="sys-sep">
+    <span>
+      Opened • 
+      <time class="time" data-utc="<?php echo htmlspecialchars($toIso($openedAt)); ?>">
+        <?php echo date('d M Y • h:i A', strtotime($openedAt)); ?>
+      </time>
+    </span>
+  </div>
+<?php endif; ?>
+
+<!-- ===== INITIAL TICKET (same as old order: always on top) ===== -->
+<?php if (!empty($this->ticket['message'])): ?>
+  <div class="msg user">
+    <div class="bar">
+      <?php
+        // Prefer ticket.user_name → created_by_name → 'User'
+        $creatorName = !empty($this->ticket['user_name'])
+          ? $this->ticket['user_name']
+          : (!empty($this->ticket['created_by_name']) ? $this->ticket['created_by_name'] : 'User');
+      ?>
+      <span class="chip"><?php echo htmlspecialchars($creatorName); ?></span>
+      <span class="chip">Reply via email</span>
+      <span class="spacer"></span>
+      <span class="time" data-utc="<?php echo htmlspecialchars($toIso($this->ticket['created_at'] ?? '')); ?>">
+        <?php echo date('d M Y • h:i A', strtotime($this->ticket['created_at'])); ?>
+      </span>
+    </div>
+    <div class="body">
+      <?php echo $ESC($this->ticket['message']); ?>
+
+      <?php if (!empty($this->ticket_attachments)): ?>
+        <div class="reply-attachments">
+          <strong>Attachments:</strong>
+          <ul>
+            <?php foreach ($this->ticket_attachments as $att):
+              list($url,$href,$name) = $attHrefName($att, $this->basePath());
+              if ($url==='') continue; ?>
+              <li>
+                📎 <?php echo htmlspecialchars($name); ?><br>
+                <a class="btn-mini" href="<?php echo htmlspecialchars($href); ?>" target="_blank" rel="noopener">View</a>
+                <a class="btn-mini" href="<?php echo htmlspecialchars($href); ?>" download>Download</a>
+              </li>
+            <?php endforeach; ?>
+          </ul>
+        </div>
+      <?php endif; ?>
+    </div>
+  </div>
+<?php endif; ?>
+
+<!-- ===== REPLIES (EXACTLY your old order) ===== -->
+<?php if (!empty($this->replies)): ?>
+  <?php $replies = array_values($this->replies); sort($replies); // <-- SAME ORDER ?>
+  <?php foreach ($replies as $reply): ?>
+    <?php
+      // 1. flags / raw values
+      $isAdmin    = !empty($reply['is_admin']); // controller already set
+      $fromEmail  = isset($reply['original_from_email']) ? trim((string)$reply['original_from_email']) : '';
+      $ownerEmail = isset($this->ticket['user_email']) ? strtolower(trim((string)$this->ticket['user_email'])) : '';
+      $ownerName  = !empty($this->ticket['user_name']) ? trim((string)$this->ticket['user_name']) : 'User';
+
+      $whenRaw = $reply['replied_at'] ?? $reply['created_at'] ?? '';
+
+      // 2. chip array banayenge order-wise
+      $chips = [];
+
+      if ($isAdmin) {
+          // PDA side (right bubble)
+          $chips[] = 'PDA Team';
+          $chips[] = 'Public reply'; // ya Internal note logic agar chaho
+          $bubbleClass = 'admin';
+      } else {
+          // User side (left bubble)
+          $bubbleClass = 'user';
+
+          $fromLower = strtolower($fromEmail);
+
+          if ($fromEmail !== '' && $ownerEmail !== '' && $fromLower !== $ownerEmail) {
+              // ===== EXTERNAL SENDER CASE =====
+              // chip #1 -> external display (before @ part)
+              $extNameGuess = preg_replace('/@.*/', '', $fromEmail); // arvlogsin@gmail.com => arvlogsin
+              $chips[] = $extNameGuess;
+
+              // chip #2 -> full email
+              $chips[] = $fromEmail;
+
+          } else {
+              // ===== TICKET OWNER CASE =====
+              // chip #1 -> ticket owner's display name
+              $chips[] = $ownerName;
+          }
+
+          // common chip at end
+          $chips[] = 'Reply via email';
+      }
+
+      // 3. body text
+      $bodyHtml = $ESC($reply['reply_text'] ?? '');
+
+    ?>
+    <div class="msg <?php echo $bubbleClass; ?>">
+      <div class="bar">
+        <?php foreach ($chips as $c): ?>
+          <span class="chip"><?php echo htmlspecialchars($c); ?></span>
+        <?php endforeach; ?>
+
+        <span class="spacer"></span>
+        <span class="time" data-utc="<?php echo htmlspecialchars($toIso($whenRaw)); ?>">
+          <?php echo $whenRaw ? date('d M Y • h:i A', strtotime($whenRaw)) : ''; ?>
+        </span>
+      </div>
+
+      <div class="body">
+        <?php echo $bodyHtml; ?>
+
+        <?php if (!empty($reply['attachments'])): ?>
+          <div class="reply-attachments">
+            <strong>Attachments:</strong>
+            <ul>
+              <?php foreach ($reply['attachments'] as $att):
+                list($url,$href,$name) = $attHrefName($att, $this->basePath());
+                if ($url==='') continue; ?>
+                <li>
+                  📎 <?php echo htmlspecialchars($name); ?><br>
+                  <a class="btn-mini" href="<?php echo htmlspecialchars($href); ?>" target="_blank" rel="noopener">View</a>
+                  <a class="btn-mini" href="<?php echo htmlspecialchars($href); ?>" download>Download</a>
+                </li>
+              <?php endforeach; ?>
+            </ul>
+          </div>
+        <?php endif; ?>
+      </div>
+    </div>
+  <?php endforeach; ?>
+<?php else: ?>
+  <!-- (no replies fallback same as before) -->
+
+
+  <div class="msg">
+    <div class="bar">
+      <span class="chip">System</span>
+      <span class="chip">Info</span>
+      <span class="spacer"></span>
+      <span class="time" data-utc="<?php echo gmdate('c'); ?>"><?php echo date('d M Y • h:i A'); ?></span>
+    </div>
+    <div class="body">No replies yet for this ticket.</div>
+  </div>
+<?php endif; ?>
+
+    <div class="footer-gap"></div>
+    <?php
+  // === WhatsApp-style: CLOSED pill at bottom ===
+  $isClosed = isset($this->ticket['status']) && strtolower((string)$this->ticket['status']) === 'closed';
+  $closedAt = $this->ticket['closed_at'] ?? ($this->ticket['updated_at'] ?? '');
+  if ($isClosed):
+?>
+  <div class="sys-sep">
+    <span>
+      Closed • 
+      <time class="time" data-utc="<?php echo htmlspecialchars($toIso($closedAt ?: gmdate('c'))); ?>">
+        <?php echo date('d M Y • h:i A', strtotime($closedAt ?: 'now')); ?>
+      </time>
+    </span>
+  </div>
+<?php endif; ?>
+
+  </div> <!-- /thread -->
+
+  <div class="footer-gap"></div>
+</div> <!-- /page -->
+
+<script>
+(function(){
+  const btn = document.getElementById('btnExport');
+  const menu = document.getElementById('exportMenu');
+  const thread = document.getElementById('chatThread');
+
+  // toggle dropdown
+  btn.addEventListener('click', () => { menu.hidden = !menu.hidden; });
+  document.addEventListener('click', (e)=>{
+    if(!menu.contains(e.target) && e.target!==btn) menu.hidden = true;
+  });
+
+  // util: filename
+  function fileName(ext){
+    const id = thread?.dataset?.ticketId || 'ticket';
+    const title = (thread?.dataset?.ticketTitle || 'chat').replace(/[^\w\-]+/g,'_').slice(0,40);
+    const ts = new Date();
+    const pad = (n)=> (n<10?'0':'')+n;
+    const stamp = ts.getFullYear()+''+pad(ts.getMonth()+1)+''+pad(ts.getDate())+'-'+pad(ts.getHours())+pad(ts.getMinutes());
+    return `Ticket_${id}-${title}-${stamp}.${ext}`;
+  }
+
+  // collect messages → array of objects
+  function collectMessages(){
+    const blocks = thread.querySelectorAll('.msg');
+    const rows = [];
+    blocks.forEach(b=>{
+      // 👇 First chip = actual name (fallback to class)
+      const bar = b.querySelector('.bar');
+      const firstChip = bar?.querySelector('.chip');
+      const who = (firstChip?.textContent || (b.classList.contains('admin') ? 'PDA Team' : 'User')).trim();
+
+      const chips = [...(bar?.querySelectorAll('.chip')||[])].map(x=>x.textContent.trim());
+      const time = (bar?.querySelector('.spacer + span')?.textContent || '').trim();
+      const body = (b.querySelector('.body')?.innerText || '').trim();
+      const atts = [];
+      b.querySelectorAll('.reply-attachments li').forEach(li=>{
+        const name = li.textContent.replace(/\s*View\s*Download\s*/,'').trim();
+        const a = li.querySelector('a[href]');
+        const href = a ? a.getAttribute('href') : '';
+        atts.push({name, href});
+      });
+      rows.push({who, chips, time, body, atts});
+    });
+    return rows;
+  }
+
+  // build TXT
+  function buildTXT(){
+    const lines = [];
+    const head = `Ticket #${thread.dataset.ticketId} — ${thread.dataset.ticketTitle}\n------------------------------------------------------------\n`;
+    lines.push(head);
+    collectMessages().forEach((m,i)=>{
+      lines.push(`#${i+1} [${m.time}] ${m.who} ${m.chips.length? '('+m.chips.join(', ')+')':''}`);
+      lines.push(m.body);
+      if(m.atts.length){
+        lines.push('Attachments:');
+        m.atts.forEach(a=> lines.push(` - ${a.name}${a.href?' -> '+a.href:''}`));
+      }
+      lines.push('');
+    });
+    return lines.join('\n');
+  }
+
+  // build HTML (clean, printable)
+  function buildHTML(){
+    const rows = collectMessages();
+    const safe = (s)=> (s||'').replace(/[&<>"]/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[m]||m));
+    const msgHTML = rows.map((m,i)=>{
+      const atts = m.atts.length
+        ? `<div class="atts">Attachments:${m.atts.map(a=>`<div>• <a href="${safe(a.href)}" target="_blank">${safe(a.name)}</a></div>`).join('')}</div>`
+        : '';
+      return `<div class="m ${m.who==='PDA Team'?'admin':'user'}">
+        <div class="meta">
+          <span class="who">${safe(m.who)}</span>
+          ${m.chips.map(c=>`<span class="chip">${safe(c)}</span>`).join('')}
+          <span class="time">${safe(m.time)}</span>
+        </div>
+        <div class="body">${safe(m.body).replace(/\n/g,'<br>')}</div>
+        ${atts}
+      </div>`;
+    }).join('');
+
+    return `<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Ticket #${safe(thread.dataset.ticketId)} — ${safe(thread.dataset.ticketTitle)}</title>
+<style>
+  body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:#f6f7fb;color:#0f172a;margin:24px}
+  .wrap{max-width:900px;margin:0 auto;background:#fff;border:1px solid #e5e7eb;border-radius:12px;box-shadow:0 8px 30px rgba(2,6,23,.06);overflow:hidden}
+  .head{padding:16px 18px;border-bottom:1px solid #eef2f7;font-weight:800}
+  .chat{padding:16px 18px}
+  .m{max-width:78%;padding:12px 14px;border:1px solid #e6eaf4;border-radius:14px;margin:12px 0;box-shadow:0 4px 18px rgba(2,6,23,.04)}
+  .m.user{background:#f8fbff;border-left:4px solid #38bdf8; margin-right:auto}
+  .m.admin{background:#faf7ff;border-right:4px solid #7c3aed; margin-left:auto}
+  .meta{display:flex;gap:6px;align-items:center;font-size:12px;color:#64748b;margin-bottom:6px}
+  .chip{background:#eef2ff;border:1px solid #e0e7ff;border-radius:999px;padding:2px 8px;font-weight:600}
+  .who{font-weight:700}
+  .time{margin-left:auto;opacity:.7}
+  .body{font-size:14px;line-height:1.6;color:#0b1324}
+  .atts{margin-top:8px;padding-top:6px;border-top:1px dashed #e5e7eb;font-size:13px}
+  @media print{
+    body{background:#fff;margin:0}
+    .wrap{box-shadow:none;border:none;border-radius:0}
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="head">Ticket #${safe(thread.dataset.ticketId)} — ${safe(thread.dataset.ticketTitle)}</div>
+    <div class="chat">${msgHTML}</div>
+  </div>
+</body>
+</html>`;
+  }
+
+  // download helper
+  function download(name, content, mime){
+    const blob = new Blob([content], {type: mime});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = name;
+    document.body.appendChild(a); a.click();
+    setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 0);
+  }
+
+  // actions
+  menu.addEventListener('click', (e)=>{
+    const kind = e.target.getAttribute('data-kind');
+    if(!kind) return;
+    menu.hidden = true;
+
+    if(kind==='txt'){
+      const txt = buildTXT();
+      download(fileName('txt'), txt, 'text/plain;charset=utf-8');
+    } else if(kind==='html'){
+      const html = buildHTML();
+      download(fileName('html'), html, 'text/html;charset=utf-8');
+    } else if(kind==='print'){
+      const html = buildHTML();
+      const w = window.open('', '_blank');
+      w.document.open(); w.document.write(html); w.document.close();
+      w.onload = ()=> w.print();
+    }
+  });
+})();
+</script>
+<script>
+(function(){
+  const fmt = new Intl.DateTimeFormat(undefined, {
+    day:'2-digit', month:'short', year:'numeric',
+    hour:'2-digit', minute:'2-digit', hour12:true
+  });
+  document.querySelectorAll('.time[data-utc]').forEach(el=>{
+    const iso = el.getAttribute('data-utc');
+    if (!iso) return;
+    const d = new Date(iso); // browser local tz
+    el.textContent = fmt.format(d).replace(',', ' •');
+  });
+})();
+</script>
+
+<!-- ===== LIVE COUNT & AUTO “NEW” BADGE ON DOM UPDATES ===== -->
+<script>
+(function(){
+  const thread  = document.getElementById('chatThread');
+  const countEl = document.getElementById('msgCount');
+  const badgeEl = document.getElementById('badgeNew');
+
+  function recalcCount(){
+    if (!thread || !countEl) return;
+    const msgs = thread.querySelectorAll('.msg');
+    countEl.textContent = msgs.length;
+  }
+  function showNewBadge(){
+    if (badgeEl && badgeEl.style.display === 'none') {
+      badgeEl.style.display = 'inline-flex';
+    } else if (badgeEl && !badgeEl.getAttribute('data-force-hidden')) {
+      badgeEl.style.display = 'inline-flex';
+    }
+  }
+
+  // initial sync in case PHP calc differs due to filters
+  recalcCount();
+
+  // Observe new messages appended in .thread
+  const mo = new MutationObserver((mutations)=>{
+    let added = false;
+    for (const m of mutations) {
+      if (m.type === 'childList') {
+        // If any node added that contains .msg
+        m.addedNodes && m.addedNodes.forEach(node=>{
+          if (node.nodeType === 1 && (node.classList?.contains('msg') || node.querySelector?.('.msg'))) {
+            added = true;
+          }
+        });
+      }
+    }
+    if (added) {
+      recalcCount();   // live count++
+      showNewBadge();  // naya message => "New" badge
+    }
+  });
+  mo.observe(thread, { childList: true, subtree: true });
+})();
+</script>
+
+<script>
+(function(){
+  var bar = document.getElementById('releaseNotice');
+  if(!bar) return;
+
+  var btn = bar.querySelector('.nb-close');
+  if(btn){
+    btn.addEventListener('click', function(){
+      // No storage used → will reappear on refresh
+      bar.style.transition = 'opacity .18s ease, height .18s ease, margin .18s ease, padding .18s ease';
+      bar.style.opacity = '0';
+      bar.style.height = '0';
+      bar.style.margin = '0';
+      setTimeout(function(){ if(bar && bar.parentNode) bar.parentNode.removeChild(bar); }, 220);
+    });
+  }
+})();
+</script>

@@ -1,0 +1,1248 @@
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+
+<style>
+  
+/* ===== Darker hover just for the inner fill (.progress) ===== */
+.stat .progress{
+  position: relative;                /* for overlay */
+  cursor: pointer;
+  transition: filter .2s ease, box-shadow .2s ease, transform .12s ease, background .2s ease;
+  will-change: filter, box-shadow, background;
+  /* (optional) define base gradient via vars so it’s tweakable */
+  --g-a: #0ebbcd;   /* left */
+  --g-b: #0393a2;   /* right */
+  --g-a-dark: #0b9cab;
+  --g-b-dark: #027b89;
+  background: linear-gradient(to left, var(--g-a), var(--g-b));
+}
+
+/* Dark overlay that fades in on hover */
+.stat .progress::after{
+  content:"";
+  position:absolute; inset:0;
+  border-radius: inherit;
+  background: rgba(0,0,0,.0);        /* start transparent */
+  transition: background .2s ease, opacity .2s ease;
+  pointer-events:none;
+  opacity: 0;
+}
+
+/* Hover = darker gradient + overlay + subtle pop */
+.stat .progress:hover{
+  background: linear-gradient(to left, var(--g-a-dark), var(--g-b-dark));
+  filter: saturate(1.05) brightness(.95);      /* darker feel */
+  box-shadow: 0 0 0 1px rgba(3,147,162,.08) inset, 0 8px 18px rgba(3,147,162,.22);
+  transform: translateZ(0);                    /* crisp */
+}
+.stat .progress:hover::after{
+  background: rgba(0,0,0,.16);  /* extra dark glaze */
+  opacity: 1;
+}
+
+/* Active press state = thoda aur dark & pressed */
+.stat .progress:active{
+  filter: saturate(1.02) brightness(.9);
+  box-shadow: 0 0 0 1px rgba(3,147,162,.12) inset, 0 4px 12px rgba(3,147,162,.22) inset;
+}
+
+/* Respect reduced motion users */
+@media (prefers-reduced-motion: reduce){
+  .stat .progress,
+  .stat .progress::after{
+    transition: none;
+  }
+}
+</style>
+
+<style>
+/* ===== iPad centering + breathing space fix ===== */
+
+/* Prevent Safari text auto-zoom & horizontal nudge */
+
+
+/* Safe-area aware gutters for notched iPads */
+:root{
+  --pad-mobile: 20px;
+  --pad-tablet: 20px;
+
+}
+
+/* Base: make wrappers center themselves */
+
+.believe-cards-wrapper{
+  margin-left:auto;
+  margin-right:auto;
+}
+
+
+
+/* iPad & small laptops: 1024–1366px */
+@media (max-width:1366px){
+  /* So wide containers don’t push content inward */
+  .plaB-wrapper{
+    max-width: 1200px;
+    padding-left: max(var(--pad-tablet), env(safe-area-inset-left));
+    padding-right: max(var(--pad-tablet), env(safe-area-inset-right));
+  }
+
+  .believe-cards-wrapper{
+    max-width: 1200px;
+    padding-left: max(var(--pad-tablet), env(safe-area-inset-left)) !important;
+    padding-right: max(var(--pad-tablet), env(safe-area-inset-right)) !important;
+  }
+
+  /* Inline-styled container ko force gutters (aapke attribute selector ka stronger override) */
+  .container-fluid[style*="padding: 0 160px"]{
+    padding-left: max(var(--pad-tablet), env(safe-area-inset-left)) !important;
+    padding-right: max(var(--pad-tablet), env(safe-area-inset-right)) !important;
+  }
+
+  /* Cards ko squeeze se bachao */
+  .believe-card-track{
+    gap: 24px !important;
+    padding: 28px 24px !important;
+  }
+}
+
+/* iPad portrait / <=1024px */
+@media (max-width:1100px){
+  .plaB-wrapper{
+    max-width: 980px;
+    padding-left: max(var(--pad-tablet), env(safe-area-inset-left));
+    padding-right: max(var(--pad-tablet), env(safe-area-inset-right));
+  }
+  .believe-cards-wrapper{
+    max-width: 980px;
+    padding-left: max(var(--pad-tablet), env(safe-area-inset-left)) !important;
+    padding-right: max(var(--pad-tablet), env(safe-area-inset-right)) !important;
+  }
+  .container-fluid[style*="padding: 0 160px"]{
+    padding-left: max(var(--pad-tablet), env(safe-area-inset-left)) !important;
+    padding-right: max(var(--pad-tablet), env(safe-area-inset-right)) !important;
+  }
+
+  /* Donut + legend stack nicely, no inner squeeze */
+  #chartContainer{
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:stretch !important;
+    gap: 14px !important;
+  }
+  #myDonutChart{ width:100% !important; max-width:420px !important; margin:0 auto !important; }
+  .legend-container{ width:100% !important; padding-left:0 !important; }
+
+  /* Track card */
+  .believe-card-track{ flex-direction:column; align-items:flex-start; }
+  .believe-card-track .cover{ width:100px; height:100px; }
+}
+
+
+
+/* Safety: images/icons shouldn’t cause overflow */
+img, svg{ max-width:100%; height:auto; }
+
+/* Progress/legend rows: stop right-edge crowding */
+.stat{ grid-template-columns: 1fr auto minmax(120px, 260px); gap: 12px; }
+.f_label{ width:auto !important; min-width:0 !important; }
+.value{ margin-right:0 !important; white-space:nowrap; }
+.progress-bar{ min-width:120px; }
+}
+</style>
+<style>
+  /* ===== FINAL CENTERING PATCH for pill bar ===== */
+
+/* Bar: exact height + symmetric padding so content sits dead-center */
+.plaB-platforms--bar{
+  display:flex; align-items:center; gap:6px; flex-wrap:wrap;
+  background:#F4F6FF; border-radius:9999px;
+  padding:4px 10px !important;      /* symmetric */
+  min-height:44px !important;        /* ✅ visual height of the purple bar */
+  box-shadow: inset 0 -1px 0 rgba(16,24,40,.02);
+  width:max-content; max-width:100%;
+  box-sizing:border-box;
+}
+
+/* Radios hidden (unchanged) */
+.plaB-platforms input[type="radio"]{
+  position:absolute; opacity:0; width:0; height:0; pointer-events:none;
+}
+
+/* Pill: exact chip size + line-height equals height = perfect vertical centering */
+.plaB-platforms .pill{
+  display:inline-flex; align-items:center; gap:8px;
+  height:36px !important;            /* chip height */
+  line-height:36px !important;       /* ✅ centers text inside chip */
+  padding:0 14px !important;
+  border-radius:9999px; border:0;
+  background:transparent;
+  font:800 13px/36px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial !important;
+  color:#1f2937; letter-spacing:.02em; white-space:nowrap;
+  cursor:pointer; user-select:none;
+  transition:background .18s ease, box-shadow .18s ease, transform .08s ease, color .18s ease;
+  margin:0 !important;               /* remove any stray margins */
+}
+
+/* Icons: remove baseline drift completely */
+.plaB-platforms .pill svg,
+.plaB-platforms .pill img{
+  width:18px; height:18px; display:block; flex:0 0 18px;
+}
+
+/* Active state */
+.plaB-platforms input[type="radio"]:checked + label.pill{
+  background:#fff;
+  box-shadow:0 1px 2px rgba(16,24,40,.06), 0 0 0 1px rgba(16,24,40,.06) inset;
+  color:#111827;
+}
+
+/* Hover/active micro motion */
+.plaB-platforms .pill:hover{ transform:translateY(-1px) }
+.plaB-platforms .pill:active{ transform:translateY(0) }
+
+/* When wrapping on iPad, keep vertical rhythm */
+@media (max-width:1024px){
+  .plaB-platforms--bar{ width:100%; min-height:44px !important; }
+}
+
+/* ✅ iPad & tablets: fix global viewport squeeze/overflow */
+html, body { max-width: 100%; overflow-x: hidden; }
+
+
+/* 1) Big paddings ko tablet par drastically reduce karein */
+@media (max-width: 1200px) {
+  .plaB-wrapper { padding: 0 32px !important; }
+  .believe-cards-wrapper { padding: 10px 32px !important; }
+  .container-fluid[style*="padding: 0 160px"] { padding: 0 32px !important; }
+}
+@media (max-width: 1024px) {
+  .plaB-wrapper { padding: 0 20px !important; }
+  .believe-cards-wrapper { padding: 10px 20px !important; }
+  .container-fluid[style*="padding: 0 160px"] { padding: 0 20px !important; }
+}
+/* 2) Two-column blocks ko stack kar do so they use full width */
+@media (max-width: 1024px) {
+  .col-md-6 { width: 100% !important; max-width: 100% !important; flex: 0 0 100% !important; }
+
+  /* Donut + legend container: column layout */
+  #chartContainer { display: flex !important; flex-direction: column !important; align-items: stretch !important; gap: 12px; }
+  #myDonutChart { width: 100% !important; max-width: 420px !important; margin: 0 auto !important; }
+  .legend-container { width: 100% !important; padding-left: 0 !important; }
+}
+
+/* 3) Card wrapper widths: avoid squeeze */
+@media (max-width: 1024px) {
+  .believe-card-track { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .believe-card-track .cover { width: 100px; height: 100px; }
+}
+
+/* 4) Top countries bar rows: tighten padding on tablet */
+@media (max-width: 1024px) {
+  .top-countries-box { padding: 24px !important; }
+  .country-row { padding: 10px 12px !important; }
+  .bar-wrapper { min-width: 0 !important; }
+}
+
+/* 5) “stat” rows: 170% label width crush ko hatao */
+.stat { display: grid !important; grid-template-columns: 1fr auto minmax(120px, 260px); align-items: center; gap: 12px; }
+.f_label { width: auto !important; min-width: 0 !important; }
+.value { margin-right: 0 !important; }
+
+/* 6) Progress bars must not overflow */
+.progress-bar { min-width: 120px; }
+
+/* 7) Pills/filters bar width: allow full width wrapping */
+.plaB-platforms--bar {  flex-wrap: wrap; }
+.plaB-platforms .pill { white-space: nowrap; }
+
+/* 8) Misc: images/text should shrink nicely */
+img, svg { max-width: 100%; height: auto; }
+.legend-text { font-size: 14px !important; }
+
+  
+.see_all
+{
+	padding: 15px;
+  font-family: rubik, -apple-system, blinkmacsystemfont, Segoe UI, roboto, Helvetica Neue, arial, Noto Sans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol, "Noto Color Emoji";
+    border-top: 1px solid #e1e1e1;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+	color:#7d2491;
+}
+  /* Backlink pill button */
+  .plaB-top .backlink{
+    display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:9999px;background:#fff;color:#111827;text-decoration:none;
+    font:600 14px/1 Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+    transition:background .18s ease, border-color .18s ease, box-shadow .18s ease, transform .08s ease, color .18s ease; white-space:nowrap;
+    border:1px solid transparent;
+  }
+  .plaB-top .backlink .icon{width:16px;height:16px;flex:0 0 16px;}
+  .plaB-top .backlink .icon path{fill:none;stroke:currentColor;stroke-width:2.25;stroke-linecap:round;stroke-linejoin:round;transition:transform .15s ease;}
+  .plaB-top .backlink:hover{background:#eef2ff;border-color:#c7d2fe;color:#4338ca;box-shadow:0 6px 16px rgba(79,70,229,.15);transform:translateY(-1px);}
+  .plaB-top .backlink:hover .icon{transform:translateX(-2px);}
+  .plaB-top .backlink:active{transform:translateY(0);box-shadow:0 2px 6px rgba(17,24,39,.15);background:#e0e7ff;border-color:#a5b4fc;}
+  .plaB-top .backlink:focus-visible{outline:2px solid #c7d2fe; outline-offset:3px; border-radius:9999px;}
+#bs-main-content-container {
+    padding-top: 25px !important;
+    padding-bottom: 30px !important;
+}  
+.see_all a
+{
+	color:#7d2491;
+}
+ .stat {
+    padding: 15.5px;
+    border-bottom: 1px solid #f9f7f7;
+    display: flex;
+}
+.f_label
+{
+	font-weight:500;
+	width:170%;
+	font-size: 14px;
+    font-family: rubik, -apple-system, blinkmacsystemfont, Segoe UI, roboto, Helvetica Neue, arial, Noto Sans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol, "Noto Color Emoji";
+    color: #3f3e3e;
+}
+
+        }
+        .label {
+            font-weight: bold;
+        }
+        .value {
+                float: right;
+				font-weight: 500;
+                font-family: rubik, -apple-system, blinkmacsystemfont, Segoe UI, roboto, Helvetica Neue, arial, Noto Sans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol, "Noto Color Emoji";
+                color: #3f3e3e;
+				font-size: 14px;
+				margin-right: 10px;
+				    white-space: nowrap;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background-color: #ddd;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+        .progress {
+            height: 100%;
+            background: linear-gradient(to left, #0ebbcd, #0393a2);
+			border-radius: 2px;
+        }
+#chartContainer { display: flex; align-items: flex-start; align-items: center; justify-content: space-between; width: 100%; } #myDonutChart { width: 36%; max-width: 300px;  /* Ensures a perfect circle */  height: auto; display: block; margin: 0 auto; /* Center the chart if needed */ }
+span.dot
+{
+	width: 4px;
+    height: 4px;
+    background: #333;
+    display: inline-block;
+    border-radius: 100%;
+    margin-right: 7px;
+    margin-left: 7px;
+}
+.legend-container {
+    width: 70%;
+    padding-left: 10px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 10px 12px;
+    border-bottom: 1px solid #efefef;
+	cursor:pointer;
+}
+.legend-item:hover
+{
+	background: #f5f5f5;
+}
+
+.legend-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+	cursor:pointer;
+}
+
+.legend-icon {
+    width: 16px;
+    height: 16px;
+    border-radius: 2px;
+}
+
+.legend-text {
+   font-family: rubik, -apple-system, blinkmacsystemfont, Segoe UI, roboto, Helvetica Neue, arial, Noto Sans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol, "Noto Color Emoji";
+    color: #3f3e3e;
+    font-weight: 500;
+    cursor: pointer;
+    font-size: 1.1rem;
+}
+
+.legend-amount {
+    font-size: 14px;
+    
+    text-align: right;
+    flex-grow: 1;
+  font-family: rubik, -apple-system, blinkmacsystemfont, Segoe UI, roboto, Helvetica Neue, arial, Noto Sans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol, "Noto Color Emoji";
+    color: #3f3e3e;
+    font-weight:500;
+}
+.legend-color-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+</style>
+
+<link rel="stylesheet" type="text/css" href="<?php echo $this->basePath(); ?>/public/css/index.min.css">
+<link rel="stylesheet" type="text/css" href="<?php echo $this->basePath(); ?>/public/css/anlytics_view.css">
+
+
+ <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+ <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+	
+	
+<style>
+  .custom-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 15px 15px;
+    background: #fff;
+    border-radius: 8px;
+    margin: 0 auto 20px auto;
+    max-width: 100%;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    font-family: 'Inter', sans-serif;
+    flex-wrap: wrap;
+  }
+
+  .cover-img-wrapper img {
+    border-radius: 8px;
+    border: 2px solid #ddd;
+    width: 90px;
+    height: 90px;
+    object-fit: cover;
+  }
+
+
+</style>
+
+
+<!-- Google Font: Inter -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<!-- START: Believe Cards Wrapper -->
+<style>
+/* Wrapper to control spacing between cards */
+.believe-cards-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding:10px 172px;
+  justify-content: space-between;
+  margin: 0px auto 20px;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Card 1 - Most Popular Track */
+.believe-card-track {
+    flex: 1 1 55%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 50px 50px;
+    gap: 40px;
+    min-height: 140px;
+    border-radius: 13px;
+    background-image: url(https://backstage-apps-prd.cdn.believebackstage.fr/micro-apps/analytics/assets/images/contextCardBackground.svg), linear-gradient(90deg, rgb(244 246 255 / 75%) 0%, rgb(244 246 255 / 86%) 100%);
+    background-size: cover, cover;
+    background-position: center, center;
+    background-repeat: no-repeat, no-repeat;
+    background-blend-mode: multiply;
+}
+
+.tooltip-icon {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f3e8fb;
+  padding: 8px 12px;
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+  cursor: pointer;
+}
+
+.tooltip-icon svg {
+  width: 20px;
+  height: 20px;
+  fill: #7d2491;
+}
+
+.tooltip-popup {
+  position: absolute;
+  top: -38px;
+  right: 0;
+  background: #111827;
+  color: #fff;
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(6px);
+  transition: all 0.2s ease;
+  z-index: 100;
+}
+
+.tooltip-icon:hover .tooltip-popup {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.believe-card-track .cover {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  flex-shrink: 0;
+}
+
+.believe-card-track .content {
+  flex: 1;
+}
+
+.believe-card-track .content .title {
+  font-size: 35px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: #222222;
+  margin-bottom: 0px;
+  font-family: "Open Sans", Roboto, Arial, sans-serif;
+}
+  
+  .believe-card-track .content .artist {
+  font-size: 19px;
+  font-weight: 550;
+  line-height: 1.5;
+  color: #222222;
+  margin-bottom: 15px;
+  font-family: "Open Sans", Roboto, Arial, sans-serif;
+}
+
+.believe-card-track .content .subtitle {
+  font-size: 12px;
+  color: #595959;
+  line-height: 1.5;
+}
+
+.believe-card-track .content .button {
+  margin-top: 10px;
+  padding: 8px 16px;
+  background: #7d2491;
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.believe-card-track .content .button:hover {
+  background: #631a7d;
+}
+
+.believe-card-track .content .button svg {
+  width: 18px;
+  height: 18px;
+  fill: white;
+}
+
+.card-link.card-20 {
+  flex: 1 1 20%;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  border-radius: 16px;
+}
+
+.believe-card.resources {
+  position: relative;
+  background: #ffffff;
+  background-image: url(https://img.freepik.com/premium-photo/defocused-image-illuminated-lights-night_1048944-26292677.jpg?w=900);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: right bottom;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  padding: 55px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden; /* keeps overlay inside radius */
+}
+
+/* 👇 Overlay color layer */
+.believe-card.resources::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(135deg, rgb(0 0 0 / 35%) 0%, /* darker tint */ rgb(0 0 0 / 55%) 100%);
+    z-index: 0;
+}
+
+/* ensures your text/content stays above overlay */
+.believe-card.resources > * {
+  position: relative;
+  z-index: 1;
+}
+
+
+.card-link.card-20:hover .believe-card.resources {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.15);
+}
+
+.believe-card.resources svg {
+  width: 32px;
+  height: 32px;
+  fill: #ffffff;
+  margin-bottom: 10px;
+}
+
+.believe-card.resources .res-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 6px;
+}
+
+.believe-card.resources .res-desc {
+  font-size: 13px;
+  color: #ffffff;
+  line-height: 1.5;
+}
+  
+  
+  
+</style>
+
+
+<div id="bs-main-content" class="col-md-12">
+  <div class="plaB-wrapper">
+    <div class="plaB-top">
+  <a class="backlink"
+     href="https://www.primebackstage.in/analytics"
+     aria-label="Back to Insights">
+    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M15 19L8 12l7-7" />
+    </svg>
+    <span>Track List</span>
+  </a>
+</div>
+
+    
+
+  <!-- Platform pills bar -->
+    <div class="plaB-platforms plaB-platforms--bar" role="radiogroup" aria-label="Platform">
+      <input type="radio" id="pf-all" name="plaB-platform" value="all" checked>
+      <label for="pf-all" class="pill">Track Insights</label>
+
+      <!-- Top Stores -->
+<input id="pf-spotify" name="plaB-platform" value="spotify"> <label for="pf-spotify" class="pill"> <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#1ED760" d="M12 0a12 12 0 1 0 0 24 12 12 0 0 0 0-24Zm5.503 17.308a.747.747 0 0 1-1.029.248c-2.817-1.72-6.365-2.11-10.542-1.156a.748.748 0 1 1-.332-1.457c4.57-1.046 8.491-.597 11.655 1.336a.75.75 0 0 1 .248 1.03Zm1.469-3.265a.936.936 0 0 1-1.29.308c-3.222-1.985-8.14-2.56-11.95-1.4a.936.936 0 0 1-.545-1.791c4.355-1.323 9.773-.683 13.477 1.593a.937.937 0 0 1 .308 1.29Zm.126-3.402C15.229 8.348 8.85 8.133 5.158 9.254a1.123 1.123 0 1 1-.653-2.15c4.239-1.29 11.286-1.038 15.74 1.605a1.123 1.123 0 0 1-1.147 1.93Z"/></svg> Top Stores </label>
+<!-- Top Territories -->
+<input id="pf-territory" name="plaB-platform" value="territory">
+<label for="pf-territory" class="pill">
+  <!-- Globe Icon -->
+  <svg viewBox="0 0 24 24" aria-hidden="true" width="18" height="18">
+    <path fill="#A238FF" d="M12 2C6.477 2 2 6.477 2 12s4.477 
+    10 10 10 10-4.477 10-10S17.523 2 12 2Zm0 
+    2a8 8 0 0 1 0 16A8 8 0 0 1 12 4Z"/>
+    <path fill="#A238FF" d="M2 12h20M12 2a15 15 0 0 1 0 
+    20M12 2a15 15 0 0 0 0 20"/>
+  </svg>
+  Top Territories
+</label>
+
+<!-- Top Transaction -->
+<input id="pf-transaction" name="plaB-platform" value="transaction">
+<label for="pf-transaction" class="pill">
+  <!-- Transaction/Money Icon -->
+  <svg viewBox="0 0 24 24" aria-hidden="true" width="18" height="18">
+    <path fill="#FF9D00" d="M12 1C5.925 1 1 5.925 1 12s4.925 
+    11 11 11 11-4.925 11-11S18.075 1 12 1Zm1 16h2a1 
+    1 0 1 1 0 2h-2v1a1 1 0 1 1-2 0v-1H9a1 1 0 1 
+    1 0-2h2v-2H9a1 1 0 1 1 0-2h2v-2H9a1 1 0 1 
+    1 0-2h2V7a1 1 0 1 1 2 0v2h2a1 1 0 1 1 0 
+    2h-2v2h2a1 1 0 1 1 0 2h-2v2Z"/>
+  </svg>
+  Top Transaction
+</label>
+
+
+
+    </div>
+    </div>
+<div class="believe-cards-wrapper">
+  <!-- Card 1: Track Highlight -->
+  <div class="believe-card-track">
+    <!-- Top Right Icon with Tooltip -->
+    <div class="tooltip-icon">
+      <svg viewBox="0 0 24 24">
+        <path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 
+        10 10 10 10-4.48 10-10S17.52 2 12 2m0 
+        18c-4.41 0-8-3.59-8-8s3.59-8
+        8-8 8 3.59 8 8-3.59 8-8 8"></path>
+      </svg>
+      <div class="tooltip-popup">This shows track usage info</div>
+    </div>
+
+    <!-- Cover Image -->
+    <img class="cover" src="<?php echo $this->coverIMG; ?>" alt="Track Cover">
+
+    <!-- Content -->
+    <div class="content">
+      <div class="title"><?php echo $this->SongName; ?></div>
+      <div class="artist"><?php echo $this->releaseArtist; ?></div>
+<div class="subtitle" style="display:flex; align-items:center; gap:12px; font-weight:600;">
+  <span style="display:inline-flex; align-items:center; gap:4px;">
+    <svg xmlns="http://www.w3.org/2000/svg" 
+         viewBox="0 0 24 24" 
+         width="14" height="14" 
+         style="fill:#666;">
+      <path d="M7 2v2H5a2 2 0 0 0-2 2v2h18V6a2 2 0 0 0-2-2h-2V2h-2v2H9V2H7zM21 10H3v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V10z"/>
+    </svg>
+    Released on <?php echo date('M d, Y', strtotime($this->releaseDate)); ?>
+  </span>
+
+  <span style="display:inline-flex; align-items:center; gap:4px;">
+    <svg xmlns="http://www.w3.org/2000/svg" 
+         viewBox="0 0 24 24" 
+         width="14" height="14" 
+         style="fill:#666;">
+      <path d="M4 4h1v16H4V4zm3 0h1v16H7V4zm3 0h1v16h-1V4zm3 0h1v16h-1V4zm3 0h1v16h-1V4zm3 0h1v16h-1V4z"/>
+    </svg>
+    UPC: <?php echo $this->UPC; ?>
+  </span>
+</div>
+      
+    </div>
+  </div>
+
+  <!-- Card 2: Resources (Clickable) -->
+  <a href="https://www.primebackstage.in/faq/category/22" target="_blank" class="card-link card-20">
+    <div class="believe-card resources">
+      <svg viewBox="0 0 24 24">
+        <path d="..."></path>
+      </svg>
+      <div class="res-title">Resources</div>
+      <div class="res-desc">Booming or Top Hits, two new segments to identify when a track is viral</div>
+    </div>
+  </a>
+</div>
+
+
+
+<!-- ✅ Responsive Top Countries Wrapper with Extra Padding -->
+<div class="container-fluid" style="padding: 0 160px; margin-bottom: 40px; margin-top: 40px;">
+
+  <style>
+    .top-countries-box {
+      background: #fff;
+      
+      padding: 35px 40px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+      font-family: Rubik, sans-serif;
+      width: 100%;
+    }
+
+    .top-countries-box h4 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #555555;
+      margin-bottom: 6px;
+    }
+
+    .top-countries-box .subtitle {
+      font-size: 13px;
+      color: #777;
+      margin-bottom: 26px;
+    }
+
+    .country-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 2px;
+      gap: 3px;
+      flex-wrap: wrap;
+      padding: 10px 50px;
+    }
+
+    .country-name {
+      display: flex;
+      align-items: center;
+      min-width: 180px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #1a1a1a;
+      justify-content: flex-end;
+      text-align: right;
+    }
+
+    .country-name img {
+      width: 18px;
+      height: 13px;
+      border-radius: 2px;
+      margin-left: 8px;
+      margin-left: 11px;
+    margin-right: 11px;
+    }
+
+    .bar-wrapper {
+      flex-grow: 1;
+      background-color: #edf3f3;
+      height: 20px;
+      border-radius: 3px;
+      margin-right: 12px;
+      overflow: hidden;
+      position: relative;
+      min-width: 100px;
+    }
+
+    .bar-fill {
+  background: linear-gradient(to left, #0ecee1, #0393a2);
+  height: 100%;
+  border-radius: 3px;
+  transition: background 0.3s ease, transform 0.2s ease;
+  position: relative;
+}
+
+/* ✅ Hover animation effect */
+.bar-fill:hover {
+  background: linear-gradient(to left, #00a3a9, #026e7e);
+  transform: scaleY(2.1); /* optional: slight vertical enlarge */
+  cursor: pointer;
+}
+
+    .amount {
+      font-size: 13px;
+      font-weight: 600;
+      color: #111;
+      white-space: nowrap;
+      min-width: 75px;
+      /*text-align: right;*/
+    }
+
+    .see_all {
+      padding-top: 24px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #7d2491;
+      text-align: center;
+      border-top: 1px solid #e1e1e1;
+      margin-top: 28px;
+    }
+
+    .see_all a {
+      color: #7d2491;
+      text-decoration: none;
+    }
+
+    @media (max-width: 576px) {
+      .country-row {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 10px 20px;
+      }
+
+      .amount {
+        text-align: left;
+        margin-top: 4px;
+      }
+
+      .top-countries-box {
+        padding: 25px 20px;
+      }
+
+      .country-name {
+        justify-content: flex-start;
+        text-align: left;
+      }
+
+      .country-name img {
+        margin-left: 0;
+        margin-right: 8px;
+      }
+
+   .progress {
+  height: 100%;
+  background: linear-gradient(to left, #0ebbcd, #0393a2);
+  border-radius: 2px;
+}
+      
+
+  </style>
+<style>
+/* —— tokens —— */
+:root{
+  --b-text:#1c2430; --b-muted:#6b7280; --b-border:#e7eaf2;
+  --b-chip:#ffffff; --b-bg:#fff; --b-shadow:0 8px 24px rgba(16,24,40,.06);
+  --b-radius:12px; --b-blue:#2563eb; --b-pill:#f3f4f6; --b-pill-active:#eef2ff; --b-outline:#d9dfff;
+}
+.plaB-wrapper{max-width:1300px;   padding: 0 180px; color:var(--b-text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;}
+
+/* top */
+.plaB-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.plaB-top h1{margin:0;font-weight:800;font-size:28px;letter-spacing:-.02em;}
+
+/* segmented range */
+.plaB-range{display:inline-grid;grid-auto-flow:column;gap:6px;background:#fff;border:1px solid var(--b-border);border-radius:999px;padding:4px 6px;box-shadow:0 1px 2px rgba(16,24,40,.04);}
+.plaB-range input{display:none;}
+.plaB-range label{min-width:52px;text-align:center;font-weight:700;font-size:12px;color:#334155;padding:8px 12px;border-radius:999px;cursor:pointer;}
+.plaB-range input:checked+label{background:#4f46e5;color:#fff;box-shadow:0 2px 6px rgba(79,70,229,.25);}
+
+/* platform bar */
+.plaB-platforms{display:flex;gap:10px;align-items:center;margin:14px 0 18px;}
+.plaB-platforms--bar{
+  /* existing */
+  background:#F4F6FF;
+  
+  border-radius:9999px;
+  padding:5px 10px;
+  gap:5px;
+  box-shadow: inset 0 -1px 0 rgba(16,24,40,.02);
+  /* NEW: width control */
+  width: var(--pla-bar-width, max-content); /* default = content width */
+  max-width: 100%;
+}
+.plaB-platforms input{display:none;}
+.plaB-platforms .pill{display:inline-flex;gap:8px;align-items:center;padding:5px 12px;border-radius:9999px;background:transparent;border:0;font-weight:800;font-size:13px;color:#3c3b3b;letter-spacing:.02em;}
+.plaB-platforms svg{width:18px;height:18px;display:block;}
+.plaB-platforms input:checked+label.pill{background:#fff;box-shadow:0 1px 2px rgba(16,24,40,.06);}
+
+/* empty state */
+.plaB-empty{border-radius:16px;background:#d7e2f914; height:450px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;margin-bottom:70px;}
+.plaB-empty .illu-img{width:120px;height:auto;opacity:.95;margin-bottom:8px;}
+.plaB-empty h3{margin:0px 0 6px;font-size:20px;font-weight:800;}
+.plaB-empty p{margin:0;color:var(--b-muted);}
+
+/* cards */
+.plaB-cards{display:grid;gap:20px;grid-template-columns:repeat(3,1fr);margin-bottom:12px;}
+.card{background:var(--b-bg);border:1px solid var(--b-border);border-radius:14px;box-shadow:var(--b-shadow);overflow:hidden;}
+.card img{display:block;width:100%;height:140px;object-fit:cover;}
+.card .meta{padding:10px 14px 4px;color:#4b5563;font-weight:600;font-size:13px;}
+.card .link{display:block;padding:0 14px 12px;font-weight:700;font-size:13px;color:var(--b-blue);text-decoration:none;}
+.card .link:hover{text-decoration:underline;}
+.card .chips{display:flex;gap:8px;flex-wrap:wrap;padding:0 14px 14px;}
+.card .chip{background:#fff;border:1px solid var(--b-border);border-radius:999px;padding:6px 10px;font-size:12px;font-weight:700;color:#475467;box-shadow:var(--b-shadow);}
+
+/* responsive */
+@media (max-width:1024px){.plaB-cards{grid-template-columns:repeat(2,1fr);} }
+@media (max-width:640px){
+  .plaB-top{flex-direction:column;gap:10px;align-items:flex-start;}
+  .plaB-cards{grid-template-columns:1fr;}
+}
+</style>
+  
+<?php if ($_GET['from_month'] != '' && $_GET['to_month'] != ''): ?>
+<div class="container-fluid" style=" ">
+
+  <div class="row">
+    <!-- Top Stores -->
+    <div class="col-md-6">
+      <div class="col-md-12" style="background-color:#fff;  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);">
+        <h6 style="margin-top: 40px; font-size:20px; font-weight:700; color:#555; padding-left: 20px;">Top stores</h6>
+        <p style="padding-left:20px; display: flex; align-items: center; line-height: 3;">
+          <?php echo date('M Y',strtotime($_GET['from_month'])) . ' - ' . date('M Y',strtotime($_GET['to_month'])) . ' <span class="dot"></span> Net Revenue'; ?>
+        </p>
+        <div style="padding: 1px;">
+          <div id="chartContainer">
+            <div id="myDonutChart"></div>
+            <div class="legend-container"></div>
+          </div>
+        </div>
+        <div class="see_all">
+          <a href="<?php echo $this->url('analytics', ['action' => 'fullview']) . '?id=' . $_GET['id'] . '&from_month=' . $_GET['from_month'] . '&to_month=' . $_GET['to_month']; ?>">SEE ALL</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top Transaction Types -->
+    <div class="col-md-6">
+      <div class="col-md-12" style="background-color:#fff;  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);">
+        <h6 style="margin-top: 40px; font-size:20px; font-weight:700; color:#555; padding-left: 20px;">Top Transaction Types</h6>
+        <p style="padding-left:20px; display: flex; align-items: center; margin-bottom: 41px;line-height: 3;">
+          <?php echo date('M Y',strtotime($_GET['from_month'])) . ' - ' . date('M Y',strtotime($_GET['to_month'])) . ' <span class="dot"></span> Net Revenue'; ?>
+        </p>
+
+        <?php
+          $transactions = [
+            ['label' => 'Audio Streams', 'value' => $this->TOTAL_STREAM, 'width' => '30%'],
+            ['label' => 'Video Views', 'value' => $this->TOTAL_VIEW, 'width' => '50%'],
+            ['label' => 'Creations', 'value' => $this->TOTAL_CREATION, 'width' => '20%'],
+            ['label' => 'Earnings', 'value' => $this->TOTAL_REVENUE, 'width' => '15%']
+          ];
+
+          foreach ($transactions as $txn): ?>
+            <div class="stat">
+              <span class="f_label"><?php echo $txn['label']; ?></span>
+              <span class="value"><?php echo $txn['value']; ?></span>
+              <div class="progress-bar">
+  <div class="progress" data-target-width="<?php echo $txn['width']; ?>" style="width: 0%;"></div>
+</div>
+
+            </div>
+        <?php endforeach; ?>
+
+        <div class="see_all">
+          <a href="<?php echo $this->url('analytics', ['action' => 'fullview']) . '?id=' . $_GET['id'] . '&from_month=' . $_GET['from_month'] . '&to_month=' . $_GET['to_month']; ?>">SEE ALL</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Countries Block -->
+  <div style="margin-top: 40px;">
+    <div class="top-countries-box">
+      <h4>Top Countries ⚠️ Not Reflective of Actual Revenue</h4>
+      <div class="subtitle">
+        <?php echo date('M Y',strtotime($_GET['from_month'])) . ' - ' . date('M Y',strtotime($_GET['to_month'])); ?>
+        <span class="dot"></span> Net Revenue
+      </div>
+
+      <?php
+        $topCountries = [
+          ['flag'=>'in','name'=>'India','value'=>30.65],
+          ['flag'=>'pk','name'=>'Pakistan','value'=>7.98],
+          ['flag'=>'us','name'=>'United States','value'=>6.29],
+          ['flag'=>'ae','name'=>'United Arab Emirates','value'=>6.49],
+          ['flag'=>'sa','name'=>'Saudi Arabia','value'=>5.21],
+          ['flag'=>'gb','name'=>'United Kingdom','value'=>5.09],
+          ['flag'=>'de','name'=>'Germany','value'=>3.24],
+          ['flag'=>'fr','name'=>'France','value'=>2.54],
+          ['flag'=>'ca','name'=>'Canada','value'=>2.00],
+          ['flag'=>'bd','name'=>'Bangladesh','value'=>1.00],
+        ];
+
+        $max = $topCountries[0]['value'];
+        foreach ($topCountries as $c):
+          $width = ($c['value'] / $max) * 70;
+      ?>
+        <div class="country-row">
+          <div class="country-name">
+            <span><?php echo $c['name']; ?></span>
+            <img src="/public/img/flags/<?php echo $c['flag']; ?>.png" alt="">
+          </div>
+          <div class="bar-wrapper">
+            <div class="bar-fill" data-target-width="<?php echo round($width, 1); ?>%" style="width:0%;"></div>
+
+          </div>
+          <div class="amount">€<?php echo number_format($c['value'],2); ?></div>
+        </div>
+      <?php endforeach; ?>
+
+      <div class="country-row">
+        <div class="country-name"><span>221 More</span></div>
+        <div class="amount"></div>
+      </div>
+
+      <div class="see_all">
+        <a href="<?php echo $this->url('analytics', ['action' => 'fullview']) . '?id=' . $_GET['id'] . '&from_month=' . $_GET['from_month'] . '&to_month=' . $_GET['to_month']; ?>">SEE ALL</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+<?php else: ?>
+<div class="plaB-empty">
+  <!-- Lottie Animation -->
+  <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.6.2/dist/dotlottie-wc.js" type="module"></script>
+  <dotlottie-wc 
+    src="https://lottie.host/3d7c4d75-1a05-4934-8ccb-8427acd4b50a/0we5XTd6ZY.lottie" 
+    style="width: 300px; height: 300px;" 
+    speed="1" 
+    autoplay 
+    loop>
+  </dotlottie-wc>
+
+  <h3>No insights data Available yet.</h3>
+  <p>Once insights are available,<br>
+you’ll be able to track performance, revenue, and audience engagement right here.</p>
+</div>
+<?php endif; ?>
+
+		
+<script>
+var defaultTotalAmount = '€'+"<?php echo $this->TOTAL_AMOUNT; ?>";
+document.addEventListener('DOMContentLoaded', function () {
+    Highcharts.chart('myDonutChart', {
+        chart: {
+            type: 'pie',
+            height: 250,
+            spacing: [0, 0, 0, 0], // Remove extra spacing
+            marginRight: 0, // No extra margin
+            events: {
+                render: function () {
+                    let totalAmount = "<?php echo $this->TOTAL_AMOUNT; ?>"; // Pre-calculated total
+                    let percentage = "<?php echo $this->TOTAL_PERCENTAGE; ?>"; // Pre-calculated percentage
+
+                    // Remove old label before adding a new one
+                    if (this.customLabel) {
+                        this.customLabel.destroy();
+                    }
+
+                    let centerX = this.plotLeft + this.plotWidth / 2;
+                    let centerY = this.plotTop + this.plotHeight / 2;
+
+                    // Add total amount inside the donut
+                    this.customLabel = this.renderer.text(
+                        `<tspan style="font-size:15px; fill:#000;">€${totalAmount}</tspan><br>
+                         <tspan style="font-size:14px; fill:#111;"></tspan>`
+                    )
+                    .css({
+                        textAlign: 'center'
+                    })
+                    .attr({
+                        align: 'center'
+                    })
+                    .add()
+                    .translate(centerX - 0, centerY - 0); // Adjust position slightly
+                }
+            }
+        },
+        title: { text: '' },
+        tooltip: {
+            pointFormat: '{series.name}: <b>{point.percentage:.2f}%</b><br>Revenue: €{point.y.toFixed(2)}'
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                innerSize: '80%', // Donut effect
+                dataLabels: { enabled: false },
+                showInLegend: true
+            }
+        },
+        series: [{
+            name: 'Revenue',
+            colorByPoint: true,
+            data: <?php echo json_encode($this->TOP_STORE); ?> // JSON-encoded PHP array with image URLs
+        }],
+        legend: {
+            enabled: false // Hide default Highcharts legend
+        }
+    });
+
+    // Generate Custom Legend
+    let chart = Highcharts.charts[0]; // Get chart instance
+    let legendHTML = '';
+	
+	function updateCenterLabel(amount, percentage) {
+		if (chart.customLabel) {
+			chart.customLabel.destroy();
+		}
+
+		let centerX = chart.plotLeft + chart.plotWidth / 2;
+		let centerY = chart.plotTop + chart.plotHeight / 2;
+
+		chart.customLabel = chart.renderer.text(
+			`<tspan style="font-size:15px; fill:#000;">${amount}</tspan>
+			 <tspan x="${centerX}" dy="22" style="font-size:14px; fill:#111;">${percentage}</tspan>`,
+			centerX,
+			centerY
+		)
+		.css({
+			textAlign: 'center'
+		})
+		.attr({
+			align: 'center'
+		})
+		.add();
+	}
+
+   chart.series[0].data.forEach((point, index) => {
+		let imgSrc = point.img ? point.img : '../public/img/store2/Others.png'; // Default image if missing
+		let color = point.color; // Get the color from Highcharts
+
+		legendHTML += `
+			<div class="legend-item" data-index="${index}">
+				<div class="legend-left">
+					<span class="legend-color-dot" style="background-color: ${color};"></span>
+					<img src="${imgSrc}" class="legend-icon">
+					<span class="legend-text">${point.name}</span>
+				</div>
+				<div class="legend-amount">€${point.y.toFixed(2)}</div>
+			</div>
+		`;
+	});
+
+    document.querySelector('.legend-container').innerHTML = legendHTML;
+	// Add Hover Effect
+	// Add Hover Effect for Custom Legend
+	document.querySelectorAll('.legend-item').forEach((item, index) => {
+		item.addEventListener('mouseover', function () {
+			let point = chart.series[0].data[index];
+			if (point) {
+				let hoverAmount = '€'+point.y.toFixed(2);
+				let hoverPercentage = point.percentage.toFixed(2)+'% of Total';
+				updateCenterLabel(hoverAmount, hoverPercentage);
+				point.setState('hover'); // Highlight pie slice
+			}
+		});
+
+		item.addEventListener('mouseout', function () {
+			
+			let point = chart.series[0].data[index];
+			if (point) {
+				updateCenterLabel(defaultTotalAmount, '');
+				point.setState(); // Reset highlight
+			}
+		});
+	});
+});
+
+  
+  
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  // Animate country bars
+  document.querySelectorAll('.bar-fill').forEach((bar, i) => {
+    const width = bar.getAttribute('data-target-width');
+    setTimeout(() => {
+      bar.style.transition = 'width 1.2s ease';
+      bar.style.width = width;
+    }, i * 120);
+  });
+
+  // Animate Top Transaction Types bars
+  document.querySelectorAll('.progress').forEach((bar, i) => {
+    const width = bar.getAttribute('data-target-width');
+    setTimeout(() => {
+      bar.style.transition = 'width 1.2s ease';
+      bar.style.width = width;
+    }, i * 120);
+  });
+});
+</script>
+

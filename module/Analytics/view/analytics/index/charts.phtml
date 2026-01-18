@@ -1,0 +1,1237 @@
+<!-- Playlists & Charts — Believe-style FINAL (with async Spotify stats) -->
+<div id="bs-main-content" class="col-md-12">
+  <div class="plaB-wrapper">
+
+    <!-- top: title -->
+    <div class="plaB-top">
+      <h1>Top Charts</h1>
+    </div>
+     
+   
+
+    <!-- platform pills BAR (soft blue background) -->
+    <div class="plaB-platforms plaB-platforms--bar" role="radiogroup" aria-label="Platform">
+      <input type="radio" id="pf-all" name="plaB-platform" value="all" checked>
+      <label for="pf-all" class="pill">ALL</label>
+
+      <input type="radio" id="pf-spotify" name="plaB-platform" value="spotify">
+      <label for="pf-spotify" class="pill">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#1ED760" d="M12 0a12 12 0 1 0 0 24 12 12 0 0 0 0-24Zm5.503 17.308a.747.747 0 0 1-1.029.248c-2.817-1.72-6.365-2.11-10.542-1.156a.748.748 0 1 1-.332-1.457c4.57-1.046 8.491-.597 11.655 1.336a.75.75 0 0 1 .248 1.03Zm1.469-3.265a.936.936 0 0 1-1.29.308c-3.222-1.985-8.14-2.56-11.95-1.4a.936.936 0 0 1-.545-1.791c4.355-1.323 9.773-.683 13.477 1.593a.937.937 0 0 1 .308 1.29Zm.126-3.402C15.229 8.348 8.85 8.133 5.158 9.254a1.123 1.123 0 1 1-.653-2.15c4.239-1.29 11.286-1.038 15.74 1.605a1.123 1.123 0 0 1-1.147 1.93Z"/></svg>
+        SPOTIFY
+      </label>
+
+      <input type="radio" id="pf-deezer" name="plaB-platform" value="deezer">
+      <label for="pf-deezer" class="pill">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path fill="#A238FF" d="M16.774 3.052c.185-1.072.457-1.747.758-1.748.561.002 1.016 2.341 1.016 5.229s-.455 5.229-1.016 5.229c-.23 0-.443-.397-.614-1.063-.27 2.438-.83 4.114-1.479 4.114-.502 0-.953-1.007-1.256-2.595-.207 3.02-.727 5.162-1.335 5.162-.381 0-.729-.849-.986-2.231-.31 2.854-1.025 4.853-1.859 4.853-.834 0-1.55-1.999-1.859-4.853-.256 1.382-.604 2.231-.987 2.231-.607 0-1.126-2.142-1.334-5.162-.303 1.587-.753 2.594-1.256 2.594-.649 0-1.21-1.676-1.48-4.114-.17 .667-.383 1.063-.613 1.063-.561 0-1.016-2.341-1.016-5.229S1.91 1.304 2.471 1.304c.301 0 .571 .676.758 1.748.3-1.85.786-3.052 1.336-3.052.653 0 1.219 1.7 1.486 4.168.262-1.796.659-2.942 1.104-2.942.624 0 1.154 2.252 1.351 5.394.369-1.611.904-2.622 1.496-2.622.592 0 1.127 1.011 1.496 2.622.197-3.142.726-5.394 1.35-5.394.444 0 .841 1.145 1.104 2.942.267-2.468.833-4.168 1.486-4.168.548 0 1.037 1.203 1.336 3.052ZM0 6.018c0-1.29.258-2.337.577-2.337.318 0 .576 1.046.576 2.337S.895 8.356.577 8.356C.258 8.356 0 7.309 0 6.018Zm18.847 0c0-1.29.258-2.337.576-2.337.318 0 .576 1.046.576 2.337s-.258 2.338-.576 2.338c-.318 0-.576-1.047-.576-2.338Z"/></svg>
+        DEEZER
+      </label>
+
+      <input type="radio" id="pf-apple" name="plaB-platform" value="apple">
+      <label for="pf-apple" class="pill">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <linearGradient id="amG2" x1="12" y1="24" x2="12" y2="0" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#FA233B"/><stop offset="1" stop-color="#FB5C74"/>
+          </linearGradient>
+          <rect width="24" height="24" rx="5" fill="url(#amG2)"/>
+          <path fill="#fff" d="M17 4.3 9.22 5.85c-.41.08-.62.3-.62.73v9.48c0 .53-.17.86-.52 1.27-.36.41-.76.56-1.54.72-1.06.22-1.71.4-2.26.86a1.9 1.9 0 0 0 .02 2.67c.49.46 1.15 .6 1.95 .43.46-.09.9-.26 1.3-.5.4-.23.72-.52.94-.85.22-.33.36-.7.44-1.07.08-.36.09-.69.09-1.08V9.52c0-.42.14-.6.54-.69l6.21-1.25c.39-.08.59.09.59.48v5.28c0 .53-.17.86-.52 1.27-.36.41-.76.56-1.54.72-1.06.22-1.71.4-2.26.86a1.91 1.91 0 0 0 .02 2.67c.49.46 1.15 .6 1.95 .43.46-.09.9-.26 1.3-.5.4-.23.72-.52.94-.85.22-.33.36-.7.44-1.07.08-.36.08-.7.08-1.08V4.93c0-.42-.27-.68-.62-.63Z"/>
+        </svg>
+        APPLE MUSIC
+      </label>
+
+      
+    </div>
+
+    
+    <!-- ===== Insights banner (Believe-style) — place this just ABOVE the charts table ===== -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap" rel="stylesheet"/>
+
+<style>
+  /* ===== FINAL CENTERING PATCH for pill bar ===== */
+
+/* Bar: exact height + symmetric padding so content sits dead-center */
+.plaB-platforms--bar{
+  display:flex; align-items:center; gap:6px; flex-wrap:wrap;
+  background:#F4F6FF; border-radius:9999px;
+  padding:4px 10px !important;      /* symmetric */
+  min-height:44px !important;        /* ✅ visual height of the purple bar */
+  box-shadow: inset 0 -1px 0 rgba(16,24,40,.02);
+  width:max-content; max-width:100%;
+  box-sizing:border-box;
+}
+
+/* Radios hidden (unchanged) */
+.plaB-platforms input[type="radio"]{
+  position:absolute; opacity:0; width:0; height:0; pointer-events:none;
+}
+
+/* Pill: exact chip size + line-height equals height = perfect vertical centering */
+.plaB-platforms .pill{
+  display:inline-flex; align-items:center; gap:8px;
+  height:36px !important;            /* chip height */
+  line-height:36px !important;       /* ✅ centers text inside chip */
+  padding:0 14px !important;
+  border-radius:9999px; border:0;
+  background:transparent;
+  font:800 13px/36px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial !important;
+  color:#1f2937; letter-spacing:.02em; white-space:nowrap;
+  cursor:pointer; user-select:none;
+  transition:background .18s ease, box-shadow .18s ease, transform .08s ease, color .18s ease;
+  margin:0 !important;               /* remove any stray margins */
+}
+
+/* Icons: remove baseline drift completely */
+.plaB-platforms .pill svg,
+.plaB-platforms .pill img{
+  width:18px; height:18px; display:block; flex:0 0 18px;
+}
+
+/* Active state */
+.plaB-platforms input[type="radio"]:checked + label.pill{
+  background:#fff;
+  box-shadow:0 1px 2px rgba(16,24,40,.06), 0 0 0 1px rgba(16,24,40,.06) inset;
+  color:#111827;
+}
+
+/* Hover/active micro motion */
+.plaB-platforms .pill:hover{ transform:translateY(-1px) }
+.plaB-platforms .pill:active{ transform:translateY(0) }
+
+/* When wrapping on iPad, keep vertical rhythm */
+@media (max-width:1024px){
+  .plaB-platforms--bar{ width:100%; min-height:44px !important; }
+}
+
+  /* Table title pill */
+.tbl-pill{
+  display:inline-flex; align-items:center; gap:6px;
+  margin-left:8px; padding:2px 8px;
+  font:800 10.5px/1 Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  letter-spacing:.3px; text-transform:uppercase;
+  color:#0f172a; background:#ffffff; border:1px solid #e5e7eb; border-radius:999px;
+  box-shadow:0 2px 6px rgba(16,24,40,.06);
+  vertical-align:middle;
+}
+.tbl-pill--alt{ background:linear-gradient(90deg,#ffe4e6,#fff1f2); border-color:#fecdd3; color:#9f1239; }
+
+  /* Scoped so it won't leak */
+  .pb-insights-wrap{font-family:'Inter',system-ui,Arial,sans-serif;margin:16px 0 24px}
+  .pb-insights-grid{display:grid;grid-template-columns:2fr 1fr;gap:20px}
+  .pb-card {
+    background: #fff;
+    border: 1px solid #e8edf3;
+    border-radius: 16px;
+    /* box-shadow: 0 6px 14px rgba(16, 24, 40, .05); */
+    overflow: hidden;
+    background: linear-gradient(90deg, rgb(238 238 238 / 89%) 13.36%, rgb(237 237 237 / 35%) 93.83%);
+    background-size: cover;
+    background-image: url(https://backstage-apps-prd.cdn.believebackstage.fr/micro-apps/analytics/assets/images/short-form/card-insight-background.png);
+}
+  .pb-card-inner{display:flex;gap:16px;align-items:stretch;padding:16px}
+  .pb-badge{width:28px;height:28px;border-radius:999px;display:grid;place-items:center;background:#eef6ff;border:1px solid #e1edff;flex:none}
+  .pb-badge svg{width:18px;height:18px;fill:#1e88e5}
+  .pb-cover{width:86px;height:86px;border-radius:12px;overflow:hidden;flex:none;box-shadow:0 4px 10px rgba(2,6,23,.08)}
+  .pb-cover img{width:100%;height:100%;object-fit:cover;display:block}
+  .pb-meta{display:flex;flex-direction:column;gap:8px;min-width:0}
+  .pb-kicker{font-size:12px;color:#64748b;font-weight:600;letter-spacing:.2px;text-transform:uppercase}
+  .pb-headline{font-size:18px;line-height:1.35;font-weight:900;color:#0f172a}
+  .pb-sub{font-size:13px;color:#475569}
+  .pb-cta {
+    /* margin-top: 6px; */
+    display: inline-flex
+;
+    align-items: center;
+    /* gap: 8px; */
+    /* background: #ffffff; */
+    color: #475569;
+    font-weight: 800;
+    border: 0;
+    font-size: 14;
+    border-radius: 10px;
+    /* padding: 9px 12px; */
+    cursor: pointer;
+    text-decoration: none;
+}
+  .pb-cta svg{width:18px;height:18px;fill:#fff}
+  .pb-cta:hover{filter:brightness(1.05)}
+  /* Right card */
+  .pb-resource{display:flex;flex-direction:column;gap:10px;padding:16px}
+  .pb-resource .pb-row{display:flex;align-items:center;gap:10px}
+  .pb-resource .pb-row svg{width:20px;height:20px;fill:#475569}
+  .pb-resource-title{font-weight:700;color:#0f172a}
+  .pb-resource-sub{font-size:13px;color:#475569}
+  .pb-card--ghost{background:linear-gradient(180deg,#f8fafc, #ffffff);border:1px solid #eef2f7}
+
+  /* Pills row spacer harmony (optional) */
+  .plaB-platforms + .pb-insights-wrap{margin-top:14px}
+
+  /* Responsive */
+  @media (max-width: 1024px){
+    .pb-insights-grid{grid-template-columns:1fr}
+  }
+  /* === Promote button (Believe-style) === */
+.start-promote {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font: 700 13px / 1 Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+    /* border: 1px solid #d9dfff; */
+    color: #3d88e6 !important;
+    /* padding: 8px 12px; */
+    border-radius: 999px;
+    text-decoration: none;
+    /* box-shadow: 0 1px 2px rgba(16, 24, 40, .06); */
+}
+
+.start-promote svg{ width:21px; height:21px; }
+.release-table td.promo{ white-space:nowrap; }
+
+</style>
+
+<?php
+  // ===== Server data (replace with real values from your controller) =====
+  $top = [
+    'title'   => $topTrack['title']   ?? 'Latest releases',
+    'artist'  => $topTrack['artist']  ?? 'Let’s promote it on social media!',
+    'cover'   => $topTrack['cover']   ?? ($this->basePath().'https://i.scdn.co/image/ab67616d00001e02dc0f6990c21ad5c5d34a2f29'),
+    'headline'=> $topTrack['headline']?? 'Your new favorite track is taking over the charts!',
+    'note'    => $topTrack['note']    ?? 'Get detailed insights on its performance.',
+    'link'    => $topTrack['link']    ?? $this->url('analytics', ['action'=>'index']),
+  ];
+?>
+
+<div class="pb-insights-wrap" role="region" aria-label="Highlights">
+  <div class="pb-insights-grid">
+
+    <!-- Left: main highlight card -->
+    <div class="pb-card">
+      <div class="pb-card-inner">
+       
+
+        <div class="pb-cover"><img src="<?php echo $this->escapeHtmlAttr($top['cover']);?>" alt="Cover"></div>
+
+        <div class="pb-meta">
+          
+          <div class="pb-headline">
+            <?php echo $this->escapeHtml($top['title']);?> — <?php echo $this->escapeHtml($top['artist']);?>
+          </div>
+          <div class="pb-sub"><?php echo $this->escapeHtml($top['headline']);?></div>
+          <a class="pb-cta" href="<?php echo $this->escapeHtmlAttr($top['link']);?>">
+            <span><?php echo $this->escapeHtml($top['note']);?></span>
+            <svg viewBox="0 0 24 24"><path d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+          </a>
+          
+        </div>
+         
+      </div>
+    </div>
+
+    <!-- Right: resource/learn card -->
+    <div class="pb-card pb-card--ghost">
+      <div class="pb-resource">
+        <div class="pb-row">
+          <!-- book icon -->
+          <svg viewBox="0 0 24 24"><path d="M21 5c-1.1-.3-2.3-.5-3.5-.5-2 0-4.1.4-5.5 1.5-1.4-1.1-3.5-1.5-5.5-1.5S2.5 4.9 1 6v14.6c0 .3.3.5.5.5l.2-.1C3.1 20.5 5.1 20 6.5 20c2 0 4.1.4 5.5 1.5 1.3-.9 3.8-1.5 5.5-1.5 1.7 0 3.3.3 4.7 1.1.1.1.2.1.3.1.3 0 .5-.3.5-.5V6c-.6-.5-1.3-.8-2-1zM21 18.5c-1.1-.3-2.3-.5-3.5-.5-1.7 0-4.2.6-5.5 1.5V8c1.3-.9 3.8-1.5 5.5-1.5 1.2 0 2.4.2 3.5.5V18.5z"/></svg>
+          <div class="pb-resource-title">Resources</div>
+        </div>
+        <div class="pb-resource-sub">
+          Breakout Track — identify when a track is going viral.
+        </div>
+        <a class="pb-cta" href="https://www.primebackstage.in/faq/category/25">
+          Read more
+          <svg viewBox="0 0 24 24"><path d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>
+<!-- ===== /Insights banner ===== -->
+
+    
+    <!-- ===== FRESH RELEASES TABLE ===== -->
+    <div class="release-table-wrap">
+      
+ <div class="table-toolbar">
+        <div class="search">
+          <input id="releaseSearch" type="search" placeholder="Search title, artist, UPC…" autocomplete="off">
+          <button id="clearSearch" title="Clear">×</button>
+        </div>
+      </div>
+      <table id="fresh-release-table" class="release-table">
+        <thead>
+          <tr>
+            <th>Track</th>
+            <th></th>
+            <th></th>
+            <th>Date</th>
+            <th>UPC</th>
+            
+            <th>Popularity</th>
+            <th>Territories</th>
+            <th>Explicit</th>
+            <th>Track URL</th>
+            <th></th>
+            <th style="width:70px;text-align:right;"></th><!-- NEW -->
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="11" style="text-align:center;padding:28px;">Loading…</td></tr>
+        </tbody>
+      </table>
+
+      <div class="pagination">
+        <button id="prevPage">« Prev</button>
+        <span id="pageInfo"></span>
+        <button id="nextPage">Next »</button>
+      </div>
+
+      <!-- small note area -->
+      
+    </div>
+    <!-- ==== /FRESH RELEASES ==== -->
+
+    <!-- EMPTY STATE -->
+    <div class="plaB-empty" style="display:none">
+      <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.6.2/dist/dotlottie-wc.js" type="module"></script>
+      <dotlottie-wc
+        src="https://lottie.host/3d7c4d75-1a05-4934-8ccb-8427acd4b50a/0we5XTd6ZY.lottie"
+        style="width:300px;"
+        speed="1"
+        autoplay
+        loop>
+      </dotlottie-wc>
+      <h3>No playlisting activity found over the period</h3>
+      <p>Meanwhile, you can read more about how Prime can help you get playlisted.</p>
+    </div>
+
+    <div class="plaB-top"><h1>Top Featured</h1></div>
+    <h4>No matter your sound, our editors want to hear it!</h4>
+    <div></div><br>
+
+    <!-- PLAYLIST GRID -->
+    <div class="playlist-grid" id="pda-playlist-grid">
+      <!-- Artist -->
+      <div class="playlist-card" data-type="artist" data-spotify="2VTak5NFLoCWBAuzCshRuP" data-title="Zohaib Ashrafi" data-followers="38,912+ Monthly listeners">
+        <img src="https://primedigitalarena.com/pda/images/655e0fa544c67c1ee5ce01a4-6749b051ba6c6feefdca0ee1_playlists-feeling-it.jpg" alt="Zohaib Ashrafi">
+        <h4>Zohaib Ashrafi</h4>
+        <p>38,912+ Monthly listeners</p>
+      </div>
+      
+      <div class="playlist-card" data-type="artist" data-spotify="570lvTOPdM8s7hfWv1MBUQ" data-title="Azim Naza" data-followers="40,052+ Monthly listeners">
+        <img src="https://primedigitalarena.com/pda/images/655e0fa544c67c1ee5ce01a4-6749ad8fdf205cf241f7af17_playlists-patterned.jpg" alt="Azim Naza">
+        <h4>Azim Naza</h4>
+        <p>40,052+ Monthly listeners</p>
+      </div>
+      
+      <div class="playlist-card" data-type="artist" data-spotify="5bMAsUwWqSpHKXq9L7wPCo" data-title="Ahemad Razvi" data-followers="51,484+ Monthly listeners">
+        <img src="https://primedigitalarena.com/pda/images/655e0fa544c67c1ee5ce01a4-6749ad336df08b57c16a1ee9_playlists-headphones.jpg" alt="Ahemad Razvi">
+        <h4>Ahemad Razvi</h4>
+        <p>51,484+ Monthly listeners</p>
+      </div>
+
+      
+
+      
+
+      <div class="playlist-card" data-type="playlist" data-spotify="" data-title="Fim do Expediente" data-followers="33,854 Followers">
+        <img src="https://charts-images.scdn.co/assets/locale_en/regional/daily/region_global_default.jpg" alt="Fim do Expediente">
+        <h4>Top Tracks</h4>
+        <p>Coming soon</p>
+      </div>
+
+      <div class="playlist-card" data-type="playlist" data-spotify="" data-title="Fim do Expediente" data-followers="33,854 Followers">
+        <img src="https://a10.gaanacdn.com/gn_pl_img/playlists/10q3ZR1352/0q3ZZykA35/size_m_1515072380.jpg" alt="Fim do Expediente">
+        <h4>Top Sufi</h4>
+        <p>Coming soon</p>
+      </div>
+    </div>
+
+    <!-- MODAL (Spotify player) -->
+    <div id="playlistModal" class="modal" aria-hidden="true">
+      <div class="modal-content">
+        <button class="close" aria-label="Close">&times;</button>
+        <div class="playlist-info">
+          <h2 id="pl-title">Title</h2>
+          <p id="pl-followers"></p>
+        </div>
+        <iframe id="spotify-embed" width="100%" height="420" frameborder="0"
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+        <div class="submit-block">
+          <a class="submit-btn" href="https://www.primebackstage.in/faq/article/109" target="_blank" rel="noopener">Submit Your Track</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLICK FEEDBACK LOADER -->
+    <div class="plaB-toggle-loader" id="plaBToggleLoader" hidden>
+      <div class="plaB-spinner" aria-hidden="true"></div>
+      <div class="plaB-spin-text">Processing…</div>
+    </div>
+
+  </div>
+</div>
+
+<style>
+  /* ⋮ actions menu */
+.kebab{border:0;background:#fff;border:1px solid var(--b-border);border-radius:8px;padding:6px 8px;cursor:pointer;font-weight:700}
+.kebab:hover{background:#f3f4f6}
+.row-menu{position:relative;display:inline-block}
+.row-menu .menu{position:absolute;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--b-border);border-radius:10px;box-shadow:0 12px 32px rgba(16,24,40,.12);min-width:160px;padding:6px 0;display:none;z-index:20}
+.row-menu.open .menu{display:block}
+.row-menu .menu a{display:flex;align-items:center;gap:8px;padding:9px 12px;color:#111827;font-weight:600;text-decoration:none}
+.row-menu .menu a:hover{background:#f6f7fb}
+.row-menu .menu a svg{width:16px;height:16px}
+  /* Cover column: always perfect square, no squeeze */
+.release-table td:first-child a{
+  display:inline-block;
+  width: 72px;
+  aspect-ratio: 1 / 1;
+  border-radius: 8px;
+  overflow:hidden;
+  background:#f3f4f6;
+  vertical-align: middle;
+}
+  .badge--ok small {
+  font-weight:600;
+  color:#334155;
+  opacity:.8;
+  margin-left:2px;
+}
+.release-table [data-col="streams"] {
+  font-weight:700;
+  color:#0f172a;
+}
+.release-table [data-col="streams"] div {
+  font-weight:500;
+  font-size:11px;
+  color:#64748b;
+}
+
+.release-table td:first-child img{
+  display:block;
+  width:100% !important;
+  height:100% !important;
+  object-fit: cover;         /* fill square, crop safely */
+  border-radius: 8px;
+}
+.release-table td{ vertical-align: middle; } /* rows align nicely */
+
+/* toolbar search */
+.table-toolbar {
+    display: flex
+;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid var(--b-border);
+    background: #f9fafb;
+}
+.table-toolbar .search{position:relative;width:min(360px,100%)}
+.table-toolbar .search input {
+    width: 100%;
+    padding: 9px 34px 9px 36px;
+    border: 1px solid var(--b-border);
+    border-radius: 8px;
+    font-size: 13px;
+    outline: 0;
+    background: #F4F6FF;
+}
+.table-toolbar .search input:focus{box-shadow:0 0 0 3px var(--b-outline)}
+.table-toolbar .search::before{
+  content:"🔎"; position:absolute; left:10px; top:50%; transform:translateY(-50%); opacity:.55
+}
+#clearSearch{
+  position:absolute; right:6px; top:50%; transform:translateY(-50%);
+  border:0; background:transparent; font-size:18px; line-height:1; cursor:pointer; display:none
+}
+
+/* tokens */
+:root{--b-text:#1c2430;--b-muted:#6b7280;--b-border:#e7eaf2;--b-chip:#ffffff;--b-bg:#fff;--b-shadow:0 8px 24px rgba(16,24,40,.06);--b-radius:12px;--b-blue:#2563eb;--b-pill:#f3f4f6;--b-pill-active:#eef2ff;--b-outline:#d9dfff;}
+.plaB-wrapper{max-width:1300px;margin:28px auto;color:var(--b-text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;}
+.plaB-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.plaB-top h1{margin:0;font-weight:800;font-size:28px;letter-spacing:-.02em;}
+.plaB-platforms{display:flex;gap:10px;align-items:center;margin:14px 0 18px;}
+.plaB-platforms--bar{background:#F4F6FF;border-radius:9999px;padding:5px 10px;gap:5px;box-shadow:inset 0 -1px 0 rgba(16,24,40,.02);width:var(--pla-bar-width, max-content);max-width:100%;}
+.plaB-platforms input{display:none;}
+/* pill: no squeeze + icon fixed size */
+.plaB-platforms .pill{
+  display:inline-flex;gap:8px;align-items:center;padding:5px 12px;border-radius:9999px;background:transparent;border:0;font-weight:800;font-size:12px;color:#5B6475;letter-spacing:.02em;white-space:nowrap;
+}
+.plaB-platforms .pill svg{width:18px;height:18px;display:block;flex-shrink:0;}
+.plaB-platforms input:checked+label.pill{background:#fff;box-shadow:0 1px 2px rgba(16,24,40,.06);}
+.plaB-empty{border-radius:16px;background:#d7e2f914;height:450px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;margin:70px 0;}
+.plaB-empty h3{margin:0 0 6px;font-size:20px;font-weight:800;}
+.plaB-empty p{margin:0;color:var(--b-muted);}
+.plaB-cards{display:grid;gap:20px;grid-template-columns:repeat(3,1fr);margin-bottom:12px;}
+.card{background:var(--b-bg);border:1px solid var(--b-border);border-radius:14px;box-shadow:var(--b-shadow);overflow:hidden;}
+.card img{display:block;width:100%;height:140px;object-fit:cover;}
+.card .meta{padding:10px 14px 4px;color:#4b5563;font-weight:600;font-size:13px;}
+.card .link{display:block;padding:0 14px 12px;font-weight:700;font-size:13px;color:#2563eb;text-decoration:none;}
+.card .link:hover{text-decoration:underline;}
+.card .chips{display:flex;gap:8px;flex-wrap:wrap;padding:0 14px 14px;}
+.card .chip{background:#fff;border:1px solid var(--b-border);border-radius:999px;padding:6px 10px;font-size:12px;font-weight:700;color:#475467;box-shadow:var(--b-shadow);}
+.playlist-grid{--tile:250px;--pad:5px;--gap:0px;display:grid;grid-template-columns:repeat(auto-fill,minmax(calc(var(--tile) + var(--pad)*2),1fr));gap:var(--gap);margin-bottom:40px;}
+.playlist-card{border-radius:16px;padding:var(--pad);text-align:center;color:#343434;cursor:pointer;transition:transform .15s ease,box-shadow .15s ease;}
+.playlist-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(16,24,40,.12);}
+.cover-wrap{position:relative;width:var(--tile);height:var(--tile);margin:0 auto 10px;}
+.cover-wrap img{width:100%;height:100%;object-fit:cover;border-radius:14px;display:block;}
+.cover-wrap .overlay{position:absolute;inset:0;border-radius:14px;background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s ease;}
+.cover-wrap:hover .overlay{opacity:1;}
+.play-icon{font-size:46px;background:rgba(0,0,0,.55);border-radius:50%;padding:16px 20px;color:#fff;}
+.playlist-card h4{margin:6px 0 4px;font-weight:800;font-size:15px;}
+.playlist-card p{margin:0;font-size:12px;color:#000;}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9999;align-items:center;justify-content:center;}
+.modal-content{position:relative;width:min(860px,92vw);background:#111418;color:#fff;border-radius:18px;padding:22px;}
+.modal-content iframe{border-radius:12px;margin-top:12px;}
+.close{position:absolute;right:16px;top:10px;font-size:32px;color:#fff;background:transparent;border:0;cursor:pointer;}
+.submit-block{margin-top:18px;}
+.submit-btn{display:inline-block;background:#fff;color:#000;border-radius:999px;padding:12px 22px;font-weight:800;text-decoration:none;}
+.submit-btn:hover{background:#1ED760;}
+@media (max-width:1024px){.plaB-cards{grid-template-columns:repeat(2,1fr);} }
+@media (max-width:640px){.plaB-top{flex-direction:column;gap:10px;align-items:flex-start;}.plaB-cards{grid-template-columns:1fr;}.playlist-grid{--tile:240px;}}
+
+.release-table-wrap{background:#fff;border:1px solid var(--b-border);border-radius:14px;box-shadow:var(--b-shadow);overflow:hidden;margin:24px 0 40px;transition:none;}
+.release-table{width:100%;border-collapse:collapse;font-size:13px;}
+.release-table th,.release-table td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--b-border);}
+.release-table th{font-weight:700;color:#334155;}
+.release-table tr:hover{background:#f9fafb;}
+.release-table img{width:80px;height:80px;object-fit:cover;border-radius:6px;}
+.release-table a{color:#111827;text-decoration:none;font-weight:700;}
+.release-table a:hover{text-decoration:underline;}
+.pagination{display:flex;justify-content:center;align-items:center;gap:12px;padding:12px;font-weight:600;color:#334155;}
+.pagination button{background:#fff;border:1px solid var(--b-border);border-radius:6px;padding:6px 14px;cursor:pointer;}
+.pagination button:hover{background:#f3f4f6;}
+.pagination button:disabled{opacity:.4;cursor:not-allowed;}
+
+/* skeletons + badges */
+.skel{position:relative;display:inline-block;border-radius:9999px;background:#eef2f7;min-width:64px;height:20px}
+.skel.sq{min-width:80px;height:16px;border-radius:6px}
+.skel::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.7),rgba(255,255,255,0));animation:skel 1.2s infinite;mix-blend-mode:overlay}
+@keyframes skel{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.badge{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:3px 10px;font-weight:700}
+.badge--ok{background:#70bb87;border-color:#5f9471}
+.badge--warn{background:#fff1f2;border-color:#ffe4e6}
+
+/* Toggle click feedback loader */
+/* REPLACE your .plaB-toggle-loader block with this */
+.plaB-toggle-loader{
+  position: absolute;  /* was: fixed */
+  inset: 0;            /* cover only the wrapper area */
+  display: grid; 
+  place-items: center;
+  background: rgba(17,24,39,.22);
+  backdrop-filter: blur(1px);
+  z-index: 50;         /* enough to float over cards/table */
+  pointer-events: auto;/* block clicks underneath while loading */
+}
+.plaB-toggle-loader[hidden]{ display:none; }
+
+.plaB-spinner{
+  width:42px;height:42px;border-radius:999px;
+  border:4px solid rgba(255,255,255,.35);border-top-color:#6366f1;
+  animation:spin .8s linear infinite;margin:0 auto 10px;
+}
+.plaB-spin-text{
+  color:#fff;font-weight:700;letter-spacing:.02em;
+  text-shadow:0 1px 2px rgba(0,0,0,.35);font-size:14px;text-align:center;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* ---------- iPad Lottie sizing fix ---------- */
+.plaB-empty dotlottie-wc {
+  display:block;
+  width: clamp(280px, 45vw, 560px);
+  height:auto !important;
+  aspect-ratio:auto !important;
+  margin:0 auto;
+}
+
+/* target iPad (touch Safari) */
+@supports (-webkit-touch-callout: none) and (not (hover: hover)) {
+  .plaB-empty dotlottie-wc {
+    width: clamp(300px, 46vw, 600px) !important;
+    height:auto !important;
+  }
+}
+
+</style>
+
+<script>
+/* Tiny hooks (future API wiring) */
+(function(){
+  const state={range:'7d', platform:'all'};
+  document.querySelectorAll('[name="plaB-range"]').forEach(el=>{
+    el.addEventListener('change',e=>{state.range=e.target.value;});
+  });
+  document.querySelectorAll('[name="plaB-platform"]').forEach(el=>{
+    el.addEventListener('change',e=>{state.platform=e.target.value;});
+  });
+})();
+</script>
+
+<script>
+/* ===== PDA Grid: auto-wrap + modal player ===== */
+(function(){
+  const modal = document.getElementById('playlistModal');
+  const iframe = document.getElementById('spotify-embed');
+  const titleEl = document.getElementById('pl-title');
+  const followersEl = document.getElementById('pl-followers');
+
+  // ensure cover overlay
+  document.querySelectorAll('.playlist-card').forEach(card => {
+    if (!card.querySelector('.cover-wrap')) {
+      const img = card.querySelector('img');
+      if (img) {
+        const wrap = document.createElement('div');
+        wrap.className = 'cover-wrap';
+        const overlay = document.createElement('div');
+        overlay.className = 'overlay';
+        const ico = document.createElement('span');
+        ico.className = 'play-icon';
+        ico.textContent = '▶';
+        overlay.appendChild(ico);
+        img.replaceWith(wrap);
+        wrap.appendChild(img);
+        wrap.appendChild(overlay);
+      }
+    }
+  });
+
+  // open spotify embed
+  document.querySelectorAll('.playlist-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const id   = (card.dataset.spotify || '').trim();
+      const type = (card.dataset.type || 'playlist').toLowerCase();
+      const name = card.dataset.title || '';
+      const meta = card.dataset.followers || '';
+      if (!id) return;
+
+      const base = type === 'artist'
+        ? `https://open.spotify.com/embed/artist/${id}`
+        : `https://open.spotify.com/embed/playlist/${id}`;
+
+      iframe.src = `${base}?utm_source=generator&theme=0`;
+      titleEl.textContent = name;
+      followersEl.textContent = meta;
+      modal.style.display = 'flex';
+      modal.setAttribute('aria-hidden','false');
+    });
+  });
+
+  // close
+  const close = document.querySelector('#playlistModal .close');
+  if (close) close.addEventListener('click', () => closeModal());
+  window.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+  function closeModal(){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); iframe.src=''; }
+})();
+</script>
+
+<script>
+/* ===== Global data-state used by platform toggles ===== */
+window.__plaB_hasAnyReleases = null; // unknown until base fetch resolves
+
+/* ===== Toolbar show/hide helper ===== */
+window.plaB_setToolbarVisible = function(visible){
+  const tb = document.getElementById('tableToolbar');
+  if (tb) tb.style.display = visible ? '' : 'none';
+};
+</script>
+
+<script>
+/* ===== Fresh Releases: async stats (BASE FETCH sets hasAnyReleases) + Actions (⋮) + toolbar auto-hide ===== */
+(function(){
+  const tableWrap = document.querySelector('.release-table-wrap');
+  const tbody     = document.querySelector('#fresh-release-table tbody');
+  const prevBtn   = document.getElementById('prevPage');
+  const nextBtn   = document.getElementById('nextPage');
+  const pageInfo  = document.getElementById('pageInfo');
+  const emptyBox  = document.querySelector('.plaB-empty');
+  const noteBox   = document.getElementById('streams-note');
+  const table     = document.getElementById('fresh-release-table');
+const insightsWrap = document.querySelector('.pb-insights-wrap');
+  function esc(s){
+    return String(s||'').replace(/[&<>"']/g,m=>({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[m]));
+  }
+
+  function showEmpty(){
+    if (tableWrap) tableWrap.style.display='none';
+    if (emptyBox)  emptyBox.style.display='flex';
+    if (insightsWrap) insightsWrap.style.display = 'none';
+    window.plaB_setToolbarVisible(false);
+  }
+  function showTable(){
+    if (tableWrap) tableWrap.style.display='';
+    if (emptyBox)  emptyBox.style.display='none';
+     if (insightsWrap) insightsWrap.style.display = '';  
+    window.plaB_setToolbarVisible(true);
+  }
+
+  let page = 1, per = 10;
+
+  function skeletonCell(cls=''){
+    return `<span class="skel ${cls}"></span>`;
+  }
+
+  function actionsCell(posterUrl){
+    return `
+      <div class="row-menu">
+        <button class="kebab" type="button" aria-haspopup="true" aria-expanded="false">⋮</button>
+        <div class="menu">
+          <a href="#" data-action="promotion" data-poster="${posterUrl}">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h14l4-3v20l-4-3H3zM5 9h8v2H5V9zm0 4h8v2H5v-2z" fill="currentColor"/></svg>
+            Promotion
+          </a>
+        </div>
+      </div>
+    `;
+  }
+
+  // format helper for numbers -> 12,345,678
+  function fmtNum(n){
+    n = parseInt(n,10);
+    if (isNaN(n)) return '';
+    return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
+  // Hydrate one row with async stats from /analytics/release-stats?id=...
+  function hydrateRow(tr, releaseId, providedUrl){
+    const statsUrl = providedUrl || `/analytics/release-stats?id=${encodeURIComponent(releaseId)}`;
+
+    fetch(statsUrl, {credentials:'same-origin', headers:{'Accept':'application/json'}})
+      .then(r=>r.json())
+      .then(j=>{
+        if(!j || j.ok!==true) return;
+
+        // ---- Spotify Streams + Monthly listeners ----
+        const streamsCell = tr.querySelector('[data-col="streams"]');
+        if (streamsCell){
+          const bt = j.best_track || {};
+          const streams   = bt.stream_count || bt.streams || null;
+          const listeners = bt.monthly_listeners || bt.listeners || null;
+
+          if (streams || listeners){
+            const topLine = streams ? fmtNum(streams) : '—';
+            const subLine = listeners ? (fmtNum(listeners) + ' monthly') : '';
+            streamsCell.innerHTML = `
+              <div style="font-weight:700;color:#0f172a;line-height:1.2">${topLine}</div>
+              <div style="font-size:11px;color:#64748b;font-weight:500;line-height:1.2">${subLine}</div>
+            `;
+          } else {
+            streamsCell.innerHTML = `<span class="badge">-</span>`;
+          }
+        }
+
+        // ---- Popularity badge ----
+        const popCell = tr.querySelector('[data-col="pop"]');
+        if (popCell){
+          popCell.innerHTML = j.popularity_label
+            ? `<span class="badge badge--ok">${esc(j.popularity_label)}</span>`
+            : '—';
+        }
+
+        // ---- Territories badge ----
+        const mrkCell = tr.querySelector('[data-col="mrk"]');
+        if (mrkCell){
+          mrkCell.innerHTML = j.markets_label
+            ? `<span class="badge">${esc(j.markets_label)}</span>`
+            : '—';
+        }
+
+        // ---- Explicit ----
+        const expCell = tr.querySelector('[data-col="exp"]');
+        if (expCell){
+          expCell.innerHTML = j.explicit_any
+            ? `<span class="badge badge--warn">E</span>`
+            : `<span class="">No</span>`;
+        }
+
+        // ---- Track URL / Stream Now ----
+        const bestCell = tr.querySelector('[data-col="best"]');
+        if (bestCell){
+          const bt = j.best_track || {};
+          if (bt.spotify_id){
+            bestCell.innerHTML =
+              `<a href="https://open.spotify.com/track/${bt.spotify_id}" target="_blank" rel="noopener">🌐 Stream Now</a>`;
+          } else if (bt.name){
+            bestCell.innerHTML =
+              `${esc(bt.name)} <small style="color:#64748b">(${bt.popularity||0})</small>`;
+          } else {
+            bestCell.textContent = 'Not Available';
+          }
+        }
+
+        // ---- poster_url -> ⋮ menu ----
+        if (j.poster_url){
+          const act = tr.querySelector('.row-menu .menu a[data-action="promotion"]');
+          if (act) act.setAttribute('data-poster', j.poster_url);
+        }
+
+        // ---- note under table (optional global hint) ----
+        if (noteBox && j.streams_note){
+          noteBox.textContent   = j.streams_note;
+          noteBox.style.display = 'block';
+        }
+      })
+      .catch(()=>{ /* silent fail keeps skeleton or blank */ });
+  }
+
+  function renderRows(rows){
+    return rows.map(r=>{
+      const poster = (r.poster_url && String(r.poster_url).trim()) || `/analytics/poster/${r.id}`;
+      const pill   = plaB_newPillHTML(r);
+
+      return `
+        <tr data-id="${r.id}">
+          <td><a href="${r.view_url}" target="_blank"><img src="${r.cover_url}" alt=""></a></td>
+          <td>
+            <a href="${r.view_url}" target="_blank">${esc(r.title)}</a> ${pill}
+            <br>${esc(r.artist)}
+          </td>
+          <td></td>
+          <td>${r.date || '-'}</td>
+          <td>${r.upc || '-'}</td>
+
+          
+
+          <td data-col="pop">${skeletonCell()}</td>
+          <td data-col="mrk">${skeletonCell()}</td>
+          <td data-col="exp">${skeletonCell('sq')}</td>
+          <td data-col="best">${skeletonCell('sq')}</td>
+<td class="promo">
+          <a class="start-promote" href="${poster}" target="_blank" rel="noopener">
+            <!-- sparkles/wand icon -->
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="currentColor" d="M9 3l1.2 2.4L12.6 7 10.2 7.6 9 10 7.8 7.6 5.4 7 7.8 5.4 9 3zm8 1l.9 1.8L20 7l-2.1.4L17 9l-.9-1.6L14 7l1.9-1.2L17 4zm-9.4 9.6 7.8-7.8 2.8 2.8-7.8 7.8c-.4.4-1 .4-1.4 0l-1.4-1.4c-.4-.4-.4-1 0-1.4z"/>
+            </svg>
+            Start promoting
+          </a>
+        </td>
+          <td class="actions">${actionsCell(poster)}</td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  function fetchPage(p){
+    tbody.innerHTML = `<tr><td colspan="11" style="text-align:center;padding:28px;">Loading…</td></tr>`;
+
+    fetch(`/analytics/latest-attached-releases?page=${p}&per=${per}`, {
+      credentials:'same-origin',
+      headers:{'Accept':'application/json'}
+    })
+    .then(r=>r.json())
+    .then(d=>{
+      if(!d || d.ok!==true) throw new Error('bad');
+
+      const total = Number(d.total||0);
+      const rows  = d.rows||[];
+
+      // set global "has any releases" based on base (unfiltered) fetch
+      window.__plaB_hasAnyReleases = total > 0;
+
+      if (total<=0){
+        showEmpty();
+        pageInfo.textContent='';
+        prevBtn.disabled = nextBtn.disabled = true;
+        if(noteBox) noteBox.style.display='none';
+        return;
+      }
+      showTable();
+
+      if(rows.length===0){
+        tbody.innerHTML = `<tr><td colspan="11" style="text-align:center;padding:30px;">No items on this page.</td></tr>`;
+      } else {
+        tbody.innerHTML = renderRows(rows);
+
+        // hydrate each row async
+        rows.forEach(r=>{
+          const tr = tbody.querySelector(`tr[data-id="${r.id}"]`);
+          hydrateRow(tr, r.id, r.stats_url || null);
+        });
+
+        // note text (if backend already sent one shortcut)
+        if (noteBox){
+          const note = (rows.find(x=>x.streams_note)?.streams_note) || '';
+          noteBox.style.display = note ? 'block' : 'none';
+          if (note) noteBox.textContent = note;
+        }
+      }
+
+      const totalPages = Math.max(1, Math.ceil(total / (d.per || per)));
+      page = d.page || p;
+      pageInfo.textContent = `Page ${page} of ${totalPages}`;
+      prevBtn.disabled = page <= 1;
+      nextBtn.disabled = page >= totalPages;
+    })
+    .catch(err=>{
+      console.error(err);
+      window.__plaB_hasAnyReleases = false;
+      showEmpty();
+      pageInfo.textContent='';
+      prevBtn.disabled = nextBtn.disabled = true;
+      if (noteBox) noteBox.style.display='none';
+    });
+  }
+
+  document.getElementById('prevPage').onclick = ()=>{ if(page>1) fetchPage(page-1); };
+  document.getElementById('nextPage').onclick = ()=>{ fetchPage(page+1); };
+
+  fetchPage(page);
+
+  /* Row actions (⋮) delegation */
+  table.addEventListener('click', (e)=>{
+    const kebab  = e.target.closest('.kebab');
+    const action = e.target.closest('.menu a[data-action]');
+    if (kebab){
+      const rowMenu = kebab.closest('.row-menu');
+      document.querySelectorAll('.row-menu.open').forEach(m=>{
+        if(m!==rowMenu) m.classList.remove('open');
+      });
+      rowMenu.classList.toggle('open');
+      e.stopPropagation();
+      return;
+    }
+    if (action){
+      e.preventDefault();
+      if (action.getAttribute('data-action')==='promotion'){
+        const url = action.getAttribute('data-poster') || '#';
+        if (url && url!=='#') window.open(url, '_blank');
+      }
+      const rm = action.closest('.row-menu');
+      if (rm) rm.classList.remove('open');
+    }
+  });
+
+  // close menus on outside click
+  document.addEventListener('click', ()=>{
+    document.querySelectorAll('.row-menu.open').forEach(m=>m.classList.remove('open'));
+  });
+
+})();
+</script>
+
+
+<script>
+/* ===== Fresh Releases: search + hydrate (DOES NOT change hasAnyReleases) + Actions (⋮) ===== */
+(function(){
+  const tbody     = document.querySelector('#fresh-release-table tbody');
+  const prevBtn   = document.getElementById('prevPage');
+  const nextBtn   = document.getElementById('nextPage');
+  const pageInfo  = document.getElementById('pageInfo');
+  const tableWrap = document.querySelector('.release-table-wrap');
+
+  const searchInput = document.getElementById('releaseSearch');
+  const clearBtn    = document.getElementById('clearSearch');
+
+  function esc(s){
+    return String(s||'').replace(/[&<>"']/g,m=>({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[m]));
+  }
+
+  function skeletonCell(cls=''){
+    return `<span class="skel ${cls}"></span>`;
+  }
+
+  function actionsCell(posterUrl){
+    return `
+      <div class="row-menu">
+        <button class="kebab" type="button" aria-haspopup="true" aria-expanded="false">⋮</button>
+        <div class="menu">
+          <a href="#" data-action="promotion" data-poster="${posterUrl}">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h14l4-3v20l-4-3H3zM5 9h8v2H5V9zm0 4h8v2H5v-2z" fill="currentColor"/></svg>
+            Promotion
+          </a>
+        </div>
+      </div>
+    `;
+  }
+
+  // same helper as above
+  function fmtNum(n){
+    n = parseInt(n,10);
+    if (isNaN(n)) return '';
+    return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
+  let page = 1, per = 10, query = '';
+
+  function hydrateRow(tr, releaseId, providedUrl){
+    const statsUrl = providedUrl || `/analytics/release-stats?id=${encodeURIComponent(releaseId)}`;
+
+    fetch(statsUrl, {credentials:'same-origin', headers:{'Accept':'application/json'}})
+      .then(r=>r.json())
+      .then(j=>{
+        if(!j || j.ok!==true) return;
+
+        // Spotify Streams col
+        const streamsCell = tr.querySelector('[data-col="streams"]');
+        if (streamsCell){
+          const bt = j.best_track || {};
+          const streams   = bt.stream_count || bt.streams || null;
+          const listeners = bt.monthly_listeners || bt.listeners || null;
+
+          if (streams || listeners){
+            const topLine = streams ? fmtNum(streams) : '—';
+            const subLine = listeners ? (fmtNum(listeners) + ' monthly') : '';
+            streamsCell.innerHTML = `
+              <div style="font-weight:700;color:#0f172a;line-height:1.2">${topLine}</div>
+              <div style="font-size:11px;color:#64748b;font-weight:500;line-height:1.2">${subLine}</div>
+            `;
+          } else {
+            streamsCell.innerHTML = `<span class="badge">-</span>`;
+          }
+        }
+
+        // Popularity
+        const popCell = tr.querySelector('[data-col="pop"]');
+        if (popCell){
+          popCell.innerHTML = j.popularity_label
+            ? `<span class="badge badge--ok">${esc(j.popularity_label)}</span>`
+            : '—';
+        }
+
+        // Territories
+        const mrkCell = tr.querySelector('[data-col="mrk"]');
+        if (mrkCell){
+          mrkCell.innerHTML = j.markets_label
+            ? `<span class="badge">${esc(j.markets_label)}</span>`
+            : '—';
+        }
+
+        // Explicit
+        const expCell = tr.querySelector('[data-col="exp"]');
+        if (expCell){
+          expCell.innerHTML = j.explicit_any
+            ? `<span class="badge badge--warn">E</span>`
+            : `<span>NO</span>`;
+        }
+
+        // Track URL / Stream Now
+        const bestCell = tr.querySelector('[data-col="best"]');
+        if (bestCell){
+          const bt = j.best_track || {};
+          if (bt.spotify_id){
+            bestCell.innerHTML =
+              `<a href="https://open.spotify.com/track/${bt.spotify_id}" target="_blank" rel="noopener">🌐 Stream Now</a>`;
+          } else if (bt.name){
+            bestCell.innerHTML =
+              `${esc(bt.name)} <small style="color:#64748b">(${bt.popularity||0})</small>`;
+          } else {
+            bestCell.textContent = 'Not Available';
+          }
+        }
+
+        // poster_url -> menu
+        if (j.poster_url){
+          const act = tr.querySelector('.row-menu .menu a[data-action="promotion"]');
+          if (act) act.setAttribute('data-poster', j.poster_url);
+        }
+      })
+      .catch(()=>{});
+  }
+
+  function renderRows(rows){
+    return rows.map(r=>{
+      const poster = (r.poster_url && String(r.poster_url).trim()) || `/analytics/poster/${r.id}`;
+      const pill   = plaB_newPillHTML(r);
+
+      return `
+        <tr data-id="${r.id}">
+          <td><a href="${r.view_url}" target="_blank"><img src="${r.cover_url}" alt=""></a></td>
+          <td>
+            <a href="${r.view_url}" target="_blank">${esc(r.title)}</a> ${pill}
+            <br>${esc(r.artist)}
+          </td>
+          <td></td>
+          <td>${r.date || '-'}</td>
+          <td>${r.upc || '-'}</td>
+
+          
+
+          <td data-col="pop">${skeletonCell()}</td>
+          <td data-col="mrk">${skeletonCell()}</td>
+          <td data-col="exp">${skeletonCell('sq')}</td>
+          <td data-col="best">${skeletonCell('sq')}</td>
+<td class="promo">
+          <a class="start-promote" href="${poster}" target="_blank" rel="noopener">
+            <!-- sparkles/wand icon -->
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="currentColor" d="M9 3l1.2 2.4L12.6 7 10.2 7.6 9 10 7.8 7.6 5.4 7 7.8 5.4 9 3zm8 1l.9 1.8L20 7l-2.1.4L17 9l-.9-1.6L14 7l1.9-1.2L17 4zm-9.4 9.6 7.8-7.8 2.8 2.8-7.8 7.8c-.4.4-1 .4-1.4 0l-1.4-1.4c-.4-.4-.4-1 0-1.4z"/>
+            </svg>
+            Start promoting
+          </a>
+        </td>
+          <td class="actions">${actionsCell(poster)}</td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  function fetchPage(p){
+    tbody.innerHTML = `<tr><td colspan="11" style="text-align:center;padding:28px;">Loading…</td></tr>`;
+    const url = `/analytics/latest-attached-releases?page=${p}&per=${per}&q=${encodeURIComponent(query)}`;
+
+    fetch(url, {credentials:'same-origin', headers:{'Accept':'application/json'}})
+      .then(r=>r.json())
+      .then(d=>{
+        if(!d || d.ok!==true) throw new Error('bad');
+
+        const total = Number(d.total||0);
+        const rows  = d.rows||[];
+
+        // search mode: don't touch window.__plaB_hasAnyReleases
+
+        if(total<=0){
+          // Search empty: keep table visible with message; toolbar visible
+          if (tableWrap) tableWrap.style.display='';
+          window.plaB_setToolbarVisible(true);
+
+          tbody.innerHTML =
+            `<tr><td colspan="11" style="text-align:center;padding:30px;">No items found.</td></tr>`;
+          pageInfo.textContent = '';
+          prevBtn.disabled = nextBtn.disabled = true;
+          return;
+        }
+
+        if(rows.length===0){
+          tbody.innerHTML =
+            `<tr><td colspan="11" style="text-align:center;padding:30px;">No items on this page.</td></tr>`;
+        } else {
+          tbody.innerHTML = renderRows(rows);
+
+          rows.forEach(r=>{
+            const tr = tbody.querySelector(`tr[data-id="${r.id}"]`);
+            hydrateRow(tr, r.id, r.stats_url || null);
+          });
+        }
+
+        const totalPages = Math.max(1, Math.ceil(total / (d.per || per)));
+        page = d.page || p;
+        pageInfo.textContent = `Page ${page} of ${totalPages}`;
+        prevBtn.disabled = page <= 1;
+        nextBtn.disabled = page >= totalPages;
+      })
+      .catch(()=>{
+        tbody.innerHTML =
+          `<tr><td colspan="11" style="text-align:center;padding:30px;">Failed to load.</td></tr>`;
+        pageInfo.textContent='';
+        prevBtn.disabled = nextBtn.disabled = true;
+      });
+  }
+
+  document.getElementById('prevPage').onclick = ()=>{ if(page>1) fetchPage(page-1); };
+  document.getElementById('nextPage').onclick = ()=>{ fetchPage(page+1); };
+
+  // search (debounced)
+  let t;
+  searchInput.addEventListener('input', ()=>{
+    query = searchInput.value.trim();
+    clearBtn.style.display = query ? 'block' : 'none';
+    clearTimeout(t);
+    t = setTimeout(()=> fetchPage(1), 350);
+  });
+
+  clearBtn.addEventListener('click', ()=>{
+    searchInput.value='';
+    query='';
+    clearBtn.style.display='none';
+    fetchPage(1);
+  });
+
+  // NOTE: base fetch IIFE already runs on load in the other block.
+})();
+</script>
+
+<script>
+/* ===== Platform toggle UX: ALL⇄SPOTIFY reuse, others show empty.
+       FIX: respect window.__plaB_hasAnyReleases + hide toolbar on empty ===== */
+(function(){
+  const loader   = document.getElementById('plaBToggleLoader');
+  const tableBox = document.querySelector('.release-table-wrap');
+  const emptyBox = document.querySelector('.plaB-empty');
+
+  function showTable(){ if (tableBox) tableBox.style.display='';    if (emptyBox) emptyBox.style.display='none'; window.plaB_setToolbarVisible(true); }
+  function showEmpty(){ if (tableBox) tableBox.style.display='none'; if (emptyBox) emptyBox.style.display='flex'; window.plaB_setToolbarVisible(false); }
+
+  function withClickLoader(run){
+    if (!loader){ run(); return; }
+    loader.hidden = false;
+    const wait = 600 + Math.floor(Math.random()*300); // 600–900ms feel
+    setTimeout(()=>{ try{ run(); } finally { loader.hidden = true; } }, wait);
+  }
+
+  document.querySelectorAll('input[name="plaB-platform"]').forEach(r=>{
+    r.addEventListener('change',(e)=>{
+      const val = e.target.value;
+      withClickLoader(()=>{
+        if (val === 'all' || val === 'spotify'){
+          // Only show table if base data exists
+          if (window.__plaB_hasAnyReleases) { showTable(); } else { showEmpty(); }
+        } else {
+          // Apple/Deezer/YouTube => always empty block
+          showEmpty();
+        }
+      });
+    });
+  });
+
+  // Initial visibility is decided by base fetch.
+})();
+</script>
+<script>
+/* Decide pill HTML based on API flag or date (≤14 days) */
+function plaB_newPillHTML(row){
+  // If backend sends a boolean/flag
+  if (row.is_new === true || row.latest === true || row.is_latest === true) {
+    return '<span class="tbl-pill">Latest</span>';
+  }
+  // Fallback: date-based (expects YYYY-MM-DD or parseable)
+  const d = Date.parse(row.date);
+  if (!isNaN(d)) {
+    const days = (Date.now() - d) / (1000*60*60*24);
+    if (days <= 2) return '<span class="tbl-pill">NEW</span>';
+  }
+  return '';
+}
+</script>
+
+<script>
+(function(){
+  const isiPad = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
+  if (!isiPad) return;
+
+  // re-measure & re-render when .plaB-empty becomes visible
+  function fixLottieSize() {
+    const host = document.querySelector('.plaB-empty dotlottie-wc');
+    if (!host) return;
+    host.style.height = 'auto';
+    host.style.width = '100%';
+    requestAnimationFrame(() => {
+      const w = Math.min(560, document.querySelector('.plaB-empty').clientWidth * 0.45);
+      host.style.width = w + 'px';
+      // force reload if rendered wrong
+      const rect = host.getBoundingClientRect();
+      if (rect.width < 50 || rect.height < 50) {
+        const src = host.getAttribute('src');
+        host.setAttribute('src', '');
+        requestAnimationFrame(() => host.setAttribute('src', src));
+      }
+    });
+  }
+
+  // patch all platform toggle radio buttons
+  document.querySelectorAll('input[name="plaB-platform"]').forEach(el => {
+    el.addEventListener('change', () => {
+      setTimeout(fixLottieSize, 400); // wait for flex/display change
+    });
+  });
+
+  // also run when page first loads
+  window.addEventListener('load', fixLottieSize);
+})();
+</script>
+

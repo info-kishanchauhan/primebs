@@ -1,0 +1,1250 @@
+<?php
+$currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$status = isset($_GET['status']) ? $_GET['status'] : '';
+$perPage = isset($_GET['per_page']) ? $_GET['per_page'] : '';
+
+$redirectURL = "/tickets?page=$currentPage";
+if ($status) $redirectURL .= "&status=" . urlencode($status);
+if ($perPage) $redirectURL .= "&per_page=" . urlencode($perPage);
+
+if (isset($_GET['reply']) || isset($_GET['deleted']) || isset($_GET['updated'])) {
+    header("Location: $redirectURL");
+    exit;
+}
+?>
+<?php
+/** @var \Zend\View\Renderer\PhpRenderer $this */
+?>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    background: #f8f9fc;
+    font-family: 'Inter', sans-serif;
+    color: #1f2937;
+  }
+  .page-container { display: flex; min-height: 100vh; }
+  .sidebar {
+    width: 240px; background: #fff; border-right: 1px solid #eee; padding: 30px 20px;
+  }
+  .sidebar h2 { font-weight: 700; margin-bottom: 30px; font-size: 22px; }
+  .sidebar a {
+    display: block; padding: 10px 14px; border-radius: 10px;
+    color: #374151; font-weight: 500; text-decoration: none; margin-bottom: 10px;
+  }
+  .sidebar a.active { background: #f3f4f6; font-weight: 600; }
+  .main-content { flex: 1; padding: 40px; }
+  .header {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;
+  }
+  .header h1 { font-size: 26px; font-weight: 700; }
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  .header input {
+    padding: 10px 16px; font-size: 14px; border-radius: 8px;
+    border: 1px solid #ccc; width: 240px;
+  }
+  .header .btn {
+    background: #000; color: #fff; padding: 10px 18px;
+    border-radius: 10px; border: none; cursor: pointer; font-size: 14px;
+  }
+  .ticket-table {
+    width: 100%; border-collapse: collapse; margin-top: 20px;
+    background: #fff; border-radius: 14px; overflow: hidden;
+  }
+  .ticket-table th, .ticket-table td {
+    padding: 14px 18px; text-align: left; border-bottom: 1px solid #eee; font-size: 14px;
+  }
+  .ticket-table th { background: #f9fafb; font-weight: 600; }
+  .editable {
+    background: #f3f4f6; border: 1px dashed #ccc; padding: 6px;
+    border-radius: 6px; min-width: 100px; cursor: pointer;
+  }
+  .badge {
+    font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 8px;
+  }
+  .badge.high { background: #fee2e2; color: #b91c1c; }
+  .badge.medium { background: #fef3c7; color: #92400e; }
+  .badge.low { background: #d1fae5; color: #065f46; }
+  .badge.status-open { background: #e0f2fe; color: #0369a1; }
+  .badge.status-progress { background: #ede9fe; color: #5b21b6; }
+  .badge.status-closed { background: #f3f4f6; color: #6b7280; }
+  .modal {
+    display: none; position: fixed; z-index: 999; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.4); justify-content: center; align-items: center;
+  }
+  .modal-content {
+    width: 600px; background: #fff; border-radius: 14px; padding: 30px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1); position: relative;
+  }
+  .modal-close {
+    position: absolute; right: 16px; top: 14px; font-size: 20px; cursor: pointer;
+  }
+  .history-log {
+    font-size: 13px; background: #f9fafb; padding: 12px; margin-top: 20px; border-radius: 10px;
+  }
+  
+.tooltip-container {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip-text {
+  visibility: hidden;
+  width: 220px;
+  background-color: #1f2937;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 12px;
+  position: absolute;
+  z-index: 1;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.15s ease-in-out;
+  white-space: normal;
+}
+
+.tooltip-container:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+.modal-content {
+  width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 14px;
+  padding: 30px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+  position: relative;
+}
+  
+.admin-action-icons {
+  display: flex;
+  gap: 30px;
+  background: #f9fafb;
+  padding: 14px 20px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+
+.admin-action-icons i {
+  font-size: 18px;
+  color: #444;
+  cursor: pointer;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.admin-action-icons i:hover {
+  color: #333;
+  transform: scale(1.15);
+}
+
+.tooltip-container {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip-text {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #222;
+  color: #fff;
+  font-size: 12px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  z-index: 100;
+  transition: opacity 0.2s ease;
+}
+
+.tooltip-container:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+  
+</style>
+
+<?php
+if (isset($_GET['success'])) echo "<script>showToast('Ticket submitted successfully!');</script>";
+if (isset($_GET['reply'])) echo "<script>showToast('Reply sent successfully!');</script>";
+if (isset($_GET['updated'])) echo "<script>showToast('Status updated.');</script>";
+if (isset($_GET['deleted'])) echo "<script>showToast('Ticket deleted.');</script>";
+?>
+
+<div class="page-container">
+  <div class="main-content">
+    <!-- Header Section -->
+    <div class="header">
+      <h1>Support Tickets 
+  <span style="font-size:14px; background:#1f2937; color:white; padding:4px 10px; border-radius:20px; margin-left:10px;">
+    Total <?= $this->TOTAL_TICKETS ?> tickets
+  </span>
+</h1>
+
+      <div class="header-right">
+  <input type="text" placeholder="Search a ticket...">
+  
+  <?php if ($_SESSION['user_id'] == 0 || $_SESSION['STAFFUSER'] == '1'): ?>
+    <div style="position: relative;">
+      <button class="btn" onclick="toggleAdminMenu(event)">☰ Admin Actions ▾</button>
+
+      <div id="adminDropdown" style="display: none; position: absolute; top: 40px; right: 0; background: white; border: 1px solid #ccc; border-radius: 8px; box-shadow: 0 6px 18px rgba(0,0,0,0.1); min-width: 180px; z-index: 1000;">
+        <button onclick="mergeTickets()" style="width: 100%; border: none; padding: 10px; text-align: left; background: white; cursor: pointer;">🔀 Merge Tickets</button>
+        <button onclick="openEmailModal()" style="width: 100%; border: none; padding: 10px; text-align: left; background: white; cursor: pointer;">✉️ Send Email</button>
+      </div>
+    </div>
+  <?php else: ?>
+    <button class="btn" onclick="openNewModal()">+ New Request</button>
+  <?php endif; ?>
+</div>
+      
+    </div>
+<select id="statusFilter" style="padding:8px; border-radius:6px;">
+  <option value="">All Status</option>
+  <option value="Open" <?= $this->FILTER_STATUS === 'Open' ? 'selected' : '' ?>>Open</option>
+  <option value="In progress" <?= $this->FILTER_STATUS === 'In progress' ? 'selected' : '' ?>>In Progress</option>
+  <option value="Closed" <?= $this->FILTER_STATUS === 'Closed' ? 'selected' : '' ?>>Closed</option>
+</select>
+    
+<!-- Ticket Table Start -->
+<table class="ticket-table" id="ticketTable">
+  <thead>
+    <tr>
+      <?php if ($_SESSION['user_id'] == 0 || $_SESSION['STAFFUSER'] == '1'): ?>
+        <th><input type="checkbox" id="selectAllTickets" title="Select All"></th>
+      <?php endif; ?>
+      <th>Title</th>
+      <th>ID</th>
+      <th>Priority</th>
+      <th>Status</th>
+      <th>Date</th>
+      <?php if ($_SESSION['user_id'] == 0 || $_SESSION['STAFFUSER'] == '1'): ?><th>Status</th><?php endif; ?>
+      <?php if ($_SESSION['user_id'] == 0 || $_SESSION['STAFFUSER'] == '1'): ?><th>Delete</th><?php endif; ?>
+      <?php if ($_SESSION['user_id'] == 0 || $_SESSION['STAFFUSER'] == '1'): ?><th>FeedBack</th><?php endif; ?>
+      <?php if ($_SESSION['user_id'] != 0 && $_SESSION['STAFFUSER'] != '1'): ?>
+    <th>Respond</th>
+<?php endif; ?>
+    </tr>
+  </thead>
+  <tbody>
+    <?php if (empty($this->TICKETS_LIST)): ?>
+      <tr>
+        <td colspan="<?php echo ($_SESSION['user_id'] == 0 || $_SESSION['STAFFUSER'] == '1') ? '7' : '6'; ?>" style="padding: 80px 20px;">
+          <div style="display: flex; flex-direction: column; align-items: center;">
+            <img src="https://www.primebackstage.in/public/img/no-data.png" alt="No Tickets" style="width: 140px; margin-bottom: 20px;">
+            <p style="font-size: 18px; font-weight: 600; color: #6b7280;">No support tickets found.</p>
+            <p style="font-size: 13px; color: #9ca3af;">Tickets will appear here once created or submitted.</p>
+          </div>
+        </td>
+      </tr>
+    <?php else: ?>
+      <?php foreach ($this->TICKETS_LIST as $ticket): ?>
+        <tr class="ticket-row" data-id="<?php echo $ticket['id']; ?>">
+          <?php if ($_SESSION['user_id'] == 0 || $_SESSION['STAFFUSER'] == '1'): ?>
+            <td>
+              <input type="checkbox" class="merge-checkbox" value="<?php echo $ticket['id']; ?>">
+            </td>
+          <?php endif; ?>
+
+          <td contenteditable="<?php echo ($_SESSION['user_id'] == 0 || $_SESSION['STAFFUSER'] == '1') ? 'true' : 'false'; ?>" class="editable">
+            <?php echo htmlspecialchars($ticket['title']); ?>
+            <?php if ($_SESSION['user_id'] == 0 && !empty($ticket['user_name'])): ?>
+              <br><small style="color:#6b7280; font-size:12px;">👤 <?php echo htmlspecialchars($ticket['user_name']); ?></small>
+            <?php endif; ?>
+          </td>
+          <td>#<?php echo $ticket['id']; ?></td>
+          <td><span class="badge <?php echo strtolower($ticket['priority']); ?>"><?php echo ucfirst($ticket['priority']); ?></span></td>
+          <td><span class="badge status-<?php echo strtolower(str_replace(' ', '', $ticket['status'])); ?>"><?php echo ucfirst($ticket['status']); ?></span></td>
+          <td><?php echo date('d M Y', strtotime($ticket['created_at'])); ?></td>
+
+          <?php if ($_SESSION['user_id'] != 0 && $_SESSION['STAFFUSER'] == '0'): ?>
+            <td>
+              <?php if (!empty($ticket['replies'])): ?>
+                <div class="tooltip-container" style="position: relative;">
+                  <span style="color:#2563eb; font-size:16px; cursor: pointer;">📩</span>
+                  <span class="tooltip-text">We’ve replied to your ticket. Please check your email.</span>
+                  <span style="
+                    font-size: 10px;
+                    color: #9333ea;
+                    background: #f3e8ff;
+                    padding: 2px 6px;
+                    border-radius: 6px;
+                    font-weight: 600;
+                    margin-left: 4px;
+                    position: relative;
+                    top: -2px;
+                  ">New*</span>
+                </div>
+              <?php endif; ?>
+            </td>
+          <?php endif; ?>
+
+          <?php if ($_SESSION['user_id'] == 0 || $_SESSION['STAFFUSER'] == '1'): ?>
+            <td>
+              <form method="post" action="/tickets/updatestatus" style="display:inline-block;">
+  <input type="hidden" name="ticket_id" value="<?php echo $ticket['id']; ?>">
+  <input type="hidden" name="page" value="<?= $this->CURRENT_PAGE ?>">
+  <input type="hidden" name="status" value="<?= $this->FILTER_STATUS ?>">
+  <input type="hidden" name="per_page" value="<?= $this->PER_PAGE ?>">
+  <select name="status" onchange="this.form.submit();">
+
+                  <option value="Open" <?php if ($ticket['status'] == 'Open') echo 'selected'; ?>>Open</option>
+                  <option value="In progress" <?php if ($ticket['status'] == 'In progress') echo 'selected'; ?>>In progress</option>
+                  <option value="Closed" <?php if ($ticket['status'] == 'Closed') echo 'selected'; ?>>Closed</option>
+                </select>
+              </form>
+  <td>
+            <form method="post" action="/tickets/delete" onsubmit="return confirm('Are you sure?')" style="display:inline-block;margin-left:10px;">
+  <input type="hidden" name="ticket_id" value="<?php echo $ticket['id']; ?>">
+  <input type="hidden" name="page" value="<?= $this->CURRENT_PAGE ?>">
+  <input type="hidden" name="status" value="<?= $this->FILTER_STATUS ?>">
+  <input type="hidden" name="per_page" value="<?= $this->PER_PAGE ?>">
+  <button type="submit" class="btn">Delete</button> 
+               <td> <button type="button" class="btn" style="margin-left:10px;background:#6b7280;color:#fff;"
+        onclick="sendFeedbackEmail(<?= (int)$ticket['id'] ?>)">📝 Feedback</button>
+</form>
+
+              <a href="/tickets/thread/<?php echo $ticket['id']; ?>" style="margin-left:10px; font-size:20px; color:#3b82f6; position: relative;" title="View Email Thread">
+                📧
+                <?php if (!empty($ticket['new_reply'])): ?>
+                  <span style="
+                    background: #ef4444;
+                    color: white;
+                    font-size: 8px;
+                    padding: 2px 6px;
+                    border-radius: 8px;
+                    position: absolute;
+                    top: -5px;
+                    right: -35px;
+                    font-weight: bold;
+                  ">NEW</span> 
+                <?php endif; ?>
+              </a>
+            </td>
+          <?php endif; ?>
+        </tr>
+      <?php endforeach; ?>
+    <?php endif; ?>
+  </tbody>
+</table>
+<!-- Ticket Table End -->
+
+    <!-- Ticket Detail Modal -->
+    <div class="modal" id="ticketModal">
+      <div class="modal-content">
+        <span class="modal-close" onclick="closeModal()">×</span>
+        <h2 id="modalTitle">Ticket # — Details</h2>
+        <p><strong>Status:</strong> <span id="modalStatus"></span></p>
+        <div class="history-log">
+          <strong>Status History:</strong>
+          <ul id="modalHistory"></ul>
+        </div>
+        
+        <p style="margin-top: 20px;">
+  <strong>Description:</strong> 
+  <span id="copyDescBtn" onclick="copyDescription()" style="cursor:pointer; font-size:14px; color:#4b5563; margin-left: 8px;" title="Copy Description">📋</span>
+</p>
+<div id="modalDesc" style="
+  background: #f9fafb;
+  border: 1px dashed #d1d5db;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  color: #1f2937;
+  margin-top: 6px;
+  white-space: pre-wrap;
+">Loading...</div>
+        <!-- Inside modal-content, under Description or wherever you want -->
+<?php if (!empty($ticket['attachment'])): ?>
+  <div style="margin-top: 20px;">
+    <strong>Options : Click on icons to  expend From</strong>
+  </div>
+<?php endif; ?>
+        
+        
+<?php if ($_SESSION['user_id'] == 0 || $_SESSION['STAFFUSER'] == '1'): ?>
+<div style="margin: 30px 0 15px;">
+  <div class="admin-action-icons">
+    <div class="tooltip-container" onclick="toggleSection('forwardSection')">
+      <i class="fa fa-share"></i>
+      <div class="tooltip-text">Forward Ticket</div>
+    </div>
+    <div class="tooltip-container" onclick="toggleSection('quickReplySection')">
+      <i class="fa fa-comment"></i>
+      <div class="tooltip-text">Quick Reply</div>
+    </div>
+    <div class="tooltip-container" onclick="toggleSection('attachmentReplySection')">
+      <i class="fa fa-paperclip"></i>
+      <div class="tooltip-text">Reply with Attachment</div>
+    </div>
+  </div>
+</div>
+
+<!-- Forward Ticket Section -->
+<div id="forwardSection" style="display:none; margin-top: 25px;">
+  <h3 style="font-size: 16px; font-weight: 600;">📤 Forward Ticket</h3>
+  <button class="btn" onclick="openForwardModal()">➔ Forward to Email</button>
+</div>
+
+<!-- Forward Modal -->
+<div class="modal" id="forwardModal">
+  <div class="modal-content" style="width: 520px;">
+    <span class="modal-close" onclick="closeForwardModal()">×</span>
+    <h2>Forward Ticket</h2>
+    <form method="post" action="/tickets/forward" enctype="multipart/form-data" onsubmit="return validateForwardForm();">
+      <input type="hidden" name="ticket_id" id="forwardTicketId">
+
+      <label>Email To:</label>
+      <input list="emailSuggestions" type="email" name="forward_email" required placeholder="manager@example.com" style="width:100%; padding:10px; margin:8px 0; border:1px solid #ccc; border-radius:8px;">
+
+      <label>CC Email (optional):</label>
+      <input list="emailSuggestions" type="email" name="forward_cc" placeholder="copy@example.com" style="width:100%; padding:10px; margin:8px 0; border:1px solid #ccc; border-radius:8px;">
+
+      <datalist id="emailSuggestions">
+        <option value="aditya.ghosh@believe.com">
+        <option value="pooja.vithlani@believe.com">
+        <option value="supportind@believe.com">
+        <option value="arpit.vijay@believe.com">
+        <option value="team@primedigitalarena.in">
+        <option value="support@primedigitalarena.in">
+      </datalist>
+
+      <label>Subject:</label>
+      <input type="text" name="forward_subject" id="forwardSubject" required style="width:100%; padding:10px; margin:8px 0; border:1px solid #ccc; border-radius:8px;">
+
+      <label>Message:</label>
+      <textarea name="forward_message" id="forwardMessage" rows="6" required style="width:100%; padding:10px; margin:8px 0; border:1px solid #ccc; border-radius:8px;"></textarea>
+
+      <div id="forwardAttachmentInfo" style="margin-top: 12px; font-size: 13px; color: #4b5563;"></div>
+
+      <label>Attach a File (optional):</label>
+      <input type="file" name="attachment" accept=".pdf,.png,.jpg,.wav,.jpeg,.zip,.doc,.docx,.txt,.csv,.xlsx" style="width:100%; padding:10px; margin:10px 0; border:1px solid #ccc; border-radius:8px;">
+      <small style="color: #6b7280;">Supported formats: PDF, images, docs, zip, txt (Max ~10MB)</small>
+
+      <button type="submit" class="btn" style="margin-top:10px;">📨 Send Forward</button>
+    </form>
+  </div>
+</div>
+
+<!-- Quick Reply Dropdown -->
+<div id="quickReplySection" style="display:none; margin-top: 30px;">
+  <label><strong>Quick Reply:</strong></label>
+  <select id="quickReplyDropdown" onchange="applyQuickReply()" style="width:100%; padding:10px; margin:10px 0; border:1px solid #ccc; border-radius:8px;">
+    <option value="">-- Choose a reply --</option>
+    <option value="We’ve forwarded your request to the technical team. We’ll notify you once it's resolved.">Forwarded to Technical Team</option>
+    <option value="Thanks for the update. Our team is reviewing it and will take appropriate action.">Under review</option>
+    <option value="Please avoid creating new tickets for the same issue, as it may delay the review process. Kindly reply with any updates or additional information on the same ticket thread.">avoid creating new tickets</option>
+    <option value="The request has been raised with YouTube. If the concerned team finds the channel eligible then you should receive a notification. Also, please note that this process takes time.">Youtube Artist Verification Submitted</option>
+    <option value="Please share a screenshot or screen recording to help us understand the issue better.">Need screenshot or proof</option>
+    <option value="We have received your audio file. Our team will now begin the validation process.">Audio received – validating</option>
+    <option value="Takedown request has been initiated. It may take up to 7 working days to reflect.">Takedown initiated</option>
+    <option value="We’ve escalated this matter to the respective store partner for faster resolution.">Escalated to store</option>
+    <option value="Your release is now live. Please check your platforms to confirm.">Release live confirmation</option>
+    <option value="Your metadata update is under review. You will be notified once it's processed.">Metadata under review</option>
+    <option value="We have raised this with the concerned team and shall soon be live on the platform.">will be Live soon on store</option>
+    <option value="The issue has been resolved. Let us know if it happens again.">Issue resolved</option>
+    <option value="We have raised the request . It will be effective on stores in 3-5 working days.">we raised the request</option>
+    <option value="This is done and shall soon reflect on DSPs..">Request Completed</option>
+    <option value="Can you please provide more details?">Need more info for issue</option>
+    <option value="Please check detailed Article About Pitch & Promotions : https://www.primebackstage.in/faq/category/26">Pitch & Promotion Guide</option>
+    <option value="❗ Important: Please read our FAQ before raising a ticket – it covers solutions for most issues: https://www.primebackstage.in/faq">Common issue FAQ</option>
+    <option value="Before submitting a ticket, please take a moment to review our FAQ — most queries are already answered there. 🔗 https://www.primebackstage.in/faq">Check FAQ Before New Ticket</option>
+  </select>
+</div>
+
+<!-- Attachment Reply Section -->
+<div id="attachmentReplySection" style="display:none; margin-top: 30px;">
+  <form method="post" action="/tickets/reply" enctype="multipart/form-data">
+    <input type="hidden" name="ticket_id" id="replyTicketId">
+    <label><strong>Reply:</strong></label>
+    <textarea name="reply_text" id="replyTextarea" required style="width: 100%; height: 100px; margin: 10px 0; padding: 10px; border: 1px solid #ccc; border-radius: 8px;"></textarea>
+    <label>Attach a File (optional):</label>
+    <input type="file" name="attachment" accept=".pdf,.png,.jpg,.jpeg,.wav,.zip,.doc,.docx,.txt,.csv,.xlsx" style="width:100%; padding:10px; margin:10px 0; border:1px solid #ccc; border-radius:8px;">
+    <small style="color: #6b7280;">Supported formats: PDF, images, docs, zip, txt (Max ~10MB)</small>
+    <button type="submit" class="btn">Send Reply</button>
+  </form>
+</div>
+<?php endif; ?>
+
+</div>
+</div>
+
+    
+
+    <!-- New Ticket Modal (User Only) -->
+    <?php if (!empty($_SESSION['user_id']) && $_SESSION['STAFFUSER'] != '1'): ?>
+
+    <div class="modal" id="newTicketModal">
+      <div class="modal-content">
+        <span class="modal-close" onclick="closeNewModal()">×</span>
+        <h2>Create Support Ticket</h2>
+        <form id="ticketForm" method="post" action="/tickets/submit" enctype="multipart/form-data" onsubmit="return validateTicketForm();">
+
+          <label>Support can we help with?:</label>
+          <input list="titleSuggestions" name="title" id="ticketTitle" placeholder="Choose or type..." required style="width:100%; padding:10px; margin:10px 0; border:1px solid #ccc; border-radius:8px;">
+          <datalist id="titleSuggestions">
+  <option value="Update Metadata">
+  <option value="Take Down Request">
+  <option value="Update Bank Details">
+    <option value="YouTube Channel Verification(OACs)">
+  <option value="Accounting & Payment">
+  <option value="Audio Missing From Stores">
+  <option value="Pitch & Promotions">
+  <option value="Response to Legal Request">
+  <option value="Instagram Music Artist Profile Link">
+   <option value="FaceBook Page Whitelist">
+     <option value="Release Claim FaceBook Video">
+       <option value="YouTube Content ID OPT-IN">
+  <option value="General Query">
+    <option value="Feedback">
+</datalist>
+          <label>Priority:</label>
+          <select name="priority" id="ticketPriority" required style="width:100%; padding:10px; margin:10px 0; border:1px solid #ccc; border-radius:8px;">
+            <option value="">-- Select Priority --</option>
+            <option value="low">Normal</option>
+            <option value="medium">High</option>
+            <option value="high">Urgent</option>
+          </select>
+          <label>Please provide any additional context related to this request:</label>
+          <textarea name="description" id="ticketDesc" required style="width:100%; height:100px; padding:10px; margin:10px 0; border:1px solid #ccc; border-radius:8px;"></textarea>
+          <label>Attach a File (optional):</label>
+<input type="file" name="attachment" accept=".pdf,.png,.jpg,.wav,.jpeg,,.zip,.doc,.docx,.txt,.csv,.xlsx"
+       style="width:100%; padding:10px; margin:10px 0; border:1px solid #ccc; border-radius:8px;">
+<small style="color: #6b7280;">Supported formats: PDF, images, docs, zip, txt (Max ~10MB)</small>
+          
+          <div id="uploadProgressBox" style="display:none; margin-top: 16px; border-radius: 10px; background: #f1f5f9; padding: 12px 16px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">
+  <div style="font-size: 14px; font-weight: 500; color: #1f2937; margin-bottom: 6px;">Uploading file...</div>
+  
+  <div style="background: #e5e7eb; height: 10px; border-radius: 6px; overflow: hidden;">
+    <div id="uploadProgress" style="height: 100%; width: 0%; background: linear-gradient(to right, #3b82f6, #2563eb); transition: width 0.3s;"></div>
+  </div>
+  
+  <div style="margin-top: 6px; font-size: 13px; color: #4b5563; text-align: right;">
+    <span id="uploadPercent">0%</span> uploaded
+  </div>
+</div>
+
+          <button type="submit" id="ticketSubmitBtn" class="btn">Submit Ticket</button>
+
+        </form>
+      </div>
+    </div>
+    <?php endif; ?>
+  </div>
+</div>
+
+<!-- 📧 Email Modal -->
+<div id="emailModal" class="modal" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
+  <div class="modal-content" style="background-color: #fff; margin: 5% auto; padding: 30px; border: 1px solid #ccc; border-radius: 12px; width: 620px; position: relative; box-shadow: 0 8px 24px rgba(0,0,0,0.1);">
+
+    <span class="modal-close" onclick="closeEmailModal()" style="position: absolute; right: 20px; top: 15px; font-size: 24px; cursor: pointer;">×</span>
+    <h2 style="margin-bottom: 20px;">✉️ Send Email</h2>
+
+    <form method="post" action="/tickets/sendemail" enctype="multipart/form-data" id="sendEmailForm">
+      
+      <input type="hidden" name="ticket_id" id="ticket_id" value="">
+      
+      <!-- From Email -->
+<label>From Email:</label>
+<div style="display: flex; gap: 10px; margin-bottom: 10px;">
+  <input type="email" id="email_from_input" name="email_from" required placeholder="Enter or select sender" style="flex:1; padding:10px;">
+  <select onchange="document.getElementById('email_from_input').value = this.value" style="width: 220px; padding:10px;">
+    <option value="">-- Select Sender --</option>
+    <option value="support@primedigitalarena.in">support@primedigitalarena.in</option>
+    <option value="info@primedigitalarena.in">info@primedigitalarena.in</option>
+    <option value="payout@primedigitalarena.in">payout@primedigitalarena.in</option>
+  </select>
+</div>
+
+<!-- To Email -->
+<label>To Email:</label>
+<div style="display: flex; gap: 10px; margin-bottom: 10px;">
+  <input type="email" id="email_to_input" name="email_to" required placeholder="Enter or select recipient" style="flex:1; padding:10px;">
+  <select onchange="document.getElementById('email_to_input').value = this.value" style="width: 220px; padding:10px;">
+    <option value="">-- Select Recipient --</option>
+    <option value="supportind@believe.com">supportind@believe.com</option>
+    <option value="aditya.ghosh@believe.com">aditya.ghosh@believe.com</option>
+    <option value="arpit.vijay@believe.com">arpit.vijay@believe.com</option>
+    <option value="pooja.vithlani@believe.com">pooja.vithlani@believe.com</option>
+  </select>
+</div>
+
+
+      <label>CC:</label>
+      <input type="email" name="email_cc" style="width:100%; padding:10px; margin-bottom:10px;">
+
+      <label>BCC:</label>
+      <input type="email" name="email_bcc" style="width:100%; padding:10px; margin-bottom:10px;">
+
+      <label>Subject:</label>
+      <input type="text" name="subject" required style="width:100%; padding:10px; margin-bottom:10px;">
+
+      <label>Body:</label>
+      <textarea name="body" id="emailBody" required rows="6" style="width:100%; padding:10px; margin-bottom:10px;"></textarea>
+
+      <label>Saved Template:</label>
+      <select name="template_id" id="template_id" style="width:100%; padding:10px; margin-bottom:10px;" onchange="loadTemplateText(this.value)">
+        <option value="">-- Select Template --</option>
+        <option value="1">Reviewed – Submission Declined</option>
+        <option value="2">Delay in Resolution</option>
+        <option value="3">🎉 Welcome – Direct Distribution</option>
+        <option value="4">🎉 Welcome – Plan Based Collaboration</option>
+      </select>
+
+      <label>Attachment:</label>
+      <input type="file" name="attachment[]" id="attachmentInput" multiple style="width:100%; padding:10px; margin-bottom:20px;">
+
+      <!-- Progress Bar -->
+      <div id="uploadProgress" style="display:none; margin-bottom: 15px;">
+        <div style="height: 8px; background: #e5e7eb; border-radius: 6px; overflow: hidden;">
+          <div id="progressBar" style="width: 0%; height: 100%; background: #3b82f6; transition: width 0.4s;"></div>
+        </div>
+        <div id="progressText" style="font-size: 12px; margin-top: 6px; color: #4b5563;">Uploading...</div>
+      </div>
+
+      <!-- ✅ Submit Button -->
+      <button type="submit" id="sendBtn" class="btn" style="background-color:#1d4ed8; color:white; padding:10px 20px; border:none; border-radius:6px;">📨 Send Email</button>
+    </form>
+  </div>
+</div>
+
+<!-- ✅ JS Upload Handler -->
+<script>
+document.getElementById("sendEmailForm").addEventListener("submit", function (e) {
+  e.preventDefault();
+
+  const form = e.target;
+  const formData = new FormData(form);
+
+  // Append files manually (multi-upload supported)
+  const files = document.getElementById('attachmentInput').files;
+  for (let i = 0; i < files.length; i++) {
+    formData.append('attachment[]', files[i]);
+  }
+
+  const xhr = new XMLHttpRequest();
+  xhr.open("POST", form.action, true);
+
+  // Show Progress UI
+  document.getElementById("uploadProgress").style.display = "block";
+  document.getElementById("progressBar").style.width = "0%";
+  document.getElementById("progressText").textContent = "Uploading... 0%";
+
+  xhr.upload.addEventListener("progress", function (e) {
+    if (e.lengthComputable) {
+      const percent = Math.round((e.loaded / e.total) * 100);
+      document.getElementById("progressBar").style.width = percent + "%";
+      document.getElementById("progressText").textContent = `Uploading... ${percent}%`;
+    }
+  });
+
+  xhr.onload = function () {
+    if (xhr.status === 200) {
+      document.getElementById("progressText").textContent = "✅ Email sent successfully!";
+      setTimeout(() => {
+        document.getElementById("uploadProgress").style.display = "none";
+        closeEmailModal();
+
+        // 🔁 Reset all form fields
+        form.reset();
+
+        // 🧹 Explicitly clear file input (browser may not reset just with form.reset)
+        const fileInput = document.getElementById("attachmentInput");
+        if (fileInput) {
+          fileInput.value = ""; // resets file input
+        }
+
+      }, 1500);
+    } else {
+      document.getElementById("progressText").textContent = "❌ Failed to send email.";
+    }
+  };
+
+  xhr.onerror = function () {
+    document.getElementById("progressText").textContent = "❌ Upload error.";
+  };
+
+  xhr.send(formData);
+});
+</script>
+
+
+
+<?php if ($this->TOTAL_PAGES > 1): ?>
+  <div style="margin-top: 20px;">
+    <?php for ($i = 1; $i <= $this->TOTAL_PAGES; $i++): ?>
+      <a href="?page=<?= $i ?>&status=<?= urlencode($this->FILTER_STATUS) ?>&per_page=<?= $this->PER_PAGE ?>"
+         style="margin-right: 6px; padding: 6px 12px; border-radius: 6px; <?= ($this->CURRENT_PAGE == $i) ? 'background:#000;color:#fff;' : 'background:#f3f4f6;color:#333;' ?>">
+        <?= $i ?>
+      </a>
+    <?php endfor; ?>
+  </div>
+<?php endif; ?>
+
+
+
+<script>
+  console.log("Tickets Array", <?php echo json_encode($this->TICKETS_LIST); ?>);
+  
+  const tickets = <?php echo json_encode($this->TICKETS_LIST); ?>;
+
+function openModal(id) {
+  const t = tickets.find(x => x.id == id);
+  if (!t) return;
+
+  document.getElementById("modalTitle").innerText = `Ticket #${t.id} — ${t.title}`;
+  document.getElementById("modalDesc").innerText = t.description || "No description.";
+  // ✅ Add attachment view link
+if (t.attachment) {
+  const link = document.createElement("a");
+  link.href = t.attachment;
+  link.target = "_blank";
+  link.style = "display: inline-block; margin-top: 10px; color: #2563eb; font-size: 14px; text-decoration: underline;";
+  link.innerHTML = "📎 Attachment File ";
+
+  const descBox = document.getElementById("modalDesc");
+  descBox.appendChild(document.createElement("br"));
+  descBox.appendChild(link);
+}
+  document.getElementById("modalStatus").innerText = t.status;
+  document.getElementById("replyTicketId").value = t.id;
+
+  // Status History
+  const h = document.getElementById("modalHistory");
+  h.innerHTML = "";
+  (t.history || []).forEach(e => {
+    const li = document.createElement("li");
+    li.innerText = `${e.status} on ${e.date}`;
+    h.appendChild(li);
+  });
+
+  // Conversation Thread
+  const conversationBox = document.querySelector("#ticketModal .history-log + div");
+  if (conversationBox) {
+    conversationBox.innerHTML = '';
+
+    if (t.replies && t.replies.length > 0) {
+      t.replies.forEach(reply => {
+        const isAdmin = reply.sender === 'Admin';
+        const bubble = document.createElement('div');
+        bubble.style = `
+          margin-bottom: 18px;
+          display: flex;
+          ${isAdmin ? 'justify-content: flex-end;' : 'justify-content: flex-start;'}
+        `;
+
+        bubble.innerHTML = `
+          <div style="
+            max-width: 75%;
+            background: ${isAdmin ? '#dbeafe' : '#e5e7eb'};
+            color: #1f2937;
+            padding: 12px 16px;
+            border-radius: 14px;
+            font-size: 14px;
+            line-height: 1.5;
+            ${isAdmin ? 'border-top-right-radius: 0;' : 'border-top-left-radius: 0;'}
+          ">
+            <div style="font-weight:600; font-size:13px; margin-bottom:4px;">
+              ${isAdmin ? '🛡️ Admin' : '🙋 User'}
+            </div>
+            <div>${reply.reply_text.replace(/\n/g, '<br>')}</div>
+            <div style="font-size: 11px; color: #6b7280; margin-top:6px; text-align:right;">
+              ${reply.replied_at}
+            </div>
+          </div>
+        `;
+        conversationBox.appendChild(bubble);
+      });
+    } else {
+      conversationBox.innerHTML = `
+        <div style="text-align:center; font-size:13px; color:#9ca3af;">No conversation yet.</div>
+      `;
+    }
+  }
+
+  document.getElementById("ticketModal").style.display = "flex";
+}
+
+
+  function closeModal() {
+    document.getElementById("ticketModal").style.display = "none";
+  }
+
+  function openNewModal() {
+    document.getElementById("newTicketModal").style.display = "flex";
+  }
+
+  function closeNewModal() {
+    document.getElementById("newTicketModal").style.display = "none";
+  }
+
+  function validateTicketForm() {
+    const title = document.getElementById('ticketTitle').value.trim();
+    const priority = document.getElementById('ticketPriority').value;
+    const desc = document.getElementById('ticketDesc').value.trim();
+    if (!title || !priority || !desc) {
+      showToast("All fields are required.");
+      return false;
+    }
+    showToast("Submitting...");
+    return true;
+  }
+
+  function exportCSV() {
+    const rows = [["ID", "Title", "Priority", "Status", "Date"]];
+    tickets.forEach(t => {
+      rows.push(["#" + t.id, `"${t.title}"`, t.priority, t.status, t.date]);
+    });
+    const uri = "data:text/csv;charset=utf-8," + rows.map(r => r.join(",")).join("\n");
+    const link = document.createElement("a");
+    link.setAttribute("href", encodeURI(uri));
+    link.setAttribute("download", "support_tickets.csv");
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    showToast("CSV exported successfully ✅");
+  }
+
+  function showToast(msg) {
+    const toast = document.createElement("div");
+    toast.innerText = msg;
+    toast.style = "position:fixed;bottom:30px;right:30px;padding:12px 20px;background:#1f2937;color:#fff;border-radius:10px;font-size:14px;z-index:1000;";
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+  }
+
+  document.querySelectorAll('.ticket-row').forEach(row => {
+  row.addEventListener('click', function (e) {
+    // ✅ अगर SELECT, BUTTON, FORM या <a> क्लिक हुआ तो कुछ नहीं करना
+    if (e.target.tagName === 'SELECT' || e.target.tagName === 'BUTTON' || e.target.closest('form') || e.target.tagName === 'A') return;
+    openModal(this.dataset.id);
+  });
+});
+
+  document.querySelectorAll('.editable').forEach(cell => {
+    cell.addEventListener("blur", function () {
+      const id = this.closest("tr").children[1].innerText.replace("#", "");
+      const newTitle = this.innerText.trim();
+      console.log(`Edited Ticket #${id}: ${newTitle}`);
+      showToast(`Title updated for Ticket #${id}`);
+    });
+  });
+
+  document.querySelector("input[placeholder='Search a ticket...']").addEventListener("input", function () {
+    const q = this.value.toLowerCase();
+    document.querySelectorAll("#ticketTable tbody tr").forEach(tr => {
+      const text = tr.innerText.toLowerCase();
+      tr.style.display = text.includes(q) ? "" : "none";
+    });
+  });
+
+  const replyDropdown = document.getElementById('quickReplyDropdown');
+  if (replyDropdown) {
+    replyDropdown.addEventListener('change', function () {
+      const replyText = this.value;
+      if (replyText) {
+        const textarea = document.querySelector('textarea[name="reply_text"]');
+        if (textarea) textarea.value = replyText;
+      }
+    });
+  }
+
+
+  function copyDescription() {
+  const text = document.getElementById("modalDesc").innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    showToast("Description copied to clipboard ✅");
+  }).catch(() => {
+    showToast("Failed to copy ❌");
+  });
+}
+ function openForwardModal() {
+  const modal = document.getElementById("forwardModal");
+  const ticketId = document.getElementById("replyTicketId").value;
+  const subject = document.getElementById("modalTitle").innerText;
+  const desc = document.getElementById("modalDesc").innerText;
+
+  document.getElementById("forwardTicketId").value = ticketId;
+  document.getElementById("forwardSubject").value = subject;
+  document.getElementById("forwardMessage").value = desc;
+
+  // ✅ Load attachment info
+  const ticket = tickets.find(t => t.id == ticketId);
+  const attachmentBox = document.getElementById("forwardAttachmentInfo");
+
+  if (attachmentBox && ticket && ticket.attachment) {
+    const filename = ticket.attachment.split("/").pop();
+    attachmentBox.innerHTML = `📎 This ticket has an attachment: <a href="${ticket.attachment}" target="_blank" style="color:#2563eb;text-decoration:underline;">${filename}</a>`;
+  } else if (attachmentBox) {
+    attachmentBox.innerHTML = `<span style="color:#6b7280;">No attachment found for this ticket.</span>`;
+  }
+
+  modal.style.display = "flex";
+}
+function closeForwardModal() {
+  document.getElementById("forwardModal").style.display = "none";
+}
+
+function validateForwardForm() {
+  showToast("Forwarding...");
+  return true;
+}
+ function openFetchPage() {
+    if (confirm('Fetch new email replies now?')) {
+        window.open('/public/cron/fetchTicketReplies.php', '_blank');
+    }
+}
+ 
+  document.getElementById("statusFilter").addEventListener("change", function () {
+  const status = this.value;
+  const url = new URL(window.location.href);
+  url.searchParams.set('status', status);
+  url.searchParams.set('page', 1); // reset to page 1
+  window.location.href = url.toString();
+});
+  
+// ✅ Run after DOM is fully loaded
+window.addEventListener("DOMContentLoaded", function () {
+
+  // Pagination dropdown logic
+  const perPageSelect = document.getElementById("perPageSelect");
+  if (perPageSelect) {
+    perPageSelect.addEventListener("change", function () {
+      const perPage = this.value;
+      const url = new URL(window.location.href);
+      url.searchParams.set('per_page', perPage);
+      url.searchParams.set('page', 1); // Reset to page 1
+      window.location.href = url.toString();
+    });
+  }
+
+  // Select All checkbox logic
+  const selectAll = document.getElementById("selectAllTickets");
+  if (selectAll) {
+    selectAll.addEventListener("change", function () {
+      document.querySelectorAll(".merge-checkbox").forEach(c => c.checked = this.checked);
+    });
+  }
+
+  // ✅ Merge tickets logic
+  window.mergeTickets = function () {
+    const selected = Array.from(document.querySelectorAll(".merge-checkbox:checked")).map(x => x.value);
+    if (selected.length < 2) {
+      showToast("Select at least 2 tickets to merge.");
+      return;
+    }
+
+    const confirmed = confirm(`Merge ${selected.length} tickets? The oldest one will be kept.`);
+    if (!confirmed) return;
+
+    fetch('/tickets/merge', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids: selected })
+    })
+    .then(res => res.json())
+    .then(data => {
+      console.log("MERGE RESPONSE", data);
+      if (data.success) {
+        showToast(`✅ Merged into Ticket #${data.primary_id}`);
+        setTimeout(() => window.location.reload(), 1200);
+      } else {
+        showToast("Merge failed ❌");
+      }
+    })
+    .catch(error => {
+      console.error("Merge error:", error);
+      showToast("Error while merging ❌");
+    });
+  };
+
+});
+  document.querySelectorAll('.merge-checkbox').forEach(cb => {
+  cb.addEventListener('click', e => e.stopPropagation());
+});
+</script>
+<script>
+document.getElementById('ticketForm').addEventListener('submit', function (e) {
+  e.preventDefault();
+
+  const form = this;
+  const formData = new FormData(form);
+
+  const progressBox = document.getElementById('uploadProgressBox');
+  const progressBar = document.getElementById('uploadProgress');
+  const percentText = document.getElementById('uploadPercent');
+  const submitBtn = document.getElementById('ticketSubmitBtn');
+
+  // Disable submit
+  submitBtn.disabled = true;
+  submitBtn.innerText = "Uploading...";
+
+ const hasFile = form.querySelector('input[type="file"]').files.length > 0;
+
+if (hasFile) {
+  progressBox.style.display = 'block';
+} else {
+  progressBox.style.display = 'none';
+}
+  progressBar.value = 0;
+  percentText.innerText = '0%';
+
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', '/tickets/submit');
+
+  xhr.upload.addEventListener('progress', function (e) {
+    if (e.lengthComputable) {
+      const percent = Math.round((e.loaded / e.total) * 100);
+      progressBar.style.width = percent + '%';
+      percentText.innerText = percent + '%';
+    }
+  });
+
+  xhr.onload = function () {
+  if (xhr.status === 200) {
+    // ✅ Show instant "Processing..." toast
+    showToast("✅ Upload complete. Submitting your ticket...");
+
+    // ⏳ Short delay before redirect
+    setTimeout(() => {
+      window.location.href = '/tickets?success=1';
+    }, 1200); // just 1.2 seconds
+  } else {
+    showToast("❌ Upload failed");
+    submitBtn.disabled = false;
+    submitBtn.innerText = "Submit Ticket";
+  }
+};
+
+  xhr.onerror = function () {
+    showToast("❌ Network error");
+    submitBtn.disabled = false;
+    submitBtn.innerText = "Submit Ticket";
+  };
+
+  xhr.send(formData);
+});
+  
+function toggleAdminMenu(event) {
+  event.stopPropagation(); // Prevent body click from closing immediately
+
+  const dropdown = document.getElementById("adminDropdown");
+  const isVisible = dropdown.style.display === "block";
+
+  // Hide any other dropdowns (optional)
+  document.querySelectorAll("#adminDropdown").forEach(d => d.style.display = "none");
+
+  dropdown.style.display = isVisible ? "none" : "block";
+}
+
+// Hide dropdown if clicked outside
+document.addEventListener("click", function (e) {
+  const dropdown = document.getElementById("adminDropdown");
+  const button = document.querySelector(".header-right button");
+
+  if (dropdown && !dropdown.contains(e.target) && !button.contains(e.target)) {
+    dropdown.style.display = "none";
+  }
+});
+
+
+</script>
+
+<script>
+function openEmailModal(ticketId = null, email = '') {
+  // Populate ticket ID and email if provided
+  if (ticketId && email) {
+    document.getElementById("ticket_id").value = ticketId;
+    document.querySelector("input[name='email_to']").value = email;
+
+    // Inject thread ID in email body footer
+    const threadTag = `[PDA-THREAD-ID:${ticketId}]`;
+    const footerBody = `\n\n\n----------\n${threadTag}`;
+    document.getElementById("emailBody").value = footerBody;
+  }
+
+  // Show modal
+  document.getElementById("emailModal").style.display = "block";
+}
+
+function closeEmailModal() {
+  document.getElementById("emailModal").style.display = "none";
+}
+</script>
+
+<script>
+document.querySelector('select[name="template_id"]').addEventListener('change', function () {
+  const selected = this.value;
+
+  const subjectField = document.querySelector('input[name="subject"]');
+  const bodyField = document.querySelector('textarea[name="body"]');
+
+  if (selected === "1") {
+    subjectField.value = "Prime Digital Arena Has Reviewed Your Submission!";
+    bodyField.value = `Hi,
+
+Thank you for reaching out to Prime Digital Arena!
+
+We truly appreciate your interest and your passion for creating soulful Islamic and Sufi content.
+However, at this time, we are not accepting new submissions or onboarding new artists.
+
+We encourage you to stay connected with us for future opportunities, and we wish you the very best in your creative journey ahead.
+
+Warm regards,
+Prime Digital Arena`;
+  } else if (selected === "2") {
+    subjectField.value = "Delay in Resolution";
+    bodyField.value = `Dear user,
+
+We apologize for the delay in resolving your issue. Our team is actively working on it and will update you soon.
+
+Thanks for your patience.`;
+  } else if (selected === "3") {
+    subjectField.value = "🎉 Welcome To Prime Digital Arena – You Are Invited for Music Distribution";
+    bodyField.value = `Hi,
+
+Welcome To Prime Digital Arena Music Distribution!
+
+EXCLUSIVE DISTRIBUTION PERIOD  
+(Period during which PDA is on an exclusive basis entitled to distribute the Content): From the Effective Date until 3 years following the date on which the first Recording is delivered to PDA in compliance with PDA’s requirements (“Initial Distribution Period”).
+
+This period shall be automatically extended for successive 2-year periods (“Extended Distribution Period”) unless a prior notice by registered mail is sent to the other party no later than 3 months before the starting date of each Extended Distribution Period.
+
+The Agreement cannot be terminated by Contractor as long as Contractor’s balance account is negative. However, 10 years after the end of the Initial Distribution Period, Contractor may terminate this Agreement as stated above even if its balance account is negative.  
+
+REVENUE SHARING:  
+70.00% of the Net Receipts shall be paid to Contractor by PDA, after deduction of 30% for Mechanical Rights (if applicable), duties and taxes (including withholding taxes).
+
+We appreciate your time and consideration of this request. We are excited about the opportunity to share this musical creation with a wider audience and contribute to the diverse range of content available on all music platforms.
+
+Thank you for your attention to this matter.  
+Best regards,  
+support@primedigitalarena.in  
+www.primedigitalarena.com`;
+  } else if (selected === "4") {
+    subjectField.value = "🎉 Welcome To Prime Digital Arena Music Distribution!";
+    bodyField.value = `Hi,
+
+Welcome To Prime Digital Arena Music Distribution!
+
+We have reviewed your content and noticed that it is currently limited. If you wish to collaborate with us, you can access Believe Music's services through our channel. Please note that a subscription will be required for this.
+
+However, if you have a substantial amount of content and generate good revenue, we can offer you a direct deal. If you're interested, we can provide you with the pricing details for the subscription.
+
+🎤 Artist Plan  
+$30 USD / Year  
+$72 USD One-Time
+
+🎼 Label Plan  
+$66 USD / Year  
+$150 USD One-Time
+
+EXCLUSIVE DISTRIBUTION PERIOD  
+(Period during which PDA is on an exclusive basis entitled to distribute the Content): From the Effective Date until 3 years following the date on which the first Recording is delivered to PDA in compliance with PDA’s requirements (“Initial Distribution Period”).
+
+This period shall be automatically extended for successive 2-year periods (“Extended Distribution Period”) unless a prior notice by registered mail is sent to the other party no later than 3 months before the starting date of each Extended Distribution Period.
+
+The Agreement cannot be terminated by Contractor as long as Contractor’s balance account is negative. However, 10 years after the end of the Initial Distribution Period, Contractor may terminate this Agreement as stated above even if its balance account is negative.
+
+REVENUE SHARING:  
+70.00% of the Net Receipts shall be paid to Contractor by PDA, after deduction of 30% for Mechanical Rights (if applicable), duties and taxes (including withholding taxes).
+
+We appreciate your time and consideration.  
+Best regards,  
+Ahemad Razvi  
+support@primedigitalarena.in  
+www.primedigitalarena.in`;
+  } else {
+    subjectField.value = "";
+    bodyField.value = "";
+  }
+});
+  
+</script>
+
+<!-- Tooltip Styles -->
+<style>
+.tooltip-container {
+  position: relative;
+  display: inline-block;
+}
+.tooltip-text {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  top: -32px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #111;
+  color: #fff;
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  z-index: 100;
+  transition: opacity 0.2s;
+}
+.tooltip-container:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+</style>
+
+<!-- Toggle Script -->
+<script>
+function toggleSection(id) {
+  // Hide all other sections first
+  const sections = ['quickReplySection', 'attachmentReplySection', 'forwardSection'];
+  sections.forEach(function(secId) {
+    if (secId !== id) {
+      const el = document.getElementById(secId);
+      if (el) el.style.display = 'none';
+    }
+  });
+
+  // Toggle clicked section
+  const section = document.getElementById(id);
+  if (section) {
+    const isVisible = section.style.display === 'block';
+    section.style.display = isVisible ? 'none' : 'block';
+  }
+
+  // ✅ If quick reply, also show textarea (from attachment section)
+  if (id === 'quickReplySection') {
+    const textareaSection = document.getElementById('attachmentReplySection');
+    if (textareaSection) {
+      textareaSection.style.display = 'block'; // always show textarea for quick reply
+    }
+  }
+}
+function applyQuickReply() {
+  const dropdown = document.getElementById("quickReplyDropdown");
+  const textarea = document.getElementById("replyTextarea");
+  if (dropdown && textarea) {
+    textarea.value = dropdown.value;
+  }
+}
+
+</script>
+<script>
+function sendFeedbackEmail(ticketId){
+  if(!confirm('Send feedback email to the user for Ticket #'+ticketId+'?')) return;
+  fetch('/tickets/sendfeedback', {
+    method: 'POST',
+    headers: {'Content-Type':'application/x-www-form-urlencoded'},
+    body: 'ticket_id='+encodeURIComponent(ticketId)
+  }).then(r=>window.location.reload());
+}
+</script>

@@ -1,0 +1,431 @@
+
+<style>
+small {
+  color: #FF414E;
+  margin-top: 5px;
+}
+.error {
+  border-color: #FF414E;
+}
+input[type=file]
+{
+	height:35px!important;
+}
+</style>
+<section id="widget-grid" class="page page-ui-tables">
+    <!-- row -->
+    <div class="row">
+        <!-- NEW WIDGET START -->
+        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+		
+<div class="jarviswidget panel panel-default panel-hovered panel-stacked mb30" id="widForm"
+     data-widget-colorbutton="false"
+     data-widget-editbutton="false"
+     data-widget-togglebutton="false"
+     data-widget-deletebutton="false"
+     data-widget-fullscreenbutton="false"
+     data-widget-custombutton="false"
+     role="widget" style=""
+     xmlns="http://www.w3.org/1999/html">
+     
+     
+    
+
+    <!-- widget div-->
+    <div class="panel-body">
+     
+        <div class="widget-body">
+
+
+            <div id="myTabContent">
+                <div class="tab-pane fade active in padding-10 no-padding-bottom" id="general">
+                    
+                       
+									<div class="row">
+										<div class="col-md-12">
+											<fieldset style="padding-top: 5px">
+											
+											
+												<?php
+													
+													$maintenanceFile = 'maintenance.flag';
+													$maintenanceMode = file_exists($maintenanceFile);
+													?>
+
+													<?php if ($_SESSION['user_id'] == '0'): ?> 
+														<div class="row">
+													
+														<section class="form-group form-group-sm clearfix">
+															
+															<label class="col-md-4"> 
+																<form method="post" style="display:flex;align-items:center;gap:10px;margin-right:10px;" class="maintenance_form">
+																	<label style="font-weight:bold;margin-bottom:0px" >
+																		🛠 Maintenance Mode:
+																		<span id="maintenance-status" style="color: <?= $maintenanceMode ? 'red' : 'green'; ?>">
+																			<?= $maintenanceMode ? 'ON' : 'OFF'; ?>
+																		</span>
+																	</label>
+																	<label class="switch" style="margin-bottom:0px">
+																		<input type="checkbox" id="toggle-maintenance" name="toggle"  <?= $maintenanceMode ? 'checked' : ''; ?>>
+																		<span class="slider round"></span>
+																	</label>
+																</form>
+															</label>
+															</section>
+														</div>
+														<style>
+															.switch { position: relative; display: inline-block; width: 50px; height: 24px; }
+															.switch input { opacity: 0; width: 0; height: 0; }
+															.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+																background-color: #ccc; transition: 0.4s; border-radius: 24px; }
+															.slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px;
+																bottom: 3px; background-color: white; transition: 0.4s; border-radius: 50%; }
+															input:checked + .slider { background-color: #f44336; }
+															input:checked + .slider:before { transform: translateX(26px); }
+															.maintenance_form .slider-track,.maintenance_form .tooltip,.maintenance_form .slider.round
+															{
+																display:none;
+															}
+														</style>
+													<?php endif; ?>
+													<form id="frmForm" class="smart-form" novalidate="novalidate" enctype="multipart/form-data">
+												<div class="row">
+													
+														<section class="form-group form-group-sm clearfix">
+															<label class="col-md-12 control-label"><strong class="txt-color-blue"><?php echo $this->translate('Logo (160x40)'); ?></strong></label>
+															<label class="col-md-12"> 
+																<input type="file" name="logo_file" id="logo_file" class="form-control ">
+																<img src="public/uploads/<?php echo $this->Settings['logo']?>" width="150" id="logo_file_img" style="padding-top:10px">
+																<label class="progress hide" style="height:21px;width: 100%;margin-top: 5px;" id="customfileupload">
+
+																	<div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%;line-height:21px;color:#FFFFFF;font-size:14px">File uploading
+																	</div>
+
+																</label>
+															</label>
+														</section>
+													
+												</div>
+												<div class="row">
+													
+														<section class="form-group form-group-sm clearfix">
+															<label class="col-md-12 control-label"><strong class="txt-color-blue"><?php echo $this->translate('Favicon Icon (24x24)'); ?></strong></label>
+															<label class="col-md-12"> 
+																<input type="file" name="favicon_file" id="favicon_file" class="form-control">
+																<img src="public/uploads/<?php echo $this->Settings['favicon']?>" width="24" style="padding-top:10px" id="favicon_file_img">
+																<label class="progress hide" style="height:21px;width: 100%;margin-top: 5px;" id="customfileupload2">
+
+																	<div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%;line-height:21px;color:#FFFFFF;font-size:14px">File uploading
+																	</div>
+
+																</label>
+															</label>
+														</section>
+													
+												</div>
+												<div class="row">
+													
+														<section class="form-group form-group-sm clearfix">
+															<label class="col-md-12 control-label"><strong class="txt-color-blue"><?php echo $this->translate('Support Form'); ?></strong></label>
+															<label class="col-md-12"> 
+																<textarea type="text" id="support_form" name="support_form" class="form-control "><?php echo $this->Settings['support_form'];?></textarea>
+																<small></small>
+															</label>
+														</section>
+													
+												</div>
+												<div class="row">
+													
+														<section class="form-group form-group-sm clearfix">
+															<label class="col-md-12 control-label"><strong class="txt-color-blue"><?php echo $this->translate('Bank Information Form'); ?></strong></label>
+															<label class="col-md-12"> 
+																<textarea type="text" id="bank_information_form" name="bank_information_form" class="form-control "><?php echo $this->Settings['bank_information_form'];?></textarea>
+																<small></small>
+															</label>
+														</section>
+													
+												</div>
+												<div class="row">
+													
+														<section class="form-group form-group-sm clearfix">
+															<label class="col-md-12 control-label"><strong class="txt-color-blue"><?php echo $this->translate('Promotion Form'); ?></strong></label>
+															<label class="col-md-12"> 
+																<textarea type="text" id="promotion_form" name="promotion_form" class="form-control "><?php echo $this->Settings['promotion_form'];?></textarea>
+																<small></small>
+															</label>
+														</section>
+													
+												</div>
+												<?php /*
+												<div class="row">
+													
+														<section class="form-group form-group-sm clearfix">
+															<label class="col-md-12 control-label"><strong class="txt-color-blue"><?php echo $this->translate('How to Edit Artist Page Link'); ?></strong></label>
+															<label class="col-md-12"> 
+																<textarea type="text" id="edit_artist_page_url" name="edit_artist_page_url" class="form-control "><?php echo $this->Settings['edit_artist_page_url'];?></textarea>
+																<small></small>
+															</label>
+														</section>
+													
+												</div>
+												<div class="row">
+													
+														<section class="form-group form-group-sm clearfix">
+															<label class="col-md-12 control-label"><strong class="txt-color-blue"><?php echo $this->translate('Content Delivery Guidline Link'); ?></strong></label>
+															<label class="col-md-12"> 
+																<textarea type="text" id="content_guideline_url" name="content_guideline_url" class="form-control "><?php echo $this->Settings['content_guideline_url'];?></textarea>
+																<small></small>
+															</label>
+														</section>
+													
+												</div>
+												<div class="row">
+													
+														<section class="form-group form-group-sm clearfix">
+															<label class="col-md-12 control-label"><strong class="txt-color-blue"><?php echo $this->translate('Generating IRSC Link'); ?></strong></label>
+															<label class="col-md-12"> 
+																<textarea type="text" id="gen_irsc_url" name="gen_irsc_url" class="form-control "><?php echo $this->Settings['gen_irsc_url'];?></textarea>
+																<small></small>
+															</label>
+														</section>
+													
+												</div>
+												<div class="row">
+													
+														<section class="form-group form-group-sm clearfix">
+															<label class="col-md-12 control-label"><strong class="txt-color-blue"><?php echo $this->translate('Youtube Content Guideline Link'); ?></strong></label>
+															<label class="col-md-12"> 
+																<textarea type="text" id="youtube_guideline_link" name="youtube_guideline_link" class="form-control "><?php echo $this->Settings['youtube_guideline_link'];?></textarea>
+																<small></small>
+															</label>
+														</section>
+													
+												</div>
+												<div class="row">
+													
+														<section class="form-group form-group-sm clearfix">
+															<label class="col-md-12 control-label"><strong class="txt-color-blue"><?php echo $this->translate('Audi Store Content Guideline Link'); ?></strong></label>
+															<label class="col-md-12"> 
+																<textarea type="text" id="audio_store_guideline_link" name="audio_store_guideline_link" class="form-control "><?php echo $this->Settings['audio_store_guideline_link'];?></textarea>
+																<small></small>
+															</label>
+														</section>
+													
+												</div> */ ?>
+												</form>
+											</fieldset>
+										</div>
+										
+									</div>	
+									
+                
+
+                </div>
+            </div>
+          
+
+        </div>
+
+    </div>
+
+	<div class="buttons flex mt-10 right">
+			<button id="btnSave" class="btn-primary" form="attributeVerification" aria-label="Continue"  class="mb-8" style="">Save</button>
+			
+		  </div>
+</div>
+
+	</article>
+	</div>
+</div>	
+<script type="text/javascript">
+    $(document).ready(function () {
+		acl_PRINT=0;
+        $("#btnSave").click(function (e) {
+            e.stopPropagation();
+            $("#frmForm").submit();
+        });
+		function setErrorMsg(field,msg)
+		{
+			$('#'+field).addClass('error');
+			$('#'+field).parent().find("small").text(msg);
+		}
+	
+	$("#frmForm").validate(
+	{
+		submitHandler: function (form) {
+			
+			var required = false;
+			$('#frmForm small').text('');
+			$('#frmForm').find('input,select,textarea').removeClass('error');
+			
+			if ($("#support_form").val() == '') {
+			   required = true;
+			   setErrorMsg('support_form','This field is required');
+			}
+			if ($("#profile_form").val() == '') {
+			   required = true;
+			   setErrorMsg('profile_form','This field is required');
+			}
+			if ($("#edit_artist_page_url").val() == '') {
+			   required = true;
+			   setErrorMsg('edit_artist_page_url','This field is required');
+			}
+			if ($("#content_guideline_url").val() == '') {
+			   required = true;
+			   setErrorMsg('content_guideline_url','This field is required');
+			}
+			if ($("#gen_irsc_url").val() == '') {
+			   required = true;
+			   setErrorMsg('gen_irsc_url','This field is required');
+			}
+			if ($("#youtube_guideline_link").val() == '') {
+			   required = true;
+			   setErrorMsg('youtube_guideline_link','This field is required');
+			}
+			if ($("#audio_store_guideline_link").val() == '') {
+			   required = true;
+			   setErrorMsg('audio_store_guideline_link','This field is required');
+			}
+			
+			if(required)
+				return;
+			
+			var $form = $('#frmForm');
+			var objMasterData = $form.serializeObject();
+			
+			$.extend(objMasterData, { MASTER_KEY_ID: 0});
+			
+			objMasterData = JSON.stringify(objMasterData);
+			var objFormData =
+			{
+				pAction    : strActionMode,
+				FORM_DATA: objMasterData
+			};
+			var objMyPost = AJAX_Post("<?php echo $this->url('settings', array('action'=>'save'));?>", objFormData);
+			if (objMyPost.ERR_NO === 0) {
+				if (objMyPost.DATA.DBStatus === 'OK') {
+					
+					mySmallAlert('Save Record', 'Settings Saved successfully', 1);
+					
+				}
+			}
+			else {
+				mySmallAlert('Error...!', 'There was an error', 0);
+			}
+		}
+ });
+    
+	
+	$("#logo_file").change(function () {
+				if (this.files && this.files[0]) {
+				   var reader = new FileReader();
+				   reader.onload = imageIsLoadedLogo;
+				   reader.readAsDataURL(this.files[0]);
+				   //Save img
+				   var $form = $('#frmForm');
+				   var oMyForm = new FormData($form.get(0));
+				   //*============================image=====================================
+				   file = document.getElementById("logo_file").files[0];
+				   if (file && file.size > 0) {
+					var fileInputProfile = document.getElementById("logo_file");
+					oMyForm.append("attachment_file", file);
+				   } else {
+					oMyForm.append("attachment_file", 0);
+				   }
+				   var deferred;
+				   deferred = $.ajax({
+					url: "<?php echo $this->url('settings', array('action'=>'uploadlogo'));?>",
+					type: "POST",
+					processData: false,
+					contentType: false,
+					dataType: 'json',
+					data: oMyForm,
+					beforeSend: function () {
+					},
+					success: function () {
+						
+					}
+				   });
+				   
+					$("#customfileupload").removeClass('hide');
+					$("#btnSave").addClass('hide');
+					deferred.done(function (result) {
+						
+					$("#customfileupload").addClass('hide');
+					$("#btnSave").removeClass('hide'); 
+					if(result.status == 'OK')
+					{
+						 $('.desktop-logo img').attr("src",'public/uploads/'+result.doc_file1);
+						 mySmallAlert('Save Image', 'Uploaded successfully', 1);
+						 $("#logo_file_img").attr("src",'public/uploads/'+result.doc_file1);
+						
+					}
+					
+				   
+				   }).fail(function (result) {
+					alert("There was an error");
+				   });
+				  }
+		});
+		
+		$("#favicon_file").change(function () {
+				if (this.files && this.files[0]) {
+				   var reader = new FileReader();
+				   reader.onload = imageIsLoadedLogo;
+				   reader.readAsDataURL(this.files[0]);
+				   //Save img
+				   var $form = $('#frmForm');
+				   var oMyForm = new FormData($form.get(0));
+				   //*============================image=====================================
+				   file = document.getElementById("favicon_file").files[0];
+				   if (file && file.size > 0) {
+					var fileInputProfile = document.getElementById("favicon_file");
+					oMyForm.append("attachment_file", file);
+				   } else {
+					oMyForm.append("attachment_file", 0);
+				   }
+				   var deferred;
+				   deferred = $.ajax({
+					url: "<?php echo $this->url('settings', array('action'=>'uploadfav'));?>",
+					type: "POST",
+					processData: false,
+					contentType: false,
+					dataType: 'json',
+					data: oMyForm,
+					beforeSend: function () {
+					},
+					success: function () {
+						
+					}
+				   });
+				   
+					$("#customfileupload2").removeClass('hide');
+					$("#btnSave").addClass('hide');
+					deferred.done(function (result) {
+						
+					$("#customfileupload2").addClass('hide');
+					$("#btnSave").removeClass('hide'); 
+					if(result.status == 'OK')
+					{
+						  $('#bs-left-logo-reduced img').attr("src",'public/uploads/'+result.doc_file1);
+						 mySmallAlert('Save Image', 'Uploaded successfully', 1);
+						 $("#favicon_file_img").attr("src","public/uploads/"+result.doc_file1);
+						
+					}
+					
+				   
+				   }).fail(function (result) {
+					alert("There was an error");
+				   });
+				  }
+		});
+		function performClick(node) {
+		  var evt = document.createEvent("MouseEvents");
+		  evt.initEvent("click", true, false);
+		  node.dispatchEvent(evt);
+		 }
+		 function imageIsLoadedLogo(e) {
+		  $('#imgCompanyLogo').attr('src', e.target.result);
+		 }
+	});
+</script>

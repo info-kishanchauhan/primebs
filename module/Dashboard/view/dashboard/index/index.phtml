@@ -1,0 +1,2304 @@
+<link rel="stylesheet" type="text/css" href="<?php echo $this->basePath(); ?>/public/css/index.min.css">
+<link rel="stylesheet" type="text/css" href="<?php echo $this->basePath(); ?>/public/css/visitor.css?v=1">	
+<link rel="stylesheet" type="text/css" href="<?php echo $this->basePath(); ?>/public/css/dashboard.css?v=2">	
+
+<!-- ✅ Top Fixed Global Notice -->
+<!--
+<div class="global-notice-bar" role="status" aria-live="polite">
+  <div class="notice-content">
+    <span class="notice-message">
+  Please Note: Release delivery may be delayed due to <strong>technical issues from Believe Music</strong>.
+</span>
+  </div>
+</div>
+<style>
+  /* ===== Global Top Notice Bar ===== */
+body {
+  margin: 0;
+  padding-top: 26px; /* adjust so your menu/content stays below */
+}
+
+.global-notice-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  width: 100%;
+  background: #3493ef; /* Believe-style blue */
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 2px 16px;
+  text-align: center;
+  z-index: 2147483647; /* highest layer */
+  border-bottom: 1px solid rgba(255,255,255,.25);
+  box-shadow: 0 2px 8px rgba(0,0,0,.1);
+}
+
+.global-notice-bar .notice-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.global-notice-bar .notice-icon {
+  font-size: 16px;
+}
+
+.global-notice-bar .notice-message a {
+  color: #fff;
+  font-weight: 600;
+  text-decoration: underline;
+}
+</style>
+
+-->
+
+<style>
+ 
+
+  /* kill overflow from naked rows */
+.row-full,
+.content-container .row,
+#widGrid .row {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+
+  .card-item {
+   
+    padding: 0px;
+
+
+  }
+#chartContainer {
+    display: flex;
+    align-items: flex-start;
+	align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+#myDonutChart {
+    width: 40%;
+    height: auto;
+    flex-shrink: 0; /* Prevents resizing */
+}
+
+span.dot
+{
+	width: 4px;
+    height: 4px;
+    background: #333;
+    display: inline-block;
+    border-radius: 100%;
+    margin-right: 7px;
+    margin-left: 7px;
+}
+.title span.dot
+{
+	background:#16a34a;
+}
+.legend-container {
+    width: 70%;
+    padding-left: 10px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 15px 15px;
+    border-bottom: 0px solid #ddd;
+	cursor:pointer;
+}
+.legend-item:hover
+{
+	background: #f5f5f5;
+}
+
+.legend-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+	cursor:pointer;
+}
+
+.legend-icon {
+    width: 25px;
+    height: 25px;
+    border-radius: 4px;
+}
+
+.legend-text {
+    font-size: 13px;
+    color: #000;
+    cursor: pointer;
+    font-weight: 500; /* Adjust this value for desired boldness */
+    font-family: var(--blvds-fontFamily-sans);
+}
+
+.legend-amount {
+    font-size: 15px;
+    color: #000;
+    text-align: right;
+    flex-grow: 1;
+    font-weight: 600; /* Adjust this value for desired boldness */
+    font-family: Arial, sans-serif;
+}
+.legend-color-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+</style>
+
+
+
+
+<?php if($_SESSION['user_id'] != '?') 
+{
+?>
+
+
+<!-- Google Font: Inter -->
+<!-- faster font load -->
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+
+<!-- START: Believe Cards Wrapper -->
+<style>
+/* Wrapper to control spacing between cards */
+.believe-cards-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: space-between;
+  margin: 40px auto 20px;
+  max-width: 1200px;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Card 1 - Most Popular Track */
+.believe-card-track {
+  flex: 1 1 70%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 20px 24px;
+  background: linear-gradient(90deg, rgb(238 238 238 / 89%) 13.36%, rgb(237 237 237 / 35%) 93.83%);
+  background-size: cover;
+  background-image: url(https://backstage-apps-prd.cdn.believebackstage.fr/micro-apps/analytics/assets/images/short-form/card-insight-background.png);
+  border-radius: 20px;
+  
+  min-height: 140px;
+  gap: 18px;
+}
+
+.tooltip-icon {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f3e8fb;
+  padding: 8px 12px;
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+  cursor: pointer;
+}
+
+.tooltip-icon svg {
+  width: 20px;
+  height: 20px;
+  fill: #7d2491;
+}
+
+/* Tooltip Popup */
+.tooltip-popup {
+  position: absolute;
+  top: -38px;
+  right: 0;
+  background: #111827;
+  color: #fff;
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(6px);
+  transition: all 0.2s ease;
+  z-index: 100;
+}
+
+.tooltip-icon:hover .tooltip-popup {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.believe-card-track .cover {
+  width: 85px;
+  height: 85px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  flex-shrink: 0;
+}
+
+.believe-card-track .content {
+  flex: 1;
+}
+
+.believe-card-track .content .title {
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+.believe-card-track .content .subtitle {
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+/* Button styled as a link */
+.believe-card-track .content .button {
+  margin-top: 10px;
+  padding: 8px 16px;
+  
+      background: linear-gradient(to right, #792b97, #5b34c8);
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+
+.believe-card-track .content .button svg {
+  width: 18px;
+  height: 18px;
+  fill: white;
+}
+
+/* Card 2 Link Wrapper */
+.card-link.card-20 {
+  flex: 1 1 20%;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  border-radius: 16px;
+}
+
+/* Card 2 - Resources */
+.believe-card.resources {
+  background: #fff;
+  background-image: url(https://img.freepik.com/premium-photo/defocused-image-illuminated-lights-night_1048944-26292677.jpg?w=900);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: right bottom;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  padding: 28px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-link.card-20:hover .believe-card.resources {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.15);
+}
+
+.believe-card.resources svg {
+  width: 32px;
+  height: 32px;
+  fill: #ffffff;
+  margin-bottom: 10px;
+}
+
+.believe-card.resources .res-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 6px;
+}
+
+.believe-card.resources .res-desc {
+  font-size: 13px;
+  color: #ffffff;
+  line-height: 1.5;
+}
+  .dashboard-cards-wrapper {
+  display: flex;
+  
+  gap: 20px;
+  justify-content: space-between;
+  margin: 40px auto 20px;
+  max-width: 1200px;
+  font-family: 'Inter', sans-serif;
+}
+  
+  .believe-card-tr {
+  flex: 1 1 70%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 20px 24px;
+  background: linear-gradient(90deg, rgb(238 238 238 / 89%) 13.36%, rgb(237 237 237 / 35%) 93.83%);
+  background-size: cover;
+  background-image: url(https://backstage-apps-prd.cdn.believebackstage.fr/micro-apps/analytics/assets/images/short-form/card-insight-background.png);
+  border-radius: 20px;
+  box-shadow: 0 4px 16px rgb(0 0 0 / 14%);
+  min-height: 140px;
+  gap: 18px;
+}
+  
+  .believe-card-tr .cover {
+  width: 85px;
+  height: 85px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  flex-shrink: 0;
+}
+
+.believe-card-tr .content {
+  flex: 1;
+}
+
+.believe-card-tr .content .title {
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+.believe-card-tr .content .subtitle {
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+/* Button styled as a link */
+.believe-card-tr .content .button {
+  margin-top: 10px;
+  padding: 8px 16px;
+  background: linear-gradient(to right, #792b97, #5b34c8);
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.believe-card-tr .content .button:hover {
+  background: #631a7d;
+}
+
+.believe-card-tr .content .button svg {
+  width: 18px;
+  height: 18px;
+  fill: white;
+}
+  .infringement-alert-box {
+  display: flex;
+  align-items: center;
+  background: #fef2f2;
+  border-left: 6px solid #dc2626;
+  border-radius: 14px;
+  padding: 20px 24px;
+  margin-bottom: 28px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+  animation: pulseInfringe 0.6s ease-in-out;
+}
+
+@keyframes pulseInfringe {
+  0% { transform: scale(0.97); opacity: 0.8; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.icon-column {
+  margin-right: 18px;
+  flex-shrink: 0;
+}
+
+.text-column {
+  flex-grow: 1;
+}
+
+.alert-title {
+  font-size: 16px;
+  color: #991b1b;
+  margin-bottom: 6px;
+}
+
+.alert-text {
+  font-size: 14px;
+  color: #7f1d1d;
+  line-height: 1.5;
+}
+/* === Users Requests: story-strip === */
+.ur-title{margin:0 0 10px;font:700 20px/1.2 Inter,system-ui;color:#1f2937}
+.ur-strip{max-width:1200px;margin:0 auto 12px}
+.ur-row{
+  display:flex;gap:12px;align-items:stretch;overflow-x:auto;padding:2px 2px 8px;
+  scrollbar-width:none;
+}
+.ur-row::-webkit-scrollbar{display:none}
+
+/* card */
+.ur-card{
+  position:relative;display:flex;align-items:center;gap:10px;
+  min-width:280px;padding:12px 14px;border-radius:16px;background:#fff;
+  border:1px solid #eef0f5;box-shadow:0 1px 0 rgba(16,24,40,.02);
+  text-decoration:none;transition:transform .15s ease, box-shadow .15s ease;
+}
+.ur-card::before{
+  content:"";position:absolute;left:0;top:0;height:3px;width:100%;
+  background:linear-gradient(90deg,#7d2492,#9b4de0);
+  border-top-left-radius:16px;border-top-right-radius:16px;opacity:0;transition:opacity .15s ease;
+}
+.ur-card:hover::before,.ur-card.is-active::before{opacity:1}
+.ur-card:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(17,24,39,.06)}
+
+.ur-ico{font-size:20px;line-height:1;width:28px;text-align:center}
+.ur-meta{display:flex;flex-direction:column}
+.ur-name{font:600 14px/1.15 Inter,system-ui;color:#0b1324}
+.ur-sub{font:500 12px/1.2 Inter,system-ui;color:#6b7280;margin-top:2px}
+
+.ur-badge{
+  margin-left:auto;font:700 11px/1 Inter;padding:6px 10px;border-radius:10px;
+  background:#f1e7ff;color:#6b21a8;text-transform:uppercase;letter-spacing:.3px;
+}
+.ur-pill{
+  margin-left:auto;display:inline-flex;align-items:center;justify-content:center;
+  min-width:22px;height:22px;border-radius:999px;font:700 11px/1 Inter;
+  background:#efeaff;color:#6d28d9;padding:0 7px;
+}
+
+@media (max-width:768px){
+  .ur-card{min-width:220px;padding:10px 12px}
+  .ur-name{font-size:13px}
+  .ur-sub{font-size:11px}
+}
+
+</style>
+<style>
+  .admin-summary-block .summary-card {
+  flex: 1 1 30%;
+  background: white;
+  border-radius: 12px;
+  padding: 18px 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 220px;
+}
+
+.admin-summary-block .summary-label {
+  font-size: 14px;
+  color: #475569;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.admin-summary-block .summary-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.4;
+}
+
+.card-item.hover-popup {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background: #fff;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 5%);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  cursor: pointer;
+}
+.card-item.hover-popup:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+  z-index: 2;
+}
+.card-item img {
+  border-radius: 8px;
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+}
+.track_details h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 5px 0;
+  color: #333;
+}
+.track_details p {
+  font-size: 13px;
+  margin: 0;
+  color: #777;
+}
+
+.track_info p {
+  font-size: 12px;
+  color: #888;
+  margin: 0;
+}
+  /* —— Empty state —— */
+.empty-state{
+  text-align:center;
+  padding:36px 12px;
+  background:#fafbfc;
+  border:1px solid #eef0f3;
+  border-radius:12px;
+}
+.empty-state .empty-illu{width:108px;opacity:.75;margin-bottom:10px;}
+.empty-state .empty-title{font-weight:700;color:#1f2937;margin:6px 0 2px;font-size:14px;}
+.empty-state .empty-desc{color:#6b7280;font-size:13px;}
+
+</style>
+<style>
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #f9fafb;
+  }
+
+  .rp-dashboard {
+    padding: 24px;
+  }
+
+  .rp-banner {
+    position: relative;
+    max-width: 1200px;
+    width: 90%;
+    margin: 0 auto;
+    padding: 28px 30px;
+    background: linear-gradient(to right, #bf3ddb, #3493ef);
+    /* background-image: url(https://cdn.razorpay.com/static/assets/rtux/hero-card-bg.jpg); */
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: right bottom;
+    border-radius: 7px;
+    text-align: center;
+    box-shadow: rgba(19, 38, 68, 0.1) 0px 2px 16px 0px;
+    overflow: hidden;
+    z-index: 0;
+  }
+
+  .rp-banner::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 7px;
+    z-index: 0;
+  }
+
+  .rp-banner > * {
+    position: relative;
+    z-index: 2;
+  }
+
+  :root {
+    --rp-heading-font: 'Inter', sans-serif;
+    --rp-date-font: 'Inter', sans-serif;
+    --rp-heading-color: #0f172a;
+    --rp-date-color: #64748b;
+    --rp-heading-align: center;
+    --rp-date-align: center;
+
+    --rp-amount-font: 'Inter', sans-serif;
+    --rp-amount-color: #0f172a;
+    --rp-amount-size: 28px;
+    --rp-amount-weight: 700;
+    --rp-amount-align: left;
+    --rp-amount-margin: 0;
+    --rp-amount-padding: 0;
+    --rp-amount-position: relative;
+    --rp-amount-top: auto;
+    --rp-amount-left: auto;
+  }
+
+  .rp-banner h2 {
+    font-size: 30px;
+    font-family: Rubik, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+    font-weight: 700;
+    color: #4a4a4a;
+    margin-bottom: 6px;
+    text-align: var(--rp-heading-align);
+  }
+
+  .rp-banner .date {
+    font-size: 14px;
+    color: var(--rp-date-color);
+    font-family: var(--rp-date-font);
+    margin-bottom: 30px;
+    text-align: var(--rp-date-align);
+  }
+
+  .rp-card {
+    background: linear-gradient(90deg, rgb(247 247 247 / 88%) 13.36%, rgba(197, 213, 238, 0.86) 93.83%);
+    border-radius: 12px;
+    padding: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 30px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    flex-wrap: wrap;
+    text-align: left;
+    z-index: 0;
+  }
+
+  .rp-card-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+  }
+
+  /* BALANCE SECTION - Left */
+  .rp-balance-section .label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #475569;
+  }
+
+  .tooltip-wrapper {
+    position: relative;
+    display: inline-block;
+    cursor: help;
+  }
+
+  .tooltip-wrapper:hover::after {
+    content: attr(aria-label);
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #334155;
+    color: white;
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    opacity: 1;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    z-index: 10;
+  }
+
+  .tooltip-wrapper::after {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+  }
+
+  .tooltip-wrapper svg {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    fill: hsla(211, 22%, 56%, 1);
+  }
+
+  .rp-balance-section .amount {
+    margin-top: 6px;
+    font-size: var(--rp-amount-size);
+    font-weight: var(--rp-amount-weight);
+    color: var(--rp-amount-color);
+    font-family: var(--rp-amount-font);
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    text-align: var(--rp-amount-align);
+    margin: var(--rp-amount-margin);
+    padding: var(--rp-amount-padding);
+    position: var(--rp-amount-position);
+    top: var(--rp-amount-top);
+    left: var(--rp-amount-left);
+  }
+
+  .rp-balance-section .currency-symbol,
+  .rp-balance-section .decimal {
+    opacity: 0.64;
+    font-size: 25px;
+  }
+
+  /* CENTER BLOCK */
+  .rp-card .center {
+    border-left: 2px solid rgba(108, 132, 157, 0.18);
+    padding-left: 24px;
+  }
+
+  .rp-card .center .title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #16a34a;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+
+  .rp-card .center .value {
+    font-size: 20px;
+    font-weight: 600;
+    color: #0f172a;
+  }
+
+  .rp-card .center .desc {
+    font-size: 14px;
+    color: #475569;
+    margin-top: 6px;
+  }
+
+  .rp-card .center a {
+    font-size: 14px;
+    color: #2563eb;
+    text-decoration: underline;
+    margin-top: 4px;
+    display: inline-block;
+  }
+
+  /* RIGHT IMAGE */
+  .rp-card .right img {
+    max-width: 80px;
+    margin-top: 12px;
+  }
+
+  .rp-bottom-padding {
+    padding-bottom: 70px;
+  }
+</style>
+  
+<?php if ($_SESSION['STAFFUSER'] == '1' || $_SESSION['user_id'] == '0'): ?>
+  <div class="ur-strip">
+    
+
+    <div class="ur-row" role="tablist" aria-label="Users requests">
+      <?php if(in_array('Rights Manager',$_SESSION['USER_ACCESS']) || $_SESSION['user_id'] == '0'): ?>
+      <a class="ur-card is-active" href="/support" role="tab" aria-selected="true">
+        <div class="ur-ico">🧾</div>
+        <div class="ur-meta">
+          <span class="ur-name">Rights Manager</span>
+          <span class="ur-sub"><?= (int)($this->PENDING_RIGHTS ?? 0) ?> Pending</span>
+        </div>
+        <span class="ur-badge">Take Action</span>
+      </a>
+      <?php endif; ?>
+
+      <?php if(in_array('Payment Request',$_SESSION['USER_ACCESS']) || $_SESSION['user_id'] == '0'): ?>
+      <a class="ur-card" href="/withdrawrequest" role="tab" aria-selected="false">
+        <div class="ur-ico">💳</div>
+        <div class="ur-meta">
+          <span class="ur-name">Payout Requests</span>
+          <span class="ur-sub"><?= (int)($this->PENDING_WITHDRAW_REQUESTS ?? 0) ?> Pending</span>
+        </div>
+        <span class="ur-pill"><?= (int)($this->PENDING_WITHDRAW_REQUESTS ?? 0) ?></span>
+      </a>
+      <?php endif; ?>
+
+      <?php if(in_array('Tickets & History',$_SESSION['USER_ACCESS']) || $_SESSION['user_id'] == '0'): ?>
+      <a class="ur-card" href="/tickets" role="tab" aria-selected="false">
+        <div class="ur-ico">🎟️</div>
+        <div class="ur-meta">
+          <span class="ur-name">Support Tickets</span>
+          <span class="ur-sub">
+            <?= (int)($this->OPEN_TICKETS ?? 0) ?> New · <?= (int)($this->PROCESS_TICKETS ?? 0) ?> In-progress
+          </span>
+        </div>
+        <span class="ur-pill"><?= (int)($this->OPEN_TICKETS ?? 0) ?></span>
+      </a>
+      <?php endif; ?>
+    </div>
+  </div>
+<?php endif; ?>
+
+
+<?php if (!empty($this->HAS_INFRINGEMENT)): ?>
+  <div class="infringement-alert-box">
+    <div class="icon-column">
+      <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.6.2/dist/dotlottie-wc.js" type="module"></script>
+      <dotlottie-wc 
+        src="https://lottie.host/96f65bd0-079d-4875-9d72-135741f9253e/xbzbykaVlT.lottie" 
+        style="width: 80px; height: 80px;" speed="1" autoplay loop>
+      </dotlottie-wc>
+    </div>
+    <div class="text-column">
+      <div class="alert-title">⚠️ <strong>URGENT : Copyright Infringement Notice</strong></div>
+      <div class="alert-text">
+        One or more of your assets have received a copyright infringement From 3rd Party.<br>
+        You can view the full report in your email or by visiting the 
+        <a href="/support" style="color:#3b82f6; font-weight:600; text-decoration: underline;">Rights Manager</a>.
+        Please respond as soon as possible to avoid further action.
+      </div>
+    </div>
+  </div>
+<?php endif; ?>
+
+
+
+
+<?php if (
+  $this->showBankNotice &&
+  $_SESSION['user_id'] != '0' &&
+  $_SESSION['STAFFUSER'] == '0' &&
+  $_SESSION['SUBUSER'] != '1'
+): ?>
+<div style="
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 28px;
+  background: #fef2f2;
+  border-left: 6px solid #dc2626;
+  border-radius: 14px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.05);
+  margin: 20px auto 40px;
+  font-family: 'Inter', sans-serif;
+  max-width: 1200px;
+">
+ <div style="display: flex; align-items: center; gap: 18px;">
+  <video autoplay muted loop playsinline 
+         style="width: 58px; height: 58px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+    <source src="https://cdn-icons-mp4.flaticon.com/512/16104/16104537.mp4" type="video/mp4">
+    <img src="https://cdn-icons-png.flaticon.com/512/16104/16104537.png" alt="Add Payout">
+  </video>
+
+  <div>
+      <div style="font-size: 16px; font-weight: 700; color: #991b1b; margin-bottom: 4px;">
+        ⚠️ Your Bank Verification is Pending
+      </div>
+      <div style="font-size: 14px; color: #7f1d1d;">
+        To receive payouts, please add and verify your bank details. This step is mandatory for activation.
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <a href="/settings/bankinformation"
+       style="background: #dc2626; color: white; padding: 10px 20px;
+              font-weight: 600; font-size: 14px; text-decoration: none;
+              border-radius: 8px; box-shadow: 0 2px 6px rgba(220, 38, 38, 0.3);">
+      + Verify Now
+    </a>
+  </div>
+</div>
+<?php endif; ?>
+
+
+<?php 
+	if($_SESSION['STAFFUSER'] != '1')
+	{
+?>
+<div class="believe-cards-wrapper">
+  <!-- Card 1: Track Highlight -->
+  <div class="believe-card-track">
+    <!-- Top Right Icon with Tooltip -->
+    <div class="tooltip-icon">
+      <svg viewBox="0 0 24 24">
+        <path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 
+        10 10 10 10-4.48 10-10S17.52 2 12 2m0 
+        18c-4.41 0-8-3.59-8-8s3.59-8
+        8-8 8 3.59 8 8-3.59 8-8 8"></path>
+      </svg>
+      <div class="tooltip-popup">This shows track usage info</div>
+    </div>
+
+    <!-- Cover Image -->
+<img class="cover" src="http://www.primebackstage.in/public/img/insight.gif" alt="Track Cover">
+
+
+    <!-- Content -->
+    <div class="content">
+      <div class="title">New: Charts & Trends · A clearer view of your trajectory</div>
+<div class="subtitle">Explore playlists, rankings, and trend lines that shape your stream counts.</div>
+      <a href="https://www.primebackstage.in/analytics/charts" class="button">
+        Discover Performance Trends
+        <svg viewBox="0 0 24 24">
+          <path d="M10 6 8.59 7.41 13.17 12l-4.58 
+          4.59L10 18l6-6z"></path>
+        </svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- Card 2: Resources (Clickable) -->
+  <a href="https://www.primebackstage.in/faq" target="_blank" class="card-link card-20">
+    <div class="believe-card resources">
+      <svg viewBox="0 0 24 24">
+        <path d="M21 5c-1.11-.35-2.33-.5-3.5-.5
+        -1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9
+        1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05
+        C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4
+        5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5
+        1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05
+        .25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0
+        13.5c-1.1-.35-2.3-.5-3.5-.5-1.7
+        0-4.15.65-5.5 1.5V8c1.35-.85
+        3.8-1.5 5.5-1.5 1.2 0 2.4.15
+        3.5.5v11.5z"></path>
+        <path d="M17.5 10.5c.88 0 1.73.09 2.5.26V9.24c-.79-.15-1.64-.24-2.5-.24
+        -1.7 0-3.24.29-4.5.83v1.66c1.13-.64 2.7-.99
+        4.5-.99zM13 12.49v1.66c1.13-.64 2.7-.99
+        4.5-.99.88 0 1.73.09 2.5.26V11.9c-.79-.15-1.64-.24-2.5-.24
+        -1.7 0-3.24.3-4.5.83zm4.5 1.84c-1.7 0-3.24.29-4.5.83v1.66c1.13-.64
+        2.7-.99 4.5-.99.88 0 1.73.09
+        2.5.26v-1.52c-.79-.16-1.64-.24-2.5-.24z"></path>
+      </svg>
+      <div class="res-title">Resources</div>
+      <div class="res-desc">Booming or Top Hits, two new segments to identify when a track is viral</div>
+    </div>
+  </a>
+</div><br>
+
+<?php } ?>
+
+
+	<div class="row row-full" style="">
+	
+		<?php 
+			if($_SESSION['STAFFUSER'] != '1')
+			{
+		?>
+		<div style="width: 100%;">
+			<div class="blvds-custom-grid" style="padding-bottom: 1.75rem;">
+				<div class="audioStreams blvds-custom-grid-col-12 blvds-bg-white" style="padding: 10px 12vw;">
+					<div class="audioStream" data-testid="as-container" style="margin-top: 20px;">
+						
+						<div class="header__top svelte-ucrmon">
+							<div class="header__topLeft svelte-ucrmon">
+								<div class="header__title blvds-format-h6 blvds-text-gray-700 svelte-ucrmon">Streaming audio performance</div>
+								<div class="header__date blvds-format-t4 blvds-text-gray-700 svelte-ucrmon">Last 6 Months</div>
+							</div>
+							<div class="header__seeMore svelte-ucrmon"><a href="javascript:;" class="a-button -Tertiary -interactive -isRounded -noPadding svelte-1ilua7d" aria-disabled="false"></a>
+						</div>
+						<canvas id="myChart" width="400" height="100"></canvas>
+				   </div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<?php } ?>
+      
+
+      
+      <?php 
+			if($_SESSION['STAFFUSER'] != '1')
+			{
+		?>
+
+<div class="row content-container" id="bs-main-content-container" style="padding-bottom: 0rem;">
+  <div class="blvds-bg-white" style="padding: 10px 12.5vw;">
+
+    <div class="mt20">
+      <div class="row">
+
+        <!-- LEFT SIDE: Booming Tracks -->
+        <div class="col-md-6">
+          <h6 style="display: inline-block;width: 300px;margin-bottom: 12px;padding-bottom: 5px;margin-top: 40px;font-size:20px;font-weight:700;color:#555555;font-family: 'Open Sans', sans-serif;">
+            Booming Tracks 
+            <a style="position: absolute;right: 12px;font-size: 15px;color:#1976d2;font-weight:normal;font-family: 'Open Sans', sans-serif;" 
+               href="<?php echo $this->url('analytics', ['action' => 'index']); ?>">
+               Go To Insight
+            </a>
+          </h6>
+
+          <div class="jarviswidget-editbox">
+            <?php
+              // Robust: HTML should contain at least one .card-item
+              $tracksHtml = isset($this->TOP_TRACK) ? trim((string)$this->TOP_TRACK) : '';
+              $hasTracks  = ($tracksHtml !== '') && (preg_match('/class="[^"]*\bcard-item\b/i', $tracksHtml) === 1);
+            ?>
+
+            <?php if (!$hasTracks): ?>
+              <div class="empty-state">
+                <svg class="empty-illu" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <rect x="8" y="12" width="48" height="40" rx="6" ry="6" fill="#f1f5f9" stroke="#cbd5e1"/>
+                  <circle cx="24" cy="32" r="6" fill="#dbeafe"/>
+                  <path d="M14 44l12-12 10 10 8-8 6 6" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <div class="empty-title">No Booming Tracks Yet</div>
+                <div class="empty-desc">Your most streamed tracks will appear here once data is available.</div>
+              </div>
+            <?php else: ?>
+              <div class="dynamic-track-wrapper">
+                <?php
+                  echo preg_replace(
+                    '/class="([^"]*\bcard-item\b[^"]*)"/i',
+                    'class="$1 hover-popup"',
+                    $tracksHtml
+                  );
+                ?>
+              </div>
+            <?php endif; ?>
+          </div>
+        </div>
+
+        <!-- RIGHT SIDE: Top Trending Stores -->
+        <div class="col-md-6">
+          <h6 style="display: inline-block;width: 300px;margin-bottom: 12px;padding-bottom: 5px;margin-top: 40px;font-size:20px;font-weight:700;color:#555555;font-family: 'Open Sans', sans-serif;">
+            Trending Stores
+            <a style="position: absolute;right: 12px;font-size: 15px;color:#1976d2;font-weight:normal;font-family: 'Open Sans', sans-serif;" 
+               href="<?php echo $this->url('analytics', ['action' => 'index']); ?>">
+               Go To Insight
+            </a>
+          </h6>
+
+          <div class="jarviswidget-editbox">
+            <?php
+              $storesArr   = isset($this->TOP_STORE) ? (array)$this->TOP_STORE : [];
+              $storesCount = count($storesArr);
+            ?>
+
+            <div id="stores-empty" class="empty-state" style="display: <?php echo ($storesCount>0?'none':''); ?>;">
+              <svg class="empty-illu" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <rect x="8" y="12" width="48" height="40" rx="6" ry="6" fill="#f1f5f9" stroke="#cbd5e1"/>
+                <circle cx="24" cy="32" r="6" fill="#dbeafe"/>
+                <path d="M14 44l12-12 10 10 8-8 6 6" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <div class="empty-title">No Trending Stores Yet</div>
+              <div class="empty-desc">This section will show your top performing stores when data becomes available.</div>
+            </div>
+
+            <?php if ($storesCount > 0): ?>
+              <div id="chartContainer">
+                <div id="myDonutChart"></div>
+                <div class="legend-container"></div>
+              </div>
+            <?php endif; ?>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+
+
+  <?php } ?>
+  <?php } ?>
+<?php if ($_SESSION['user_id'] > 0 && $_SESSION['SUBUSER'] == 0 && $_SESSION['STAFFUSER'] != '1'): ?>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+
+      
+ 
+							
+<br><br><br>
+      <div style="width: 100%;">
+			<div class="blvds-custom-grid" style="padding-bottom: 1.75rem;">
+				<div class="audioStreams blvds-custom-grid-col-12 blvds-bg-white" style="padding: 4px 12vw;">
+					<div class="audioStream" data-testid="as-container" style="margin-top: 10px;">
+						
+						<div class="header__top svelte-ucrmon">
+							<div class="header__topLeft svelte-ucrmon">
+								<div class="header__title blvds-format-h6 blvds-text-gray-700 svelte-ucrmon">Payments</div>
+								<div class="header__date blvds-format-t4 blvds-text-gray-700 svelte-ucrmon">Shows Current Balance</div>
+							</div>
+						</div>
+				</div>
+			</div>
+		</div>
+	</div>
+<?php
+// ===== normalize incoming state from controller =====
+// Controller may send: REQ_TYPE = requested | sent | on hold | processed | paid | complete
+// (Old values like 'new' / 'no' are treated as "no request")
+$__raw_state      = strtolower(trim($this->REQ_TYPE ?? ''));
+$__requested_date = (string)($this->requested_date ?? '');
+$__req_amount     = (string)($this->req_amount ?? '0.00');
+
+// Should we show the progress widget?
+$__progress_states = ['requested','sent','on hold','processed','paid','complete'];
+$__hasProgress = (in_array($__raw_state, $__progress_states, true) && $__requested_date !== '');
+
+// Derive step only if progress is visible
+$__step = 0;
+$__stateRaw = '';
+if ($__hasProgress) {
+  $__stateRaw = $__raw_state;
+  $__step = 1;
+  if ($__stateRaw === 'sent' || $__stateRaw === 'on hold') $__step = 2;
+  if (in_array($__stateRaw, ['processed','paid','complete'], true)) $__step = 3;
+}
+
+// unique id so multiple cards/widgets don't clash
+$__uid = substr(md5($__requested_date . $__req_amount . $__raw_state . mt_rand()), 0, 6);
+?>
+
+<style>
+/* ===== slot takes full width inside rp-card flex ===== */
+.rp-card .rp-progress-slot{ flex: 0 0 100%; width:100%; margin-top:14px; }
+
+/* ===== Dashboard compact progress (scoped) ===== */
+#dpwDash-<?= $__uid ?> .dpw-card{
+  background: linear-gradient(90deg, rgba(255,255,255,.65), rgba(255,255,255,.35));
+  border-radius: 12px; padding: 12px 14px;
+  box-shadow: inset 0 4px 16px rgba(0,0,0,.06);
+  border: 1px solid rgba(148,163,184,.20);
+}
+#dpwDash-<?= $__uid ?> .dpw-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px; }
+#dpwDash-<?= $__uid ?> .dpw-title{ font: 700 13px/1.2 'Inter', system-ui; color:#0f172a; }
+#dpwDash-<?= $__uid ?> .dpw-sub{ font: 12px/1.35 'Inter', system-ui; color:#475569; opacity:.9; }
+#dpwDash-<?= $__uid ?> .dpw-amount{ font: 800 13px/1 'Inter', system-ui; color:#0f172a; }
+#dpwDash-<?= $__uid ?> .dpw-amount b{ font-weight:900; }
+
+#dpwDash-<?= $__uid ?> .dpw-progress{ position:relative; padding-top:12px; }
+#dpwDash-<?= $__uid ?> .dpw-track{
+  position:relative; height:6px;
+  background:linear-gradient(90deg, rgba(148,163,184,.35), rgba(148,163,184,.18));
+  border-radius:999px; overflow:hidden;
+}
+#dpwDash-<?= $__uid ?> .dpw-fill{
+  position:absolute; left:0; top:0; bottom:0; width:0;
+  background:linear-gradient(90deg,#bf3ddb,#3493ef); transition: width .35s ease;
+}
+#dpwDash-<?= $__uid ?> .dpw-pin{
+  position:absolute; top:-9px; left:0; transform: translateX(-50%);
+  display:flex; flex-direction:column; align-items:center; gap:4px;
+}
+#dpwDash-<?= $__uid ?> .dpw-pin .dot{ width:12px; height:12px; border-radius:50%; background:#111827; opacity:.85; box-shadow:0 0 0 2px #fff; }
+#dpwDash-<?= $__uid ?> .dpw-pin .label{
+  padding:3px 7px; border-radius:999px; background:#0f172a; color:#fff; font:700 10.5px/1 'Inter', system-ui;
+  box-shadow:0 6px 16px rgba(2,6,23,.18);
+}
+
+#dpwDash-<?= $__uid ?> .dpw-steps{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:8px; }
+#dpwDash-<?= $__uid ?> .dpw-step{ text-align:center; }
+#dpwDash-<?= $__uid ?> .dpw-dot{
+  width:24px; height:24px; border-radius:999px; display:grid; place-items:center; margin:0 auto 5px;
+  background:#e2e8f0; color:#475569; font-size:11px; box-shadow:0 1px 6px rgba(0,0,0,.06);
+}
+#dpwDash-<?= $__uid ?> .is-active .dpw-dot{ background:#fff; color:#5b34c8; border:2px solid rgba(91,52,200,.35); }
+#dpwDash-<?= $__uid ?> .is-done .dpw-dot{ background:linear-gradient(135deg,#bf3ddb,#3493ef); color:#fff; }
+#dpwDash-<?= $__uid ?> .dpw-lbl{ font: 600 11.5px/1 'Inter', system-ui; color:#475569; }
+#dpwDash-<?= $__uid ?> .dpw-subtxt{ font: 11px/1.2 'Inter', system-ui; color:#64748b; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+#dpwDash-<?= $__uid ?> .dpw-badge{ margin-left:6px; padding:1px 6px; border-radius:999px; font-size:10.5px; font-weight:700; background:#fef3c7; color:#92400e; border:1px solid #fde68a; }
+</style>
+
+<div class="rp-banner">
+  <div class="rp-card">
+
+    <!-- Current Balance -->
+    <div class="left rp-balance-section">
+      <div class="label">
+        <span class="label-title">Current balance</span>
+        <div tabindex="-1" class="tooltip-wrapper" aria-label="This is your upcoming payment.">
+          <svg aria-hidden="true" height="16px" viewBox="0 0 24 24" width="16px" fill="none">
+            <path d="M12 11C12.5523 11 13 11.4477 13 12V16C13 16.5523 12.5523 17 12 17C11.4477 17 11 16.5523 11 16V12C11 11.4477 11.4477 11 12 11Z" fill="hsla(211, 22%, 56%, 1)"></path>
+            <path d="M12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9H12.01C12.5623 9 13.01 8.55228 13.01 8C13.01 7.44772 12.5623 7 12.01 7H12Z" fill="hsla(211, 22%, 56%, 1)"></path>
+            <path d="M1 12C1 5.92487 5.92487 1 12 1C18.0751 1 23 5.92487 23 12C23 18.0751 18.0751 23 12 23C5.92487 23 1 18.0751 1 12ZM12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3Z" clip-rule="evenodd" fill="hsla(211, 22%, 56%, 1)" fill-rule="evenodd"></path>
+          </svg>
+        </div>
+      </div>
+      <div class="amount">
+        <span class="currency-symbol">€</span>
+        <span class="value"><?php echo $this->BALANCE ?? '0.00'; ?></span>
+        <span class="decimal">.00</span>
+      </div>
+    </div>
+
+    <!-- Last Settlement -->
+    <div class="center">
+      <div class="title">
+        <p style="display:flex;align-items:center;">Last settlement <span class="dot"></span>&nbsp;<strong><?php echo $this->LAST_SETTLEMENT_DATE ?? ''; ?></strong></p>
+      </div>
+      <div class="value"><?php echo $this->LAST_SETTLEMENT_AMOUNT ?? '€0.00'; ?></div>
+      <div class="desc">Your balance must exceed the contractual threshold of 100.00 €</div>
+      <a href="<?php echo $this->url('payments', ['action' => 'index']); ?>">View all Statements</a>
+    </div>
+
+    <!-- GIF -->
+    <div class="right">
+      <img src="https://cdn.razorpay.com/static/assets/rtux/settlement-processed.gif" alt="Processed">
+    </div>
+
+    <!-- ====== PAYMENT PROCESS (full-width slot inside card) ====== -->
+    <?php if ($__hasProgress): ?>
+    <div class="rp-progress-slot" id="dpwDash-<?= $__uid ?>" aria-label="Payment progress">
+      <div class="dpw-card">
+        <div class="dpw-head">
+          <div>
+            <div class="dpw-title">Payout status</div>
+            <div class="dpw-sub">Requested on: <?= htmlspecialchars($__requested_date) ?></div>
+          </div>
+          <div class="dpw-amount">€ <b><?= htmlspecialchars($__req_amount) ?></b></div>
+        </div>
+
+        <div class="dpw-progress">
+          <div class="dpw-track" id="dpwDashTrack-<?= $__uid ?>">
+            <div class="dpw-fill" id="dpwDashFill-<?= $__uid ?>"></div>
+            <div class="dpw-pin" id="dpwDashPin-<?= $__uid ?>">
+              <div class="dot"></div>
+              <div class="label">
+                <?= ($__step === 1 ? 'Requested' : ($__step === 2 ? ($__stateRaw==='on hold'?'On hold':'Sent') : 'Processed')); ?>
+              </div>
+            </div>
+          </div>
+
+          <div class="dpw-steps" id="dpwDashSteps-<?= $__uid ?>">
+            <div class="dpw-step <?= ($__step>=1?'is-active':'') ?> <?= ($__step>1?'is-done':'') ?>">
+              <div class="dpw-dot"><i class="fa fa-upload"></i></div>
+              <div class="dpw-lbl">Requested</div>
+              <div class="dpw-subtxt"><?= htmlspecialchars($__requested_date) ?></div>
+            </div>
+
+            <div class="dpw-step <?= ($__step>=2?'is-active':'') ?> <?= ($__step>2?'is-done':'') ?>">
+              <div class="dpw-dot"><i class="fa fa-paper-plane"></i></div>
+              <div class="dpw-lbl">
+                Sent <?php if ($__stateRaw==='on hold'): ?><span class="dpw-badge">On&nbsp;hold</span><?php endif; ?>
+              </div>
+              <div class="dpw-subtxt">Confirmed by team</div>
+            </div>
+
+            <div class="dpw-step <?= ($__step>=3?'is-active':'') ?>">
+              <div class="dpw-dot"><i class="fa fa-check"></i></div>
+              <div class="dpw-lbl">Processed</div>
+              <div class="dpw-subtxt">Payout provider</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <?php endif; ?>
+    <!-- ====== /PAYMENT PROCESS ====== -->
+
+  </div>
+</div>
+
+<script>
+// accurate pin/fill placement (scoped) — runs only if progress exists
+(function(){
+  <?php if ($__hasProgress): ?>
+    function layoutDashProgress(uid, step, stateRaw){
+      var $root  = $('#dpwDash-' + uid);
+      var $steps = $root.find('.dpw-steps .dpw-step');
+      if($root.length === 0 || $steps.length === 0) return;
+
+      var $track = $('#dpwDashTrack-' + uid);
+      var $fill  = $('#dpwDashFill-' + uid);
+      var $pin   = $('#dpwDashPin-' + uid);
+
+      var idx = Math.max(0, Math.min(2, (step|0) - 1));
+      var $dot = $steps.eq(idx).find('.dpw-dot');
+      if($dot.length === 0 || $track.length === 0) return;
+
+      var dotCenter = $dot.offset().left + ($dot.outerWidth()/2);
+      var trackLeft = $track.offset().left;
+      var trackWidth= $track.outerWidth();
+
+      var pinLeftPx = Math.max(0, Math.min(trackWidth, dotCenter - trackLeft));
+      $pin.css('left', pinLeftPx + 'px');
+      $fill.css('width', pinLeftPx + 'px');
+
+      var label = (step===1) ? 'Requested' : (step===2 ? (stateRaw==='on hold'?'On hold':'Sent') : 'Processed');
+      $pin.find('.label').text(label);
+    }
+
+    var STEP  = <?= (int)$__step ?>;
+    var STATE = '<?= $__stateRaw ?>';
+    var UID   = '<?= $__uid ?>';
+
+    function relayout(){ layoutDashProgress(UID, STEP, STATE); }
+    $(window).on('load resize', relayout);
+    setTimeout(relayout, 50);
+    setTimeout(relayout, 250);
+    setTimeout(relayout, 600);
+  <?php endif; ?>
+})();
+</script>
+
+
+<?php endif; ?>
+<br><br>
+<div class="data-table " id="widGrid" data-widget-editbutton="false" data-widget-colorbutton="false" data-widget-togglebutton="false" data-widget-deletebutton="false" data-widget-fullscreenbutton="false" data-widget-custombutton="false" role="widget" style="padding: 10px 12vw;">
+
+				        <div class="mt20">
+						  <div class="row">
+                             <?php if ($isAdmin): ?>
+							 <div class="col-md-<?php if($_SESSION['user_id'] == '?'){ echo '12';}else{echo '6';}?>"><h6  id="" style="display: inline-block;width: 300px;margin-bottom: 12px;padding-bottom: 5px;margin-top: 40px;font-size:20px;font-weight:700;color:#555555;font-family: 'Open Sans', sans-serif;">Drafts Saved <a style="position: absolute;right: 12px;font-size: 15px;color:#1976d2;font-weight:normal;font-family: 'Open Sans', sans-serif;" href="<?php echo $this->url("releases",array("action" => "index"));?>?type=drafts">View All</a></h6>
+							<div class="jarviswidget-editbox">
+
+								<?php echo $this->LATEST_DRAFTS;?>
+								
+							</div>
+	
+						</div>
+                              <?php endif; ?>
+						<?php
+							if($_SESSION['user_id'] > 0 || $_SESSION['STAFFUSER'] == '0')
+							{
+						?>
+							
+							<div class="col-md-6"><h6 id="" style="display: inline-block;width: 300px;margin-bottom: 12px;padding-bottom: 5px;margin-top: 40px;font-size:20px;font-weight:700;color:#555555;font-family: 'Open Sans', sans-serif;">News</h6>
+							<div class="jarviswidget-editbox">
+							
+								<?php echo $this->News; ?>
+
+								<!--<div class="card-item-news">
+									<div class="news_date">
+										<h3>24 <br><span>APR</span></h3>
+									</div>
+									<div class="details">
+										<h3><a href="javascript:;">Scientists Discover New Species of Glowing Fish in Deep Ocean</a></h3>
+									</div>
+									
+								</div>-->
+								
+								
+							</div>
+	
+						</div>
+						
+							<?php } ?>
+							
+						  </div>
+					   </div>
+  
+					
+        <div class="jarviswidget-editbox">
+
+            <!-- This area used as dropdown edit box -->
+        </div>
+</div>
+</div>
+
+
+<div id="newsPopup" class="modal fade in" aria-hidden="false" style="display: none;">
+<div class="modal-dialog" style="">
+<div class="modal-content">
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+	
+</div>
+<div class="modal-body">
+	
+	<div class="row">
+	<div class="col-md-12 news_info">
+	 </div>
+	 </div>
+</div>
+</div>
+</div>
+</div>
+
+
+
+ <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+ <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+
+
+<script>
+	$(document).ready(function(){
+		
+		
+		$('.card-item-news h3').click(function(){
+			
+			var objFormData =
+			{
+				id : $(this).attr('id')
+			};
+			var objMyPost = AJAX_Post("<?php echo $this->url('dashboard', array('action'=>'getnews'));?>", objFormData);
+			if (objMyPost.ERR_NO === 0) {
+				if (objMyPost.DATA.DBStatus === 'OK') {
+					$('#newsPopup').modal("show");
+					$('.news_info').html(objMyPost.DATA.INFO);
+				}
+			}
+			
+		})
+	});
+</script>
+<script>
+		
+			let chart = Highcharts.charts[0]; // Get chart instance
+			let legendHTML = '';
+		
+
+		   chart.series[0].data.forEach((point, index) => {
+				let imgSrc = point.img ? point.img : '../public/img/store2/Others.png'; // Default image if missing
+				let color = point.color; // Get the color from Highcharts
+
+				legendHTML += `
+					<div class="legend-item" data-index="${index}">
+						<div class="legend-left">
+							<span class="legend-color-dot" style="background-color: ${color};"></span>
+							<img src="${imgSrc}" class="legend-icon">
+							<span class="legend-text">${point.name}</span>
+						</div>
+						<div class="legend-amount">${point.percentage.toFixed(1)}%</div>
+					</div>
+				`;
+			});
+
+			document.querySelector('.legend-container').innerHTML = legendHTML;
+			// Add Hover Effect
+			// Add Hover Effect for Custom Legend
+			document.querySelectorAll('.legend-item').forEach((item, index) => {
+				item.addEventListener('mouseover', function () {
+					let point = chart.series[0].data[index];
+					if (point) {
+						let hoverAmount = '€'+point.y.toFixed(2);
+						let hoverPercentage = point.percentage.toFixed(2)+'% of Total';
+						//updateCenterLabel(hoverAmount, hoverPercentage);
+						point.setState('hover'); // Highlight pie slice
+						chart.tooltip.refresh(point);
+					}
+				});
+
+				item.addEventListener('mouseout', function () {
+					
+					let point = chart.series[0].data[index];
+					if (point) {
+						//updateCenterLabel(defaultTotalAmount, '');
+						point.setState(); // Reset highlight
+						chart.tooltip.hide(); // Hide tooltip
+						
+					}
+				});
+			});
+        });
+		
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  Highcharts.chart('myDonutChart', {
+    chart: {
+      type: 'pie',
+      height: 250,
+      spacing: [0,0,0,0]
+    },
+    title: { text: '' },
+    subtitle: { text: '' },
+    tooltip: {
+      useHTML: true,
+      formatter: function () {
+        const pct = Highcharts.numberFormat(this.point.percentage, 1);
+        const val = Highcharts.numberFormat(this.y, 0);
+        return `<b>${this.point.name}</b><br>${pct}% • ${val} streams`;
+      }
+    },
+    plotOptions: {
+      pie: {
+        innerSize: '78%',
+        startAngle: -90,
+        endAngle: 270,
+        dataLabels: { enabled: false },
+        borderWidth: 0,
+        states: {
+          hover: { brightness: 0.08 }
+        }
+      },
+      series: {
+        animation: { duration: 700 }
+      }
+    },
+    // Colors will come from PHP (point.color). Keep colorByPoint true.
+    series: [{
+      name: 'Store',
+      colorByPoint: true,
+      data: <?php echo json_encode($this->TOP_STORE); ?>
+    }],
+    legend: { enabled: false }
+  });
+
+  // ===== Custom legend code of yours stays same =====
+  const chart = Highcharts.charts[0];
+  let legendHTML = '';
+  chart.series[0].data.forEach((point, index) => {
+    const imgSrc = point.img ? point.img : '../public/img/store2/Others.png';
+    const color = point.color || '#7C3AED';
+    legendHTML += `
+      <div class="legend-item" data-index="${index}">
+        <div class="legend-left">
+          <span class="legend-color-dot" style="background:${color}"></span>
+          <img src="${imgSrc}" class="legend-icon">
+          <span class="legend-text">${point.name}</span>
+        </div>
+        <div class="legend-amount">${point.percentage.toFixed(1)}%</div>
+      </div>`;
+  });
+  document.querySelector('.legend-container').innerHTML = legendHTML;
+
+  document.querySelectorAll('.legend-item').forEach((item, index) => {
+    item.addEventListener('mouseenter', () => {
+      const p = chart.series[0].data[index];
+      if (!p) return;
+      p.setState('hover');
+      chart.tooltip.refresh(p);
+    });
+    item.addEventListener('mouseleave', () => {
+      const p = chart.series[0].data[index];
+      if (!p) return;
+      p.setState();
+      chart.tooltip.hide();
+    });
+    item.addEventListener('click', () => {
+      const p = chart.series[0].data[index];
+      if (!p) return;
+      p.select(null, true);
+    });
+  });
+});
+</script>
+
+<script>
+  document.querySelectorAll('.ur-card').forEach(card=>{
+    card.addEventListener('click', ()=>{
+      document.querySelectorAll('.ur-card.is-active').forEach(c=>c.classList.remove('is-active'));
+      card.classList.add('is-active');
+    });
+  });
+</script>
+<!-- Chart.js (already loaded) -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  // ===== Line chart (Chart.js) =====
+  const canvas = document.getElementById('myChart');
+  const ctx = canvas.getContext('2d');
+
+  // Fill gradient (top -> bottom)
+  const fillGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  fillGradient.addColorStop(0, 'rgba(124, 58, 237, 0.18)'); // #7C3AED 18%
+  fillGradient.addColorStop(1, 'rgba(124, 58, 237, 0.00)');
+
+  // Border gradient (left -> right)
+  const borderGradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+  borderGradient.addColorStop(0, '#7C3AED'); // violet
+  borderGradient.addColorStop(1, '#06B6D4'); // cyan
+
+  // Soft glow plugin
+  const glow = {
+    id: 'glow',
+    beforeDatasetsDraw(chart, args, pluginOptions) {
+      const {ctx} = chart;
+      ctx.save();
+      ctx.shadowColor = 'rgba(124, 58, 237, 0.45)';
+      ctx.shadowBlur = 12;
+      ctx.lineJoin = 'round';
+    },
+    afterDatasetsDraw(chart, args, pluginOptions) {
+      chart.ctx.restore();
+    }
+  };
+
+  const data = {
+    labels: <?php echo json_encode($this->MONTH_NAME);?>,
+    datasets: [{
+      label: 'Audio Streams',
+      data: <?php echo json_encode($this->MONTH_DATA);?>,
+      backgroundColor: fillGradient,
+      borderColor: borderGradient,
+      borderWidth: 3,
+      pointRadius: 4,
+      pointHoverRadius: 6,
+      pointHitRadius: 12,
+      pointBorderWidth: 2,
+      pointBackgroundColor: '#ffffff',
+      pointBorderColor: '#7C3AED',
+      fill: true,
+      tension: 0.42
+    }]
+  };
+
+  const options = {
+    responsive: true,
+    maintainAspectRatio: true,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#111827',
+        titleColor: '#fff',
+        bodyColor: '#E5E7EB',
+        padding: 10,
+        displayColors: false,
+        callbacks: {
+          label: (ctx) => {
+            const v = ctx.parsed.y || 0;
+            if (v >= 1_000_000) return (v/1_000_000).toFixed(1) + 'M';
+            if (v >= 1_000) return (v/1_000).toFixed(1) + 'K';
+            return v;
+          }
+        }
+      }
+    },
+    animations: {
+      tension: { duration: 800, easing: 'easeOutCubic' },
+      borderWidth: { duration: 800 },
+      y: { duration: 700, easing: 'easeOutQuad' }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        grid: { color: 'rgba(17, 24, 39, 0.08)' },
+        ticks: {
+          color: '#6B7280',
+          callback: (value) => {
+            if (value >= 1_000_000) return (value/1_000_000).toFixed(1) + 'M';
+            if (value >= 1_000) return (value/1_000).toFixed(0) + 'K';
+            return value;
+          }
+        }
+      },
+      x: {
+        grid: { display: false },
+        ticks: { color: '#6B7280' }
+      }
+    }
+  };
+
+  new Chart(canvas.getContext('2d'), {
+    type: 'line',
+    data,
+    options,
+    plugins: [glow]
+  });
+});
+</script>
+
+
+<!-- ===== End body code ===== -->
+
+
+
+
+
+
+
+
+
+
+
+
+  <!-- ===== Chatboat code ===== -->
+<script>
+(() => {
+  // ---------- CONFIG ----------
+   const CFG = {
+    heroImg: "https://downloads.intercomcdn.com/i/o/rsifqopp/650685/8270e016160407676c1c5967a3a7/e9b78e28d612e893edba215f6a260f45.png",
+    z: 2147483647,
+  };
+
+  // ---------- MOUNT ----------
+  const root = document.createElement('div');
+  root.id = 'pda-ditto-clone';
+  root.style.all = 'initial';
+  root.style.zIndex = CFG.z;
+  document.body.appendChild(root);
+
+  root.innerHTML = `
+  <style>
+    #pda-ditto-clone, #pda-ditto-clone *{ box-sizing:border-box; font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif }
+
+    :root{
+      --p:#6F3FF5; --p2:#7C3AED; --text:#101828; --mut:#667085; --bd:#E7E8F2; --bg:#fff;
+      --r:22px; --shadow:0 30px 70px rgba(24,19,60,.28);
+      --hero-img: url('${CFG.heroImg}');
+      --lav:#EEE9FF;
+    }
+
+    /* FAB */
+    .pdaFab{
+      all:initial; position:fixed; right:22px; bottom:22px; width:58px; height:58px; border-radius:50%;
+      background:linear-gradient(135deg, #7d2492, #cd4ffa); color:#fff; display:grid; place-items:center; cursor:pointer;
+      box-shadow:0 22px 48px rgba(111,63,245,.45); border:none; transition:transform .18s ease, filter .18s ease; z-index:${CFG.z};
+    }
+    .pdaFab:hover{ transform:translateY(-3px) scale(1.06); filter:brightness(1.06) }
+
+    /* PANEL */
+ /* PANEL (fixed pointer-events toggling) */
+#pda-ditto-clone .pdaPanel {
+  /* all: initial;  <-- optional; rakhna hai to rakh lo */
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-panel);
+  pointer-events: none;           /* default: no clicks when hidden */
+}
+
+/* when open or during closing animation, allow clicks inside */
+#pda-ditto-clone .pdaPanel.open,
+#pda-ditto-clone .pdaPanel.closing {
+  pointer-events: auto;
+}
+
+#pda-ditto-clone .pdaSheet {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  width: min(390px, 90vw);
+  max-height: 75vh;
+  background: var(--bg);
+  border-radius: var(--r);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  display: grid;
+  grid-template-rows: auto 1fr auto auto;
+  transform-origin: bottom right;
+  opacity: 0;
+  transform: scale(0.85) translateY(30px);
+  /* pointer-events: auto;  <-- ab zaroorat nahi (parent se mil jayega) */
+}
+
+@media (max-width: 560px) {
+  #pda-ditto-clone .pdaSheet { left: 10px; right: 10px; width: calc(100vw - 20px); }
+}
+
+/* Open state animation */
+.pdaPanel.open .pdaSheet {
+  animation: growUp 0.35s cubic-bezier(.2, .8, .16, 1) forwards;
+}
+
+/* Close state animation */
+.pdaPanel.closing .pdaSheet {
+  animation: shrinkDown 0.25s ease forwards;
+}
+
+/* Keyframes */
+@keyframes growUp {
+  0% {
+    opacity: 0;
+    transform: scale(0.85) translateY(30px);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1.02) translateY(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes shrinkDown {
+  0% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.85) translateY(30px);
+  }
+}
+
+    .pdaPanel.open .pdaSheet{ transform:none; opacity:1 }
+    @media (max-width:560px){ .pdaSheet{ left:10px; right:10px; width:auto } }
+
+    /* ===== HERO HEADER (IMAGE) ===== */
+    .pdaHeroHeader{ position:relative; height:230px; overflow:hidden; isolation:isolate; }
+    .pdaHeroHeader::before{
+      content:""; position:absolute; inset:0; background-image:var(--hero-img);
+      background-repeat:no-repeat; background-size:100% auto; background-position:left top; z-index:0;
+    }
+    .pdaHeroBrand{ position:absolute; left:30px; top:30px; color:#fff; font-weight: 400; letter-spacing:.12em; text-shadow:0 2px 8px rgba(0,0,0,.2) }
+    .pdaHeroText{ position:absolute; left:30px; bottom:42px; color:#fff }
+    .pdaHeroText h3{ margin:0 0 6px; font-size:28px; line-height:1.1; font-weight:600;  color:#fff; padding-bottom:1px; }
+    .pdaHeroText p{ margin:0; left:30px; opacity:.92; font-size:18px; color:#fff; padding-top:0; padding-bottom:0; }
+    .pdaHeaderCurve{ position:absolute; left:0; right:0; bottom:-28px; height:28px; background:#fff; border-radius:28px 28px 0 0; box-shadow:0 -10px 24px rgba(0,0,0,.06) inset }
+    .pdaMini{ position:absolute; right:14px; top:14px; width:44px; height:44px; border-radius:14px; border:0;
+      background:rgba(255,255,255,.18); backdrop-filter:saturate(140%) blur(6px); color:#fff; display:grid; place-items:center;
+      box-shadow:0 6px 18px rgba(0,0,0,.15); cursor:pointer; }
+
+    /* BODY */
+    .pdaBody{ padding:14px; overflow:auto }
+
+    .pdaBody::-webkit-scrollbar{ width:8px } .pdaBody::-webkit-scrollbar-thumb{ background:#E3DFFF; border-radius:10px }
+
+    .card{ background:#fff; border:1px solid var(--bd); border-radius:18px; box-shadow:0 16px 36px rgba(0,0,0,.06) }
+    .ctaWrap{ padding:14px; border:0; box-shadow:none; background:transparent }
+    .cta{
+      width:100%; border:0; border-radius:16px; padding:14px 16px; font-weight:500; cursor:pointer; background:#fff; color:#111;
+      display:flex; align-items:center; justify-content:space-between; gap:10px; box-shadow:0 8px 24px rgba(17,12,46,.12);
+    }
+    .pill{ width:38px; height:38px; border-radius:12px; background:linear-gradient(135deg,var(--p),var(--p2)); color:#fff; display:grid; place-items:center; box-shadow:0 6px 16px rgba(111,63,245,.35) }
+
+    /* SEARCH */
+    .searchCard{ margin-top:1px; padding:2px 0 0; border:0; box-shadow:none; background:transparent }
+    .searchPill{ position:relative }
+    .searchPill input{
+      width:100%; height:44px; border:1.5px solid #ECECF6; border-radius:12px; background:#fff;
+      padding:0 44px 0 42px; outline:none; transition:box-shadow .15s ease, border-color .15s ease;
+      font-size:14px; color:#191b26; box-shadow:0 6px 18px rgba(17,12,46,.06);
+    }
+    .searchPill input:focus{ border-color:#CFC7FF; box-shadow:0 0 0 4px rgba(111,63,245,.15) }
+    .lens, .glass{ position:absolute; top:50%; transform:translateY(-50%); font-size:0 }
+    .lens{ left:14px } .glass{ right:12px }
+    .icon{ width:18px; height:18px; display:block; color:#98A2B3 }
+    .icon.accent{ color:#6F3FF5 }
+
+    /* QUICK list */
+    .quick{ list-style:none; margin:12px 0 0; padding:0; max-height:220px; overflow:auto; border-radius:14px }
+    .quick li{ border-bottom:1px solid #ffffff; }
+    li { color:#9d9d9d; font-size:13px; line-height:18px; }
+    .quick a{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 10px; color:#707070; text-decoration:none; border-radius:12px }
+    .quick a .mute{ color:#9AA4B2; font-weight:700 }
+    .quick a:hover{ background:#F6F5FF }
+    
+
+    /* NEWS */
+    .newsRow{ border:0; border-radius:18px; overflow:hidden; margin-top:12px; box-shadow:0 8px 24px rgba(17,12,46,.08) }
+    .newsCard{ display:flex; gap:12px; padding:10px; align-items:center }
+    .newsImg{ width:96px; height:60px; border-radius:12px; overflow:hidden; background:#ddd }
+    .newsImg img{ width:100%; height:100%; object-fit:cover }
+    .newsMeta{ font-size:11px; color:#6F3FF5; font-weight:700 }
+    .newsTitle{ font-size:14px; font-weight:800; color:#222; margin-top:2px }
+
+  
+    /* Tabs */
+    .tabs{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; padding:12px; background:#fff; position:relative; border-radius:22px; box-shadow:0 -6px 24px rgba(17,12,46,.06) }
+    .tabs button{
+      all:initial; border-radius:16px; padding:1px 1px; cursor:pointer; color:#3b3b44;
+      display:flex; flex-direction:column; align-items:center; gap:6px; font:14px Inter, system-ui; text-align:center;
+    }
+    .tabs button svg{ width:18px; height:18px }
+    .tabs button.active{ color:#6F3FF5 }
+    .tabs{ margin-bottom:5px; border-radius:0 !important; }
+
+/* ===== Skeleton ===== */
+    .skeleton { position: relative; overflow: hidden; background: #eee; border-radius: 8px; }
+    .skeleton::after {
+      content: ""; position: absolute; inset: 0;
+      transform: translateX(-100%);
+      background: linear-gradient(90deg, rgba(255,255,255,0) 0%,
+        rgba(255,255,255,.6) 50%, rgba(255,255,255,0) 100%);
+      animation: shimmer 1.3s infinite;
+    }
+    @keyframes shimmer { 100% { transform: translateX(100%); } }
+    .skeleton-line { height: 10px; border-radius: 6px; }
+    .skeleton-gap { height: 8px; }
+    .skeleton-quick li{ display:flex; gap:10px; padding:12px 10px; }
+    .skeleton-dot{ width:18px; height:18px; border-radius:6px; }
+    .skeleton-news .row{ display:flex; gap:12px; padding:10px; }
+    .skeleton-thumb{ width:96px; height:60px; border-radius:12px; }
+    .hide{ display:none !important; }
+  </style>
+
+  <!-- FAB -->
+  <button class="pdaFab" id="pdaFab" aria-label="Open support">
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round">
+      <path d="M7 8h10M7 12h7M5 20l3-3h9a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7A3 3 0 0 0 4 7v10a3 3 0 0 0 1 3z"/>
+    </svg>
+  </button>
+
+  <!-- PANEL -->
+  <div class="pdaPanel" id="pdaPanel" aria-hidden="true">
+    <div class="pdaSheet">
+      <!-- HERO -->
+      <div class="pdaHeroHeader">
+        <button class="pdaMini" id="pdaMini" aria-label="Close">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+        <div class="pdaHeroBrand">PRIME</div>
+        <div class="pdaHeroText">
+          <h3>Hi there.</h3>
+          <p>How can we help?</p>
+        </div>
+        <div class="pdaHeaderCurve"></div>
+      </div>
+
+      <!-- BODY -->
+    <section class="pdaBody">
+  
+
+          <div class="searchCard">
+            <div class="searchPill">
+              <span class="lens">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+              </span>
+              <input type="text" id="pdaSearch" placeholder="Search for help"/>
+              <span class="glass">
+                <svg class="icon accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h16"/></svg>
+              </span>
+            </div>
+
+ <!-- Skeleton FAQ -->
+          <ul id="quickListSkeleton" class="skeleton-quick">
+            ${Array.from({length:5}).map(()=>`
+              <li>
+                <div class="skeleton skeleton-dot"></div>
+                <div style="flex:1">
+                  <div class="skeleton skeleton-line" style="width:75%"></div>
+                  <div class="skeleton-gap"></div>
+                  <div class="skeleton skeleton-line" style="width:45%"></div>
+                </div>
+              </li>
+            `).join('')}
+          </ul>
+
+             <ul class="quick hide" id="quickList">
+              <li><a href="https://www.primebackstage.in/faq/article/66"><span class="q">How does YouTube Content ID work?</span><span class="mute">›</span></a></li>
+              <li><a href="https://www.primebackstage.in/faq/article/69"><span class="q">How do I get an Official Artist Channel on YouTube?</span><span class="mute">›</span></a></li>
+              <li><a class="active" href="https://www.primebackstage.in/faq/article/64"><span class="q">How can I whitelist my Facebook pages?</span><span class="mute">›</span></a></li>
+              <li><a href="https://www.primebackstage.in/faq/article/73"><span class="q">How do I access my statements?</span><span class="mute">›</span></a></li>
+              <li><a href="https://www.primebackstage.in/faq/article/96"><span class="q">How can I pitch my songs for promotion?</span><span class="mute">›</span></a></li>
+
+            </ul>
+          </div>
+
+
+
+         <div class="newsRow">
+  <a href="https://www.primebackstage.in/faq/article/111" class="newsCard" style="text-decoration:none; color:inherit; display:flex; gap:12px; align-items:center;">
+    <div class="newsImg">
+      <img src="https://downloads.intercomcdn.com/i/o/rsifqopp/1452204507/4554922cdf3e00dd07d2fbaabac8/Whatsapp_Store-Page_Press-Update.jpg?expires=1754995500&signature=5a4053f3b29cffc4bbd5e278e8a242f494a3f79c10b7e9eef7cd4196030a7812&req=dSQiFMt%2BmYRfXvMW1HO4zWvS25up4hXXk1L9VGnRmC4XuNb4GaHhoq6FmE%2Bi%0ADk4EXGQ%3D%0A" alt="">
+    </div>
+    <div>
+      <div class="newsMeta">New Store</div>
+      <div class="newsTitle">Upload your tracks to WhatsApp</div>
+      <div class="mute" style="font-size:12px">Read more ➜</div>
+    </div>
+  </a>
+
+<a href="https://www.primebackstage.in/promotion" class="newsCard" style="text-decoration:none; color:inherit; display:flex; gap:12px; align-items:center;">
+    <div class="newsImg">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYQZ5P3ugmQZ1UkipSgg4HnHxOY0evgT3YeLw03QhQt8zEjzDSCbN9E1BcdsfG9M4pM4s&usqp=CAU" alt="">
+    </div>
+    <div>
+      <div class="newsMeta">New Service</div>
+      <div class="newsTitle">Ready to Join a YouTube MCN?</div>
+      <div class="mute" style="font-size:12px">Join Now ➜</div>
+    </div>
+  </a>
+</div>
+
+      </section>
+
+ 
+
+      <!-- Tabs -->
+      <nav class="tabs" id="pdaTabs">
+        <button class="active" data-go="home">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M9 22V12h6v10"/></svg>
+          <span>Home</span>
+        </button>
+        <button data-go="messages">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M21 15a4 4 0 0 1-4 4H7l-4 4V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/>
+  </svg>
+  <span>Support Tickets</span>
+</button>
+
+<button data-go="help">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <circle cx="12" cy="12" r="10"/>
+    <path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2-3 4"/>
+    <path d="M12 17h.01"/>
+  </svg>
+  <span>Help</span>
+</button>
+
+<button data-go="news">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M4 4h16v16H4z"/>
+    <path d="M8 8h8M8 12h8M8 16h5"/>
+  </svg>
+  <span>News</span>
+</button>
+
+      </nav>
+    </div>
+  </div>
+  `;
+
+  // ---------- JS ----------
+  const $ = sel => root.querySelector(sel);
+  const fab   = $('#pdaFab');
+  const panel = $('#pdaPanel');
+  const sheet = root.querySelector('.pdaSheet');
+  const mini  = $('#pdaMini');
+  const tabs  = $('#pdaTabs');
+  const search= $('#pdaSearch');
+  const quick = $('#quickList');
+
+  const quickReal = $('#quickList'), quickSkel = $('#quickListSkeleton');
+  
+
+  function showSkeleton() {
+    quickSkel.classList.remove('hide'); quickReal.classList.add('hide');
+    
+  }
+  function hideSkeleton() {
+    quickSkel.classList.add('hide'); quickReal.classList.remove('hide');
+    
+  }
+
+  const open = () => {
+    panel.classList.add('open');
+    panel.setAttribute('aria-hidden','false');
+    fab.style.display='none';
+    showSkeleton();
+    setTimeout(hideSkeleton, 1000); // 1s delay
+  };
+  const close = () => {
+    panel.classList.remove('open');
+    panel.setAttribute('aria-hidden','true');
+    fab.style.display='grid';
+  };
+
+  fab.addEventListener('click', open);
+  mini.addEventListener('click', close);
+  tabs.addEventListener('click', e=>{
+    const b = e.target.closest('button[data-go]');
+    if(!b) return;
+    tabs.querySelectorAll('button').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+  });
+
+  if(search && quick){
+    search.addEventListener('input', ()=>{
+      const q = search.value.toLowerCase();
+      quick.querySelectorAll('li').forEach(li=>{
+        li.style.display = li.textContent.toLowerCase().includes(q) ? '' : 'none';
+      });
+    });
+  }
+
+  try {
+    if(new URLSearchParams(location.search).get('openChat') === '1') open();
+  } catch {}
+})();
+</script>
+  <script>
+  document.querySelector('button[data-go="messages"]').onclick = () => {
+    window.location.href = "https://www.primebackstage.in/tickets";
+  };
+  document.querySelector('button[data-go="help"]').onclick = () => {
+    window.location.href = "https://www.primebackstage.in/faq";
+  };
+  document.querySelector('button[data-go="news"]').onclick = () => {
+    window.location.href = "https://www.whatsapp.com/channel/0029VaXU4WWLtOjGnXeqFJ3h";
+  };
+      document.getElementById("ctaBtn").addEventListener("click", function() {
+    window.location.href = "https://www.primebackstage.in/tickets";
+  });
+    
+    const close = () => {
+  panel.classList.remove('open');
+  panel.classList.add('closing');
+  setTimeout(() => {
+    panel.classList.remove('closing');
+    panel.setAttribute('aria-hidden','true');
+    fab.style.display='grid';
+  }, 250); // shrinkDown duration ke barabar
+};
+
+</script>
+  
+  <style>
+  
+.cta {
+    background: #6F3FF5;
+    color: #fff;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 15px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .cta:hover {
+    background: ;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(111, 63, 245, 0.4);
+  }
+ 
+    
+    .newsCard {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 10px;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+.newsImg img {
+  border-radius: 8px;
+  transition: transform 0.3s ease;
+}
+.newsMeta {
+  font-size: 12px;
+  color: #6F3FF5;
+  font-weight: 600;
+}
+.newsTitle {
+  font-size: 15px;
+  font-weight: 600;
+  margin-top: 2px;
+}
+.mute {
+  font-size: 12px;
+  color: #666;
+}
+
+.newsCard:hover {
+  background: #f9f7ff;
+  box-shadow: 0 8px 20px rgba(111, 63, 245, 0.15);
+  transform: translateY(-3px);
+}
+.newsCard:hover .newsImg img {
+  transform: scale(1.05);
+}
+</style>
+
+<!-- Floating FAQ Help Button -->
+<div id="faqBotWrapper">
+
+  <!-- ✅ First-time robot animation -->
+  <div id="faqIntroAnimation">
+    <dotlottie-wc 
+      src="https://lottie.host/a54e24d2-af27-4ff5-a7d5-5aeb08ccfcbc/ZNiqJEiXDN.lottie" 
+      speed="1" 
+      autoplay 
+      loop 
+      style="width: 140px; height: 140px;">
+    </dotlottie-wc>
+  </div>
+
+<!-- ✅ Lottie Loader -->
+<script type="module" src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.6.2/dist/dotlottie-wc.js"></script>
+
+<!-- ✅ CSS Styling -->
+<style>
+/* ✅ Robot stays UNDER the chat */
+#faqIntroAnimation {
+    position: fixed;
+    bottom: 90px;
+    right: 60px;
+    width: 80px;
+    height: 80px;
+    
+    pointer-events: none;
+    animation: appearBot 0.8s ease-out forwards;
+  }
+
+/* ✅ Appear from Right */
+@keyframes appearBot {
+  0% {
+    opacity: 0;
+    transform: translateX(80px) scale(0.8);
+    filter: blur(8px);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateX(-10px) scale(1.05);
+    filter: blur(3px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+/* ✅ Exit to Right with Motion Blur */
+@keyframes disappearBot {
+  0% {
+    opacity: 1;
+    transform: translateX(0);
+    filter: blur(0px);
+  }
+  40% {
+    filter: blur(2px);
+  }
+  70% {
+    filter: blur(5px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(120px);
+    filter: blur(8px);
+    visibility: hidden;
+  }
+}
+
+.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes blink {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateY(-5px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+/* Chart section spacing */
+.audioStreams { border-radius: 14px; }
+
+/* legend hover */
+.legend-item { transition: background .2s ease, transform .2s ease; }
+.legend-item:hover { background:#f6f7fb; transform: translateY(-1px); }
+
+</style>
+
+<script>
+
+// ✅ Always show robot animation on every page refresh
+window.addEventListener('DOMContentLoaded', () => {
+  const anim = document.getElementById('faqIntroAnimation');
+
+  // After entry animation, wait and then exit
+  setTimeout(() => {
+    if (anim) {
+      anim.style.animation = 'disappearBot 0.5s ease-in-out forwards';
+    }
+  }, 6000); // 6s delay, then slide out
+});
+
+
+</script>
+

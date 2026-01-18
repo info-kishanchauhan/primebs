@@ -1,0 +1,1382 @@
+
+
+<?php
+// ---------- Safe field helper ----------
+if (!function_exists('safeField')) {
+  function safeField($val, $placeholder = '—') {
+    $val = trim((string)$val);
+    if ($val === '' || stripos($val, '(empty)') !== false) {
+      return '<span class="text-muted">'.$placeholder.'</span>';
+    }
+    return htmlspecialchars($val, ENT_QUOTES, 'UTF-8');
+  }
+}
+?>
+<?php
+// ---- ISRC completeness flag (final) ----
+$totTracks  = (int)($this->INFO['tot_tracks'] ?? 0);
+$tracksHtml = (string)($this->Tracks ?? '');
+$isrcRows   = (string)($this->ISRC_DATA ?? '');
+$popNotice  = isset($this->popin_notice)   ? (string)$this->popin_notice   : null; // '' or 'hide'
+$popOK      = isset($this->popin_allvalid) ? (string)$this->popin_allvalid : null; // '' or 'hide'
+
+if ($totTracks === 0) {
+  $isrcMissing = true;                         // no tracks => cannot be complete
+} elseif (isset($this->INFO['isrc_missing_count'])) {
+  $isrcMissing = ((int)$this->INFO['isrc_missing_count'] > 0);
+} elseif ($popOK !== null || $popNotice !== null) {
+  // class="" means visible, "hide" means hidden
+  if ($popOK !== null && trim($popOK) !== 'hide') {
+    $isrcMissing = false;
+  } elseif ($popNotice !== null && trim($popNotice) !== 'hide') {
+    $isrcMissing = true;
+  } else {
+    $isrcMissing = null;                       // undecided → fallbacks
+  }
+  if ($isrcMissing === null) {
+    $isrcMissing = false; // will get overridden by fallbacks below
+  }
+} elseif ($isrcRows !== '') {
+  $isrcMissing =
+      (stripos($isrcRows, 'ISRC not found') !== false)
+   || (preg_match('/name=["\']isrc_\d+["\'][^>]*\bvalue=["\']\s*["\']/i', $isrcRows) === 1);
+} else {
+  $isrcMissing =
+      (stripos($tracksHtml, 'ISRC not found') !== false)
+   || (stripos($tracksHtml, 'Ask to generate an ISRC') !== false)
+   || (stripos($tracksHtml, 'data-isrc-missing="1"') !== false)
+   || (preg_match('/\bISRC\b\s*[:\-]?\s*(?:—|N\/A|NA|None|Empty)/i', $tracksHtml) === 1);
+}
+
+$isrcComplete = !$isrcMissing;
+?>
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" type="text/css" href="<?php echo $this->basePath(); ?>/public/css/assets.css">
+
+<style>
+  
+
+    #bs-main {
+  background-color: #f7f7f8 !important;
+}
+/* ---------- Fonts & iOS fixes ---------- */
+:root{
+  --font: 'Inter', -apple-system, 'SF Pro Text', system-ui, 'Segoe UI',
+          Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --ink:#0f172a; --muted:#6b7280; --line:#e5e7eb; --chip:#eef2ff;
+  --primary:#5b34c8; --primary-2:#792b97; --card:#ffffff; --bg:#f7f8fb;
+}
+html { -webkit-text-size-adjust: 100%; }
+html, body { -webkit-font-smoothing: antialiased; }
+body { background:var(--bg); font-family: var(--font) !important; }
+#bs-main-content-container {
+    padding-top: 1px;
+    padding-bottom: 30px;
+}
+/* Global font lock – tables & headings included */
+.sub-hero .meta h2,
+.sub-hero .meta .sub,
+.chip,
+.card-h h3,
+.kv label,
+.kv .v,
+.table th,
+.table td,
+button, input, select, textarea {
+  font-family: var(--font) !important;
+}
+/* iOS zoom on inputs ko avoid kare */
+input, select, textarea, button { font-size: 16px; }
+
+.sub-hero .meta h3 {
+    margin: 0 0 6px;
+    font: 700 14px / 1.2 var(--font);
+    color: #fff;
+}
+/* ---------- Hero with blurred poster BG ---------- */
+.sub-hero {
+    position: relative;
+    overflow: hidden;
+    display: grid
+;
+    grid-template-columns: 96px 1fr auto;
+    gap: 45px;
+    align-items: center;
+    padding: 20px 20px;
+    border: 1px solid var(--line);
+    /* border-radius: 12px; */
+    background: #000000;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, .06);
+    margin: 14px 0 18px;
+}
+.sub-hero .hero-bg{
+  position:absolute; inset:0; z-index:0;
+  background-size:cover; background-position:center;
+  filter: blur(18px) saturate(1.05);
+  transform: scale(1.12); /* blur edge fix */
+}
+/* gradient wash for readability */
+.sub-hero .hero-bg::after{
+  content:""; position:absolute; inset:0;
+  background:
+    radial-gradient(1200px 60% at 15% 20%, rgba(255,255,255,.15), rgba(255,255,255,0) 60%),
+    linear-gradient(90deg, rgba(15,23,42,.55), rgba(15,23,42,0) 45%, rgba(15,23,42,.55));
+}
+.sub-hero > *{ position:relative; z-index:1; } /* content above bg */
+
+.sub-hero .cover {
+    width: 120px;
+    height: 120px;
+    overflow: hidden;
+    border: 1px solid #ffffff;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, .25);
+    /* border-radius: 10px; */
+    background: #fff;
+}
+.sub-hero img{width:100%; height:100%; object-fit:cover}
+.sub-hero .meta h2{margin:0 0 6px; font:700 20px/1.2 var(--font); color:#fff}
+.sub-hero .meta .sub{color:#e5e7eb; font:500 13px/1.6 var(--font)}
+.sub-hero .chips{display:flex; flex-wrap:wrap; gap:8px; margin-top:8px}
+.chip{
+  padding:6px 10px; border-radius:4px; background:rgba(255,255,255,.85);
+  color:var(--primary); font:700 11px/1 var(--font); letter-spacing:.3px;
+  backdrop-filter: blur(4px);
+}
+.sub-hero .act{display:flex; gap:8px}
+.btn-ghost {
+    border: 1px solid rgb(255 255 255 / 24%);
+    background: rgb(45 44 44 / 68%);
+    color: #ffffff;
+    font-weight: 600;
+    padding: 8px 12px;
+    /* border-radius: 10px; */
+    backdrop-filter: blur(4px);
+    font-size: 13;
+}
+.btn-ghost:hover{background:rgba(255,255,255,.18)}
+.btn-ghostn {
+    border: 1px solid rgb(140 73 163);
+    background: rgb(140 73 163);
+    color: #ffffff;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 3px;
+    backdrop-filter: blur(4px);
+    font-size: 10;
+    /* flex: inherit; */
+}
+.btn-ghostn:hover{background:rgba(255,255,255,.18)}
+.btn-primary-xl {
+    background: linear-gradient(90deg, var(--primary), var(--primary-2));
+    color: #fff;
+    border: none;
+    padding: 8px 10px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 14px;
+    box-shadow: 0 6px 16px rgba(91, 52, 200, .24);
+}
+
+/* ---------- Layout + Cards ---------- */
+.sub-layout{display:grid; grid-template-columns: minmax(0,1fr) 360px; gap:18px}
+.card{background:var(--card); border:1px solid var(--line); border-radius:3px;
+  box-shadow:0 3px 12px rgba(15,23,42,.05)}
+.card-h{display:flex; align-items:center; justify-content:space-between;
+  padding:14px 16px; border-bottom:1px solid var(--line)}
+.card-h h3{margin:0; font:700 15px/1.2 var(--font); color:var(--ink)}
+.card-c{padding:14px 16px}
+.kv{display:grid; grid-template-columns:160px 1fr; gap:10px; padding:8px 0;
+  border-bottom:1px dashed #eef1f4}
+  .kd{ grid-template-columns:160px 1fr; gap:10px; 
+  border-bottom:1px dashed #eef1f4}
+  .kvn{display:grid; grid-template-columns:160px 1fr; gap:98px; padding:8px 0;
+  border-bottom:1px dashed #eef1f4}
+.kv:last-child{border-bottom:0}
+.kv label{color:var(--muted); font:600 11px/1.4 var(--font); text-transform:uppercase; letter-spacing:.3px}
+  .kd label{color:var(--muted); font:600 11px/1.4 var(--font); text-transform:uppercase; letter-spacing:.3px}
+.kv .v{color:var(--ink); font:600 14px/1.5 var(--font)}
+
+/* ---------- Assets table look ---------- */
+.sub-table{width:100%; border-collapse:separate; border-spacing:0 8px}
+.sub-table th{font:700 11px/1 var(--font); color:#667085; text-transform:uppercase; padding:8px 10px}
+.sub-table td{background:#fff; border:1px solid var(--line); padding:11px 10px;
+  font:500 13px/1.5 var(--font); color:#111}
+.sub-table tr td:first-child{border-radius:10px 0 0 10px}
+.sub-table tr td:last-child{border-radius:0 10px 10px 0}
+
+/* ---------- Sidebar ---------- */
+.side-sticky{position:sticky; top:86px; display:flex; flex-direction:column; gap:14px}
+.stat{font:800 26px/1 var(--font); color:var(--ink)}
+.badge-ok {
+    color: #16a34a;
+    font-weight: 600;
+    font-size: 12;
+}
+.badge-warn{color:#b42318; font-weight:700}
+
+/* ---------- Submit bar ---------- */
+.submit-cta{
+   bottom:0; 
+  backdrop-filter:saturate(1.1) blur(6px); 
+  padding:12px; border-radius:12px;  justify-content:flex-end; gap:10px
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width:1100px){
+  .sub-layout{grid-template-columns:1fr}
+  .side-sticky{position:static}
+}
+
+/* ---------- Legacy utility (kept) ---------- */
+.btn{border-radius:4px!important;margin:1px 2px}
+.label-info {
+    background-color: #8c49a3 !important;
+    padding: 5px 5px;
+    font-weight: 800;
+    font-size: 9.8;
+}
+/* NOTE: font-family intentionally inherit to avoid Roboto override */
+.table th,.table td{font-size:13px;line-height:1.4;font-family:inherit!important;color:#333;vertical-align:middle;padding:6px 10px}
+.table td.title-artist{font-size:12px;font-weight:500}
+.border-blue-500{border-color:rgb(120 44 154)}
+.text-blue-500{color:rgb(118 43 156)}
+.btn-primary{background:linear-gradient(to right,#792b97,#5b34c8);border-color:#2699FB!important;height:34px;line-height:20px;letter-spacing:.8px;font-size:12px}
+.modal-header{background:#f6f7fa;height:auto;padding:20px 20px 20px 55px;min-height:60px;border-bottom:0}
+.modal-title{color:#7c808c}
+.modal-header h2{margin-left:40px;color:#000;font-weight:400;font-size:31px}
+.modal-body{line-height:30px;padding:30px 50px 20px 70px!important;background:#fff;font-family:var(--font);font-size:14px}
+#isrcConfirmationRelease .modal-body{line-height:17px;padding:12px 80px!important}
+#isrcConfirmationRelease .modal-header{background:#fff}
+.artist:not(:first-child)::before{height:0;width:auto;border:1px solid rgba(124,128,140,.34);content:" ";margin-bottom:15px;width:100%}
+.btn-primary:disabled,.btn-primary[disabled]{background:#c2c4cc!important}
+.modal{display:flex;height:100%;align-items:center;justify-content:center}
+.nf-btn-submit{padding:10px 16px;font-size:18px;line-height:1.3333333;height:auto}
+.pop-btn{padding:12px 24px;height:auto;font-size:15px!important;font-weight:bold}
+.h3,h3{font-size:20px;font-weight:600}
+p{margin:0 0 10px}
+.h1,.h2,.h3,.h4,.h5,.h6,h1,h2,h3,h4,h5,h6{font-family:var(--font);font-weight:500;line-height:1.7;color:#1b1b1b}
+  /* ===== Notice bar (above hero) ===== */
+.notice-bar{ 
+  
+  font-family:var(--font); 
+}
+
+.notice-bar .nb-wrap{
+  display:flex; align-items:flex-start; gap:10px;
+  padding:15px 12px;
+  border:1px solid var(--line);
+  background:#0b1220; color:#e5e7eb;
+  box-shadow:0 4px 14px rgba(15,23,42,.06);
+  border-radius:3px; /* same as cards */
+}
+
+/* Color variants (set via data-type="info|warn|ok") */
+.notice-bar[data-type="info"] .nb-wrap{
+  background:linear-gradient(180deg, #404040, #3b3b3b);
+}
+.notice-bar[data-type="warn"] .nb-wrap{
+  background:#2a1412; color:#fce7e7; border-color:#7f1d1d;
+}
+.notice-bar[data-type="ok"] .nb-wrap{
+  background:#0f1f14; color:#dcfce7; border-color:#14532d;
+}
+
+/* Icon, text, close */
+.nb-ico{ 
+  flex:0 0 auto; width:18px; height:18px; 
+  margin-top:2px; opacity:.9; 
+}
+.nb-text{
+  font:600 12.5px/1.55 var(--font); 
+  letter-spacing:.2px;
+}
+.nb-text b{ color:#fff; font-weight:800; }
+
+.nb-close{
+  margin-left:auto; 
+  background:transparent; border:0; 
+  color:#cbd5e1; font-weight:700;
+  line-height:1; font-size:16px; 
+  cursor:pointer; 
+  padding:2px 6px; border-radius:4px;
+  transition:background .18s ease, color .18s ease, transform .18s ease;
+}
+.nb-close:hover{ background:rgba(255,255,255,.06); color:#fff; }
+.nb-close:active{ transform:scale(.96); }
+
+/* Small screens */
+@media (max-width:600px){
+  .nb-text{ font-size:12px; }
+}
+.pda-issues-title{ font-weight:700; margin-bottom:6px; font-size:13px; }
+  /* ===== HERO SPACING ===== */
+.sub-hero{
+  position: relative;
+  padding-top: 48px;     /* 3-dots ke liye headroom */
+  padding-bottom: 52px;  /* bottom button ke liye space */
+  min-height: 150px;
+}
+.he-menu a:hover,
+.he-menu a:focus{ background:rgba(255,255,255,.10); color:#000000 !important; }
+/* ===== Edit release info -> bottom-right pin ===== */
+.sub-hero .act{
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  margin: 0;
+  align-self: auto;
+  justify-self: auto;
+  z-index: 3;
+}
+
+/* ===== Kebab (⋮) menu ===== */
+.hero-ellipsis{
+  position:absolute; top:10px; right:12px; z-index:10;
+}
+.hero-ellipsis .he-btn {
+    /* display: inline-flex
+; */
+    align-items: center;
+    /* justify-content: center; */
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: rgb(255 255 255 / 0%);
+    /* border: 1px solid rgba(255, 255, 255, .22); */
+    color: #fff;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+    transition: background .16s 
+ease, transform .12s 
+ease, border-color .16s 
+ease;
+}
+.badge-miss{
+  color:#b42318;
+  font-weight:700;
+  font-size:12px;
+  background:#fff5f5;
+  border:1px solid #fca5a5;
+  padding:2px 6px;
+  border-radius:4px;
+  pointer-events:none;   /* non-clickable */
+  cursor:default;
+  user-select:none;
+}
+
+.badge-ok{
+  color:#42b418;
+  font-weight:700;
+  font-size:12px;
+  background:#f5fff8;
+  border:1px solid #42b418;
+  padding:2px 6px;
+  border-radius:4px;
+  pointer-events:none;   /* non-clickable */
+  cursor:default;
+  user-select:none;
+}
+.hero-ellipsis .he-btn:active{ transform:scale(.98); }
+
+/* dropdown */
+.he-menu {
+    position: absolute;
+    top: 30px;
+    right: 20;
+    min-width: 120px;
+    padding: 6px;
+    margin: 0;
+    list-style: none;
+    background: #f7f7f8;
+    color: #222222;
+    border: 1px solid rgba(255, 255, 255, .12);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, .35);
+    /* border-radius: 10px; */
+    opacity: 0;
+    transform: translateY(-6px);
+    pointer-events: none;
+    transition: opacity .14s 
+ease, transform .14s 
+ease;
+}
+.he-menu.show{ opacity:1; transform:translateY(0); pointer-events:auto; }
+.he-menu a {
+    display: flex
+;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 6px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #626262;
+    font: 600 13px / 1 var(--font);
+}
+.he-menu a:hover{ background:rgba(255,255,255,.08); }
+
+/* responsive nudge */
+@media (max-width:900px){
+  .sub-hero{ padding-top:44px; padding-bottom:48px; }
+}
+.hero-ellipsis .he-btn svg { fill: #fff; }
+   /* mini toggle pill */
+.mini-toggle{
+  margin-left:auto; display:inline-flex; align-items:center; gap:6px;
+  padding:6px 10px; border:1px solid #e5e7eb; background:#fff; color:#374151;
+  border-radius:9999px; cursor:pointer; font:600 12px/1 Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  transition:background .18s ease, border-color .18s ease;
+}
+.mini-toggle:hover{ background:#f9fafb; }
+.mini-toggle svg{ transition:transform .22s ease; }
+.mini-toggle[aria-expanded="true"] svg{ transform:rotate(180deg); }
+
+/* smooth height reveal only for the list row */
+.collapsible-body{
+  overflow:hidden; max-height:0; opacity:0;
+  transition:max-height .28s ease, opacity .22s ease;
+}
+.collapsible-body.is-open{ opacity:1; }
+/* ================= Territory UI (scoped) ================= */
+.territory-accordion{display:flex; flex-direction:column; gap:10px;}
+.territory-accordion *{box-sizing:border-box;}
+/* force hidden truly hidden (override any global) */
+.territory-accordion [hidden]{display:none !important;}
+
+/* ---------- Header: Available Territories mini-toggle ---------- */
+.mini-toggle{
+  margin-left:auto; display:inline-flex; align-items:center; gap:6px;
+  padding:6px 10px; border:1px solid #e5e7eb; background:#fff; color:#374151;
+  border-radius:4px; cursor:pointer; font:600 12px/1 Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  transition:background .18s ease, border-color .18s ease;
+}
+.mini-toggle:hover{ background:#f9fafb; }
+.mini-toggle svg{
+  display:block; width:14px; height:14px;
+  stroke:currentColor; fill:none; /* ensure visible */
+  transition:transform .22s ease;
+}
+.mini-toggle[aria-expanded="true"] svg{ transform:rotate(180deg); }
+
+/* collapsible body (outer list container) */
+.collapsible-body{
+  overflow:hidden; max-height:0; opacity:0;
+  transition:max-height .28s ease, opacity .22s ease;
+}
+.collapsible-body.is-open{ opacity:1; }
+
+/* ---------- Region card ---------- */
+.territory-accordion .reg{
+  border:1px solid #e5e7eb; border-radius:10px; background:#fff;
+}
+.territory-accordion .reg-h{
+  display:flex; align-items:center; gap:10px; padding:10px 12px; width:100%;
+}
+.territory-accordion .reg-check{
+  display:flex; align-items:center; gap:8px; margin:0;
+  font:600 14px/1 Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial; color:#111827;
+}
+.territory-accordion .reg-check input{width:16px; height:16px; margin:0;}
+
+/* count pill on right */
+.territory-accordion .badge-count{
+  margin-left:auto; background:#f3f4f6; border:1px solid #e5e7eb; color:#374151;
+  border-radius:9999px; padding:4px 8px; font:600 12px/1 Inter, system-ui, -apple-system;
+}
+
+/* region chevron (drop icon) */
+.territory-accordion .reg-toggle {
+    margin-left: 8px;
+    width: 0px;
+    height: 32px;
+    /* display: inline-flex
+; */
+    align-items: center;
+    justify-content: center;
+    /* border: 1px solid #e5e7eb; */
+    background: #fff;
+    color: #6b7280;
+    border-radius: 8px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+.territory-accordion .reg-toggle svg{
+  display:block; width:16px; height:16px;
+  stroke:currentColor; fill:none; stroke-width:2;
+  transition:transform .22s ease;
+}
+.territory-accordion .reg-toggle[aria-expanded="true"] svg{ transform:rotate(180deg); }
+
+/* ---------- Countries grid ---------- */
+.territory-accordion .reg-countries{
+  padding:10px 12px 12px; width:100%;
+  display:grid; grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px 14px; border-top:1px solid #f1f5f9;
+}
+@media (max-width: 900px){
+  .territory-accordion .reg-countries{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+@media (max-width: 560px){
+  .territory-accordion .reg-countries{ grid-template-columns:1fr; }
+}
+.territory-accordion .cty{
+  display:flex; align-items:center; gap:8px; margin:0;
+  font:500 13px/1.2 Inter, system-ui; color:#374151;
+}
+.territory-accordion .cty input{width:14px; height:14px; margin:0;}
+
+/* ---------- LOCK: user cannot untick (but checkmark visible) ---------- */
+.territory-accordion input[type="checkbox"]{
+  pointer-events:none; opacity:1; cursor:default;
+}
+/* keep active look for checked items */
+.territory-accordion .cty input:checked + span,
+.territory-accordion .reg-check input:checked + span{
+  color:#111827; font-weight:600;font-size: 10;
+}
+
+#territory-list.is-open {
+  max-height: none !important;
+  opacity: 1;
+  overflow: visible !important;
+}
+
+
+</style>
+<script>
+(function(){
+  function setOpen(body, btn, open){
+    if(open){
+      body.classList.add('is-open');
+      // first clear to recalc, then set to scrollHeight for smooth expand
+      body.style.maxHeight = '0px';
+      // next frame so transition triggers
+      requestAnimationFrame(function(){
+        body.style.maxHeight = body.scrollHeight + 'px';
+      });
+    } else {
+      // collapse to 0
+      body.style.maxHeight = body.scrollHeight + 'px';
+      requestAnimationFrame(function(){
+        body.style.maxHeight = '0px';
+      });
+      body.classList.remove('is-open');
+    }
+    if(btn){
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      var lbl = btn.querySelector('.mini-toggle__label');
+      if(lbl) lbl.textContent = open ? 'Hide' : 'Show';
+    }
+  }
+
+  function saveState(body, open){
+    var key = body.getAttribute('data-persist-key');
+    if(!key) return;
+    try { localStorage.setItem(key, open ? '1' : '0'); } catch(e){}
+  }
+
+  function loadState(body){
+    var key = body.getAttribute('data-persist-key');
+    if(!key) return null;
+    try { return localStorage.getItem(key); } catch(e){ return null; }
+  }
+
+  function initTerritoryToggle(){
+    var body = document.querySelector('#territory-list');
+    var btn  = document.querySelector('.mini-toggle[data-target="#territory-list"]');
+    if(!body || !btn) return;
+
+    // restore (default collapsed)
+    var saved = loadState(body);
+    var shouldOpen = (saved === '1');
+    setOpen(body, btn, shouldOpen);
+
+    // click handler (prevents submit/reload)
+    document.addEventListener('click', function(e){
+      var t = e.target.closest('.mini-toggle');
+      if(!t || t !== btn) return;
+      e.preventDefault();
+      e.stopPropagation();
+
+      var open = body.classList.contains('is-open') ? false : true;
+      setOpen(body, btn, open);
+      saveState(body, open);
+    });
+
+    // keep height correct after resize if open
+    window.addEventListener('resize', function(){
+      if(body.classList.contains('is-open')){
+        body.style.maxHeight = body.scrollHeight + 'px';
+      }
+    });
+  }
+
+  // DOM ready
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', initTerritoryToggle);
+  } else {
+    initTerritoryToggle();
+  }
+})();
+</script>
+
+<script>
+(function(){
+  // Close all open menus
+  function closeAll(){
+    document.querySelectorAll('.he-menu.show').forEach(function(m){
+      m.classList.remove('show');
+      var b = m.closest('.hero-ellipsis')?.querySelector('.he-btn');
+      if (b) b.setAttribute('aria-expanded','false');
+    });
+  }
+
+  document.addEventListener('click', function(e){
+    // 1) If a kebab button was clicked -> toggle its own menu
+    var btn = e.target.closest('.hero-ellipsis .he-btn');
+    if (btn){
+      e.preventDefault(); e.stopPropagation();
+      var wrap = btn.closest('.hero-ellipsis');
+      var menu = wrap.querySelector('.he-menu');
+      var willOpen = !menu.classList.contains('show');
+      closeAll();                         // close others
+      if (willOpen){
+        menu.classList.add('show');
+        btn.setAttribute('aria-expanded','true');
+      }
+      return;
+    }
+
+    // 2) Click inside any open menu → do nothing
+    if (e.target.closest('.he-menu')) return;
+
+    // 3) Click anywhere else → close
+    closeAll();
+  });
+
+  // 4) ESC to close
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') closeAll();
+  });
+})();
+</script>
+
+<div id="easyEntryContent">
+  <div id="easyEntryAssetsHeader" class="clearfix">
+    
+  </div>
+
+  <div id="msgBox"></div>
+
+  <form method="post" action="" id="form_6618e6fc6def6">
+    <input type="hidden" name="~formSubmitted" value="1">
+    <input value="save" class="inputBehavior- form-control" name="action" id="form_6618e6fc6def6-action-0" type="hidden">
+
+   
+    <!-- ===== HERO ===== -->
+    <div class="sub-hero">
+      <div class="hero-bg" style="background-image:url('<?= safeField($this->INFO['cover_img']); ?>');"></div>
+
+      <div class="cover">
+        <img src="<?= safeField($this->INFO['cover_img']); ?>" alt="Cover">
+      </div>
+
+      <div class="meta">
+        <h2><?= safeField($this->INFO['title']); ?></h2>
+        <h3><?= safeField($this->INFO['version']); ?></h3>
+        <div class="sub">
+          <strong><?= safeField($this->INFO['artist']); ?></strong> • 
+          <?= safeField($this->INFO['label']); ?>
+        </div>
+        <div class="chips">
+          <span class="chip">Catalogue: <?= safeField($this->INFO['pcn'] ?? ''); ?></span>
+          <span class="chip">Tracks: <?= (int)$this->INFO['tot_tracks']; ?></span>
+        </div>
+      </div>
+
+      <div class="hero-ellipsis">
+  <button type="button" class="he-btn" aria-haspopup="true" aria-expanded="false" aria-controls="heroEllipsisMenu">
+    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+      <circle cx="12" cy="5" r="2"></circle>
+      <circle cx="12" cy="12" r="2"></circle>
+      <circle cx="12" cy="19" r="2"></circle>
+    </svg>
+    <span class="sr-only">Open Options</span>
+  </button>
+  <ul id="heroEllipsisMenu" class="he-menu" role="menu">
+  <li role="none">
+    <a role="menuitem" href="<?= $this->url('releases',['action'=>'index']);?>">
+      <!-- logout arrow icon -->
+      <span>Save & Exit</span>
+      <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+        <path fill="currentColor" d="M10 3a1 1 0 0 1 1 1v3h-2V5H6v14h3v-2h2v3a1 1 0 0 1-1 1H5a2 2 0 0 1-2-2V5c0-1.1.9-2 2-2h5zm4.7 5.3 4 4a1 1 0 0 1 0 1.4l-4 4-1.4-1.4 2.3-2.3H11v-2h4.6l-2.3-2.3 1.4-1.4z"/>
+      </svg>
+      
+    </a>
+  </li>
+</ul>
+
+
+</div>
+
+      
+      <div class="act">
+        <a class="btn-ghost" href="<?= $this->url('newrelease',['action'=>'index']);?>?edit=<?= $_GET['edit'];?>">Edit release info</a>
+      </div>
+    </div>
+<!-- ===== Top Notice (above hero) ===== -->
+<div class="notice-bar" id="releaseNotice" role="status" aria-live="polite" data-type="info">
+  <div class="nb-wrap">
+    <svg class="nb-ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M12 2a10 10 0 1 0 .001 20.001A10 10 0 0 0 12 2Zm0 7.25a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5Zm1.25 8.25h-2.5v-7h2.5v7Z"/>
+    </svg>
+    <div class="nb-text">
+  <b>Important:</b> Review all release details first.  
+  The <b>Submit</b> option becomes available only after all missing fields and issues are resolved.
+</div>
+    <button class="nb-close" type="button" aria-label="Dismiss">×</button>
+  </div>
+</div>
+
+
+    <!-- ===== TWO-COLUMN LAYOUT ===== -->
+    <div class="sub-layout">
+      <!-- LEFT -->
+      <div class="left">
+        <div class="card">
+          <div class="card-h"><h3>Release overview</h3>
+           <div class="v"><?= $this->INFO['release_info_error_count']>0 ? '<span class="badge-miss">⚠ Issue(s)</span>' : '<span class="badge-ok">Done</span>' ?></div></div>
+          
+          <div class="card-c">
+            <div class="kv"><label>Title</label><div class="v"><?= safeField($this->INFO['title']); ?></div></div>
+            <div class="kv"><label>Subtitle</label><div class="v"><?= safeField($this->INFO['version']); ?></div></div>
+            <div class="kv"><label>Artist(s)</label><div class="v"><?= safeField($this->INFO['artist']); ?></div></div>
+            <div class="kv"><label>Label</label><div class="v"><?= safeField($this->INFO['label']); ?></div></div>
+            <div class="kv"><label>Genre</label><div class="v"><?= safeField($this->INFO['mainGenre']); ?><?= !empty($this->INFO['subgenre']) ? ' — '.safeField($this->INFO['subgenre']) : '' ?></div></div>
+            <!-- C-Line & P-Line (read-only) -->
+<div class="kv">
+  <label>© C-Line</label>
+  <div class="v"><?= safeField($this->INFO['productionYear'] ?? ''); ?> — <?= safeField($this->INFO['cLine'] ?? ($this->INFO['sLine'] ?? '')); ?></div>
+</div>
+<div class="kv">
+  <label>℗ P-Line</label>
+  <div class="v"><?= safeField($this->INFO['productionYear'] ?? ''); ?> — <?= safeField($this->INFO['pLine'] ?? ''); ?></div>
+</div>
+            
+            <div class="kv">
+  <label>Original (Physical) Release Date</label>
+  <div class="v"><?= safeField($this->INFO['physicalReleaseDate'] ?? ''); ?></div>
+</div>
+       
+     
+          </div>
+        </div>
+
+        <br>
+        <div id="assets" class="card">
+          <div class="card-h">
+            <h3>Track overview</h3>
+            <div class="v">
+    <?php if ($isrcComplete): ?>
+      <span class="badge-ok">Done</span>
+    <?php else: ?>
+      <span class="badge-miss" aria-disabled="true">⚠ Issue(s)</span>
+    <?php endif; ?>
+  </div>
+          </div>
+          <div class="card-c">
+            <?= str_replace('class="table"', 'class="sub-table"', $this->Tracks); ?>
+          </div>
+        </div>
+      </div>
+
+ <!-- RIGHT -->
+      <div class="side-sticky">
+        <div class="card">
+          <div class="card-h"><h3>Release Date</h3>
+            <?php if($this->INFO['release_date_error']=='yes'): ?><span class="badge-miss">⚠ Issue(s)</span>
+            <?php else: ?><span class="badge-ok">Done</span><?php endif; ?>
+          </div>
+          <div class="card-c">
+            <div class="kv"><label>Main Release date</label><div class="v"><?= safeField($this->INFO['digitalReleaseDate']); ?></div></div>
+            <br>
+<a class="btn-ghostn" 
+   href="<?= $this->url('newrelease',['action'=>'releasedate']);?>?edit=<?= $_GET['edit'];?>">
+   <span class="glyphicon glyphicon-pencil"></span> Edit date
+</a>
+          </div>
+        </div>
+
+
+        <div class="card">
+          <div class="card-h"><h3>All Eligible Territories</h3><span class="badge-ok">Done</span></div>
+          <div class="card-c">
+            <div class="stat"><?= isset($this->INFO['territories'])?(int)$this->INFO['territories']:245; ?></div>
+            
+            <div class="kd" style="grid-template-columns:1fr; align-items:center;">
+<div class="kd" style="grid-template-columns:1fr; align-items:center;">
+  <label>Available Territories :</label>
+
+  <!-- Toggle button: non-submitting -->
+  <button type="button"
+          class="mini-toggle"
+          data-target="#territory-list"
+          aria-expanded="false"
+          title="Show/Hide list">
+    <span class="mini-toggle__label">Show</span>
+    <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+</div>
+
+<!-- Collapsible body (only this part hides/shows) -->
+<div class="kv collapsible-body" id="territory-list"
+     data-persist-key="pda.territory.list.open.<?= (int)($_GET['edit'] ?? 0); ?>"
+     style="grid-template-columns:1fr">
+
+  <?php
+  // ===== Regions & Countries (sample list; swap with DB if you have) =====
+  $REGIONS = [
+    'Asia' => [
+      'Afghanistan','Bangladesh','Bhutan','Brunei','Cambodia','China','Hong Kong','India','Indonesia','Japan','Laos','Malaysia','Maldives','Mongolia','Myanmar','Nepal','Pakistan','Philippines','Singapore','South Korea','Sri Lanka','Taiwan','Thailand','Timor-Leste','Vietnam',
+    ],
+    'Europe' => [
+      'Albania','Andorra','Armenia','Austria','Azerbaijan','Belarus','Belgium','Bosnia & Herzegovina','Bulgaria','Croatia','Cyprus','Czech Republic','Denmark','Estonia','Finland','France','Georgia','Germany','Greece','Hungary','Iceland','Ireland','Italy','Kosovo','Latvia','Liechtenstein','Lithuania','Luxembourg','Malta','Moldova','Monaco','Montenegro','Netherlands','North Macedonia','Norway','Poland','Portugal','Romania','San Marino','Serbia','Slovakia','Slovenia','Spain','Sweden','Switzerland','Ukraine','United Kingdom','Vatican City',
+    ],
+    'Africa' => [
+      'Algeria','Angola','Benin','Botswana','Burkina Faso','Burundi','Cabo Verde','Cameroon','Central African Republic','Chad','Comoros','Congo','DR Congo','Djibouti','Egypt','Equatorial Guinea','Eritrea','Eswatini','Ethiopia','Gabon','Gambia','Ghana','Guinea','Guinea-Bissau','Ivory Coast','Kenya','Lesotho','Liberia','Libya','Madagascar','Malawi','Mali','Mauritania','Mauritius','Morocco','Mozambique','Namibia','Niger','Nigeria','Rwanda','São Tomé and Príncipe','Senegal','Seychelles','Sierra Leone','Somalia','South Africa','South Sudan','Sudan','Tanzania','Togo','Tunisia','Uganda','Zambia','Zimbabwe',
+    ],
+    'Australia' => ['Australia','New Zealand','Papua New Guinea','Fiji','Samoa','Tonga','Vanuatu','Solomon Islands'],
+    'North America' => [
+      'Antigua and Barbuda','Bahamas','Barbados','Belize','Canada','Costa Rica','Cuba','Dominica','Dominican Republic','El Salvador','Grenada','Guatemala','Haiti','Honduras','Jamaica','Mexico','Nicaragua','Panama','Saint Kitts and Nevis','Saint Lucia','Saint Vincent and the Grenadines','Trinidad and Tobago','United States',
+    ],
+    'Antarctica' => ['Argentina Antarctic Claim','Australian Antarctic Territory','British Antarctic Territory'],
+    'South America' => [
+      'Argentina','Bolivia','Brazil','Chile','Colombia','Ecuador','Guyana','Paraguay','Peru','Suriname','Uruguay','Venezuela','French Guiana (FR)',
+    ],
+  ];
+  ?>
+
+  <div class="territory-accordion" data-accordion="regions">
+    <?php foreach($REGIONS as $region => $countries):
+      $rid = 'reg_' . preg_replace('/[^a-z0-9]+/i','_', strtolower($region));
+      $total = count($countries);
+    ?>
+    <div class="reg">
+      <div class="reg-h">
+        <label class="reg-check">
+          <input type="checkbox" class="reg-box" checked data-reg="<?= $rid ?>" disabled>
+          <span><?= htmlspecialchars($region) ?></span>
+        </label>
+        <span class="badge-count" data-badge-for=""><?= $total ?> countries</span>
+        <button type="button" class="reg-toggle" aria-controls="<?= $rid ?>" aria-expanded="false" title="Expand">
+          <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="reg-countries" id="<?= $rid ?>" hidden>
+        <?php foreach($countries as $c):
+          $cid = $rid.'_'.preg_replace('/[^a-z0-9]+/i','_', strtolower($c));
+        ?>
+        <label class="cty">
+          <input type="checkbox" class="cty-box" checked data-reg="<?= $rid ?>" data-cty-id="<?= $cid ?>" disabled>
+
+          <span><?= htmlspecialchars($c) ?></span>
+        </label>
+        <?php endforeach; ?>
+      </div>
+    </div>
+    <?php endforeach; ?>
+  </div>
+</div>
+    </div>
+        </div>
+</div>
+
+
+      
+
+        <div class="card">
+          <div class="card-h"><h3>Ready To Distribute!</h3></div>
+          <div class="card-c">
+      
+                    <div class="kvn">
+  <label>Release Information</label>
+                      <div class="v"><?= $this->INFO['release_info_error_count']>0 ? '<span class="badge-miss">⚠ Errors</span>' : '<span class="badge-ok">✓ Ready</span>' ?></div></div>
+<div class="kvn">
+  <label>Track Information</label>
+  <div class="v">
+    <?php if ($isrcComplete): ?>
+      <span class="badge-ok">✓ Ready</span>
+    <?php else: ?>
+      <span class="badge-miss" aria-disabled="true">⚠ Errors</span>
+    <?php endif; ?>
+  </div>
+</div>
+            <div class="kvn">
+  <label>Main Release Date</label><div>
+            <?php if($this->INFO['release_date_error']=='yes'): ?><span class="badge-miss">⚠ Errors</span>
+            <?php else: ?><span class="badge-ok">✓ Ready</span><?php endif; ?>
+          </div>
+            </div>
+            <div class="submit-cta">
+              
+           <?php if (
+     $this->INFO['release_info_error_count']=='0'
+  && $this->INFO['release_date_error']=='no'
+  && $this->INFO['assets_info_error_count']=='0'
+  && $this->all_track_error=='0'
+  && $totTracks > 0               // at least one track
+  && $isrcComplete                // ISRCs complete
+  && $this->STATUS=='draft'
+  && ($_SESSION["SUBUSER"]==0 || $_SESSION["USER_TYPE"]!='Limited Access')
+): ?>
+  <button id="btnSubmitRelease" type="button" class="btn-primary-xl" data-action="submit-release">
+    Submit my release
+  </button>
+<?php endif; ?>
+
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+
+<?php
+/* ---------- Adapter bootstrap once ---------- */
+if (!isset($GLOBALS['__pda_adapter__'])) {
+  $GLOBALS['__pda_adapter__'] =
+    $this->getHelperPluginManager()->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+}
+if (!function_exists('pda_renderArtistWithSpotifyChips')) {
+  function pda_fetch_spotify_map(array $names) {
+    $adapter = $GLOBALS['__pda_adapter__'];
+    $clean=[]; foreach ($names as $n){ $n=trim((string)$n); if($n!=='') $clean[]=$n; }
+    if(!$clean) return [];
+    $ph=implode(',', array_fill(0,count($clean),'?'));
+    $sql="SELECT name, spotify_id FROM tbl_artist WHERE name IN ($ph)";
+    $res=$adapter->createStatement($sql)->execute($clean);
+    $map=[]; foreach($res as $r){ $map[$r['name']]=(string)($r['spotify_id'] ?? ''); }
+    return $map;
+  }
+  function pda_renderArtistWithSpotifyChips($artistStringOrArray, $separator=', ') {
+    $list=is_array($artistStringOrArray)?$artistStringOrArray:array_map('trim', explode(',', (string)$artistStringOrArray));
+    $map=pda_fetch_spotify_map($list);
+    $ICON='/public/img/store2/spotify.png';
+    $out=[];
+    foreach($list as $nm){
+      if($nm==='') continue;
+      $id=isset($map[$nm])?trim((string)$map[$nm]):'';
+      $nmSafe=htmlspecialchars($nm,ENT_QUOTES,'UTF-8');
+      if($id!==''){
+        $idSafe=htmlspecialchars($id,ENT_QUOTES,'UTF-8');
+        $url='https://open.spotify.com/artist/'.$idSafe;
+        $chip='<a class="ap-spotify-id ap-mini--linked" href="'.$url.'" target="_blank" rel="noopener">'
+            .'<img src="'.$ICON.'" alt="Spotify" class="sp-ico" />'.$idSafe.'</a>';
+      } else {
+        $chip='<span class="ap-spotify-id ap-mini--empty"><img src="'.$ICON.'" alt="Spotify" class="sp-ico" />No Spotify ID linked Yet</span>';
+      }
+      $out[]='<span class="pda-artist-with-id">'.$nmSafe.' '.$chip.'</span>';
+    }
+    return implode($separator, $out);
+  }
+}
+?>
+
+<style>
+/* chips */
+.ap-spotify-id{display:inline-block;margin-left:8px;padding:2px 6px;border-radius:6px;font:600 12px/1.6 var(--font);text-decoration:none;white-space:nowrap}
+.pda-artist-with-id{display:inline-flex;align-items:center;gap:20px}
+.ap-spotify-id .sp-ico{width:17px;height:17px;margin-right:4px;display:inline-block}
+</style>
+
+<!-- ===== Modals ===== -->
+<div id="easyEntryAssetsModal" class="modal fade in" aria-hidden="false" style="display: none;">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title"><span style="margin-right:10px;">1/3</span> Almost done! <h3>Confirm your Artist Pages</h2></h4>
+      </div>
+      <div class="modal-body">
+        <h3 style="margin:0 0 30px -10;font-weight:550;"><?= pda_renderArtistWithSpotifyChips($this->INFO['artist'], '<br>') ?></h3>
+                <div class="row"><div class=""><p><b>For more info on how to edit your artist page, please refer to the guideline for Artist ID.</b><br><br></p></div></div>
+
+        <div class="right">
+          <a id="btnBack" href="" class="mb-8 bg-white border uppercase text-sm border-blue-500 text-blue-500 py-2 mr-2 px-10 rounded-full pop-btn">Cancel</a>
+          <button id="btnSave1" class="btn-primary pop-btn" form="attributeVerification" aria-label="Continue">CONFIRM and Continue</button>
+        </div>
+      </div>
+      <div class="modal-header"></div>
+    </div>
+  </div>
+</div>
+
+<div id="easyEntryAssetsModal2" class="modal fade in" aria-hidden="false" style="display: none;">
+  <div class="modal-dialog modal-lg" style="font-size:13px;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title"><span style="margin-right:10px;">2/3</span> Almost done! <h3>Your expected release date <?php echo $this->INFO['digitalReleaseDate'];?></h2></h4>
+      </div>
+      <div class="modal-body" style="line-height:20px;">
+        <div class="row"><div class="col-md-12">
+          <p style="color:#fa2a2a;font-weight:bold;font-size:14px;">You requested a release of your product in less than 48 hours.</p>
+          <p>Distribution of your release can be delayed by text, audio and cover infringement with stores guidelines. Furthermore, store require a delay to make your release available.</p>
+          <p>That's why, and according to Prime Digital Arena Content Delivery Guidelines, <b>all product should be submitted two weeks ahead of release date.</b><br><br></p>
+          <p>We recommend setting your release date to <?php echo $this->INFO['recom_release_day'];?> <b><?php echo ' '.$this->INFO['recom_release_date'];?> </b><br><br></p>
+          <form style="font-size:14px">
+            <div class="form-group">
+              <label class="radio-inline"><input type="radio" name="optradio" id="change_release_date1"><b>Change to recommended release date</b></label>
+              <p>Your release will be live on <?php echo $this->INFO['recom_release_date'];?></p>
+            </div>
+            <div class="form-group">
+              <label class="radio-inline"><input type="radio" name="optradio" id="change_release_date2" checked><b>Ignore recommended release date</b></label>
+            </div>
+          </form>
+          <p>For more information, please refer to the <a href="https://primedigitalarena.com/" style="color:#007bff; text-decoration:none">Prime Digital Arena Content Delivery Guidelines.</a></p>
+        </div></div><br>
+        <div class="right">
+          <a id="btnBack" href="" class="mb-8 bg-white border uppercase text-sm border-blue-500 text-blue-500 py-2 mr-2 px-10 rounded-full pop-btn">Cancel</a>
+          <button id="btnSave2" class="btn-primary pop-btn" form="attributeVerification" aria-label="Continue">CONFIRM and Continue</button>
+        </div>
+      </div>
+      <div class="modal-header"></div>
+    </div>
+  </div>
+</div>
+
+<div id="easyEntryAssetsModal3" class="modal fade in" aria-hidden="false" style="display: none;">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title"><span style="margin-right:10px;">3/3</span> Almost done! <h3>Terms & Conditions</h2></h4>
+      </div>
+      <div class="modal-body" style="line-height:23px;font-size:13px;color:#484848;">
+        <div class="row"><div class="col-md-12">
+          <p>Please confirm that you have understood and that you agree to the following Terms & Conditions, and delivery guidelines.</p><br>
+          <form>
+            <div class="form-group">
+              <label class="checkbox-inline">
+                <input type="checkbox" value="" id="term1_cb"><span style="font-size:15px;color:#242833;font-family:var(--font);font-weight:500;">I understand and agree to the ISRC Terms & Conditions.</span><br>
+                If you asked us to generate your ISRC codes, you hereby agree to <a href="https://primedigitalarena.com/" style="color:#007bff; text-decoration:none">Prime Digital Arena's conditions for generating ISRCs.</a>
+              </label>
+            </div>
+            <div class="form-group">
+              <label class="checkbox-inline">
+                <input type="checkbox" value="" id="term2_cb"><span style="font-size:15px;color:#242833;font-family:var(--font);font-weight:500;">I understand and agree to the Youtube Content Guidelines.</span><br>
+                Some content cannot be safely distributed and monetized on the platform.<br>
+                Please be sure you have read and follow the <a href="https://primedigitalarena.com/" style="color:#007bff; text-decoration:none">Youtube Content Guidelines.</a>
+              </label>
+            </div>
+            <div class="form-group">
+              <label class="checkbox-inline">
+                <input type="checkbox" value="" id="term3_cb"><span style="font-size:15px;color:#242833;font-family:var(--font);font-weight:500;">I understand and agree to the Prime Digital Arena Content Delivery Guidelines for Audio Stores.</span><br>
+                Some content is not eligible to be distributed on Apple Music, Spotify and Youtube Audio Fingerprint.<br>
+                Please be sure you have read and understand the <a href="https://primedigitalarena.com/" style="color:#007bff; text-decoration:none">Prime Digital Arena Content Delivery Guidelines for Audio Stores.</a>
+              </label>
+            </div>
+          </form><br>
+        </div></div>
+        <div class="right">
+          <a id="btnBack" href="" class="mb-8 bg-white border uppercase text-sm border-blue-500 text-blue-500 py-2 mr-2 px-10 rounded-full pop-btn">Cancel</a>
+          <button id="btnSave3" class="btn-primary pop-btn" form="attributeVerification" aria-label="Continue" disabled>AGREE and Submit</button>
+        </div>
+      </div>
+      <div class="modal-header"></div>
+    </div>
+  </div>
+</div>
+
+<div id="isrcConfirmationRelease" class="modal fade in" aria-hidden="false" data-backdrop="static" style="display: none;">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title">Edit all ISRC codes</h4>
+      </div>
+      <div class="modal-body">
+        <div class="bg bg-warning">
+          <span id="popin_notice" class="<?php echo $this->popin_notice;?>"> ISRC codes are missing on some tracks.
+          Please add them below or choose the relevant option before submitting your release. </span>
+          <span id="popin_allvalid" class="<?php echo $this->popin_allvalid;?>"> Your ISRC codes are now properly filled in. You can close this window and continue submitting your release. </span>
+        </div>
+
+        <div class="bg bg-info">
+          <p><strong>How to input your ISRC codes.</strong></p>
+          <p id="icHelp_isrc_manual" class="hide small">Please indicate the ISRC code of this track as detailed below:<br>
+          i.e.: GB-6V8-12-12340. <br><br>
+          An ISRC code is composed like this:<br>
+          GB : registrant country code<br>
+          6V8 : registrant code<br>
+          12 : year of registration<br>
+          1234 : 4 digits identifying the recording<br>
+          0 : "0" for audio<br><br>
+          This ISRC code is unique to a recording. When an ISRC code is generated for a track, it cannot be modified later.<br>
+          Failure to provide the correct unique ISRC to collective societies, can lead to the impossibility to match your songs and to collect revenue.</p>
+
+          <p id="icHelp_isrc_root" class="hide small">If you do not have any ISRC code for this track, you can create one from one of the roots you have submitted to the Prime Digital Arena.<br>
+          Just select one of your registered roots and create your code from it. Do try to remember this code since you will have to use it to declare this track to collective societies such as PPL.<br><br>
+          This ISRC code must be unique to this track. It cannot be modified or replaced later by another one.</p>
+
+          <p id="icHelp_isrc_noroot" class="small">Prime Digital can generate an ISRC code for this track if it doesn't have a code yet.<br><br>
+          You will have to use this code as the track's unique reference code. You will not be able to modify it or replace it later.<br><br>
+          By answering "Yes" to this request, you acknowledge that no ISRC codes currently exist for this track, and you request Prime Digital to provide you with its unique ISRC code. You also accept that this is the code which you will register to collective societies if necessary.</p>
+        </div>
+
+        <form id="isrcForm" style="color:#333">
+          <table class="table"><tbody><?php echo $this->ISRC_DATA;?></tbody></table>
+        </form>
+
+        <style>
+          .linkToRootIsrcChoice {font-size: 09px!important;line-height: 10px!important;}
+          table.table td.v-a-mid {vertical-align: middle;}
+          .bg {padding: 5px;margin-bottom: 5px;}
+          .input-isrc, .is-root-isrc {width: 150px !important;font-size: 12px !important;}
+        </style>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function($){
+  if (window.PDA_initSubmissionUI) return; window.PDA_initSubmissionUI = true;
+  function log(){ try{ console.log.apply(console, ['[submission]', ...arguments]); }catch(e){} }
+
+  $(function(){
+    var isrcFormChanged = false;
+
+    /* Submit flow (delegated) */
+    $(document)
+      .off('click', '[data-action="submit-release"]')
+      .on('click', '[data-action="submit-release"]', function(e){
+        e.preventDefault(); e.stopPropagation();
+        log('Submit clicked → open modal 1');
+        $('#easyEntryAssetsModal').modal('show');
+      });
+
+    $(document)
+      .off('click', '#btnSave1')
+      .on('click', '#btnSave1', function(e){
+        e.preventDefault(); e.stopPropagation();
+        $('#easyEntryAssetsModal').modal('hide');
+        $('#easyEntryAssetsModal2').modal('show');
+      });
+
+    $(document)
+      .off('click', '#btnSave2')
+      .on('click', '#btnSave2', function(e){
+        e.preventDefault(); e.stopPropagation();
+
+        if($('#change_release_date1').prop('checked') === true){
+          log('Updating recommended release date…');
+          var res = AJAX_Post("<?= $this->url('newrelease',['action'=>'updatereleasedate']);?>",
+                              { release_id : "<?= $_GET['edit'];?>" });
+          log('updatereleasedate:', res);
+        }
+
+        $('#easyEntryAssetsModal2').modal('hide');
+        $('#easyEntryAssetsModal3').modal('show');
+      });
+
+    $(document)
+      .off('click', '#btnSave3')
+      .one('click', '#btnSave3', function(e){
+        e.preventDefault(); e.stopPropagation();
+        $('#btnSave3').prop('disabled', true);
+
+        var res = AJAX_Post("<?= $this->url('newrelease',['action'=>'submitRelease']);?>",
+                            { release_id : '<?= $_GET['edit'];?>' });
+        log('submitRelease:', res);
+        $('#btnSave3').prop('disabled', false);
+
+        if (res && res.ERR_NO === 0 && res.DATA && res.DATA.DBStatus === 'OK') {
+          $('#easyEntryAssetsModal3').modal('hide');
+          window.location.href='success?edit=<?= $_GET['edit'];?>';
+        } else {
+          mySmallAlert('Error...!', 'There was an error', 0);
+        }
+      });
+
+    /* ISRC modal open */
+    $(document)
+      .off('click', '[data-action="edit-isrc"], .isrcConfirmationRelease')
+      .on('click', '[data-action="edit-isrc"], .isrcConfirmationRelease', function(e){
+        e.preventDefault(); e.stopPropagation();
+        isrcFormChanged = false;
+        $('#isrcConfirmationRelease').modal('show');
+      });
+
+    /* ISRC changes */
+    $(document).on('click', '[id^=GeneratedIsrcRequiredYes_]', function(){
+      isrcFormChanged = true;
+      var track_id = $(this).attr('data-song-id');
+      $('#isrc_'+track_id).parent().addClass('hide');
+    });
+    $(document).on('click', '[id^=GeneratedIsrcRequiredNo_]', function(){
+      isrcFormChanged = true;
+      var track_id = $(this).attr('data-song-id');
+      $('#isrc_'+track_id).parent().removeClass('hide');
+    });
+    $(document).on('change', '[id^=isrc_]', function(){ isrcFormChanged = true; });
+
+    /* ISRC save */
+    $('#isrcConfirmationRelease .modal-footer .btn-primary')
+      .off('click')
+      .on('click', function(e){
+        e.preventDefault(); e.stopPropagation();
+        if(!isrcFormChanged){ $('#isrcConfirmationRelease').modal('hide'); return; }
+
+        var $form = $('#isrcForm');
+        var objMasterData = $form.serializeObject ? $form.serializeObject() : {};
+        if (typeof strActionMode !== 'undefined' && strActionMode == 'ADD') $.extend(objMasterData, { MASTER_KEY_ID: 0});
+        else if (typeof iActiveID !== 'undefined') $.extend(objMasterData, { MASTER_KEY_ID: iActiveID});
+
+        var res = AJAX_Post("<?= $this->url('newrelease',['action'=>'updateisrc']);?>",
+                            { FORM_DATA: JSON.stringify(objMasterData) });
+        log('updateisrc:', res);
+
+        if (res && res.ERR_NO === 0 && res.DATA) {
+          if (res.DATA.DBStatus === 'OK') {
+            $('#isrcConfirmationRelease').modal('hide');
+            location.reload();
+          } else if (res.DATA.DBStatus === 'EXIST') {
+            mySmallAlert('Duplicate...!', 'Duplicate ISRC', 0);
+          }
+        }
+      });
+
+    /* Terms enable final button */
+    $('#term1_cb,#term2_cb,#term3_cb').on('click', function(){
+      var ok = $('#term1_cb').prop('checked') && $('#term2_cb').prop('checked') && $('#term3_cb').prop('checked');
+      $('#btnSave3').prop('disabled', !ok);
+    });
+  });
+})(jQuery);
+</script>
+<script>
+(function(){
+  var bar = document.getElementById('releaseNotice');
+  if(!bar) return;
+
+  var btn = bar.querySelector('.nb-close');
+  if(btn){
+    btn.addEventListener('click', function(){
+      // No storage used → will reappear on refresh
+      bar.style.transition = 'opacity .18s ease, height .18s ease, margin .18s ease, padding .18s ease';
+      bar.style.opacity = '0';
+      bar.style.height = '0';
+      bar.style.margin = '0';
+      setTimeout(function(){ if(bar && bar.parentNode) bar.parentNode.removeChild(bar); }, 220);
+    });
+  }
+})();
+</script>
+<script>
+(function(){
+  const persistKey = 'pda.territory.regions.open.v2.' + (<?= json_encode((int)($_GET['edit'] ?? 0)); ?>);
+
+  function saveOpenSet(set){
+    try{ localStorage.setItem(persistKey, JSON.stringify(Array.from(set))); }catch(e){}
+  }
+  function loadOpenSet(){
+    try{
+      const raw = localStorage.getItem(persistKey);
+      if(!raw) return new Set();
+      return new Set(JSON.parse(raw));
+    }catch(e){ return new Set(); }
+  }
+
+  function updateRegionCount(regId){
+    const regionBox = document.querySelector('.reg-box[data-reg="'+regId+'"]');
+    const badge = document.querySelector('.badge-count[data-badge-for="'+regId+'"]');
+    const ctys = document.querySelectorAll('.cty-box[data-reg="'+regId+'"]');
+    if(!badge || !ctys.length) return;
+    let selected = 0;
+    ctys.forEach(c => { if(c.checked) selected++; });
+    const total = ctys.length;
+    badge.textContent = selected + ' / ' + total + ' countries';
+    if(regionBox){ regionBox.indeterminate = (selected>0 && selected<total); }
+  }
+
+  function setRegion(regId, checked){
+    const ctys = document.querySelectorAll('.cty-box[data-reg="'+regId+'"]');
+    ctys.forEach(c => { c.checked = checked; });
+    const rbox = document.querySelector('.reg-box[data-reg="'+regId+'"]');
+    if(rbox){ rbox.checked = checked; rbox.indeterminate = false; }
+    updateRegionCount(regId);
+  }
+
+  // CLICK handlers (same)
+  document.addEventListener('click', function(e){
+    const tgl = e.target.closest('.reg-toggle');
+    if(tgl){
+      e.preventDefault();
+      const id = tgl.getAttribute('aria-controls');
+      const body = document.getElementById(id);
+      if(!body) return;
+
+      const openSet = loadOpenSet();
+      const willOpen = body.hasAttribute('hidden');
+      if(willOpen){
+        body.removeAttribute('hidden');
+        tgl.setAttribute('aria-expanded','true');
+        openSet.add(id);
+      }else{
+        body.setAttribute('hidden','');
+        tgl.setAttribute('aria-expanded','false');
+        openSet.delete(id);
+      }
+      saveOpenSet(openSet);
+      return;
+    }
+
+    const rbox = e.target.closest('.reg-box');
+    if(rbox){ setRegion(rbox.getAttribute('data-reg'), rbox.checked); return; }
+
+    const cbox = e.target.closest('.cty-box');
+    if(cbox){ updateRegionCount(cbox.getAttribute('data-reg')); return; }
+  });
+
+  // INIT (force all closed, then restore saved)
+  (function init(){
+    // 1) Sabko closed set karo (default)
+    document.querySelectorAll('.reg-countries').forEach(body=>{
+      body.setAttribute('hidden','');
+      const t = document.querySelector('.reg-toggle[aria-controls="'+body.id+'"]');
+      if(t) t.setAttribute('aria-expanded','false');
+    });
+
+    // 2) Saved open set ko restore karo (agar hai to)
+    const openSet = loadOpenSet();
+    openSet.forEach(id=>{
+      const body = document.getElementById(id);
+      const t = document.querySelector('.reg-toggle[aria-controls="'+id+'"]');
+      if(body){ body.removeAttribute('hidden'); }
+      if(t){ t.setAttribute('aria-expanded','true'); }
+    });
+
+    // 3) Counts + indeterminate set karo
+    document.querySelectorAll('.reg-box').forEach(rb=>{
+      updateRegionCount(rb.getAttribute('data-reg'));
+    });
+  })();
+})();
+</script>

@@ -1,0 +1,2139 @@
+<link rel="stylesheet" type="text/css" href="<?php echo $this->basePath(); ?>/public/css/assets.css">
+
+<style>
+  .removemultifield {
+    position: absolute;
+    top: 7px;
+    right: -26px;
+  }
+
+  .progress-bar {
+    background-color: #337ab7 !important;
+  }
+
+  .table-bordered > tbody > tr > td > .glyphicon.glyphicon-ok {
+    color: #5cb85c;
+    font-size: 20px;
+  }
+
+  .table-bordered > tbody > tr > td > .glyphicon.glyphicon-remove {
+    color: #d9534f;
+    font-size: 20px;
+  }
+
+  .suggestion-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 5px 0 0;
+    border: 1px solid #ccc;
+    border-top: none;
+    max-height: 200px;
+    overflow-y: auto;
+    position: absolute;
+    background: #fff;
+    z-index: 1000;
+    border-radius: 0 0 5px 5px;
+    width: calc(100% - 30px);
+    top: 27px;
+  }
+
+  /* Individual Suggestion Item */
+  .suggestion-item {
+    padding: 10px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .suggestion-item:hover {
+    background: #f0f0f0;
+  }
+</style>
+
+<div id="easyEntryContent">
+  <div id="easyEntryAssetsHeader" class="clearfix">
+    <h2 style="float: left;">
+      <?php echo $this->INFO['title'].' '.$this->INFO['version_head']; ?>
+    </h2>
+    <div style="float: right;">
+      <!-- <img style="margin: 10px 30px;" src="<?php echo $this->basePath(); ?>/public/img/loader.gif" class="hide nf-loader"> -->
+    </div>
+  </div>
+
+  <!-- message -->
+  <div id="msgBox"></div>
+
+  <!-- tabs -->
+  <ul class="nav nav-tabs" id="ee_tabs">
+    <li>
+      <a class="easyEntryStep" data-page="main"
+         href="<?php echo $this->url('newrelease', array('action' => 'index')); ?>?edit=<?php echo $_GET['edit']; ?>">
+        Release information
+      </a>
+    </li>
+    <li class="active">
+      <a class="easyEntryStep" data-page="tracks"
+         href="<?php echo $this->url('newrelease', array('action' => 'track')); ?>?edit=<?php echo $_GET['edit']; ?>">
+        Tracks
+      </a>
+    </li>
+    <li>
+      <a class="easyEntryStep" data-page="releasedate"
+         href="<?php echo $this->url('newrelease', array('action' => 'releasedate')); ?>?edit=<?php echo $_GET['edit']; ?>">
+        Release date
+      </a>
+    </li>
+    <?php if($this->INFO['import_flag'] == '0') { ?>
+      <li>
+        <a class="easyEntryStep" data-page="submission"
+           href="<?php echo $this->url('newrelease', array('action' => 'submission')); ?>?edit=<?php echo $_GET['edit']; ?>">
+          Submission
+        </a>
+      </li>
+    <?php } ?>
+  </ul>
+
+  <div class="bloc-volume">
+    <?php echo $this->TRACK_DATA ?>
+    <?php /*
+    <div class="volume-header clearfix" rel="1">
+      <h4 style="float: left;">Volume 1</h4>
+      <div style="float: left; margin-left: 30px; margin-top: 5px;">
+        <a class="btn btn-sm btn-default addTrackLink addNewTrackLink" volume="1" href="javascript:;">
+          <span class="glyphicon glyphicon-plus"></span> Add track
+        </a>
+      </div>
+    </div>
+    <ul id="release-tracks-volume-1" class="volume ui-sortable" data-volume="1">
+      <li class="track" id="track_1">
+        <div class="row">
+          <div class="col-md-1">
+            <span class="glyphicon glyphicon-move handle"></span>&nbsp;&nbsp;&nbsp;&nbsp;
+            <span class="glyphicon glyphicon-music"></span>&nbsp;&nbsp;&nbsp;&nbsp;
+          </div>
+          <div class="col-md-3">
+            <span class="trackNumber">1</span>.&nbsp;<span class="trackName">New track</span>
+            <div class="trackIsrc text-muted" style="display:block"></div>
+          </div>
+          <div class="col-md-2"></div>
+          <div class="col-md-6" style="text-align: right;">
+            <a track_id="" onclick="return false;" class="btn btn-sm btn-default editTrackLink">
+              <span class="glyphicon glyphicon-pencil"></span>&nbsp;Edit
+            </a>&nbsp;
+            <a track_id="" class="btn btn-sm btn-default deleteTrackLink" onclick="return false;" style="display: none;">
+              <span class="glyphicon glyphicon-remove"></span>&nbsp;Delete
+            </a>
+            <a track_id="" class="btn btn-sm btn-default moveTrackLink" onclick="return false;" data-placement="left" href="#" data-original-title="" title="">
+              <span class="glyphicon glyphicon-arrow-right"></span>&nbsp;Move to another volume
+            </a>
+          </div>
+        </div>
+      </li>
+    </ul>
+    */ ?>
+  </div>
+
+  <div id="easyEntryAssetsModal" class="modal fade in" aria-hidden="false" style="display: none;">
+    <div class="modal-dialog" style="width: 700px;">
+      <div class="modal-content">
+        <form method="post" action="javascript:;" id="easyEntryEditForm" class="form-horizontal" role="form">
+          <input type="hidden" name="track_id" id="track_id" value="">
+          <input type="hidden" name="audio_hidden" id="audio_hidden" value="">
+          <input type="hidden" name="audio_format_info" id="audio_format_info" value="">
+
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">
+              <span aria-hidden="true">×</span><span class="sr-only">Close</span>
+            </button>
+            <h4 class="modal-title">Assets metadata</h4>
+          </div>
+
+          <div class="modal-body">
+            <div id="msgBoxModal"></div>
+            <div id="msgBox"></div>
+
+            <div id="trackForm">
+              <div id="track-col1" class="">
+
+                <!-- Primary track type -->
+                <div class="form-group form-group-sm">
+                  <div class="col-sm-3 control-label">
+                    <label class="input-required behavior-2"
+                           id="label-easyEntryEditForm-primaryTrackType-0"
+                           for="primaryTrackType">
+                      Primary track type
+                    </label>
+                    <span style="position: absolute; white-space: nowrap; z-index: 100;">
+                      <span style="color: red;"> *</span>
+                      <span class="label-tip">
+                        <a href="#" data-html="true" data-placement="right" title=""
+                           class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip"
+                           data-original-title="<div style=&quot;text-align: left;&quot;>Use this option if the track requires classical metadata information</div>">
+                          <span class="glyphicon glyphicon-question-sign"></span>
+                        </a>
+                      </span>
+                    </span>
+                  </div>
+                  <div class="col-sm-7">
+                    <label class="radio-inline">
+                      <input type="radio" class="input-primaryTrackType inputString inputBehavior-2"
+                             name="primaryTrackType" id="primaryTrackType"
+                             checked="checked" value="Music" tabindex="3">
+                      Music
+                    </label>
+                  </div>
+                  <div class="col-sm-2 divAppend"></div>
+                </div>
+
+                <!-- Secondary Track Type -->
+                <div class="form-group form-group-sm">
+                  <div class="col-sm-3 control-label">
+                    <label class="input-required behavior-2"
+                           id="label-easyEntryEditForm-trackType-0"
+                           for="easyEntryEditForm-trackType-0">
+                      Secondary Track Type
+                    </label>
+                    <span style="position: absolute; white-space: nowrap; z-index: 100;">
+                      <span style="color: red;"> *</span>
+                    </span>
+                  </div>
+                  <div class="col-sm-7">
+                    <label class="radio-inline">
+                      <input type="radio" class="input-secondaryTrackType inputString inputBehavior-2"
+                             name="trackType" id="trackType-0" value="original track" tabindex="4">
+                      Original
+                    </label>
+                    <label class="radio-inline">
+                      <input type="radio" class="input-secondaryTrackType inputString inputBehavior-2"
+                             name="trackType" id="trackType-1" value="karaoke" tabindex="5">
+                      Karaoke
+                    </label>
+                    <label class="radio-inline">
+                      <input type="radio" class="input-secondaryTrackType inputString inputBehavior-2"
+                             name="trackType" id="trackType-2" value="medley" tabindex="6">
+                      Medley
+                    </label>
+                    <label class="radio-inline">
+                      <input type="radio" class="input-secondaryTrackType inputString inputBehavior-2"
+                             name="trackType" id="trackType-3" value="cover" tabindex="7">
+                      Cover
+                    </label>
+                    <label class="radio-inline">
+                      <input type="radio" class="input-secondaryTrackType inputString inputBehavior-2"
+                             name="trackType" id="trackType-4" value="cover by cover band" tabindex="8">
+                      Cover by cover band
+                    </label>
+                  </div>
+                  <div class="col-sm-2 divAppend"></div>
+                </div>
+
+                <!-- Instrumental -->
+                <div class="form-group form-group-sm">
+                  <div class="col-sm-3 control-label">
+                    <label class="behavior-2"
+                           id="label-easyEntryEditForm-idInstrumental-0"
+                           for="easyEntryEditForm-idInstrumental-0">
+                      Instrumental
+                    </label>
+                    <span style="position: absolute; white-space: nowrap; z-index: 100;">
+                      <span style="color: red;"> *</span>
+                    </span>
+                  </div>
+                  <div class="col-sm-7">
+                    <label class="radio-inline">
+                      <input type="radio" class="input-large inputInt inputBehavior-2"
+                             name="idInstrumental" id="idInstrumental-0" value="-1" tabindex="9">
+                      Yes
+                    </label>
+                    <label class="radio-inline">
+                      <input type="radio" class="input-large inputInt inputBehavior-2"
+                             name="idInstrumental" id="idInstrumental-1" value="0" tabindex="10" checked="checked">
+                      No
+                    </label>
+                  </div>
+                  <div class="col-sm-2 divAppend"></div>
+                </div>
+
+                <!-- Title -->
+                <div class="form-group form-group-sm">
+                  <div class="col-sm-3 control-label">
+                    <label class="input-required behavior-2"
+                           id="label-easyEntryEditForm-songName-0"
+                           for="songName">
+                      Title
+                    </label>
+                    <span style="position: absolute; white-space: nowrap; z-index: 100;">
+                      <span style="color: red;"> *</span>
+                      <span class="label-tip">
+                        <a href="#" data-html="true" data-placement="right" title=""
+                           class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip"
+                           data-original-title="<div style=&quot;text-align: left;&quot;>Please enter a title for this release:<br /><br /> eg.: <font color=&quot;#ff0000&quot;><em>Ya Ilahi Har Jagah Teri</em></font>, <font color=&quot;#ff0000&quot;><em>Mustafa Jaan-e-Rehmat Pe Lakhon Salaam</em></font>, <font color=&quot;#ff0000&quot;><em>Mera Koi Nahi Hai Tere Siwa</em></font>, etc...<br /><br />Please use the version field if you need to enter further information for the release.<br /><br />eg.: <font color=&quot;#ff0000&quot;><em>Radio Edit</em></font>, <font color=&quot;#ff0000&quot;><em>Ramzan Special Version</em></font>, <font color=&quot;#ff0000&quot;><em>Live Mehfil Cut</em></font>, <font color=&quot;#000000&quot;><em><font color=&quot;#ff0000&quot;>Bonus Track</font></em></font>, etc...</div>">
+                          <span class="glyphicon glyphicon-question-sign"></span>
+                        </a>
+                      </span>
+                    </span>
+                  </div>
+                  <div class="col-sm-7">
+                    <input id="songName"
+                           class="input-large input-trackName inputString inputBehavior-2 form-control"
+                           name="songName" type="text" value="" tabindex="11">
+                    <span style="display:none" class="form-input-error help-inline control-label"
+                          rel="input-trackName-standard"></span>
+                  </div>
+                  <div class="col-sm-2 divAppend"></div>
+                </div>
+
+                <!-- Version/Subtitle -->
+                <div class="form-group form-group-sm">
+                  <div class="col-sm-3 control-label">
+                    <label class="behavior-2" id="label-easyEntryEditForm-version-0" for="version">
+                      Version/Subtitle
+                    </label>
+                    <span style="position: absolute; white-space: nowrap; z-index: 100;">
+                      <span style="visibility: hidden;"> *</span>
+                      <span class="label-tip">
+                        <a href="#" data-html="true" data-placement="right" title=""
+                           class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip"
+                           data-original-title="<div style=&quot;text-align: left;&quot;>Please use this field if you want to add further details to your release.<br /><br />eg.: <font color=&quot;#ff0000&quot;><em>Ramzan Special</em></font>, <font color=&quot;#ff0000&quot;><em>Live Mehfil Version</em></font>, <font color=&quot;#ff0000&quot;><em>Qawwali Reprise</em></font>, <font color=&quot;#000000&quot;><em><font color=&quot;#ff0000&quot;>Bonus Track</font></em></font>, etc...</div>">
+                          <span class="glyphicon glyphicon-question-sign"></span>
+                        </a>
+                      </span>
+                    </span>
+                  </div>
+                  <div class="col-sm-7">
+                    <input class="input-large input-version inputString inputBehavior-2 form-control"
+                           name="version" id="version" type="text" value="" tabindex="12">
+                    <span style="display:none" class="form-input-error help-inline control-label"
+                          rel="easyEntryEditForm-version-0"></span>
+                  </div>
+                  <div class="col-sm-2 divAppend"></div>
+                </div>
+
+                <!-- Primary artist -->
+                <div class="form-group form-group-sm">
+                  <div class="col-sm-3 control-label">
+                    <label class="input-required behavior-2"
+                           id="label-easyEntryEditForm-trackArtist-0"
+                           for="trackArtist">
+                      Primary artist
+                    </label>
+                    <span style="position: absolute; white-space: nowrap; z-index: 100;">
+                      <span style="color: red;"> *</span>
+                      <span class="label-tip">
+                        <a href="#" data-html="true" data-placement="right" title=""
+                           class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip"
+                           data-original-title="<div style=&quot;text-align: left;&quot;>Please enter the name of the band or artist for the release.<br /><br />Please enter the <strong>full first-name</strong>, no initials.<br /><br />eg.: <font color=&quot;#ff0000&quot;><em>Junaid Jamshed</em></font>, <font color=&quot;#ff0000&quot;><em>Amjad Sabri</em></font>, <font color=&quot;#ff0000&quot;><em>Rahat Fateh Ali Khan</em></font><br /><br />Please only <strong>enter one name per field.</strong><br /><br />For example, don't enter <font color=&quot;#ff0000&quot;>Hafiz Rizwan &amp; Qari Noman</font> in the Artist Name field, but <font color=&quot;#ff0000&quot;>Hafiz Rizwan</font> <strong>in the first field</strong> and <font color=&quot;#ff0000&quot;>Qari Noman</font> <strong>in a separate field.</strong> To add an additional artist, click <em>Add new artist.</em><br /><br />If your release is a compilation, you do not need to indicate all artists individually: just click the appropriate box.<strong><br /></strong></div>">
+                          <span class="glyphicon glyphicon-question-sign"></span>
+                        </a>
+                      </span>
+                    </span>
+                  </div>
+
+                  <?php if($this->user_artist_cnt == '1') { ?>
+                    <div class="col-sm-7">
+                      <div id="artist-fields">
+                        <div style="display:flex">
+                          <input data-tags="true"
+                                 class="input-large input-trackArtist input-multiple inputString inputBehavior-2 form-control"
+                                 name="trackArtist[]" id="f_track_artist" type="text"
+                                 value="<?php echo $this->user_artist_name; ?>"
+                                 tabindex="3" autocomplete="off" readonly>
+                        </div>
+                        <span style="display:none" class="form-input-error help-inline control-label" rel="releaseArtist"></span>
+                      </div>
+                    </div>
+                    <div class="col-sm-2 divAppend">
+                      <span class="append-input">
+                        <span class="glyphicon glyphicon-lock" style="color:#4CAF50"></span>
+                      </span>
+                    </div>
+                  <?php } else { ?>
+                    <div class="col-sm-7">
+                      <div id="artist-fields">
+                        <div style="display:flex">
+                          <input data-tags="true"
+                                 class="input-large input-trackArtist input-multiple inputString inputBehavior-2 form-control"
+                                 name="trackArtist[]" id="f_track_artist" type="text"
+                                 value="<?php echo $this->user_artist_name; ?>"
+                                 tabindex="3" autocomplete="off">
+                        </div>
+                        <span style="display:none" class="form-input-error help-inline control-label" rel="trackArtist"></span>
+                      </div>
+                    </div>
+                    <div class="col-sm-2 divAppend">
+                      <span class="append-input">
+                        <a href="javascript:;" class="addFieldLink" data-selector="input-trackArtist">
+                          <span class="glyphicon glyphicon-plus-sign" onclick="addTrackArtist()"></span>
+                        </a>
+                      </span>
+                    </div>
+                  <?php } ?>
+                </div>
+
+                <!-- Featuring -->
+                <div class="form-group form-group-sm">
+                  <div class="col-sm-3 control-label">
+                    <label class="behavior-2"
+                           id="label-easyEntryEditForm-featuring-0"
+                           for="easyEntryEditForm-featuring-0">
+                      Featuring
+                    </label>
+                    <span style="position: absolute; white-space: nowrap; z-index: 100;">
+                      <span style="visibility: hidden;"> *</span>
+                    </span>
+                  </div>
+                  <div class="col-sm-7">
+                    <div id="featuring-fields">
+                      <div style="display:flex">
+                        <input data-tags="true"
+                               class="input-large input-featuring input-multiple inputString inputBehavior-2 form-control"
+                               name="featuring[]" id="f_featuring" type="text"
+                               value="" tabindex="3" autocomplete="off">
+                        <span style="display:none" class="form-input-error help-inline control-label"
+                              rel="easyEntryEditForm-featuring-0"></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-sm-2 divAppend">
+                    <span class="append-input">
+                      <a href="javascript:;" class="addFieldLink" data-selector="input-featuring">
+                        <span class="glyphicon glyphicon-plus-sign" onclick="addFieldFeaturing()"></span>
+                      </a>
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Remixer -->
+                <div class="form-group form-group-sm">
+                  <div class="col-sm-3 control-label">
+                    <label class="input-required behavior-2"
+                           id="easyEntryEditForm-remixer"
+                           for="easyEntryEditForm-remixer-0">
+                      Remixer
+                    </label>
+                    <span style="position: absolute; white-space: nowrap; z-index: 100;">
+                      <span style="color: red;"> </span>
+                      <span class="label-tip">
+                        <a href="#" data-html="true" data-placement="right" title=""
+                           class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip"
+                           data-original-title=""></a>
+                      </span>
+                    </span>
+                  </div>
+                  <div class="col-sm-7">
+                    <input class="input-large inputString inputBehavior-2 form-control"
+                           name="remixer" id="remixer" type="text" value="" tabindex="20">
+                    <span style="display:none" class="form-input-error help-inline control-label"
+                          rel="easyEntryEditForm-remixer-0"></span>
+                  </div>
+                  <div class="col-sm-2 divAppend"></div>
+                </div>
+
+                <!-- Author -->
+                <div class="form-group form-group-sm">
+                  <div class="col-sm-3 control-label">
+                    <label class="input-required behavior-2"
+                           id="label-easyEntryEditForm-author-0" for="author">
+                      Author
+                    </label>
+                    <span style="position: absolute; white-space: nowrap; z-index: 100; visibility: visible;">
+                      <span style="color: red;"> *</span>
+                      <span class="label-tip">
+                        <a href="#" data-html="true" data-placement="top" title=""
+                           class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip"
+                           data-original-title="<div style=&quot;text-align: left;&quot;>Author and Composer fields must be filled with a <strong class=&quot;text-light&quot;>full and complete name</strong> including <strong class=&quot;text-light&quot;>first name and last (family) name.</strong><br><br />Please only <strong>enter one name per field.</strong><br /><br />For example, don't enter <font color=&quot;#ff0000&quot;>Hafiz Rizwan &amp; Qari Noman</font> in the Author (or Composer) field, but <font color=&quot;#ff0000&quot;>Hafiz Rizwan</font> <strong>in the first field</strong> and <font color=&quot;#ff0000&quot;>Qari Noman</font> <strong>in a separate field.</strong> To add an additional Author (or Composer), click <em>Add a new author.</em><br /><br /><span class=&quot;small&quot;>Incomplete data (&quot;M. Khan&quot; instead of &quot;Mohammad Khan&quot;) or simplified information such as &quot;Rights Reserved&quot; or &quot;Public domain&quot; (as well as RR, PD, etc.) will no longer be accepted by stores.</span></div>">
+                          <span class="glyphicon glyphicon-question-sign"></span>
+                        </a>
+                      </span>
+                    </span>
+                  </div>
+                  <div class="col-sm-7">
+                    <div id="author-fields">
+                      <div style="">
+                        <input data-tags="true"
+                               class="input-large input-author input-multiple inputString inputBehavior-2 form-control"
+                               name="author[]" id="f_author" type="text" value="" tabindex="3" autocomplete="off">
+                        <span style="" class="form-input-error help-inline control-label"
+                              rel="easyEntryEditForm-author-0">
+                          <span>Digital Music Stores require full first and last (family) name</span>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-sm-2 divAppend">
+                    <span class="append-input">
+                      <a href="javascript:;" class="addFieldLink" data-selector="input-author">
+                        <span class="glyphicon glyphicon-plus-sign" onclick="addauthor()"></span>
+                      </a>
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Composer -->
+                <div class="form-group form-group-sm">
+                  <div class="col-sm-3 control-label">
+                    <label class="input-required behavior-2"
+                           id="label-easyEntryEditForm-composer-0"
+                           for="composer">
+                      Composer
+                    </label>
+                    <span style="position: absolute; white-space: nowrap; z-index: 100;">
+                      <span style="color: red;"> *</span>
+                      <span class="label-tip">
+                        <a href="#" data-html="true" data-placement="right" title=""
+                           class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip"
+                           data-original-title="<div style=&quot;text-align: left;&quot;>Author and Composer fields must be filled with a <strong class=&quot;text-light&quot;>full and complete name</strong> including <strong class=&quot;text-light&quot;>first name and last (family) name.</strong><br><br />Please only <strong>enter one name per field.</strong><br /><br />For example, don't enter <font color=&quot;#ff0000&quot;>Ustad Shafqat &amp; Haji Imran</font> in the Author (or Composer) field, but <font color=&quot;#ff0000&quot;>Ustad Shafqat</font> <strong>in the first field</strong> and <font color=&quot;#ff0000&quot;>Haji Imran</font> <strong>in a separate field.</strong> To add an additional Author (or Composer), click <em>Add a new author.</em><br /><br /><span class=&quot;small&quot;>Incomplete data (&quot;M. Raza&quot; instead of &quot;Mohammad Raza&quot;) or simplified information such as &quot;Rights Reserved&quot; or &quot;Public domain&quot; (as well as RR, PD, etc.) will no longer be accepted by stores.</span></div>">
+                          <span class="glyphicon glyphicon-question-sign"></span>
+                        </a>
+                      </span>
+                    </span>
+                  </div>
+                  <div class="col-sm-7">
+                    <div id="composer-fields">
+                      <div style="">
+                        <input data-tags="true"
+                               class="input-large input-composer input-multiple inputString inputBehavior-2 form-control"
+                               name="composer[]" id="f_composer" type="text" value="" tabindex="3" autocomplete="off">
+                        <span style="" class="form-input-error help-inline control-label"
+                              rel="easyEntryEditForm-composer-0">
+                          <span>Digital Music Stores require full first and last (family) name</span>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-sm-2 divAppend">
+                    <span class="append-input">
+                      <a href="javascript:;" class="addFieldLink" data-selector="input-composer">
+                        <span class="glyphicon glyphicon-plus-sign" onclick="addcomposer()"></span>
+                      </a>
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Producer -->
+                <div class="form-group form-group-sm">
+                  <div class="col-sm-3 control-label">
+                    <label class="behavior-2"
+                           id="label-easyEntryEditForm-produceBy-0"
+                           for="produceBy">
+                      Producer
+                    </label>
+                    <span style="position: absolute; white-space: nowrap; z-index: 100;">
+                      <span style="visibility: hidden;"> *</span>
+                    </span>
+                  </div>
+                  <div class="col-sm-7">
+                    <div id="produceby-fields">
+                      <div style="display:flex">
+                        <input data-tags="true"
+                               class="input-large input-produceBy input-multiple inputString inputBehavior-2 form-control"
+                               name="produceBy[]" id="f_produceby" type="text"
+                               value="" tabindex="3" autocomplete="off">
+                        <span style="display:none" class="form-input-error help-inline control-label"
+                              rel="easyEntryEditForm-produceBy-0"></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-sm-2 divAppend">
+                    <span class="append-input">
+                      <a href="javascript:;" class="addFieldLink" data-selector="input-produceBy">
+                        <span class="glyphicon glyphicon-plus-sign" onclick="addproduceBy()"></span>
+                      </a>
+                    </span>
+                  </div>
+                </div>
+
+                <!-- ℗ Pline -->
+                <div class="form-group form-group-sm">
+                  <div class="col-sm-3 control-label">
+                    <label class="input-required behavior-2"
+                           id="easyEntryEditForm-pLine"
+                           for="easyEntryEditForm-pLine-0">
+                      ℗ Pline
+                    </label>
+                    <span style="position: absolute; white-space: nowrap; z-index: 100;">
+                      <span style="color: red;"> *</span>
+                      <span class="label-tip">
+                        <a href="#" data-html="true" data-placement="right" title=""
+                           class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip"
+                           data-original-title="<div style=&quot;text-align: left;&quot;>The first owner of this track, i.e. the first label or company to have financed its recording.</div>">
+                          <span class="glyphicon glyphicon-question-sign"></span>
+                        </a>
+                      </span>
+                    </span>
+                  </div>
+                  <div class="col-sm-7">
+                    <input class="input-large inputString inputBehavior-2 form-control"
+                           name="pLine" id="pLine" type="text" value="" tabindex="20">
+                    <span style="display:none" class="form-input-error help-inline control-label"
+                          rel="easyEntryEditForm-pLine-0"></span>
+                  </div>
+                  <div class="col-sm-2 divAppend"></div>
+                </div>
+
+                <!-- Production Year -->
+                <div class="form-group form-group-sm">
+                  <div class="col-sm-3 control-label">
+                    <label class="input-required behavior-2"
+                           id="label-easyEntryEditForm-productionYear-0"
+                           for="productionYear">
+                      Production Year
+                    </label>
+                    <span style="position: absolute; white-space: nowrap; z-index: 100;">
+                      <span style="color: red;"> *</span>
+                      <span class="label-tip">
+                        <a href="#" data-html="true" data-placement="right" title=""
+                           class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip"
+                           data-original-title="<div style=&quot;text-align: left;&quot;>The year in which the track has been produced and recorded. If more than one, please indicate the final year of production.</div>">
+                          <span class="glyphicon glyphicon-question-sign"></span>
+                        </a>
+                      </span>
+                    </span>
+                  </div>
+                  <div class="col-sm-7">
+                    <select type="select" class="select2" name="productionYear" id="productionYear" tabindex="21">
+                      <option value="0">- Select a year -</option>
+                      <?php for($i=(date('Y')+1);$i>=1900;$i--) { echo '<option value="'.$i.'">'.$i.'</option>'; } ?>
+                    </select>
+                    <span style="display:none" class="form-input-error help-inline control-label"
+                          rel="easyEntryEditForm-productionYear-0"></span>
+                  </div>
+                  <div class="col-sm-2 divAppend"></div>
+                </div>
+
+                <!-- Publisher -->
+                <div class="form-group form-group-sm">
+                  <div class="col-sm-3 control-label">
+                    <label class="behavior-2" id="label-easyEntryEditForm-editor-0" for="editor">
+                      Publisher
+                    </label>
+                    <span style="position: absolute; white-space: nowrap; z-index: 100;">
+                      <span style="visibility: hidden;"> *</span>
+                    </span>
+                  </div>
+                  <div class="col-sm-7">
+                    <input class="input-large inputString inputBehavior-2 form-control"
+                           name="editor" id="editor" type="text" value="" tabindex="22">
+                    <span style="display:none" class="form-input-error help-inline control-label"
+                          rel="easyEntryEditForm-editor-0"></span>
+                  </div>
+                  <div class="col-sm-2 divAppend"></div>
+                </div>
+
+                <!-- ISRC -->
+                <div class="form-group form-group-sm isrc_div">
+                  <div class="col-sm-3 control-label">
+                    <label class="behavior-2"
+                           id="label-easyEntryEditForm-module_isrc-isrc-0"
+                           for="isrc">
+                      ISRC
+                    </label>
+                    <span style="position: absolute; white-space: nowrap; z-index: 100;">
+                      <span style="color: red;"> *</span>
+                      <span class="label-tip">
+                        <a href="#" data-html="true" data-placement="right" title=""
+                           class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip"
+                           data-original-title="<div style=&quot;text-align: left;&quot;>Please indicate the ISRC code of this track as detailed below: i.e.: GB-6V8-12-12340. An ISRC code is composed like this: GB : registrant country code 6V8 : registrant code 12 : year of registration 1234 : 4 digits identifying the recording 0 : &quot;0&quot; for audio, &quot;1&quot; for video This ISRC code is unique to a recording. When an ISRC code is generated for a track, it cannot be modified later. Failure to provide the correct unique ISRC to collective societies, can lead to the impossibility to match your songs and to collect revenue.</div>">
+                          <span class="glyphicon glyphicon-question-sign"></span>
+                        </a>
+                      </span>
+                    </span>
+                  </div>
+                  <div class="col-sm-7">
+                    <input type="text"
+                           class="input-large isrcModuleElement isrcModuleElement-isrc inputIsrc inputBehavior-2 form-control"
+                           name="isrc" id="isrc" placeholder="XX-0X0-00-00000" value="" tabindex="23">
+                    <span style="display:none" class="form-input-error help-inline control-label"
+                          rel="easyEntryEditForm-module_isrc-isrc-0"></span>
+                  </div>
+                  <div class="col-sm-2 divAppend"></div>
+                </div>
+
+                <!-- Ask to generate ISRC -->
+                <div class="form-group form-group-sm">
+                  <div class="col-sm-3 control-label">
+                    <label class="behavior-2"
+                           id="label-easyEntryEditForm-module_isrc-generateIsrc-0"
+                           for="generate_isrc">
+                      Ask to generate an ISRC
+                    </label>
+                    <span style="position: absolute; white-space: nowrap; z-index: 100;">
+                      <span style="visibility: hidden;"> *</span>
+                      <span class="label-tip">
+                        <a href="#" data-html="true" data-placement="right" title=""
+                           class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip"
+                           data-original-title="<div style=&quot;text-align: left;&quot;>Prime backstage Digital can generate an ISRC code for this track if it doesn't have a code yet. You will have to use this code as the track's unique reference code. You will not be able to modify it or replace it later. By answering &quot;Yes&quot; to this request, you acknowledge that no ISRC codes currently exist for this track, and you request Prime backstage Digital to provide you with its unique ISRC code. You also accept that this is the code which you will register to collective societies if necessary.</div>">
+                          <span class="glyphicon glyphicon-question-sign"></span>
+                        </a>
+                      </span>
+                    </span>
+                  </div>
+                  <div class="col-sm-7">
+                    <label class="radio-inline">
+                      <input type="radio"
+                             class="input-large generateByPrimeBackstage isrcModuleElement isrcModuleElement-generateIsrc inputInt inputBehavior-2"
+                             name="generate_isrc" id="generate_isrc-0" value="1" tabindex="24">
+                      Yes
+                    </label>
+                    <label class="radio-inline">
+                      <input type="radio"
+                             class="input-large generateByPrimeBackstage isrcModuleElement isrcModuleElement-generateIsrc inputInt inputBehavior-2"
+                             name="generate_isrc" id="generate_isrc-1" value="0" tabindex="25" checked>
+                      No
+                    </label>
+                  </div>
+                  <div class="col-sm-2 divAppend"></div>
+                </div>
+
+                <?php /*
+                <div class="form-group form-group-sm">
+                  <div class="col-sm-3 control-label">
+                    <label class="behavior-2" id="label-easyEntryEditForm-producerReference-0" for="producerReference">
+                      Producer catalogue number
+                    </label>
+                    <span style="position: absolute; white-space: nowrap; z-index: 100;">
+                      <span style="visibility: hidden;"> *</span>
+                    </span>
+                  </div>
+                  <div class="col-sm-7">
+                    <input class="input-large inputString inputBehavior-2 form-control"
+                           name="producerReference" id="producerReference" type="text" value="" tabindex="31">
+                    <span style="display:none" class="form-input-error help-inline control-label"
+                          rel="easyEntryEditForm-producerReference-0"></span>
+                  </div>
+                  <div class="col-sm-2 divAppend"></div>
+                </div>
+                */ ?>
+
+                <!-- Parental advisory -->
+                <div class="form-group form-group-sm">
+                  <div class="col-sm-3 control-label">
+                    <label class="input-required behavior-2"
+                           id="label-easyEntryEditForm-explicitContent-0"
+                           for="explicitContent">
+                      Parental advisory
+                    </label>
+                    <span style="position: absolute; white-space: nowrap; z-index: 100;">
+                      <span style="color: red;"> *</span>
+                      <span class="label-tip">
+                        <a href="#" data-html="true" data-placement="top" title=""
+                           class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip"
+                           data-original-title="<div style=&quot;text-align: left;&quot;>Choose &quot;cleaned&quot; if this track is a cleaned-up version of a track originally explicit. If the original track does not contain explicit lyrics, choose &quot;no&quot;.</div>">
+                          <span class="glyphicon glyphicon-question-sign"></span>
+                        </a>
+                      </span>
+                    </span>
+                  </div>
+                  <div class="col-sm-7">
+                    <label class="radio-inline">
+                      <input type="radio" class="input-explicitContent inputInt inputBehavior-2"
+                             name="explicitContent" id="explicitContent-0" value="1" tabindex="32">
+                      Yes
+                    </label>
+                    <label class="radio-inline">
+                      <input type="radio" class="input-explicitContent inputInt inputBehavior-2"
+                             name="explicitContent" id="explicitContent-1" value="0" tabindex="33">
+                      No
+                    </label>
+                    <label class="radio-inline">
+                      <input type="radio" class="input-explicitContent inputInt inputBehavior-2"
+                             name="explicitContent" id="explicitContent-2" value="2" tabindex="34">
+                      Cleaned
+                    </label>
+                  </div>
+                  <div class="col-sm-2 divAppend"></div>
+                </div>
+
+                <!-- Preview start -->
+                <div class="form-group form-group-sm">
+                  <div class="col-sm-3 control-label">
+                    <label class="input-required behavior-2"
+                           id="easyEntryEditForm-preview_start"
+                           for="easyEntryEditForm-preview_start-0">
+                      Preview start
+                    </label>
+                    <span style="position: absolute; white-space: nowrap; z-index: 100;">
+                      <span style="color: red;"> </span>
+                      <span class="label-tip">
+                        <a href="#" data-html="true" data-placement="right" title=""
+                           class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip"
+                           data-original-title="<div style=&quot;text-align: left;&quot;>Please indicate when you want the 30 second pre-listen clip on your Player to start for this track. Please fill this field with seconds. i.e.: &quot;180&quot; for 3 minutes or &quot;30&quot; for 30 seconds.</div>">
+                          <span class="glyphicon glyphicon-question-sign"></span>
+                        </a>
+                      </span>
+                    </span>
+                  </div>
+                  <div class="col-sm-7">
+                    <input class="input-large inputString inputBehavior-2 form-control"
+                           name="preview_start" id="preview_start" type="text" value="120.00" tabindex="20">
+                    <span style="display:none" class="form-input-error help-inline control-label"
+                          rel="easyEntryEditForm-preview_start-0"></span>
+                  </div>
+                  <div class="col-sm-2 divAppend"></div>
+                </div>
+
+                <!-- Track title language -->
+                <div class="form-group form-group-sm">
+                  <div class="col-sm-3 control-label">
+                    <label class="input-required behavior-2"
+                           id="label-easyEntryEditForm-metadataLanguage-0"
+                           for="metadataLanguage">
+                      Track title language
+                    </label>
+                    <span style="position: absolute; white-space: nowrap; z-index: 100;">
+                      <span style="color: red;"> *</span>
+                      <span class="label-tip">
+                        <a href="#" data-html="true" data-placement="right" title=""
+                           class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip"
+                           data-original-title="<div style=&quot;text-align: left;&quot;>Please indicate the spelling language of the release title.</div>">
+                          <span class="glyphicon glyphicon-question-sign"></span>
+                        </a>
+                      </span>
+                    </span>
+                  </div>
+                  <div class="col-sm-7">
+                    <select type="select" class="select2" name="metadataLanguage" id="metadataLanguage" tabindex="36">
+                      <option value="0">Please select...</option>
+                      <option value="OM">(Afan) Oromo</option>
+                      <option value="AB">Abkhazian</option>
+                      <option value="AA">Afar</option>
+                      <option value="AF">Afrikaans</option>
+                      <option value="SQ">Albanian</option>
+                      <option value="AM">Amharic</option>
+                      <option value="AR">Arabic</option>
+                      <option value="HY">Armenian</option>
+                      <option value="AS">Assamese</option>
+                      <option value="AY">Aymara</option>
+                      <option value="AZ">Azerbaijani</option>
+                      <option value="BM">Bambara</option>
+                      <option value="BA">Bashkir</option>
+                      <option value="EU">Basque</option>
+                      <option value="BN">Bengali, Bangla</option>
+                      <option value="H8">Bhojpuri</option>
+                      <option value="DZ">Bhutani</option>
+                      <option value="BH">Bihari</option>
+                      <option value="BI">Bislama</option>
+                      <option value="I8">Bodo</option>
+                      <option value="BR">Breton</option>
+                      <option value="BG">Bulgarian</option>
+                      <option value="MY">Burmese</option>
+                      <option value="BE">Byelorussian</option>
+                      <option value="KM">Cambodian</option>
+                      <option value="Z3">Cantonese</option>
+                      <option value="CA">Catalan</option>
+                      <option value="H6">Chhattisgarhi</option>
+                      <option value="ZH">Chinese</option>
+                      <option value="Z1">Chinese (Simplified)</option>
+                      <option value="Z2">Chinese (Traditional)</option>
+                      <option value="CO">Corsican</option>
+                      <option value="HR">Croatian</option>
+                      <option value="CS">Czech</option>
+                      <option value="DA">Danish</option>
+                      <option value="I1">Dogri</option>
+                      <option value="H2">Dogri</option>
+                      <option value="NL">Dutch</option>
+                      <option value="EN">English</option>
+                      <option value="EO">Esperanto</option>
+                      <option value="ET">Estonian</option>
+                      <option value="FO">Faroese</option>
+                      <option value="FJ">Fiji</option>
+                      <option value="FI">Finnish</option>
+                      <option value="FR">French</option>
+                      <option value="FY">Frisian</option>
+                      <option value="GL">Galician</option>
+                      <option value="H5">Garhwali</option>
+                      <option value="I9">Garo</option>
+                      <option value="KA">Georgian</option>
+                      <option value="DE">German</option>
+                      <option value="EL">Greek</option>
+                      <option value="KL">Greenlandic</option>
+                      <option value="GN">Guarani</option>
+                      <option value="GU">Gujarati</option>
+                      <option value="HT">Haitian</option>
+                      <option value="H4">Haryanvi</option>
+                      <option value="HA">Hausa</option>
+                      <option value="HE">Hebrew</option>
+                      <option value="HI">Hindi</option>
+                      <option value="HU">Hungarian</option>
+                      <option value="IS">Icelandic</option>
+                      <option value="ID">Indonesian</option>
+                      <option value="IA">Interlingua</option>
+                      <option value="IE">Interlingue</option>
+                      <option value="IU">Inuktitut</option>
+                      <option value="IK">Inupiak</option>
+                      <option value="GA">Irish</option>
+                      <option value="IT">Italian</option>
+                      <option value="JA">Japanese</option>
+                      <option value="JV">Javanese</option>
+                      <option value="KN">Kannada</option>
+                      <option value="KS">Kashmiri</option>
+                      <option value="KK">Kazakh</option>
+                      <option value="I2">Khasi</option>
+                      <option value="RW">Kinyarwanda</option>
+                      <option value="KY">Kirghiz</option>
+                      <option value="RN">Kirundi</option>
+                      <option value="J1">Kok Borok</option>
+                      <option value="I3">Konkani</option>
+                      <option value="H7">Konkani</option>
+                      <option value="KO">Korean</option>
+                      <option value="KU">Kurdish</option>
+                      <option value="J2">Kutchi</option>
+                      <option value="LO">Laothian</option>
+                      <option value="LA">Latin</option>
+                      <option value="LV">Latvian, Lettish</option>
+                      <option value="LN">Lingala</option>
+                      <option value="LT">Lithuanian</option>
+                      <option value="MK">Macedonian</option>
+                      <option value="I4">Maithili</option>
+                      <option value="MG">Malagasy</option>
+                      <option value="MS">Malay</option>
+                      <option value="ML">Malayalam</option>
+                      <option value="MT">Maltese</option>
+                      <option value="I5">Manipuri</option>
+                      <option value="MI">Maori</option>
+                      <option value="MR">Marathi</option>
+                      <option value="I6">Mizo</option>
+                      <option value="MO">Moldavian</option>
+                      <option value="MN">Mongolian</option>
+                      <option value="NA">Nauru</option>
+                      <option value="NE">Nepali</option>
+                      <option value="NO">Norwegian</option>
+                      <option value="OC">Occitan</option>
+                      <option value="OR">Oriya</option>
+                      <option value="PS">Pashto, Pushto</option>
+                      <option value="FA">Persian</option>
+                      <option value="PL">Polish</option>
+                      <option value="PT">Portuguese</option>
+                      <option value="PA">Punjabi</option>
+                      <option value="QU">Quechua</option>
+                      <option value="H1">Rajasthani</option>
+                      <option value="RC">Reunionese</option>
+                      <option value="RM">Rhaeto-Romance</option>
+                      <option value="RO">Romanian</option>
+                      <option value="RU">Russian</option>
+                      <option value="SM">Samoan</option>
+                      <option value="SG">Sangho</option>
+                      <option value="SA">Sanskrit</option>
+                      <option value="I7">Santali</option>
+                      <option value="GD">Scots Gaelic</option>
+                      <option value="SR">Serbian</option>
+                      <option value="SH">Serbo-Croatian</option>
+                      <option value="ST">Sesotho</option>
+                      <option value="TN">Setswana</option>
+                      <option value="SN">Shona</option>
+                      <option value="SD">Sindhi</option>
+                      <option value="SI">Sinhalese</option>
+                      <option value="SS">Siswati</option>
+                      <option value="SK">Slovak</option>
+                      <option value="SL">Slovenian</option>
+                      <option value="SO">Somali</option>
+                      <option value="ES">Spanish</option>
+                      <option value="SU">Sundanese</option>
+                      <option value="SW">Swahili</option>
+                      <option value="SV">Swedish</option>
+                      <option value="TL">Tagalog</option>
+                      <option value="TG">Tajik</option>
+                      <option value="TA">Tamil</option>
+                      <option value="TT">Tatar</option>
+                      <option value="TE">Telugu</option>
+                      <option value="TH">Thai</option>
+                      <option value="BO">Tibetan</option>
+                      <option value="TI">Tigrinya</option>
+                      <option value="TO">Tonga</option>
+                      <option value="TS">Tsonga</option>
+                      <option value="J3">Tulu</option>
+                      <option value="TR">Turkish</option>
+                      <option value="TK">Turkmen</option>
+                      <option value="TW">Twi</option>
+                      <option value="UG">Uighur</option>
+                      <option value="UK">Ukrainian</option>
+                      <option value="UR">Urdu</option>
+                      <option value="UZ">Uzbek</option>
+                      <option value="H3">Varhadi-Nagpuri</option>
+                      <option value="VI">Vietnamese</option>
+                      <option value="VO">Volapuk</option>
+                      <option value="CY">Welsh</option>
+                      <option value="WO">Wolof</option>
+                      <option value="XH">Xhosa</option>
+                      <option value="YI">Yiddish</option>
+                      <option value="YO">Yoruba</option>
+                      <option value="ZA">Zhuang</option>
+                      <option value="ZU">Zulu</option>
+                    </select>
+                    <span style="display:none" class="form-input-error help-inline control-label"
+                          rel="easyEntryEditForm-metadataLanguage-0"></span>
+                  </div>
+                  <div class="col-sm-2 divAppend"></div>
+                </div>
+
+                <!-- Lyrics language -->
+                <div class="form-group form-group-sm">
+                  <div class="col-sm-3 control-label">
+                    <label class="behavior-2"
+                           id="label-easyEntryEditForm-idLyricsSelect-0"
+                           for="idLyricsSelect">
+                      Lyrics language
+                    </label>
+                    <span style="position: absolute; white-space: nowrap; z-index: 100;">
+                      <span style="visibility: visible; color: rgb(255, 0, 0);"> *</span>
+                      <span class="label-tip">
+                        <a href="#" data-html="true" data-placement="right" title=""
+                           class="nf-creator-tooltip" onclick="return false;" data-toggle="tooltip"
+                           data-original-title="<div style=&quot;text-align: left;&quot;>Please indicate the language your release is in. If the release language is not listed, please select the closest provided.</div>">
+                          <span class="glyphicon glyphicon-question-sign"></span>
+                        </a>
+                      </span>
+                    </span>
+                  </div>
+                  <div class="col-sm-7">
+                    <select type="select" class="select2" name="idLyricsSelect" id="idLyricsSelect" tabindex="37">
+                      <option value="0">Please select...</option>
+                      <option value="(Afan) Oromo">(Afan) Oromo</option>
+                      <option value="Abkhazian">Abkhazian</option>
+                      <option value="Afar">Afar</option>
+                      <option value="Afrikaans">Afrikaans</option>
+                      <option value="Albanian">Albanian</option>
+                      <option value="Amharic">Amharic</option>
+                      <option value="Arabic">Arabic</option>
+                      <option value="Armenian">Armenian</option>
+                      <option value="Assamese">Assamese</option>
+                      <option value="Aymara">Aymara</option>
+                      <option value="Azerbaijani">Azerbaijani</option>
+                      <option value="Bambara">Bambara</option>
+                      <option value="Bashkir">Bashkir</option>
+                      <option value="Basque">Basque</option>
+                      <option value="Bengali, Bangla">Bengali, Bangla</option>
+                      <option value="Bhojpuri">Bhojpuri</option>
+                      <option value="Bhutani">Bhutani</option>
+                      <option value="Bihari">Bihari</option>
+                      <option value="Bislama">Bislama</option>
+                      <option value="Bodo">Bodo</option>
+                      <option value="Breton">Breton</option>
+                      <option value="Bulgarian">Bulgarian</option>
+                      <option value="Burmese">Burmese</option>
+                      <option value="Byelorussian">Byelorussian</option>
+                      <option value="Cambodian">Cambodian</option>
+                      <option value="Cantonese">Cantonese</option>
+                      <option value="Catalan">Catalan</option>
+                      <option value="Chhattisgarhi">Chhattisgarhi</option>
+                      <option value="Chinese">Chinese</option>
+                      <option value="Chinese (Simplified)">Chinese (Simplified)</option>
+                      <option value="Chinese (Traditional)">Chinese (Traditional)</option>
+                      <option value="Corsican">Corsican</option>
+                      <option value="Croatian">Croatian</option>
+                      <option value="Czech">Czech</option>
+                      <option value="Danish">Danish</option>
+                      <option value="Dogri">Dogri</option>
+                      <option value="Dogri">Dogri</option>
+                      <option value="Dutch">Dutch</option>
+                      <option value="English">English</option>
+                      <option value="Esperanto">Esperanto</option>
+                      <option value="Estonian">Estonian</option>
+                      <option value="Faroese">Faroese</option>
+                      <option value="Fiji">Fiji</option>
+                      <option value="Finnish">Finnish</option>
+                      <option value="French">French</option>
+                      <option value="Frisian">Frisian</option>
+                      <option value="Galician">Galician</option>
+                      <option value="Garhwali">Garhwali</option>
+                      <option value="Garo">Garo</option>
+                      <option value="Georgian">Georgian</option>
+                      <option value="German">German</option>
+                      <option value="Greek">Greek</option>
+                      <option value="Greenlandic">Greenlandic</option>
+                      <option value="Guarani">Guarani</option>
+                      <option value="Gujarati">Gujarati</option>
+                      <option value="Haitian">Haitian</option>
+                      <option value="Haryanvi">Haryanvi</option>
+                      <option value="Hausa">Hausa</option>
+                      <option value="Hebrew">Hebrew</option>
+                      <option value="Hindi">Hindi</option>
+                      <option value="Hungarian">Hungarian</option>
+                      <option value="Icelandic">Icelandic</option>
+                      <option value="Indonesian">Indonesian</option>
+                      <option value="Interlingua">Interlingua</option>
+                      <option value="Interlingue">Interlingue</option>
+                      <option value="Inuktitut">Inuktitut</option>
+                      <option value="Inupiak">Inupiak</option>
+                      <option value="Irish">Irish</option>
+                      <option value="Italian">Italian</option>
+                      <option value="Japanese">Japanese</option>
+                      <option value="Javanese">Javanese</option>
+                      <option value="Kannada">Kannada</option>
+                      <option value="Kashmiri">Kashmiri</option>
+                      <option value="Kazakh">Kazakh</option>
+                      <option value="Khasi">Khasi</option>
+                      <option value="Kinyarwanda">Kinyarwanda</option>
+                      <option value="Kirghiz">Kirghiz</option>
+                      <option value="Kirundi">Kirundi</option>
+                      <option value="Kok Borok">Kok Borok</option>
+                      <option value="Konkani">Konkani</option>
+                      <option value="Konkani">Konkani</option>
+                      <option value="Korean">Korean</option>
+                      <option value="Kurdish">Kurdish</option>
+                      <option value="Kutchi">Kutchi</option>
+                      <option value="Laothian">Laothian</option>
+                      <option value="Latin">Latin</option>
+                      <option value="Latvian, Lettish">Latvian, Lettish</option>
+                      <option value="Lingala">Lingala</option>
+                      <option value="Lithuanian">Lithuanian</option>
+                      <option value="Macedonian">Macedonian</option>
+                      <option value="Maithili">Maithili</option>
+                      <option value="Malagasy">Malagasy</option>
+                      <option value="Malay">Malay</option>
+                      <option value="Malayalam">Malayalam</option>
+                      <option value="Maltese">Maltese</option>
+                      <option value="Manipuri">Manipuri</option>
+                      <option value="Maori">Maori</option>
+                      <option value="Marathi">Marathi</option>
+                      <option value="Mizo">Mizo</option>
+                      <option value="Moldavian">Moldavian</option>
+                      <option value="Mongolian">Mongolian</option>
+                      <option value="Nauru">Nauru</option>
+                      <option value="Nepali">Nepali</option>
+                      <option value="Norwegian">Norwegian</option>
+                      <option value="Occitan">Occitan</option>
+                      <option value="Oriya">Oriya</option>
+                      <option value="Pashto, Pushto">Pashto, Pushto</option>
+                      <option value="Persian">Persian</option>
+                      <option value="Polish">Polish</option>
+                      <option value="Portuguese">Portuguese</option>
+                      <option value="Punjabi">Punjabi</option>
+                      <option value="Quechua">Quechua</option>
+                      <option value="Rajasthani">Rajasthani</option>
+                      <option value="Reunionese">Reunionese</option>
+                      <option value="Rhaeto-Romance">Rhaeto-Romance</option>
+                      <option value="Romanian">Romanian</option>
+                      <option value="Russian">Russian</option>
+                      <option value="Samoan">Samoan</option>
+                      <option value="Sangho">Sangho</option>
+                      <option value="Sanskrit">Sanskrit</option>
+                      <option value="Santali">Santali</option>
+                      <option value="Scots Gaelic">Scots Gaelic</option>
+                      <option value="Serbian">Serbian</option>
+                      <option value="Serbo-Croatian">Serbo-Croatian</option>
+                      <option value="Sesotho">Sesotho</option>
+                      <option value="Setswana">Setswana</option>
+                      <option value="Shona">Shona</option>
+                      <option value="Sindhi">Sindhi</option>
+                      <option value="Sinhalese">Sinhalese</option>
+                      <option value="Siswati">Siswati</option>
+                      <option value="Slovak">Slovak</option>
+                      <option value="Slovenian">Slovenian</option>
+                      <option value="Somali">Somali</option>
+                      <option value="Spanish">Spanish</option>
+                      <option value="Sundanese">Sundanese</option>
+                      <option value="Swahili">Swahili</option>
+                      <option value="Swedish">Swedish</option>
+                      <option value="Tagalog">Tagalog</option>
+                      <option value="Tajik">Tajik</option>
+                      <option value="Tamil">Tamil</option>
+                      <option value="Tatar">Tatar</option>
+                      <option value="Telugu">Telugu</option>
+                      <option value="Thai">Thai</option>
+                      <option value="Tibetan">Tibetan</option>
+                      <option value="Tigrinya">Tigrinya</option>
+                      <option value="Tonga">Tonga</option>
+                      <option value="Tsonga">Tsonga</option>
+                      <option value="Tulu">Tulu</option>
+                      <option value="Turkish">Turkish</option>
+                      <option value="Turkmen">Turkmen</option>
+                      <option value="Twi">Twi</option>
+                      <option value="Uighur">Uighur</option>
+                      <option value="Ukrainian">Ukrainian</option>
+                      <option value="Urdu">Urdu</option>
+                      <option value="Uzbek">Uzbek</option>
+                      <option value="Varhadi-Nagpuri">Varhadi-Nagpuri</option>
+                      <option value="Vietnamese">Vietnamese</option>
+                      <option value="Volapuk">Volapuk</option>
+                      <option value="Welsh">Welsh</option>
+                      <option value="Wolof">Wolof</option>
+                      <option value="Xhosa">Xhosa</option>
+                      <option value="Yiddish">Yiddish</option>
+                      <option value="Yoruba">Yoruba</option>
+                      <option value="Zhuang">Zhuang</option>
+                      <option value="Zulu">Zulu</option>
+                    </select>
+                    <span style="display:none" class="form-input-error help-inline control-label"
+                          rel="easyEntryEditForm-idLyricsSelect-0"></span>
+                  </div>
+                  <div class="col-sm-2 divAppend"></div>
+                </div>
+
+<div class="jarviswidget panel panel-default panel-hovered panel-stacked mb30 jarviswidget-sortable show">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-12 col-xs-12">
+                <form id="fileupload" method="POST" enctype="multipart/form-data">
+                    
+                    <!-- Hidden File Input -->
+                    <input type="file" id="audio_upload" multiple
+                           style="left:-99999px;visibility:hidden;width:0px;z-index:-999;"
+                           accept=".wav,.flac">
+                    
+                    <!-- Mixed Bitrate Warning -->
+                    <div class="alert alert-warning audio-mixed-bitrate-warning-message hidden">
+                        <strong>We have detected different bit depth among your audio files, this release will not be considered as HD.</strong>
+                    </div>
+                    
+                    <!-- Upload Table -->
+                    <table class="table table-bordered" id="tableContainer" style="empty-cells: hide;">
+                        <thead id="tableContainerHead">
+                            <tr>
+                                <th class="text-center">&nbsp;</th>
+                                <th class="text-center">Upload</th>
+                                <th class="text-center">Check</th>
+                                <th class="text-center"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableContainerBody" class="files">
+                            <tr>
+                                <td id="audio_file_info" width="40%"></td>
+                                <td width="20%" align="center">
+                                    <div class="glyphicon glyphicon-ok upload_status hide"></div>
+                                    <div class="progress hide" style="height:21px;" id="customfileupload">
+                                        <div class="progress-bar progress-bar-success progress-bar-striped active"
+                                             role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"
+                                             style="width:0%;line-height:21px;color:#FFFFFF;font-size:16px"
+                                             id="progressBar">
+                                            0%
+                                        </div>
+                                    </div>
+                                </td>
+                                <td id="audio_file_check" width="20%" align="center"></td>
+                                <td width="20%" align="center">
+                                    <button type="button" class="btn btn-default delete_audio hide">
+                                        <b><i class="glyphicon glyphicon-remove"></i> Delete file</b>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <!-- Upload Form Group -->
+                    <div class="form-group">
+                        <div class="col-sm-3 control-label">
+                            <label class="behavior-2" id="label-easyEntryEditForm-lyrics-0" for="easyEntryEditForm-lyrics-0">
+                                Upload<span style="color: red;"> *</span>
+                            </label>
+                        </div>
+                        <div class="col-sm-7">
+                            <div class="container-fluid">
+                                <div class="row">
+                                    <div class="col-md-6 col-xs-7">
+                                        <span class="btn btn-primary fileinput-button" style="width: 250px;">
+                                            <i class="glyphicon glyphicon-plus"></i> 
+                                            <span>Add and upload file</span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="row hidden">
+                                    <div class="alert alert-danger text-center uploader-service-unavailable">
+                                        <strong></strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-2 divAppend"></div>
+                        </div>
+                        
+                        <!-- Audio Format Info -->
+                        <div class="col-md-12">
+                            <div class="col-sm-12" style="margin-top:30px;">
+                                <p>
+                                    <strong>Audio format:</strong> The standard format of audio file is WAV 16 bits, 44,100 Hz, Stereo. Do not use multiple formats in the same release. The file must be complete (not cut) and good quality (no noise for example).<br><br>
+                                    <strong>HD files:</strong> For 24-bit format, file must be among the following options: 
+                                    24-bit / 44100 Hz (24/44); 
+                                    24-bit / 48000 Hz (24/48); 
+                                    24-bit / 88200 Hz (24/88); 
+                                    24-bit / 96000 Hz (24/96); 
+                                    24-bit / 192000 Hz (24/96).
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Modal Footer -->
+                    <div class="modal-footer">
+                        <button href="#" class="btn btn-default btn-tracks-close" data-dismiss="modal">Close</button>
+                        <button id="easyEntryDataSaveButton" class="btn btn-primary nf-btn-submit" type="button" href="#">
+                            <i class="icon-ok-circle icon-white"></i> Save
+                        </button>
+                        <div style="float: right;">
+                            <img style="margin: 10px 30px;" src="<?php echo $this->basePath(); ?>/public/img/loader.gif" class="hide nf-loader">
+                        </div>
+                    </div>
+                    
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Styles -->
+<style>
+    .controls label.radio.inline:first-child { margin-left: 0; }
+    .tooltip-inner { max-width: 350px; }
+    .form-control-inline { width: 250px !important; }
+    .control-label.controls-vertical { float: none; text-align: left; }
+    .controls.controls-vertical { margin-left: 0; }
+    .form-group .control-label label { padding-right: 5px; }
+    .form-group .col-sm-2.divAppend { padding-top: 7px; padding-left: 0; }
+</style>
+
+<!-- Empty Script -->
+<script type="text/javascript"></script>
+
+<!-- Modals -->
+<div id="easyEntryAssetsPopover"></div>
+<div id="easyEntryArtistIdModal" class="modal fade" aria-hidden="true"></div>
+<div id="focusTrackModal" class="modal fade" aria-hidden="true"></div>
+<div id="madeForKidsGuidelinesModal" class="modal fade" aria-hidden="true"></div>
+
+<!-- Delete Track Modal -->
+<div id="deleteTrackModal" class="modal fade" aria-hidden="false" style="display: none; padding-right: 17px;">
+    <input type="hidden" id="delete_track_id" value="">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p>
+                    Are you sure you want to delete this track ?<br>
+                    <strong id="delete_track_name"></strong>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal">Close</button>
+                <a href="javascript:;" class="btn btn-primary deleteTrack">Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+function bindSuggestionEvent() {
+  $('.input-trackArtist')
+    .off('keyup')
+    .on('keyup', function () {
+      let inputField = $(this);
+      let query = inputField.val();
+      let suggestionList = inputField.siblings('.suggestion-list');
+
+      if (query.length > 2) {
+        $.ajax({
+          url: '<?php echo $this->url('newrelease', array("action" => "artistSuggestionList")); ?>',
+          type: 'POST',
+          data: { query: query },
+          success: function (response) {
+            if (!suggestionList.length) {
+              inputField.after('<ul class="suggestion-list">' + response + '</ul>');
+            } else {
+              suggestionList.html(response);
+            }
+          }
+        });
+      } else {
+        suggestionList.remove();
+      }
+    })
+    .off('focus')
+    .on('focus', function () {
+      let inputField = $(this);
+      let suggestionList = inputField.siblings('.suggestion-list');
+
+      <?php if ($_SESSION["SUBUSER"] == '1') { ?>
+      $.ajax({
+        url: '<?php echo $this->url('newrelease', array("action" => "artistSuggestionList")); ?>',
+        type: 'POST',
+        data: { query: 'ALL_LIST' },
+        success: function (response) {
+          if (!suggestionList.length) {
+            inputField.after('<ul class="suggestion-list">' + response + '</ul>');
+          } else {
+            suggestionList.html(response);
+          }
+        }
+      });
+      <?php } ?>
+    });
+
+  // Select a suggestion
+  $(document)
+    .off('click', '.suggestion-item')
+    .on('click', '.suggestion-item', function () {
+      let selectedText = $(this).text();
+      let inputField = $(this).closest('.suggestion-list').siblings('.input-trackArtist');
+      inputField.val(selectedText);
+      $('.suggestion-list').remove();
+    });
+
+  // Hide on outside click
+  $(document).on('click', function (e) {
+    if (!$(e.target).closest('.input-trackArtist, .suggestion-list').length) {
+      $('.suggestion-list').remove();
+    }
+  });
+}
+// Bind once at start
+bindSuggestionEvent();
+
+/* ===============
+   Error Utilities
+   =============== */
+function setErrorMsg(field, msg) {
+  $('#' + field).parents('.form-group').find('label').addClass('labelError');
+  $('#' + field).addClass('inputError');
+  $('#' + field).parents('.form-group').find(".form-input-error").text(msg).removeAttr('style');
+  $('#' + field).parents('.form-group').addClass('has-error');
+}
+
+function removeErrorMsg() {
+  $('input,select,textarea').parents('.form-group').find('label').removeClass('labelError');
+  $('input,select,textarea').removeClass('inputError');
+  $('input,select,textarea').parents('.form-group').find(".form-input-error").text('').attr('style', 'display:none;');
+  $('input,select,textarea').parents('.form-group').removeClass('has-error');
+}
+
+/* ======================
+   Dynamic Field Helpers
+   ====================== */
+function removeField(button) {
+  var div = button.parentNode;
+  div.parentNode.remove(div);
+}
+
+function addTrackArtist() {
+  if ($('#artist-fields input').length < "<?php echo $user_artist_cnt; ?>" || <?php echo $user_artist_cnt; ?> == 0) {
+    var newInputGroup =
+      '<div style="margin-top:5px;position: relative;">' +
+        '<input data-tags="true" class="input-large input-trackArtist input-multiple inputString inputBehavior-2 form-control" name="trackArtist[]" type="text" value="" tabindex="3" autocomplete="off">' +
+        '<span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-trackArtist-0"></span>' +
+        '<a href="javascript:;" class="addFieldLink removemultifield" data-selector="input-trackArtist">' +
+          '<span class="glyphicon glyphicon-minus-sign" onclick="removeField(this)"></span>' +
+        '</a>' +
+      '</div>';
+    $('#artist-fields').append(newInputGroup);
+    bindSuggestionEvent();
+  }
+}
+
+function addFieldFeaturing() {
+  var newInputGroup =
+    '<div style="margin-top:5px;position: relative;">' +
+      '<input data-tags="true" class="input-large input-featuring input-multiple inputString inputBehavior-2 form-control" name="featuring[]" type="text" value="" tabindex="3" autocomplete="off">' +
+      '<span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-featuring-0"></span>' +
+      '<a href="javascript:;" class="addFieldLink removemultifield" data-selector="input-featuring">' +
+        '<span class="glyphicon glyphicon-minus-sign" onclick="removeField(this)"></span>' +
+      '</a>' +
+    '</div>';
+  $('#featuring-fields').append(newInputGroup);
+}
+
+function addauthor() {
+  var newInputGroup =
+    '<div style="margin-top:5px;position: relative;">' +
+      '<input data-tags="true" class="input-large input-author input-multiple inputString inputBehavior-2 form-control" name="author[]" type="text" value="" tabindex="3" autocomplete="off">' +
+      '<span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-author-0"></span>' +
+      '<a href="javascript:;" class="addFieldLink removemultifield" data-selector="input-author">' +
+        '<span class="glyphicon glyphicon-minus-sign" onclick="removeField(this)"></span>' +
+      '</a>' +
+    '</div>';
+  $('#author-fields').append(newInputGroup);
+}
+
+function addcomposer() {
+  var newInputGroup =
+    '<div style="margin-top:5px;position: relative;">' +
+      '<input data-tags="true" class="input-large input-composer input-multiple inputString inputBehavior-2 form-control" name="composer[]" type="text" value="" tabindex="3" autocomplete="off">' +
+      '<span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-composer-0"></span>' +
+      '<a href="javascript:;" class="addFieldLink removemultifield" data-selector="input-composer">' +
+        '<span class="glyphicon glyphicon-minus-sign" onclick="removeField(this)"></span>' +
+      '</a>' +
+    '</div>';
+  $('#composer-fields').append(newInputGroup);
+}
+
+function addproduceBy() {
+  var newInputGroup =
+    '<div style="margin-top:5px;position: relative;">' +
+      '<input data-tags="true" class="input-large input-produceBy input-multiple inputString inputBehavior-2 form-control" name="produceBy[]" type="text" value="" tabindex="3" autocomplete="off">' +
+      '<span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-produceBy-0"></span>' +
+      '<a href="javascript:;" class="addFieldLink removemultifield" data-selector="input-produceBy">' +
+        '<span class="glyphicon glyphicon-minus-sign" onclick="removeField(this)"></span>' +
+      '</a>' +
+    '</div>';
+  $('#produceby-fields').append(newInputGroup);
+}
+
+/* =====================
+   Move Track (Popover)
+   ===================== */
+$(document).on('click', '.moveTrackLink', function (e) {
+  e.preventDefault();
+
+  $(this).popover({
+    html: true,
+    content: function () {
+      var ulElt = $(this).closest("ul.volume");
+      var currentVolume = ulElt.attr("data-volume");
+      var volumes = $("ul.volume");
+      var trackId = $(this).closest("li.track").attr("id").replace(/track-/, "");
+
+      var html = "";
+      html += "<form method='post' style='margin-bottom: 0' class='moveTrackForm'>";
+      html += "<input type='hidden' name='idTrack' value='" + trackId + "' />";
+      html += "<input type='hidden' name='moveFrom' value='" + currentVolume + "' />";
+      html += "<table><tr>";
+      html += "<td style='vertical-align: middle;'>Move to : </td>";
+      html += "<td style='vertical-align: middle;'>";
+      html += "<select style='margin-bottom:0px;border-width:1px;border-style:solid;border-color:rgb(118,118,118);' class='input-small' id='moveTo' name='moveTo'>";
+
+      $.each(volumes, function () {
+        var volumeNb = $(this).attr("data-volume");
+        if (volumeNb != currentVolume) {
+          html += "<option value='" + volumeNb + "'>Volume " + volumeNb + "</option>";
+        }
+      });
+
+      html += "</select></td>";
+      html += "<td style='vertical-align: middle;'>&nbsp;&nbsp;";
+      html += "<a onclick='$(\".moveTrackLink\").popover(\"hide\"); return false;' href='javascript:;'><span class='glyphicon glyphicon-remove-sign'></span></a>&nbsp;&nbsp;";
+      html += "<a onclick='submitFormWithAjax($(this).parents(\".moveTrackForm\")); return false;' href='javascript:;'><span class='glyphicon glyphicon-ok-sign'></span></a>";
+      html += "&nbsp;</td></tr></table>";
+      html += "</form>";
+
+      return html;
+    }
+  }).popover('show');
+});
+
+function submitFormWithAjax(form) {
+  var $form = form;
+  var objMasterData = $form.serializeObject();
+  $.extend(objMasterData, { MASTER_KEY_ID: iActiveID });
+  objMasterData = JSON.stringify(objMasterData);
+
+  var objFormData = { FORM_DATA: objMasterData };
+  var objMyPost = AJAX_Post("<?php echo $this->url('newrelease', array('action' => 'moveTrack')); ?>", objFormData);
+
+  if (objMyPost.ERR_NO === 0) {
+    if (objMyPost.DATA.DBStatus === 'OK') {
+      window.location.href = window.location.href;
+    }
+  } else {
+    mySmallAlert('Error...!', 'There was an error', 0);
+  }
+}
+
+/* =========================
+   Sortable (Track Ordering)
+   ========================= */
+$(".volume").sortable({
+  containment: '.bloc-volume:hover',
+  update: function () {
+    var releaseId = $(this).attr("data-release");
+    var tracks = $(this).find("li.track");
+    var trackOrder = {};
+
+    $.each(tracks, function (i) {
+      var trackId = $(this).attr("id").replace(/track_/, "");
+      trackOrder[trackId] = (i + 1);
+    });
+
+    $.get(
+      "<?php echo $this->url('newrelease', array('action' => 'updateTrackOrder')); ?>",
+      { idRelease: releaseId, trackOrder: JSON.stringify(trackOrder) },
+      function (data) {
+        data = $.parseJSON(data);
+        $.each(trackOrder, function (id, order) {
+          $("li#track_" + id).find("span.trackNumber").text(order);
+        });
+      }
+    );
+  }
+});
+
+/* =====================
+   Audio Upload (XHR)
+   ===================== */
+$(document).on('change', '#audio_upload', function () {
+  console.log('1');
+
+  if (this.files && this.files[0]) {
+    var reader = new FileReader();
+    reader.onload = imageIsLoadedLogo;
+    reader.readAsDataURL(this.files[0]);
+
+    $('#tableContainerBody tr').show();
+    $('.upload_status').addClass('hide');
+
+    var audio_file_name = this.files[0].name;
+    $('#audio_file_check').html('Processing...');
+    $('#audio_file_info').html(audio_file_name);
+
+    // Build form
+    var $form = $('#fileupload');
+    var oMyForm = new FormData($form.get(0));
+
+    var file = document.getElementById("audio_upload").files[0];
+    if (file && file.size > 0) {
+      oMyForm.append("audio_upload", file);
+    } else {
+      oMyForm.append("audio_upload", 0);
+    }
+    oMyForm.append("track_id", '<?php echo $_GET['edit']; ?>');
+
+    // UI state
+    $("#customfileupload").removeClass('hide');
+    $("#btnSave").addClass('hide');
+    $('.modal-footer button').prop('disabled', true);
+    $('.modal-header button').hide();
+
+    // XHR
+    var ajax = new XMLHttpRequest();
+
+    ajax.upload.addEventListener("progress", function (event) {
+      if (event.lengthComputable) {
+        var percentComplete = Math.round((event.loaded / event.total) * 100);
+        var progressBar = $("#customfileupload .progress-bar");
+        progressBar.css("width", percentComplete + "%");
+        progressBar.html(percentComplete + "%");
+      }
+    }, false);
+
+    ajax.addEventListener("load", function (event) {
+      $("#customfileupload").addClass('hide');
+      $("#btnSave").removeClass('hide');
+      $('.upload_status').removeClass('hide');
+      $('.delete_audio').removeClass('hide');
+      $('.modal-footer button').prop('disabled', false);
+      $('.modal-header button').show();
+
+      $('#audio_upload').val('');
+      $('.progress-bar').html("0%");
+
+      var result = JSON.parse(event.target.responseText);
+
+      if (result.status == 'OK') {
+        $("#audio_hidden").val(result.file_name);
+        $("#audio_format_info").val(result.format_info);
+        $("#audio_file_info").append(result.format_info);
+        $('#audio_file_check').html('<div class="glyphicon glyphicon-ok"></div>');
+      }
+
+      if (result.status == 'WRONG_FORMAT') {
+        $("#audio_hidden").val('');
+        $("#audio_format_info").val('');
+        $("#audio_file_info").append(result.format_info);
+        $('#audio_file_check').html('<div class="glyphicon glyphicon-remove"></div><div style="color: #d9534f" class="error">Wrong Format</div>');
+      }
+
+      if (result.status == 'NO_OK') {
+        $("#audio_hidden").val('');
+        $("#audio_format_info").val('');
+        $("#audio_file_info").append(result.format_info);
+        $('#audio_file_check').html('<div class="glyphicon glyphicon-remove"></div><div style="color: #d9534f" class="error">Wrong Format</div>');
+        mySmallAlert('Error...!', result.msg, 0);
+      }
+    }, false);
+
+    ajax.addEventListener("error", function () {
+      alert("There was an error uploading the file.");
+    }, false);
+
+    ajax.open("POST", "<?php echo $this->url('newrelease', array('action' => 'uploadaudio')); ?>");
+    ajax.send(oMyForm);
+  }
+});
+
+/* ==========================
+   Misc Small Helper Functions
+   ========================== */
+function performClick(node) {
+  var evt = document.createEvent("MouseEvents");
+  evt.initEvent("click", true, false);
+  node.dispatchEvent(evt);
+}
+
+function progressHandler(event) {
+  console.log('load');
+  _("loaded_n_total").innerHTML = "Uploaded " + event.loaded + " bytes of " + event.total;
+  var percent = (event.loaded / event.total) * 100;
+  _("progressBar").value = Math.round(percent);
+  _("status").innerHTML = Math.round(percent) + "% uploaded... please wait";
+}
+
+function completeHandler(event) {
+  _("status").innerHTML = event.target.responseText;
+  _("progressBar").value = 0; // clear after success
+}
+
+function imageIsLoadedLogo(e) {
+  $('#imgCompanyLogo').attr('src', e.target.result);
+}
+
+/* =========================
+   Track Edit / Delete Hooks
+   ========================= */
+$(document).on('click', '.editTrackLink', function () {
+  var track_id = $(this).attr('track_id');
+  clearForm("easyEntryEditForm");
+  cPopulateEditEntries(track_id, "<?php echo $this->url('newrelease', array('action' => 'getTrack')); ?>");
+  $("#easyEntryAssetsModal").modal({ backdrop: 'static', keyboard: false });
+
+  <?php if ($_GET['showError'] == '1') { ?>
+  setTimeout(function () {
+    $("#easyEntryDataSaveButton").trigger('click');
+  }, 1000);
+  <?php } ?>
+});
+
+$(document).on('click', '.delete_audio', function () {
+  $("#audio_hidden").val('');
+  $("#audio_format_info").val('');
+  $('#tableContainerBody tr').hide();
+  $('#audio_file_check').html('');
+});
+
+$(document).on('click', '.deleteTrackLink', function () {
+  var track_name = $(this).parents('.track').find('.trackName').html();
+  var track_id = $(this).attr('track_id');
+
+  $('#delete_track_name').html(track_name);
+  $("#deleteTrackModal").modal("show");
+  $('#delete_track_id').val(track_id);
+});
+
+$(document).on('click', '.deleteTrack', function () {
+  var objFormData = { track_id: $('#delete_track_id').val() };
+  var objMyPost = AJAX_Post("<?php echo $this->url('newrelease', array('action' => 'deleteTrack')); ?>", objFormData);
+
+  if (objMyPost.ERR_NO === 0) {
+    if (objMyPost.DATA.DBStatus === 'OK') {
+      window.location.href = window.location.href;
+    }
+  } else {
+    mySmallAlert('Error...!', 'There was an error', 0);
+  }
+});
+
+/* =========================
+   ISRC / Explicit toggles
+   ========================= */
+$('input[name=generate_isrc]').change(function () {
+  if ($('#generate_isrc-0').prop('checked') == true) {
+    $('.isrc_div').addClass('hide');
+  } else {
+    $('.isrc_div').removeClass('hide');
+  }
+});
+
+/* =========================
+   Add New Track (from UI)
+   ========================= */
+$(document).on('click', '.addNewTrackLink', function () {
+  var volume = $(this).attr('volume');
+  var objFormData = { master_id: "<?php echo $_GET['edit']; ?>", volume: volume };
+  var objMyPost = AJAX_Post("<?php echo $this->url('newrelease', array('action' => 'addTrack')); ?>", objFormData);
+
+  if (objMyPost.ERR_NO === 0) {
+    if (objMyPost.DATA.DBStatus === 'OK') {
+      $("#easyEntryAssetsModal").modal({ backdrop: 'static', keyboard: false });
+      clearForm('easyEntryEditForm');
+
+      $('#track_id').val(objMyPost.DATA.track_id);
+      $('#release-tracks-volume-' + volume).append(objMyPost.DATA.add_new_track_html);
+
+      if (objMyPost.DATA.add_new_volume == true) {
+        $('.bloc-volume').append(objMyPost.DATA.add_new_volume_html);
+      }
+    }
+  } else {
+    mySmallAlert('Error...!', 'There was an error', 0);
+  }
+
+  // Prefill fields from release info
+  var release_artist = "<?php echo $this->INFO['releaseArtist'] ?>";
+  var featuring = "<?php echo $this->INFO['featuring'] ?>";
+
+  $('#songName').val("<?php echo $this->INFO['title']; ?>");
+  $('#version').val("<?php echo $this->INFO['version']; ?>");
+  $('#pLine').val("<?php echo $this->INFO['pLine']; ?>");
+  $('#productionYear').select2('val', "<?php echo $this->INFO['productionYear']; ?>");
+
+  release_artist = release_artist.split(',');
+  featuring = featuring.split(',');
+
+  for (var i = 0; i < release_artist.length; i++) {
+    if (i == 0) {
+      $('#f_track_artist').val(release_artist[i]);
+    } else {
+      var newInputGroup =
+        '<div style="margin-top:5px;position: relative;">' +
+          '<input data-tags="true" class="input-large input-trackArtist input-multiple inputString inputBehavior-2 form-control" name="trackArtist[]" type="text" value="' + release_artist[i] + '" tabindex="3" autocomplete="off">' +
+          '<span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-trackArtist-0"></span>' +
+          '<a href="javascript:;" class="addFieldLink removemultifield" data-selector="input-trackArtist">' +
+            '<span class="glyphicon glyphicon-minus-sign" onclick="removeField(this)"></span>' +
+          '</a>' +
+        '</div>';
+      $('#artist-fields').append(newInputGroup);
+    }
+  }
+
+  for (var j = 0; j < featuring.length; j++) {
+    if (j == 0) {
+      $('#f_featuring').val(featuring[j]);
+    } else {
+      var newInputGroupF =
+        '<div style="margin-top:5px;position: relative;">' +
+          '<input data-tags="true" class="input-large input-featuring input-multiple inputString inputBehavior-2 form-control" name="featuring[]" type="text" value="' + featuring[j] + '" tabindex="3" autocomplete="off">' +
+          '<span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-featuring-0"></span>' +
+          '<a href="javascript:;" class="addFieldLink removemultifield" data-selector="input-featuring">' +
+            '<span class="glyphicon glyphicon-minus-sign" onclick="removeField(this)"></span>' +
+          '</a>' +
+        '</div>';
+      $('#featuring-fields').append(newInputGroupF);
+    }
+  }
+});
+
+/* =================
+   DOM Ready Block
+   ================= */
+$(document).ready(function () {
+  acl_PRINT = 0;
+
+  $("#easyEntryDataSaveButton").click(function (e) {
+    e.stopPropagation();
+    $("#easyEntryEditForm").submit();
+  });
+
+  $('.fileinput-button').click(function () {
+    $('#audio_upload').trigger('click');
+  });
+
+  <?php if ($_GET['edit'] > 0 && $_GET['track_id'] > 0) { ?>
+  $('.editTrackLink[track_id="<?php echo $_GET['track_id'] ?>"]').trigger('click');
+  <?php } ?>
+
+  $('.btn-tracks-close,.close').click(function () {
+    let url = new URL(window.location.href);
+    url.searchParams.delete('showError');
+    url.searchParams.delete('track_id');
+    window.location.href = url.toString();
+  });
+
+  // Validate + Submit
+  $("#easyEntryEditForm").validate({
+    submitHandler: function () {
+      removeErrorMsg();
+
+      var is_required = false;
+      if ($("#songName").val() == '') {
+        setErrorMsg('songName', 'This field is required');
+        is_required = true;
+      }
+
+      <?php if ($_GET['showError'] == '1') { ?>
+      if (
+        $("#trackType-0").prop('checked') == false &&
+        $("#trackType-1").prop('checked') == false &&
+        $("#trackType-2").prop('checked') == false &&
+        $("#trackType-3").prop('checked') == false
+      ) {
+        setErrorMsg('trackType-0', 'This field is required');
+        is_required = true;
+      }
+
+      if ($('#f_track_artist').val() == '') {
+        setErrorMsg('f_track_artist', 'This field is required');
+        is_required = true;
+      }
+
+      if ($('#f_author').val() == '') {
+        setErrorMsg('f_author', 'This field is required');
+        is_required = true;
+      } else {
+        var inputValueA = $('#f_author').val();
+        if (!inputValueA.includes(' ')) {
+          setErrorMsg('f_author', 'Digital Music Stores require full first and last (family) name');
+          is_required = true;
+        }
+      }
+
+      if ($('#f_composer').val() == '') {
+        setErrorMsg('f_composer', 'This field is required');
+        is_required = true;
+      } else {
+        var inputValueC = $('#f_composer').val();
+        if (!inputValueC.includes(' ')) {
+          setErrorMsg('f_composer', 'Digital Music Stores require full first and last (family) name');
+          is_required = true;
+        }
+      }
+
+      if ($('#pLine').val() == '') {
+        setErrorMsg('pLine', 'This field is required');
+        is_required = true;
+      }
+
+      if ($('#productionYear').val() == '0') {
+        setErrorMsg('productionYear', 'This field is required');
+        is_required = true;
+      }
+
+      if ($('#generate_isrc-1').prop('checked') == true) {
+        if ($('#isrc').val() == '') {
+          setErrorMsg('isrc', 'This field is required');
+          is_required = true;
+        } else if ($('#isrc').length > 15) {
+          setErrorMsg('isrc', 'Maximum length should be 15 char');
+          is_required = true;
+        }
+      }
+
+      if (
+        $("#explicitContent-0").prop('checked') == false &&
+        $("#explicitContent-1").prop('checked') == false &&
+        $("#explicitContent-2").prop('checked') == false
+      ) {
+        setErrorMsg('explicitContent-0', 'This field is required');
+        is_required = true;
+      }
+
+      if ($('#metadataLanguage').val() == '0') {
+        setErrorMsg('metadataLanguage', 'This field is required');
+        is_required = true;
+      }
+
+      if ($('#idLyricsSelect').val() == '0') {
+        setErrorMsg('idLyricsSelect', 'This field is required');
+        is_required = true;
+      }
+
+      if ($('#audio_hidden').val() == '') {
+        setErrorMsg('label-easyEntryEditForm-lyrics-0', 'This field is required');
+        is_required = true;
+      }
+      <?php } ?>
+
+      if (is_required) return;
+
+      var $form = $('#easyEntryEditForm');
+      var objMasterData = $form.serializeObject();
+      $.extend(objMasterData, { MASTER_KEY_ID: iActiveID });
+      objMasterData = JSON.stringify(objMasterData);
+
+      var objFormData = { pAction: strActionMode, FORM_DATA: objMasterData };
+
+      $('.nf-loader').removeClass('hide');
+      $('#easyEntryDataSaveButton,.btn-tracks-close').addClass('hide');
+
+      var objMyPost = AJAX_Post("<?php echo $this->url('newrelease', array('action' => 'saveTrack')); ?>", objFormData);
+
+      if (objMyPost.ERR_NO === 0) {
+        $('.nf-loader').addClass('hide');
+        $('#easyEntryDataSaveButton,.btn-tracks-close').removeClass('hide');
+
+        if (objMyPost.DATA.DBStatus === 'OK') {
+          strActionMode = "EDIT";
+          <?php if ($_GET['showError'] == '1') { ?>
+          let url = new URL(window.location.href);
+          url.searchParams.delete('showError');
+          url.searchParams.delete('track_id');
+          window.location.href = url.toString();
+          <?php } else { ?>
+          window.location.href = window.location.href;
+          <?php } ?>
+        }
+
+        if (objMyPost.DATA.DBStatus === 'EXIST') {
+          mySmallAlert('Duplicate Record', 'Duplicate ISRC', 0);
+          return;
+        }
+      } else {
+        mySmallAlert('Error...!', 'There was an error', 0);
+      }
+    }
+  });
+});
+
+/* ================================
+   Populate Edit Entries (AJAX GET)
+   ================================ */
+function cPopulateEditEntries(iID, strURL) {
+  var arrForms = [];
+  var strElementType;
+
+  var objFormData = { pAction: 'GETREC', KEY_ID: iID };
+  var objMyPost = AJAX_Post(strURL, objFormData);
+
+  if (objMyPost.ERR_NO === 0) {
+    if (objMyPost.DATA.DBStatus === 'OK') {
+      strActionMode = 'EDIT';
+      arrForms = objMyPost.DATA.data[0];
+
+      $.each(arrForms, function (key, value) {
+        if (key == 'audio_file') {
+          if (value != '') {
+            $('#tableContainerBody tr').show();
+            $("#audio_hidden").val(value);
+            $("#audio_format_info").val(arrForms['audio_format_info']);
+            $('#audio_file_info').html(arrForms['audio_file_name'] + '' + arrForms['audio_format_info']);
+            $('.upload_status,.delete_audio').removeClass('hide');
+            $('#audio_file_check').html('<div class="glyphicon glyphicon-ok"></div>');
+          } else {
+            $("#audio_hidden").val('');
+            $("#audio_format_info").val('');
+            $('#tableContainerBody tr').hide();
+            $('#audio_file_check').html('');
+          }
+        }
+
+        if (key == 'trackArtist') {
+          for (var i = 0; i < value.length; i++) {
+            if (i == 0) {
+              $('#f_track_artist').val(value[i]);
+            } else {
+              var newInputGroup =
+                '<div style="margin-top:5px;position: relative;">' +
+                  '<input data-tags="true" class="input-large input-trackArtist input-multiple inputString inputBehavior-2 form-control" name="trackArtist[]" type="text" value="' + value[i] + '" tabindex="3" autocomplete="off">' +
+                  '<span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-trackArtist-0"></span>' +
+                  '<a href="javascript:;" class="addFieldLink removemultifield" data-selector="input-trackArtist">' +
+                    '<span class="glyphicon glyphicon-minus-sign" onclick="removeField(this)"></span>' +
+                  '</a>' +
+                '</div>';
+              $('#artist-fields').append(newInputGroup);
+            }
+          }
+        }
+
+        if (key == 'featuring') {
+          for (var j = 0; j < value.length; j++) {
+            if (j == 0) {
+              $('#f_featuring').val(value[j]);
+            } else {
+              var newInputGroupF =
+                '<div style="margin-top:5px;position: relative;">' +
+                  '<input data-tags="true" class="input-large input-featuring input-multiple inputString inputBehavior-2 form-control" name="featuring[]" type="text" value="' + value[j] + '" tabindex="3" autocomplete="off">' +
+                  '<span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-featuring-0"></span>' +
+                  '<a href="javascript:;" class="addFieldLink removemultifield" data-selector="input-featuring">' +
+                    '<span class="glyphicon glyphicon-minus-sign" onclick="removeField(this)"></span>' +
+                  '</a>' +
+                '</div>';
+              $('#featuring-fields').append(newInputGroupF);
+            }
+          }
+        }
+
+        if (key == 'author') {
+          for (var a = 0; a < value.length; a++) {
+            if (a == 0) {
+              $('#f_author').val(value[a]);
+            } else {
+              var newInputGroupA =
+                '<div style="margin-top:5px;position: relative;">' +
+                  '<input data-tags="true" class="input-large input-author input-multiple inputString inputBehavior-2 form-control" name="author[]" type="text" value="' + value[a] + '" tabindex="3" autocomplete="off">' +
+                  '<span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-author-0"></span>' +
+                  '<a href="javascript:;" class="addFieldLink removemultifield" data-selector="input-author">' +
+                    '<span class="glyphicon glyphicon-minus-sign" onclick="removeField(this)"></span>' +
+                  '</a>' +
+                '</div>';
+              $('#author-fields').append(newInputGroupA);
+            }
+          }
+        }
+
+        if (key == 'composer') {
+          for (var c = 0; c < value.length; c++) {
+            if (c == 0) {
+              $('#f_composer').val(value[c]);
+            } else {
+              var newInputGroupC =
+                '<div style="margin-top:5px;position: relative;">' +
+                  '<input data-tags="true" class="input-large input-composer input-multiple inputString inputBehavior-2 form-control" name="composer[]" type="text" value="' + value[c] + '" tabindex="3" autocomplete="off">' +
+                  '<span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-composer-0"></span>' +
+                  '<a href="javascript:;" class="addFieldLink removemultifield" data-selector="input-composer">' +
+                    '<span class="glyphicon glyphicon-minus-sign" onclick="removeField(this)"></span>' +
+                  '</a>' +
+                '</div>';
+              $('#composer-fields').append(newInputGroupC);
+            }
+          }
+        }
+
+        if (key == 'produceBy') {
+          for (var p = 0; p < value.length; p++) {
+            if (p == 0) {
+              $('#f_produceby').val(value[p]);
+            } else {
+              var newInputGroupP =
+                '<div style="margin-top:5px;position: relative;">' +
+                  '<input data-tags="true" class="input-large input-produceBy input-multiple inputString inputBehavior-2 form-control" name="produceBy[]" type="text" value="' + value[p] + '" tabindex="3" autocomplete="off">' +
+                  '<span style="display:none" class="form-input-error help-inline control-label" rel="easyEntryEditForm-produceBy-0"></span>' +
+                  '<a href="javascript:;" class="addFieldLink removemultifield" data-selector="input-produceBy">' +
+                    '<span class="glyphicon glyphicon-minus-sign" onclick="removeField(this)"></span>' +
+                  '</a>' +
+                '</div>';
+              $('#produceby-fields').append(newInputGroupP);
+            }
+          }
+        }
+
+        if (key == 'trackType') {
+          if (value == 'original track') $('#trackType-0').prop('checked', true);
+          if (value == 'karaoke')        $('#trackType-1').prop('checked', true);
+          if (value == 'medley')         $('#trackType-2').prop('checked', true);
+          if (value == 'cover')          $('#trackType-3').prop('checked', true);
+          if (value == 'cover by cover band') $('#trackType-4').prop('checked', true);
+        }
+
+        if (key == 'idInstrumental') {
+          if (value == '-1') $('#idInstrumental-0').prop('checked', true);
+          if (value == '0')  $('#idInstrumental-1').prop('checked', true);
+        }
+
+        if (key == 'generate_isrc') {
+          if (value == '1') {
+            $('#generate_isrc-0').prop('checked', true);
+            $('.isrc_div').addClass('hide');
+          }
+          if (value == '0') {
+            $('#generate_isrc-1').prop('checked', true);
+            $('.isrc_div').removeClass('hide');
+          }
+        }
+
+        if (key == 'explicitContent') {
+          if (value == '1') $('#explicitContent-0').prop('checked', true);
+          if (value == '0') $('#explicitContent-1').prop('checked', true);
+          if (value == '2') $('#explicitContent-2').prop('checked', true);
+        }
+
+        // Generic field population
+        if ($("#" + key).length > 0) {
+          strElementType = $("#" + key).attr("type");
+
+          if (strElementType == "hidden") {
+            $("#" + key).val(value);
+            $("#spanRefNo").html(value);
+          } else if (strElementType == "text") {
+            $("#" + key).val(value);
+          } else if (strElementType == "number") {
+            $("#" + key).val(value);
+          } else if (strElementType == "password") {
+            $("#" + key).val(value);
+          } else if ($("#" + key).attr("name") == "descriptions") {
+            $("textarea#" + key).text(value);
+          } else if (strElementType == "select") {
+            $("#" + key).select2("val", value).trigger('change');
+          } else if (strElementType == "multiselect") {
+            var arrValues = $.parseJSON(stripslashes(value));
+            $("#" + key).select2("val", arrValues);
+          }
+        }
+      });
+    }
+  } else {
+    mySmallAlert('Error...!', 'There was an error', 0);
+  }
+}
+</script>
