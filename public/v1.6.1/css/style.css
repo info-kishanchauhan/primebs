@@ -1,0 +1,185 @@
+.logn {
+  background: #fff;
+ /* box-shadow: 0 1px 8px rgba(0, 0, 0, 0.14);*/
+  margin: 0 auto;
+  max-width: 520px;
+  padding: 30px 0px;
+  position: relative;
+}
+.logn .client-form header {
+  background: none;
+  border: none;
+  padding: 0;
+  text-align: center;
+}
+.logn .text-info {
+  color: #464646;
+  font-size: 14px;
+}
+.logn .well, .logn .client-form footer {
+  background: none;
+  border: none;
+  box-shadow: none;
+}
+.logn .input input, .logn .textarea textarea {
+  -webkit-flex: 1 1 auto;
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+  -webkit-order: 2;
+  -ms-flex-order: 2;
+  order: 2;
+  display: block;
+  background: 0 0;
+  padding:5px;
+  border-width:1px;
+  line-height: 26px;
+  -ms-flex-preferred-size: 26px;
+  border-radius: 2px;
+}
+.logn .input label, .logn .textarea label {
+  -webkit-order: 1;
+  -ms-flex-order: 1;
+  order: 1;
+  pointer-events: none;
+  -webkit-font-smoothing: antialiased;
+  padding-left: 2px;
+  z-index: 1;
+  
+}
+.logn .input label, .logn .textarea label {
+  color: rgba(0, 0, 0, 0.26);
+}
+.logn .input label.active, .logn .textarea label.active {
+  //transform: translate3d(0, 4px, 0) scale(0.75);
+  //color: rgb(63, 81, 181);
+  /*visibility: hidden;*/
+}
+.logn .note {
+  margin-top: 20px;
+}
+.logn .smart-form footer .btn {
+  height: 47px;
+}
+.logn .smart-form footer .btn.btn-lg {
+  height: 50px;
+}
+.logn .form-group input,.logn .form-group textarea{
+  padding-right: 32px!important;
+}
+.social-auth-links {
+    margin: 10px 0;
+}
+.btn.btn-flat {
+    border-radius: 0;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+    border-width: 1px;
+}
+.btn-facebook {
+    color: #fff;
+    background-color: #3b5998;
+    border-color: rgba(0,0,0,0.2);
+}
+.btn-social {
+    position: relative;
+    padding-left: 44px;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.btn-google {
+    color: #fff;
+    background-color: #dd4b39;
+    border-color: rgba(0,0,0,0.2);
+}
+.btn-block+.btn-block {
+    margin-top: 5px;
+}
+.btn-social>:first-child {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 32px;
+    line-height: 34px;
+    font-size: 1.6em;
+    text-align: center;
+    border-right: 1px solid rgba(0,0,0,0.2);
+}
+.btn-facebook:hover {
+    color: #fff;
+    background-color: #2d4373;
+    border-color: rgba(0,0,0,0.2);
+}
+.btn-google:hover {
+    color: #fff;
+    background-color: #c23321;
+    border-color: rgba(0,0,0,0.2);
+}
+.form-group .fa{
+  width: auto;
+  height: auto;
+  padding: 8px;
+}
+.btn > i:before {
+  margin-right: 6px;
+}
+.btn:hover {
+  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);
+}
+.btn.btn-default:hover {
+  background: #fff !important;
+}
+.btn-lg, .btn-group-lg > .btn {
+  padding: 11px 20px;
+  font-size: 15px;
+  line-height: 1.3333333;
+  border-radius: 2px;
+}
+.btn-lg.btn-rounded {
+  border-radius: 20px;
+}
+.SmallBox {
+  position: absolute;
+  left: 50%;
+  top: 15px;
+  width: 300px;
+  color: #fff;
+  z-index: 9999;
+  overflow: hidden;
+  border: 1px solid transparent;
+  margin-left: -150px; 
+}
+.SmallBox:hover {
+  border: 1px solid #fff;
+  cursor: pointer;
+}
+.SmallBox .foto {
+  font-size: 50px;
+  position: absolute;
+  left: 17px;
+  display: none;
+}
+.SmallBox .textoFoto {
+  width: 100%;
+  margin: 3px 20px 3px 20px;
+  float: left;
+}
+.SmallBox span {
+  font-size: 17px;
+  font-weight: 300;
+  letter-spacing: -1px;
+  display: block;
+  margin: 4px 0;
+  display: none;
+}
+.SmallBox p {
+  font-size: 13px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+.SmallBox .fa {
+  font-size: 52px;
+}

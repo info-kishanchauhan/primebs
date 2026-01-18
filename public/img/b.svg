@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
+    <defs>
+        <style>
+            .prefix__cls-1{fill:#1a1e28}
+        </style>
+    </defs>
+    <g id="prefix__Groupe_19" data-name="Groupe 19" transform="translate(-1104 -498)">
+        <g id="prefix__Groupe_14" data-name="Groupe 14" transform="translate(892.605 -222.064)">
+            <g id="prefix__Groupe_13" data-name="Groupe 13">
+                <g id="prefix__Groupe_11" data-name="Groupe 11">
+                    <g id="prefix__Groupe_10" data-name="Groupe 10">
+                        <path id="prefix__Tracé_12" d="M222.4 729.064h5.2v7.175a6.743 6.743 0 0 1 5.045-1.974c3.635 0 8.555 2.6 8.555 9.182 0 6.267-4.356 9.4-8.774 9.4a5.634 5.634 0 0 1-4.982-2.444h-.063v1.849H222.4zm9.243 18.926a4.436 4.436 0 0 0 .094-8.868 4.28 4.28 0 0 0-4.324 4.387 4.233 4.233 0 0 0 4.225 4.481z" class="prefix__cls-1" data-name="Tracé 12"/>
+                    </g>
+                </g>
+                <g id="prefix__Groupe_12" data-name="Groupe 12">
+                    <path id="prefix__Tracé_13" d="M246.45 750.626a2.189 2.189 0 1 1-2.175-2.2 2.2 2.2 0 0 1 2.175 2.2zm-3.9 0a1.715 1.715 0 1 0 1.722-1.757 1.742 1.742 0 0 0-1.725 1.757zm1.808-1.242c.47 0 .893.2.893.687a.606.606 0 0 1-.4.589c.178.075.326.2.349.567a1.937 1.937 0 0 0 .075.6h-.59a3.53 3.53 0 0 1-.08-.584c-.017-.137-.051-.355-.435-.355h-.24v.939h-.607v-2.438zm-.423.418v.687h.292c.126 0 .418 0 .418-.372 0-.309-.258-.315-.384-.315z" class="prefix__cls-1" data-name="Tracé 13"/>
+                </g>
+            </g>
+        </g>
+        <path id="prefix__Rectangle_2" d="M0 0H40V40H0z" data-name="Rectangle 2" transform="translate(1104 498)" style="fill:none"/>
+    </g>
+</svg>

@@ -28,8 +28,8 @@ if ($hp !== '' || $tid<=0 || $rating<1 || $rating>5 || mb_strlen($comment)<10) {
 // --- DB creds (aapke hi) ---
 $DB_HOST='localhost';
 $DB_NAME='primebs';
-$DB_USER='primebs';
-$DB_PASS='mJYwFtL4QNuzvPuz2PNZ';
+$DB_USER='root';
+$DB_PASS='1234';
 
 mysqli_report(MYSQLI_REPORT_OFF);
 $db = @new mysqli($DB_HOST,$DB_USER,$DB_PASS,$DB_NAME);

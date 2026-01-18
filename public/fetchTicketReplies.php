@@ -198,7 +198,7 @@ try {
 
     if ($emails) {
         rsort($emails); // latest first
-        $db = new mysqli("localhost", "primebs", "mJYwFtL4QNuzvPuz2PNZ", "primebs");
+        $db = new mysqli("localhost", "root", "1234", "primebs");
 
         if ($db->connect_error) {
             throw new Exception('Database connection failed: ' . $db->connect_error());
