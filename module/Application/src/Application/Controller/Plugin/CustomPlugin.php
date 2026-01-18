@@ -444,13 +444,13 @@ class CustomPlugin extends AbstractPlugin {
 	}
 	public function dbconnection()
 	{
-		$user     	= "primebs";
-		$password   = "mJYwFtL4QNuzvPuz2PNZ"; 
+		$user     	= "root";
+		$password   = "1234"; 
 		$db        = "primebs";
 		$server    = "localhost"; 
 			
 		$mysqli = @mysqli_connect($server, $user, $password,$db)
-		or die("Couldn't connect to SQL Server on $myServer");
+		or die("Couldn't connect to SQL Server on $mysqli");
 		
 		return $mysqli;
 	}

@@ -444,8 +444,8 @@ class CustomPlugin extends AbstractPlugin {
 	}
 	public function dbconnection()
 	{
-		$user     	= "primebs";
-		$password   = "mJYwFtL4QNuzvPuz2PNZ"; 
+		$user     	= "root";
+		$password   = "1234"; 
 		$db        = "primebs";
 		$server    = "localhost"; 
 			

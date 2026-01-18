@@ -6,8 +6,8 @@ return array(
 
 'db' => array(
     'driver'   => 'Pdo_Mysql', // ✅ REQUIRED
-    'username' => 'primebs',
-    'password' => 'mJYwFtL4QNuzvPuz2PNZ',
+    'username' => 'root',
+    'password' => '1234',
     'database' => "primebs",   // ✅ Rename from 'db' to 'database' for consistency
     'host'     => 'localhost',
 ),

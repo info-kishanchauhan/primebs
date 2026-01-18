@@ -24,7 +24,7 @@ $db        = "primebs";
 $server    = "localhost";
 
 $mysqli = @mysqli_connect($server, $user, $password, $db)
-	or die("Couldn't connect to SQL Server on $myServer");
+	or die("Couldn't connect to SQL Server on $mysqli");
 
 
 if (!strstr($_SERVER['REQUEST_URI'], "login") && !strstr($_SERVER['REQUEST_URI'], "forgotpwd")) {
