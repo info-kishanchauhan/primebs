@@ -1,0 +1,154 @@
+
+/* FORM GENERAL */
+/*.form-input-error, .form-input-warning {
+	display:block;
+	text-align:left !important;
+}*/
+
+/*#easyEntryAssetsModal { left: 50%; }*/
+
+/*select option {
+	max-width: 700px;
+}*/
+
+h2 {
+	margin-top: 0px;
+	font-size: 24px;
+}
+
+#easyEntryContent .breadcrumb {
+	background-color: transparent;
+}
+
+#ee_tabs { margin-bottom: 20px; }
+
+#easyEntryAssetsHeader { margin-bottom: 20px; }
+
+#release-col-cover .control-label { text-align: center; }
+#release-col-cover .cover-error { font-weight: bold; }
+#release-col-cover .cover-error .img-thumbnail { border-color: #b94a48; }
+
+
+.easyEntryCol { padding: 20px; }
+
+.text-prepend { color: #999; font-style: italic; }
+.popover { cursor: default; }
+
+/* page TRACKS */
+ul.volume { margin-top: 10px; margin-left: 0; padding-left: 0;}
+ul.volume li { 
+	list-style: none; 
+	padding: 10px 0 5px 10px; 
+	/*
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	border-radius: 10px;*/
+	border-bottom: 1px solid #ddd;
+	margin: 3px 0;
+}
+
+ul.volume li:hover { background-color: #e6e6e6; cursor: move}
+
+.bloc-volume { padding-bottom: 20px; }
+.volume-header { padding: 5px 15px; }
+
+#titlePreviewText { display: block; color: #999;} 
+
+.promotion-progress .control-group{
+    float: right;
+    width: 40%;
+    margin-right: 5%;
+}
+
+.promotion-progress .controls{
+    margin: 0;
+}
+
+.allScreen{
+    width: 100%
+}
+
+.link-label {
+	text-decoration: underline;
+	color: #000;
+	font-size: 0.9em;
+}
+
+.modal-body {
+    padding: 19px 27px !important;
+    background: #F5F5F6;
+    font-size: 13px;
+    color: #333;
+    border-radius: 10px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    line-height: 1.5;
+}
+
+div.tooltip,
+div.tooltip.top {
+	opacity: 1;
+}
+
+
+div.tooltip div.tooltip-inner,
+div.tooltip.top div.tooltip-inner {
+	background-color: white;
+	border: 1px solid #bdbdbd;
+	color: black;
+	padding: 12px 16px;
+	width: 350px;
+    white-space: break-spaces !important;
+}
+
+
+div.tooltip div.tooltip-arrow,
+div.tooltip.top div.tooltip-arrow {
+	border-top-color: #bdbdbd;
+}
+
+
+center {
+	flex-direction: column;
+	display: flex;
+	text-align: center;
+}
+
+left {
+	flex-direction: column;
+	display: flex;
+	text-align: left;
+}
+
+right {
+	flex-direction: column;
+	display: flex;
+	text-align: right;
+}
+
+red {
+	color: #f44336;
+}
+
+blue {
+	color: #2196f3;
+}
+
+green {
+	color: #4caf50;
+}
+
+purple {
+	color: #9c27b0;
+}
+
+orange {
+	color: #ff9800;
+}
+
+yellow {
+	color: #ffeb3b;
+}
+
+grey {
+	color: #9e9e9e;
+}

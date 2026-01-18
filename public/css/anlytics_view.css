@@ -1,0 +1,1456 @@
+.header__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.header__topLeft {
+  display: flex;
+  align-items: center;
+}
+.header__title {
+  display: inline;
+  vertical-align: middle;
+}
+
+.header__top.-skeleton .header__topLeft {
+  width: 100%;
+}
+#bs-main-content-container
+{
+	padding:0px;
+}
+
+/* Desktop */
+@media (min-width: 992px) {
+  .header__date {
+    display: inline;
+    vertical-align: middle;
+  }
+  .header__seeMore {
+    display: block;
+  }
+
+  .hideOnDesktop {
+    display: none;
+  }
+}
+.a-button:not(.-isDisabled).-Tertiary.svelte-1ilua7d {
+    border-color: transparent;
+    --tw-text-opacity: 1;
+    color: rgba(38,153,251,1);
+}
+.a-button.svelte-1ilua7d {
+    border-width: 1px;
+    word-break: break-all;
+    font-size: var(--blvds-text-button);
+    font-family: var(--blvds-fontFamily-sans);
+    line-height: var(--blvds-lineHeight-base);
+    letter-spacing: var(--blvds-letterSpacing-button);
+    font-weight: 400;
+    max-width: 100%;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+.table>tbody>tr>td,.table>thead>tr>th
+{
+	border:none;
+}
+.table>tbody>tr:hover {
+    background-color: rgba(229, 230, 232, 0.24);
+}
+#bs-table-container {
+    display: block!important
+}
+
+:focus {
+    outline: none!important
+}
+
+.panel {
+    border-radius: 0;
+    border: none
+}
+
+.panel .panel-heading {
+    position: relative;
+    border: none
+}
+
+.panel .panel-heading h5 {
+    margin: 0;
+    padding-right: 18px
+}
+
+.panel .panel-heading .infoPopin {
+    color: #d1d1d1;
+    font-size: 20px;
+    position: absolute;
+    top: 9px;
+    right: 8px
+}
+
+.panel .panel-heading .infoPopin:hover {
+    color: #333;
+    cursor: pointer
+}
+
+.panel-default>.panel-heading {
+    background-color: #fff;
+    padding: 10px
+}
+
+.popover {
+    max-width: 100%
+}
+
+#mainWrapper .material-icons.posDown {
+    position: relative;
+    top: 5px
+}
+
+#mainWrapper .tabListIcon .material-icons {
+    font-size: 30px
+}
+
+body {
+    background: none!important;
+    background-color: transparent
+}
+
+#mainWrapper .panel {
+    background-color: transparent
+}
+
+#mainWrapper .panel .panel-body,#mainWrapper .panel .panel-heading {
+    background-color: hsla(0,0%,100%,.8)
+}
+
+.datepicker table.table-condensed {
+    height: 270px
+}
+
+#affixnav {
+    background-color: transparent
+}
+
+#affixnav .buttonActions button.btn-default {
+    border: none;
+    background-color: transparent
+}
+
+#affixnav .buttonActions button.btn-default#infoButton {
+    font-size: 20px;
+    padding-top: 13px;
+    padding-bottom: 13px
+}
+
+#affixnav .buttonActions button.btn-default#infoButton,#affixnav .buttonActions button.btn-default#reportButton {
+    border-radius: 0;
+    border-left: 1px solid #ccc
+}
+
+#affixnav .buttonActions button.btn-default .reportDataValue .nbAvailable {
+    color: green
+}
+
+#affixnav .buttonActions button.btn-default#reportButton:hover .reportDataValue .nbAvailable,#affixnav .buttonActions button.btn-default.btn-actif#reportButton,#affixnav .buttonActions button.btn-default.btn-actif#reportButton .reportDataValue .nbAvailable {
+    color: #ccc
+}
+
+#affixnav .buttonActions button.btn-default#reportButton #contentTitle {
+    display: inline-block;
+    margin-right: 12px
+}
+
+#affixnav .buttonActions button.btn-default.btn-actif,#affixnav .buttonActions button.btn-default:hover {
+    color: #ccc
+}
+
+#affixnav .buttonActions button.btn-default:active {
+    box-shadow: none
+}
+
+#affixnav h4 {
+    margin: 0;
+    padding: 6px 0
+}
+
+#affixnav h4#searchType {
+    margin: 0;
+    padding-top: 18px
+}
+
+#affixnav.affix {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    top: 0;
+    left: 200px;
+    right: 0;
+    background: #f9f9f9;
+    z-index: 9000;
+    box-shadow: 0 0 20px 0 rgba(46,40,64,.5);
+    margin: 0 15px
+}
+
+@media screen and (max-width: 767px) {
+    #affixnav .buttonActions button.btn-default {
+        padding:6px 10px
+    }
+
+    #affixnav .buttonActions button.btn-default#reportButton #contentTitle {
+        margin-right: 6px
+    }
+
+    #affixnav .buttonActions button.btn-default#reportButton #contentTitle .reportDataLabel {
+        max-width: 120px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap
+    }
+}
+
+@media screen and (max-width: 360px) {
+    #affixnav .buttonActions button.btn-default {
+        padding:6px 5px
+    }
+}
+
+@media screen and (min-width: 768px) {
+    #affixnav .buttonActions button.btn-default#infoButton {
+        padding-left:27px
+    }
+
+    .specificPage #affixnav .buttonActions button.btn-default#infoButton {
+        padding-right: 27px
+    }
+}
+
+#periodButton span {
+    padding: 6px;
+    font-size: 14px
+}
+
+#emailPanel,#exportPanel,#filtersPanel,#infoPanel,#periodPanel,#printPanel,#reportPanel,#slidePanel {
+    display: none;
+    padding-right: 15px;
+    padding-left: 15px
+}
+
+#slidePanel h4 {
+    color: #707070;
+    margin-top: 20px!important;
+    margin-bottom: 20px!important
+}
+
+#slidePanel button#applyFilters {
+    background-color: #3377e0;
+    border-color: #fff;
+    color: #fff;
+    transition-duration: .2s
+}
+
+#slidePanel button#applyFilters:hover {
+    background-color: #fff;
+    border-color: #3377e0;
+    color: #3377e0;
+    transition-duration: .2s
+}
+
+#filtersPanel label {
+    padding-right: 5px;
+    padding-left: 5px
+}
+
+#periodPanel button.btn-primary {
+    color: #3377e0!important;
+    background-color: #f5f5f6!important;
+    border: none;
+    -webkit-transition-duration: .3s;
+    transition-duration: .3s
+}
+
+#periodPanel button.btn-primary.selectDateActif,#periodPanel button.btn-primary:hover {
+    color: #fff!important;
+    background-color: #3377e0!important;
+    border: none
+}
+
+#slideButtons {
+    margin-top: 20px
+}
+
+#infoPanel #infoBox {
+    margin-top: 15px;
+    margin-bottom: 0
+}
+
+.specificPage #infoPanel #infoBox {
+    margin-bottom: 15px
+}
+
+#checkExportButton {
+    margin-top: 20px
+}
+
+#exportButtonGroup {
+    margin-top: 20px;
+    margin-left: 10px
+}
+
+.highcharts-tooltip {
+    z-index: 9998!important
+}
+
+#dailysalesTabsList {
+    border-bottom: none;
+    padding-left: 10px;
+    padding-right: 10px
+}
+
+#dailysalesTabsList li {
+    width: 33.33%;
+    margin-bottom: 20px;
+    padding: 0 5px
+}
+
+#dailysalesTabsList li:hover {
+    cursor: pointer
+}
+
+#dailysalesTabsList li a {
+    border: none;
+    border-radius: 0;
+    background-color: #f6f6f6;
+    color: #ccc;
+    display: block;
+    padding: 15px
+}
+
+#dailysalesTabsList li:hover a {
+    color: #333;
+    background-color: #f3f3f3;
+    cursor: pointer
+}
+
+#dailysalesTabsList li.active a {
+    background-color: #fff;
+    cursor: pointer;
+    color: #333;
+    border: none
+}
+
+.tabListEngagementIcon i,.tabListIcon {
+    font-size: 30px;
+    margin-bottom: 10px
+}
+
+.tabListName {
+    font-size: 13px;
+    text-transform: uppercase
+}
+
+#mainLineCharts .mainLineChartDisable {
+    font-weight: 400;
+    font-size: 12px;
+    color: #60606a;
+    font-family: Lucida Grande,Lucida Sans Unicode,Arial,Helvetica,sans-serif;
+    padding-bottom: 91px;
+    padding-top: 92px;
+    display: none
+}
+
+#lineCharts .panel.panel-default {
+    margin-bottom: 10px
+}
+
+#lineCharts .linePanelBody {
+    padding: 10px
+}
+
+#mainLineCharts .panel .mainPanelBody {
+    padding-bottom: 0
+}
+
+#lineCharts .panel .panel-body:hover {
+    cursor: pointer
+}
+
+#lineCharts .panel .panel-body .lineChartAmount {
+    font-size: 1.6em
+}
+
+#lineCharts .panel .panel-body .curveIconSign {
+    font-size: 12px;
+    position: relative;
+    top: -3px
+}
+
+#lineCharts .panel .panel-body .icon-green {
+    color: green
+}
+
+#lineCharts .panel .panel-body .icon-red {
+    color: red
+}
+
+#lineCharts .panel .panel-body .icon-black .lineChartAmountSign {
+    color: #000
+}
+
+#lineCharts .panel .panel-body .lineChartAmountSign {
+    font-size: 20px;
+    position: relative;
+    top: 5px
+}
+
+#lineCharts .panel .panel-body h6 {
+    font-size: 12px;
+    margin: 0;
+    padding-top: 2px
+}
+
+#lineCharts .panel .panel-body h6 .lineAmount {
+    font-size: 1.5em;
+    display: inline-block;
+    margin-right: 10px
+}
+
+#infoboxNumber {
+    font-size: 24px
+}
+
+#mainLineCharts .mainPanelBody {
+    padding: 10px
+}
+
+#mainLineCharts .mainPanelBody #infoboxDiff {
+    padding-left: 20px;
+    color: red;
+    font-size: 15px
+}
+
+#mainLineCharts .mainPanelBody #infoboxDiff .blv-font {
+    position: relative;
+    top: 5px;
+    font-size: 30px
+}
+
+.lineChartTypeTitle {
+    white-space: nowrap
+}
+
+#mainLineCharts .infobox #infoboxDiff>span>.material-icons {
+    font-size: 28px;
+    position: relative;
+    top: 5px
+}
+
+#productTypeContainer,#storeContainer {
+    padding: 25px 0
+}
+
+.topPanelBloc .panel .panel-heading {
+    padding: 0;
+    background-color: #fbfbfb
+}
+
+#playlistDetailsLoaderBar .slider,.topPanelBloc .slider {
+    display: block;
+    position: relative;
+    height: 4px;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden
+}
+
+#playlistDetailsLoaderBar .line,.topPanelBloc .line {
+    position: absolute;
+    opacity: .4;
+    background: #3377e0;
+    width: 150%;
+    height: 4px
+}
+
+#playlistDetailsLoaderBar .subline,.topPanelBloc .subline {
+    position: absolute;
+    background: #3377e0;
+    height: 4px
+}
+
+#playlistDetailsLoaderBar .inc,.topPanelBloc .inc {
+    animation: increase 4s infinite
+}
+
+#playlistDetailsLoaderBar .dec,.topPanelBloc .dec {
+    animation: decrease 4s 1s infinite
+}
+
+#playlistDetailsPopin .modal-header {
+    padding: 0;
+    height: 100px
+}
+
+#playlistDetailsPopin button.close {
+    padding: 40px;
+    vertical-align: bottom
+}
+
+.playlistDetailsHeaderInfos {
+    padding: 15px;
+    vertical-align: bottom
+}
+
+.playlistDetailsHeaderCover,.playlistDetailsHeaderInfos {
+    display: inline-block
+}
+
+.playlistDetailsHeaderCover img {
+    width: 100px;
+    margin-right: 15px;
+    vertical-align: bottom
+}
+
+.playlistDetailsHeaderInfos .storeIcon img {
+    width: 20px
+}
+
+.playlistDetailsHeaderInfos .curatorName,.playlistDetailsHeaderInfos .playlistName {
+    font-size: 13px
+}
+
+@keyframes increase {
+    0% {
+        left: -5%;
+        width: 5%
+    }
+
+    to {
+        left: 130%;
+        width: 100%
+    }
+}
+
+@keyframes decrease {
+    0% {
+        left: -80%;
+        width: 80%
+    }
+
+    to {
+        left: 110%;
+        width: 10%
+    }
+}
+
+div.topBanner {
+    margin-bottom: 20px
+}
+
+.headerTopDescription {
+    display: block;
+    padding: 20px;
+    min-height: 64px;
+    background-color: #3377e0!important;
+    color: #fff;
+    text-align: right
+}
+
+.headerTopDescription .headerTopDescriptionIcon {
+    float: right;
+    cursor: pointer;
+    margin-left: 15px
+}
+
+.headerTopDescription .headerTopDescriptionText {
+    font-size: 15px
+}
+
+.topTableStreamAudioTotal {
+    font-size: 14px
+}
+
+@media screen and (min-width: 768px) {
+    .topTableStreamAudioTotal {
+        font-size:16px
+    }
+}
+
+@media screen and (max-width: 768px) {
+    #periodButton {
+        width:100%
+    }
+
+    .headerPageFiltersCol div {
+        text-align: center;
+        float: none!important
+    }
+
+    #reportPanel .text-right {
+        text-align: left
+    }
+
+    .availableReport {
+        margin-right: 15px;
+        margin-left: 0!important
+    }
+}
+
+.topElementNumber {
+    width: 50px
+}
+
+.topShowMore {
+    color: #3377e0!important
+}
+
+.topShowMore:first-letter {
+    text-transform: uppercase
+}
+
+.topElementCover {
+    width: 75px
+}
+
+.specificPage.artistpage .topPanelBloc .panel .panel-body,.specificPage.labelpage .topPanelBloc .panel .panel-body,.specificPage.releasepage .topPanelBloc .panel .panel-body,.specificPage.trackpage .topPanelBloc .panel .panel-body {
+    min-height: 420px
+}
+
+.specificPage.artistpage #topPlaylistPanel .panel .panel-body,.specificPage.labelpage #topPlaylistPanel .panel .panel-body,.specificPage.releasepage #topPlaylistPanel .panel .panel-body,.specificPage.trackpage #topPlaylistPanel .panel .panel-body,.specificPage.trackpage #topRadioPanel .panel .panel-body {
+    min-height: 231px
+}
+
+.topPanelBloc .panel .panel-heading button {
+    background-color: #ebf0fa;
+    padding: 10px;
+    border-radius: 0;
+    border: none;
+    line-height: 1;
+    margin-right: 0
+}
+
+.specificPage #topPlaylistPanel .panel .panel-heading button,.specificPage #topRadioPanel .panel .panel-heading button {
+    border: none
+}
+
+#topPlaylistDataCount,#topRadioDataCount {
+    display: none;
+    background-color: #3377e0;
+    margin-left: 10px
+}
+
+.nbPlaylistCount {
+    background-color: #a9a9a9;
+    margin-left: 10px
+}
+
+.playlistDetailsIcon:hover {
+    cursor: pointer
+}
+
+.topPanelBloc .panel .panel-heading button h5 {
+    align-items: center;
+    color: #020202;
+    display: inline-flex;
+    font-family: Arial;
+    font-size: 13px;
+    font-weight: 400;
+    padding: 0;
+    transition-duration: .2s
+}
+
+#mainWrapper .topPanelBloc .panel .panel-heading .material-icons.posDown {
+    font-size: 20px;
+    margin-right: 5px;
+    top: 0
+}
+
+.specificPage #topPlaylistPanel .panel .panel-heading button h5,.specificPage #topRadioPanel .panel .panel-heading button h5,.topPanelBloc .panel .panel-heading button.topActif h5,.topPanelBloc .panel .panel-heading button:focus h5,.topPanelBloc .panel .panel-heading button:hover h5 {
+    color: #333
+}
+
+.topPanelBloc .panel .panel-heading button:focus {
+    outline: none
+}
+
+.topPanelBloc .panel .panel-heading button.topActif {
+    background-color: #fff!important
+}
+
+.topPanelBloc .panel .panel-heading button:not(.topActif):hover {
+    background-color: #aac8ff!important
+}
+
+#playlistDetailsPopin table,.topPanelBloc .topGraphContainer table {
+    margin-bottom: 0
+}
+
+#playlistDetailsPopin table,#playlistDetailsPopin table>thead>tr>th,#playlistDetailsPopin table tbody tr,#playlistDetailsPopin table tbody tr td,.topPanelBloc .topGraphContainer table,.topPanelBloc .topGraphContainer table>thead>tr>th,.topPanelBloc .topGraphContainer table tbody tr,.topPanelBloc .topGraphContainer table tbody tr td {
+    border: none
+}
+
+#playlistDetailsPopin table tbody tr td div.text-muted,.topPanelBloc .topGraphContainer table tbody tr td div.text-muted {
+    font-size: 11px
+}
+
+#playlistDetailsPopin table tbody tr td.artistCover span,#playlistDetailsPopin table tbody tr td.labelCover span,.topPanelBloc .topGraphContainer table tbody tr td.artistCover span,.topPanelBloc .topGraphContainer table tbody tr td.labelCover span {
+    font-size: 40px;
+    color: #333
+}
+
+#playlistDetailsPopin table tbody tr td.territorieCover img,.topPanelBloc .topGraphContainer table tbody tr td.territorieCover img {
+    position: relative;
+    top: -10px;
+    padding-bottom: 5px;
+    padding-top: 5px
+}
+
+#playlistDetailsPopin table tbody tr td.playlistCover img,#playlistDetailsPopin table tbody tr td.storeCover img,.topPanelBloc .topGraphContainer table tbody tr td.playlistCover img,.topPanelBloc .topGraphContainer table tbody tr td.storeCover img {
+    display: block;
+    width: 40px;
+    height: 40px
+}
+
+.top-custom-select-row {
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -ms-flex-align: center;
+    -webkit-align-items: center;
+    -webkit-box-align: center;
+    align-items: center;
+    height: 60px
+}
+
+.top-custom-select-label {
+    font-size: 16px;
+    font-weight: 700;
+    padding-left: 25px
+}
+
+.top-custom-select-input {
+    padding-right: 25px
+}
+
+.top-custom-select {
+    height: 40px;
+    width: 100%
+}
+
+.top-custom-select-dropdown .select2-result-selectable,.top-custom-select .select2-choice {
+    height: 40px;
+    padding: 0 10px;
+    width: 100%
+}
+
+.top-custom-select-dropdown .select2-results .select2-result-label,.top-custom-select .select2-choice>.select2-chosen {
+    padding: 10px
+}
+
+.top-custom-select-dropdown,.top-custom-select .select2-choice {
+    border-radius: 0
+}
+
+.top-custom-select.select2-container .select2-choice .select2-arrow {
+    border: 0
+}
+
+.top-custom-select-dropdown .select2-result-selectable {
+    background-color: #ebf0fa;
+    border-bottom: 2px solid #fff;
+    color: #000
+}
+
+.top-custom-select-dropdown .select2-result-selectable:last-child {
+    border: 0
+}
+
+.top-custom-select-dropdown .select2-highlighted {
+    background-color: #aac8ff
+}
+
+.select2-container .select2-choice .select2-arrow b,.select2-container .select2-choice div b {
+    background-position: 0 6px
+}
+
+.select2-dropdown-open .select2-choice .select2-arrow b,.select2-dropdown-open .select2-choice div b {
+    background-position: -18px 6px
+}
+
+.topPlaylistStoreLogo img {
+    width: 12px
+}
+
+.playlistShareIcon i {
+    color: #000;
+    font-size: 18px
+}
+
+.playlistShareIcon i.text-muted {
+    color: #ccc
+}
+
+.block-graph__empty-data {
+    margin-top: 240px
+}
+
+.block-graph__empty-data--text {
+    margin-top: 35px
+}
+
+.specificPage .block-graph__empty-data {
+    margin-top: 126px;
+    margin-bottom: 126px
+}
+
+.block-graph__empty-data--icon i,.block-graph__loading-error--icon i {
+    font-size: 100px
+}
+
+.unknowFieldValue {
+    color: #ccc
+}
+
+#playlistDetailsPopin .modal-body {
+    padding: 0
+}
+
+#playlistDetailsPopin .modal-body #playlistDetailsInfo {
+    text-align: center;
+    font-size: 12px;
+    padding: 0;
+    margin: 0 0 50px
+}
+
+#playlistDetailsPopin .modal-body #playlistDetailsContent {
+    padding: 50px 25px 25px
+}
+
+@media screen and (max-width: 767px) {
+    .topTracks {
+        table-layout:fixed
+    }
+
+    .topTracks td {
+        word-wrap: break-word;
+        overflow-wrap: break-word
+    }
+}
+
+.modalVerticalAlignHelper {
+    z-index: 9000!important;
+    display: table;
+    height: 100%;
+    width: 100%;
+    margin: auto;
+    max-width: 600px
+}
+
+.modalVerticalAlignHelper .modal-dialog {
+    display: table-cell;
+    vertical-align: middle
+}
+
+.infoPopin {
+    position: relative;
+    top: -1px
+}
+
+.modal-dialog .modal-body img.popinStoresImg {
+    width: 35px;
+    height: 35px;
+    margin: 20px 10px 20px 0
+}
+
+.modalVerticalAlignHelper .modal-header {
+    height: auto
+}
+
+.modalVerticalAlignHelper .modal-header .bootstrap-dialog-close-button {
+    font-size: 24px
+}
+
+.modalVerticalAlignHelper .modal-header .bootstrap-dialog-close-button button.close {
+    margin-top: 0
+}
+
+.modalVerticalAlignHelper .modal-header .bootstrap-dialog-title {
+    width: calc(100% - 20px)
+}
+
+.modalVerticalAlignHelper .modal-body {
+    max-height: 400px;
+    overflow-y: scroll;
+    padding: 24px
+}
+
+@media screen and (max-width: 767px) {
+    .modalVerticalAlignHelper {
+        margin:10px;
+        max-width: calc(100vw - 20px)
+    }
+}
+
+#topsPagination {
+    margin-top: 10px
+}
+
+.paginationButton:hover {
+    cursor: pointer
+}
+
+.topGraphContainer .pagination {
+    margin: 0
+}
+
+.availableReport {
+    display: inline-block;
+    margin-left: 15px;
+    margin-bottom: 15px
+}
+
+.availableReport img,.unavailableReport img {
+    display: block;
+    height: 30px
+}
+
+.unavailableReport {
+    display: inline-block;
+    margin-right: 15px;
+    margin-bottom: 15px
+}
+
+.unavailableReportStoreCount {
+    font-size: 18px;
+    font-weight: 700
+}
+
+.unavailableReportStoreText {
+    display: block;
+    font-size: 10px;
+    line-height: 3px
+}
+
+.unavailableReportDate {
+    font-size: 12px
+}
+
+.mainLineChartEnable .logoContent {
+    float: right;
+    margin-top: 7px
+}
+
+.mainLineChartEnable .logoContent .displayedStore {
+    display: inline-block;
+    height: 25px;
+    margin-right: 15px
+}
+
+.mainLineChartEnable .logoContent .displayedStore img {
+    display: block;
+    height: 24px
+}
+
+@media screen and (max-width: 767px) {
+    .blv-genders {
+        margin-bottom:20px
+    }
+}
+
+#genderContainer {
+    padding: 20px 0 20px 20px
+}
+
+#averageAgeContainer {
+    padding: 20px 0 0 20px
+}
+
+#genderContainer .genderFemale,#genderContainer .genderMale {
+    display: inline-block
+}
+
+#genderContainer .genderIcon {
+    font-size: 35px;
+    margin-top: 0;
+    margin-bottom: 20px
+}
+
+#genderContainer .genderIcon.maxGender {
+    font-size: 50px;
+    margin-top: 0
+}
+
+#genderContainer .genderIcon.minGender {
+    margin-top: 15px;
+    font-size: 35px
+}
+
+.chartCategoryValue {
+    font-size: 30px;
+    font-weight: 700
+}
+
+.syncEngagementStreamValues {
+    margin-top: 7px
+}
+
+.chartCategoryValue span.percentSign {
+    font-size: 20px;
+    font-weight: 700
+}
+
+#genderContainer .genderPercent,.chartCategoryTitle {
+    font-size: 12px;
+    font-weight: 400
+}
+
+.panelPercent {
+    font-size: 10px;
+    margin-top: 5px
+}
+
+#sourceStreamContainer .highcharts-container .highcharts-axis-labels.highcharts-xaxis-labels span {
+    width: 100%
+}
+
+.sourceStreamGraphContainer {
+    padding-left: 20px
+}
+
+.sourceStreamPercent {
+    font-weight: 400
+}
+
+.sourceStreamTooltip {
+    padding: 15px;
+    background-color: #fff;
+    border-radius: 3px;
+    -webkit-box-shadow: 0 1px 5px 0 rgba(0,0,0,.53);
+    -moz-box-shadow: 0 1px 5px 0 rgba(0,0,0,.53);
+    box-shadow: 0 1px 5px 0 rgba(0,0,0,.53)
+}
+
+.devicesColumn {
+    display: block;
+    width: 20%;
+    float: left
+}
+
+.devicesBlock,.operatingSystemsBlock {
+    padding: 20px
+}
+
+@media screen and (max-width: 767px) {
+    .devicesBlock,.operatingSystemsBlock {
+        padding:20px 0
+    }
+}
+
+.devicesPercentBlock {
+    padding-left: 20px
+}
+
+.offlineCachedStreamsValue {
+    font-weight: 700;
+    font-size: 20px
+}
+
+.devicesIcon {
+    font-size: 50px
+}
+
+.devicesColumn .devicesIcon {
+    margin-bottom: 20px
+}
+
+#uniqueListenersStoresContainer .row {
+    margin-top: 10px
+}
+
+#uniqueListenersStoresContainer img {
+    width: 30px;
+    height: 30px
+}
+
+#uniqueListenersStoresContainer .uniqueListenersStoreValue {
+    font-weight: 700;
+    font-size: 16px;
+    padding-top: 4px
+}
+
+#uniqueListenersTotalDescription {
+    margin-bottom: 30px
+}
+
+@media (min-width: 768px) {
+    .playPercentInfosBloc {
+        padding-top:160px
+    }
+}
+
+.operatingSystemsIcons img {
+    height: 50px
+}
+
+.operatingSystemsIcons {
+    margin-bottom: 20px
+}
+
+.specificPage .content-wrapper-top-bar .panel-body {
+    padding: 0
+}
+
+.specificPage .content-wrapper-top-bar .panel-body .affixnav {
+    margin: 0
+}
+
+.specificPage .content-wrapper-top-bar .panel-body #affixnav.affix {
+    padding-top: 0;
+    padding-bottom: 0
+}
+
+ .buttonActions {
+    padding: 0;
+    min-height: 90px
+}
+
+ .buttonActions .headerContentPage {
+    position: relative
+}
+
+ .buttonActions .headerContentPage .headerCoverBlock {
+    display: inline-block;
+    left: 15px;
+    position: absolute
+}
+
+ .buttonActions .headerContentPage .headerInfosBlock {
+    display: block
+}
+
+ .buttonActions .headerContentPage .headerInfosBlock .headerPageInfoCol {
+    padding-top: 5px;
+    position: relative;
+    margin-left: 115px
+}
+
+@media (min-width: 768px) {
+     .buttonActions .headerContentPage .headerInfosBlock .headerPageInfoCol {
+        left:115px;
+        margin-left: 0
+    }
+}
+
+ .buttonActions .headerContentPage .headerInfosBlock .headerPageFiltersCol {
+    padding-top: 19px
+}
+
+.buttonActions .headerContentPage .headerInfosBlock .headerPageInfoCol {
+    padding-top: 18px
+}
+
+
+
+
+.buttonActions .headerContentPage .headerInfosBlock .headerArtistName,.buttonActions .headerContentPage .headerInfosBlock .headerLabelName,.buttonActions .headerContentPage .headerInfosBlock .headerAlbumName,.buttonActions .headerContentPage .headerInfosBlock .headerSongName {
+    color: #333;
+    font-size: 14px
+}
+
+.buttonActions .headerContentPage .headerInfosBlock .headerUpc,.buttonActions .headerContentPage .headerInfosBlock .headerIsrc {
+    color: #333;
+    font-size: 10px
+}
+.buttonActions .headerContentPage .headerInfosBlock .headerAlbumName
+{
+	font-size:12px;
+}
+a{
+	color:#399af9;
+}
+.buttonActions .headerContentPage .headerInfosBlock .headerAlbumName .header-album-release,.buttonActions .headerContentPage .headerInfosBlock .headerArtistName {
+    font-size: 12px
+}
+
+.buttonActions .headerContentPage .headerCoverBlock .headerCover>span,.buttonActions .headerContentPage .headerCoverBlock .headerCover>span {
+    font-size: 50px;
+    display: inline-block;
+    padding-left: 27px;
+    padding-top: 22px
+}
+
+.specificPage .panelComingSoon {
+    width: 100%
+}
+
+.panelComingSoon>.panel-body {
+    padding: 10px
+}
+
+#mainWrapper.specificPage .panel .panel-heading.comingSoonContainer {
+    width: 100%;
+    background-color: #eff4fd;
+    padding: 30px
+}
+
+#mainWrapper.specificPage .panel.comingSoonPanelContext,#mainWrapper.specificPage .panel.comingSoonPanelHotness,#mainWrapper.specificPage .panel.comingSoonPanelSource,#mainWrapper.specificPage .panel.panelComingSoon {
+    background-color: hsla(0,0%,100%,.8)!important
+}
+
+#mainWrapper.specificPage .panel.comingSoonPanelContext .panel-body,#mainWrapper.specificPage .panel.comingSoonPanelHotness .panel-body,#mainWrapper.specificPage .panel.comingSoonPanelSource .panel-body,#mainWrapper.specificPage .panel.panelComingSoon .panel-body {
+    background-color: transparent!important
+}
+
+.specificPage .comingSoonSVG {
+    width: 100%
+}
+
+.specificPage .comingSoonSVG>img {
+    width: 80px
+}
+
+.commingSoon-newfeature,.commingSoon-staytuned {
+    padding: 10px 12px
+}
+
+.commingSoon-newfeature>.col-xs-12>span {
+    font-size: 20px
+}
+
+.commingSoon-staytuned>.col-xs-12>span {
+    font-size: 12px
+}
+
+.comingSoonPanelHotness,.panelComingSoon {
+    min-height: 302px
+}
+
+.panelUniqueListeners>.panel-body .panelPercent {
+    position: absolute;
+    bottom: 15px;
+    right: 15px
+}
+
+.panelCachedStreamsCol>.panel-body,.panelUniqueListeners>.panel-body {
+    position: relative
+}
+
+#mainLineCharts {
+    min-height: 432px
+}
+
+.specificPage.releasepage #mainLineCharts,.specificPage.trackpage #mainLineCharts {
+    min-height: 292px
+}
+
+.panelProductType>.panel-body,.panelStore>.panel-body {
+    min-height: 380px
+}
+
+.topPanelBloc .panel-body {
+    min-height: 670px
+}
+
+.topPanelBloc .panel-body .block-graph__loading-error {
+    margin-top: 50px
+}
+
+.specificPage.artistpage .topPanelBloc .panel-body,.specificPage.labelpage .topPanelBloc .panel-body,.specificPage.releasepage .topPanelBloc .panel-body,.specificPage.trackpage .topPanelBloc .panel-body {
+    min-height: 420px
+}
+
+.panelDailyUniqueListeners>.panel-body,.panelUniqueListeners>.panel-body {
+    min-height: 463px
+}
+
+.panelDemographic>.panel-body {
+    min-height: 330px
+}
+
+.panelDevices>.panel-body,.panelOperatingSystems>.panel-body {
+    min-height: 232px
+}
+
+.panelPlayPercent>.panel-body {
+    min-height: 89px
+}
+
+@media (min-width: 768px) {
+    .panelPlayPercent>.panel-body {
+        min-height:436px
+    }
+}
+
+.panelMap>.panel-body {
+    min-height: 545px
+}
+
+@media screen and (min-width: 320px) and (max-width:812px) {
+    .mobile-topTerritories {
+        display:none!important
+    }
+}
+
+.PanelTrendsSource>.panel-body {
+    min-height: 663px
+}
+
+.panelSourceStream>.panel-body {
+    min-height: 730px
+}
+
+.panelCachedStreamsCol>.panel-body {
+    min-height: 267px
+}
+
+.topCities tr {
+    height: 56px
+}
+
+a.trendsDemoTab {
+    cursor: pointer
+}
+
+.bs-loader-overlay {
+    background: hsla(0,5%,92.2%,.8);
+    height: 100%;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 100%;
+    z-index: 1000
+}
+
+.bs-loader-bars,.bs-loader-bars:after,.bs-loader-bars:before {
+    background: #399af9;
+    -webkit-animation: bars-loader 1s ease-in-out infinite;
+    animation: bars-loader 1s ease-in-out infinite;
+    width: 1em;
+    height: 4em
+}
+
+.bs-loader-bars:before {
+    left: -1.5em
+}
+
+.bs-loader-bars:after {
+    left: 1.5em
+}
+
+.bs-loader {
+    color: #399af9;
+    font-size: 10px;
+    left: 50%;
+    position: absolute;
+    text-indent: -9999em;
+    transform: translate(-50%,-50%);
+    top: calc(50% - 2em);
+    -webkit-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-animation-delay: -.16s;
+    animation-delay: -.16s
+}
+
+.bs-loader:after,.bs-loader:before {
+    content: "";
+    position: absolute;
+    top: 0
+}
+
+.bs-loader:before {
+    -webkit-animation-delay: -.32s;
+    animation-delay: -.32s
+}
+
+@-webkit-keyframes bars-loader {
+    0%,80%,to {
+        box-shadow: 0 0;
+        height: 4em
+    }
+
+    40% {
+        box-shadow: 0 -2em;
+        height: 5em
+    }
+}
+
+@keyframes bars-loader {
+    0%,80%,to {
+        box-shadow: 0 0;
+        height: 4em
+    }
+
+    40% {
+        box-shadow: 0 -2em;
+        height: 5em
+    }
+}
+
+.toast-container>.toast-warning {
+    color: #484848;
+    background-color: #ebf0fa;
+    opacity: .95
+}
+
+.toast-close-button {
+    color: #484848!important
+}
+
+#voice-command-container .highcharts-yaxis .highcharts-axis-line {
+    stroke-width: 2px
+}
+
+.voice-command-icon img {
+    height: 30px
+}
+
+.PanelVoiceCommand .panel-body {
+    min-height: 200px
+}
+
+@keyframes pulseKeyframe {
+    0% {
+        opacity: 1
+    }
+
+    50% {
+        opacity: .4
+    }
+
+    to {
+        opacity: 1
+    }
+}
+
+.blv-skeleton {
+    background-color: #e0e0e0
+}
+
+.blv-skeleton.-circle {
+    border-radius: 9999px
+}
+
+.blv-skeleton.-light {
+    background-color: #fff
+}
+
+.blv-skeleton.-icon {
+    background-color: transparent
+}
+
+.blv-skeleton.-icon .icon {
+    color: #e0e0e0
+}
+
+.blv-skeleton.-icon.-light .icon {
+    color: #fff
+}
+
+.blv-skeleton.-pulse {
+    animation: pulseKeyframe 1.5s ease-in-out .5s infinite
+}
+.highcharts-button,.highcharts-credits
+{
+	display:none;
+}

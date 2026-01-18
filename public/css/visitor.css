@@ -1,0 +1,44 @@
+body {
+  background-color: #ffffff !important;
+}
+#bs-main-content-container {
+  /*padding-top: 0 !important;*/
+}
+
+.blv-homepage-welcome-banner {
+  /*background-image: url(../img/welcome_banner.jpg);*/
+  background-color:#151515;
+  background-position: 50%;
+  background-repeat: no-repeat;
+  background-size: cover;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  height: 240px;
+  justify-content: flex-end;
+  padding-bottom: 32px;
+}
+.blv-homepage-welcome-banner__title {
+  font-size: 54px;
+  font-weight: bold;
+}
+.blv-homepage-welcome-banner__subtitle {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.blv-homepage-news-container {
+  margin-top: 32px;
+}
+
+@media only screen and (min-width: 1024px) {
+  .blv-homepage-welcome-banner {
+    justify-content: center;
+    padding-bottom: 0;
+  }
+
+  .blv-homepage-welcome-banner,
+  .blv-homepage-news-container {
+    padding-left: 104px;
+  }
+}

@@ -1,0 +1,863 @@
+@charset "UTF-8";
+#bs-main {
+    background-color: #e8ebf2;
+}
+
+#availableReport td, #availableReport th,
+#pregen-reports td, #pregen-reports th
+{
+    vertical-align: middle;
+}
+
+#reportPaymentMainTitle {
+    background: url('../img/report_payment.svg') no-repeat;
+    padding-left: 60px;
+    height: 50px;
+    display: inline-block;
+    background-size: 56px 45px;
+}
+
+
+#requestedReports td:first-child, #monthlyGeneratedReports td:first-child {
+    width: 280px;
+}
+
+#headColumnsForAvailableReports {
+    display: none;
+}
+
+.upper {
+    text-transform: uppercase;
+}
+
+.boldMe {
+    font-weight: bold;
+}
+
+#availableReportTitle, #customMyCsvTitle, #whichKindReportTitle, #archiveOperationTitle {
+    display: inline-block;
+    width: 300px;
+    border-bottom: 3px solid black;
+    margin-bottom: 20px;
+    padding-bottom: 5px;
+    margin-top: 40px;
+}
+
+#waitingReportBox .waitingReportBoxBackground {
+    position: absolute;
+    top: 0;
+    width: calc(100% - 10px);
+    height: 100%;
+    background-color: #fff;
+    z-index: 10;
+    opacity: 0.7;
+    filter: alpha(opacity=70);
+}
+
+#waitingReportBox .waitingReportBoxContent {
+    margin-top: 20em;
+    opacity: 1;
+    filter: alpha(opacity=100);
+}
+
+.waitingReportBoxContent p, .waitingReportBoxContent .fa {
+    font-size: 2em;
+}
+
+.modalVerticalAlignHelper {
+    display: table;
+    height: 100%;
+    width: 100%;
+    margin-left: 100px;
+}
+
+.modalVerticalCenter {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.modal-content {
+    width: inherit;
+    height: inherit;
+    margin: 0 auto;
+}
+
+
+#requestedReports .tooltip-inner {
+    max-width: none;
+    white-space: nowrap;
+    text-align: left;
+}
+
+.alert-info {
+    color: #404040;
+}
+
+.progress {
+    margin: auto;
+}
+
+#availableReport .nav-tabs {
+    display: none;
+}
+
+.removeMarginLeft {
+    margin-left: -15px !important;
+}
+
+.removeMarginLeft .radio span {
+    vertical-align: sub;
+}
+
+#chooseExportMode {
+    margin-top: 20px;
+    height: 80px;
+}
+
+#editMyCsvTemplateButton {
+
+    display: none;
+    margin-left: 10px;
+    vertical-align: top;
+    margin-top: -5px;
+}
+
+#dedicatedMyReport, #splitMyReport {
+    display: none;
+    margin-bottom: 35px;
+    width: 100%;
+}
+
+#customizeMyCsv, #dedicatedMyReport, #splitMyReport {
+    margin-top: 35px !important;
+}
+
+#customizeMyCsv {
+    margin-bottom: 10px;
+    width: 100%;
+    margin-top: 10px;
+}
+
+#customizeMyCsv h4 {
+    display: inline-block;
+    padding: 10px;
+}
+
+#handleCustomLayout{
+    margin-bottom: 30px;
+}
+
+.addMarginBottom {
+    margin-bottom: 10px;
+}
+
+#fieldSectionToCustomizeCsv .scopeSection {
+    display: inline-block;
+    margin-left: 10px;
+    width: 200px;
+}
+
+#fieldSectionToCustomizeCsv .scopeSection .fa-ellipsis-v,
+#fieldSectionToCustomizeCsv .scopeSection .blv-font-remove {
+    height: 30px;
+    font-size: 1.2em;
+    display: inline-block;
+    padding: 10px 3px;
+}
+
+#fieldSectionToCustomizeCsv .scopeSection .fa-ellipsis-v {
+    cursor: move;
+}
+
+#fieldSectionToCustomizeCsv .scopeSection .blv-font-remove {
+    cursor: pointer;
+}
+
+#fieldSectionToCustomizeCsv .scopeSection .blv-font-remove:first-child {
+    cursor: crosshair;
+}
+
+#fieldSectionToCustomizeCsv .scopeSection h6 {
+    cursor: move;
+}
+
+#fieldSectionToCustomizeCsv .scopeSection .select2Basic {
+    width: 160px;
+
+}
+
+.scopeSectionForButton {
+    width: 60px !important;
+}
+
+#summaryReport .tooltip-inner {
+    white-space: nowrap;
+    max-width: none !important;
+
+}
+
+#dedicatedMyReport .select2-input {
+    padding-left: 22px !important;
+}
+
+#addSelectForCsv button, #removeSelectForCsv button {
+    width: 100%;
+}
+
+#chooseWhichKindReportsGlobal, #chooseWhichKindReportsNotGlobal {
+    width: 100%;
+}
+
+.chooseWhichKindReports aside {
+    font-size: 0.8em;
+    margin-top: 5px;
+    margin-bottom: 20px;
+}
+
+.overviewTable {
+    margin-top: 30px;
+}
+
+#globalForm {
+    display: none;
+}
+
+.deleteReport {
+    cursor: pointer;
+}
+
+a.fa-download {
+    color: #000;
+}
+
+.verticalCenterBootstrapRow {
+    display: flex;
+    align-items: center;
+}
+
+.fa {
+    font-size: 15px;
+}
+
+#requestedReports a.fa {
+    color: #000;
+}
+
+#availableReport td:first-child {
+    width: 280px !important;
+}
+
+/*GENERATE REPORT*/
+#summaryReport li {
+    margin-left: 15px;
+}
+
+/**FOR WIZARD**/
+
+.wizard > .actions li:first-child {
+
+    display: none;
+}
+
+#nextStepButtonPlugin {
+    vertical-align: middle;
+}
+
+#wizardStepGenerateReport .overviewButton {
+    display: inline-block;
+    visibility: hidden;
+}
+
+#wizardStepGenerateReport {
+    display: none;
+    margin-bottom: 50px;
+}
+
+#wizardStepGenerateReport > .actions{
+    top: 156px;
+    left: -11px;
+    position: absolute;
+}
+
+#wizardStepGenerateReport > .content{
+    padding-top: 30px;
+}
+
+.wizard > .content {
+    min-height: 400px;
+}
+
+.wizard > .steps .error a,
+.wizard > .steps .error a:hover,
+.wizard > .steps .error a:active {
+    background: #fff;
+    color: #000;
+}
+
+.notClickableStepButton {
+    cursor: no-drop !important;
+    opacity: 0.5;
+}
+
+.like-btn-primary-outline {
+    background-color: transparent;
+    border: 1px solid #399af9;
+    color: #399af9;
+}
+
+.like-btn-primary {
+    background-color: #399af9;
+    border: 1px solid #399af9;
+    color: #fff;
+}
+
+.like-btn {
+    cursor: pointer;
+    font-weight: 400;
+    line-height: 1.5;
+    padding: 0.375rem 1rem;
+    display:inline-block;
+
+}
+
+#dedicatedMyReport input, #splitMyReport input {
+    margin: 2px 0px 0 -18px;
+}
+
+.dedicatedReportSelect {
+    width: 100%;
+}
+
+#selectDedicatedMyReport {
+    margin-top: 15px;
+    margin-bottom: 25px;
+
+}
+
+.dedicatedReport span {
+    vertical-align: bottom;
+    margin: 0;
+}
+
+.multipleSquare {
+    position: relative;
+    width: 155px;
+    height: 155px;
+    border:none;
+}
+
+
+#useLegacyDedicatedReport {
+    border-style: dashed;
+}
+
+#wizardStepGenerateReport .tooltip-inner {
+    background-color:#337AB7 !important;
+}
+
+#wizardStepGenerateReport .tooltip > .tooltip-arrow {
+    border-left-color:#337AB7 !important;
+}
+
+.legacyContainer {
+    position:relative;
+    width:160px;
+    display:inline-block;
+}
+
+.legacyWarningIcon {
+    font-size:30px;
+    color:#ff414e;
+    position:absolute;
+    cursor:default;
+    margin-top:163px;
+    padding-left:63px;
+    top: 0px;
+    left:0px;
+}
+
+.relativePosition {
+    position:relative;
+}
+
+
+.littleTitleLikeButton {
+    font-size: 1.4em;
+}
+
+.littleExplainLikeButton {
+    font-size: 0.8em;
+}
+
+.subSquare_1 {
+    left:8px;
+    margin-left: 5px;
+    z-index:1;
+    top:6px;
+    position:absolute;
+}
+
+.subSquare_2 {
+    left:-8px;
+    z-index:2;
+    position:absolute;
+    top:6px;
+}
+
+.subSquare_3 {
+    left:-8px;
+    z-index:3;
+    padding-top: 33% !important;
+    position:absolute;
+    top:6px;
+}
+
+.square150 {
+    width: 155px;
+    height: 155px;
+    padding: 6px;
+}
+
+.square150.reportTypeBtn {
+    margin-top:19px;
+}
+
+.square150.reportTypeBtn p:first-child {
+    padding-top: 3em !important;
+}
+
+
+.like-btn-primary-outline:hover:not(.keepBtnRaw), .like-btn-primary-outline:focus {
+    background-color: #399af9;
+    border-color: #399af9;
+    color: #fff;
+}
+
+.multipleSquare:hover .square150:not(.keepBtnRaw) {
+    background-color: #399af9;
+    border-color: #399af9;
+    color: #fff;
+}
+
+.multipleSquare .like-btn-primary-outline  {
+    background-color: #F7F8F8;
+}
+
+    /*FOR DATePICKER*/
+
+/*FOR PORTLET SORTABLE*/
+#fieldSectionToCustomizeCsv li.portlet-placeholder {
+    border: 1px dotted #aaa;
+    height: 35px;
+    width: 140px;
+    margin-left: 10px;
+    margin-bottom: -15px;
+    background-color: #eee;
+    display: inline-block;
+    border-radius: 5px 5px 5px 5px;
+    -moz-border-radius: 5px 5px 5px 5px;
+    -webkit-border-radius: 5px 5px 5px 5px;
+}
+
+/*********TAKE A TOUR*************/
+#takeATourButton, #tourReportManager_reportmanager_56e69b893670e_startTourButton {
+    color: #fff;
+    background-color: #868B8F;
+}
+
+.tour .popover-navigation {
+    float: right;
+}
+
+.tour-backdrop {
+    opacity: 0.7 !important;
+}
+
+.tour {
+    min-width: 400px;
+    max-width: 400px;
+}
+
+.tour h3 {
+    border-bottom: 1px solid #ebebeb;
+    padding-bottom: 6px !important;
+    margin: 0;
+    background-color: #f7f7f7;
+    border-radius: 5px 5px 0 0;
+}
+
+.tour .popover-title {
+    border-bottom: none;
+}
+
+.tour .endButtonTour {
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+.tour .nextButtonTour {
+    margin-left: 10px;
+}
+
+#requestedReports .littleActionTourStep, #monthlyGeneratedReports .littleActionTourStep {
+    padding: 5px;
+}
+
+/*********END TAKE A TOUR*************/
+
+/***Radius these element**/
+#warningRequestPayment,
+#blv-container button,
+.tour-step-background,
+.tour .nextButtonTour,
+.tour .backButtonTour,
+#addSelectForCsv button,
+#removeSelectForCsv button,
+.wizard > .actions li,
+.datepicker table tr td span.active,
+.datepicker table tr td span.active:hover {
+    color: #FFF;
+    background-color: #399af9 !important;
+    border-radius: 0.25rem !important;
+}
+
+/* For Countries List*/
+#territoriesSelectorCounter {
+    cursor: pointer;
+}
+
+#territoriesSelectorPopin .modal-dialog {
+    width: inherit;
+    max-width: 1110px;
+}
+
+#territoriesSelectorPopin .modal-header {
+    background-color: #fff;
+    color: #000;
+}
+
+#territoriesSelectorPopin .listContainer .listColumn {
+    margin-left: 25px;
+    margin-top: 25px;
+}
+
+/* ----- DIALOG/MODAL ----- */
+
+/* FADE/SCALE EFFECT */
+.material-modal .modal.fade .modal-dialog {
+    opacity: 0;
+    -webkit-transform: scale(0.1);
+    -ms-transform: scale(0.1);
+    -o-transform: scale(0.1);
+    transform: scale(0.1);
+    -webkit-transition: all 0.3s ease;
+    -moz-transition: all 0.3s ease;
+    -o-transition: all 0.3s ease;
+    transition: all 0.3s ease;
+}
+
+.material-modal .modal.fade.in .modal-dialog {
+    opacity: 1;
+    -webkit-transform: scale(1);
+    -ms-transform: scale(1);
+    -o-transform: scale(1);
+    transform: scale(1);
+    -webkit-transform: translate3d(0%, 0, 0);
+    -ms-transform: translate3d(0%, 0, 0);
+    -o-transform: translate3d(0%, 0, 0);
+    transform: translate3d(0%, 0, 0);
+}
+
+/* DIALOG CONTENT */
+.material-modal .modal-content {
+    border: none;
+    -webkit-box-shadow: 0 40px 77px rgba(0, 0, 0, 0.22), 0 27px 24px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: 0 40px 77px rgba(0, 0, 0, 0.22), 0 27px 24px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 40px 77px rgba(0, 0, 0, 0.22), 0 27px 24px rgba(0, 0, 0, 0.2);
+}
+
+/* DIALOG HEADER */
+.material-modal .modal-header {
+    min-height: 16px;
+    padding: 24px;
+    border-bottom: none;
+}
+
+.material-modal .modal-title {
+    font-weight: 500;
+    font-size: 21px;
+}
+
+/* DIALOG BODY */
+.material-modal .modal-body {
+    padding: 0 24px;
+}
+
+.material-modal .modal-body p {
+    font-weight: 400;
+    font-size: 14px;
+    color: #212121;
+}
+
+.material-modal .modal-body p:last-child,
+.material-modal .modal-body .lead:last-child {
+    margin-bottom: 0;
+}
+
+.newReportModal-wrapper.modal-dialog {
+    width: 460px;
+}
+
+.material-modal .modal-footer {
+    padding: 40px 24px 40px 0px;
+    border-top: none;
+    height: auto; /*to remove*/
+}
+
+.newReportModal-wrapper .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0px;
+    margin-top: 40px;
+    height: auto;
+}
+
+.newReportModal-wrapper .modal-content {
+    border-radius: 16px;
+    padding: 32px;
+}
+
+.newReportModal-wrapper .modal-content .btn {
+    border-radius: 16px;
+    padding: 8px 25px;
+    text-transform: uppercase;
+}
+
+.newReportModal-wrapper .modal-content .btn.btn-secondary {
+    background-color: #ffffff;
+    border-color: #399af9;
+    color: #399af9;
+}
+
+.newReportModal-wrapper .modal-content .row {
+    padding-top: 10px;
+}
+
+.newReportModal-wrapper .modal-body {
+    padding: 0px;
+    font-size: 14px;
+}
+
+.newReportModal-wrapper .modal-body .main-text {
+    font-size: 20px;
+}
+
+.newReportModal-wrapper .modal-body .third-text {
+    font-size: 12px;
+}
+
+.material-modal .modal-footer .btn {
+    height: 36px;
+    margin-right: 8px;
+    padding: 8px 10px;
+    border: none;
+    border-radius: 0;
+    text-transform: uppercase;
+    font-weight: 500;
+    color: #009688;
+    background-color: #fff;
+}
+
+.material-modal .modal-footer .btn:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.material-modal .modal-footer .btn:focus,
+.material-modal .modal-footer .btn:hover {
+    color: #00796B;
+}
+
+.material-modal .modal-footer .btn + .btn {
+    margin-left: 0;
+}
+
+.material-modal .modal-footer .btn + .btn:last-child {
+    margin-left: -4px;
+}
+
+/* specific rules*/
+.material-modal .modal-body {
+    text-align: center;
+}
+.material-modal #reportImage {
+    width: 100px;
+    margin : 40px 0px;
+}
+.material-modal p {
+    font-family: open_sansregular;
+    font-size: 15px;
+}
+.material-modal p.main-text {
+    color : #242833;
+}
+.material-modal p.secondary-text {
+    color : #7C818D;
+}
+.material-modal .modal-footer .btn {
+    font-size: 13px;
+    font-weight: 600;
+}
+.material-modal #remindMeLater {
+    color : #7C818D;
+}
+.material-modal #sendOneClickReport {
+    color: #ff414e;
+}
+
+#closeOneClickReport {
+    margin-top: 20px;
+}
+
+#methodPayText,.messageText {
+    color:#828893;
+}
+
+#bs-header {
+    background: #e8ebf2;
+    border-bottom: 1px solid #E5E6E8;
+    color: #000000;
+    padding-top: 10px;
+    height: 100px;
+    margin-left: -20px;
+    margin-right: -30px;
+    margin-bottom: 30px
+}
+
+#bs-header .title {
+    font-weight: 400;
+    font-style: normal;
+    font-size: 21px;
+    color: #000000;
+    line-height: 18px;
+}
+
+#bs-header .text {
+    font-weight: 400;
+    font-style: normal;
+    color: #828893;
+    line-height: 10px;
+    font-size: 13px;
+    margin-top: 18px;
+}
+
+#solde #infosBank
+{
+    margin-bottom: 50px;
+}
+
+@media (max-width: 992px) {
+    #bs-main {
+        text-align: center;
+    }
+
+    #infosBank {
+        margin-bottom: 15px;
+    }
+}
+
+/**Operations Details - Balance History**/
+#availableReport table thead {
+    background-color: #F5F5F5;
+}
+
+#availableReport table tbody td.no-data{
+    font-size: 24px;
+    font-weight: bold;
+    font-style: normal;
+    font-stretch: normal;
+    letter-spacing: 0.24px;
+    text-align: center;
+    color: #7c808c;
+    padding-top : 72px;
+    padding-bottom : 72px;
+}
+
+#availableReport {
+    margin-bottom: 50px;
+}
+
+#availableReport table thead tr th,
+#monthlyGeneratedReports table thead tr th {
+    font-size: 11px;
+    font-weight: 700;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 8px;
+    letter-spacing: normal;
+    vertical-align: middle;
+    border: none;
+}
+#monthlyGeneratedReports table {
+    margin-top: 0 !important;
+}
+#availableReport table thead tr,
+#monthlyGeneratedReports table thead tr {
+    height: 40px;
+}
+
+.dataTables_paginate ul.pagination {
+    float: left;
+}
+
+#pregen-reports tbody tr td {
+   height: 30px;
+}
+
+#availableReport table tbody tr:hover {
+    background-color: rgba(239, 241, 246, 1);
+}
+td .fa-download:hover {
+    cursor: pointer !important;
+}
+
+#availableReport  table tr td.description,
+#availableReport  table tr td.operation.debit{
+    color : black ;
+    font-weight: 600;
+}
+
+#availableReport  table tr td.operation.credit{
+    font-weight: 600;
+    color: #04ab9b;
+}
+
+#availableReport  table tr td.datefield,
+#availableReport  table tr td.cell__limit-text-length,
+#availableReport  table tr td.solde{
+    font-family: open_sansregular;
+    font-weight: 400;
+    font-style: normal;
+    color: #828893;
+    line-height: 17px;
+    font-size: 13px;
+    letter-spacing: normal;
+}
+
+#generateReportInfoMessage {
+    margin-top: 25px;
+    text-align: center;
+}
+
+.blvstep-message {
+    padding-left: 25px;
+    padding-top: 15px;
+}
+
+#wizardStepGenerateReport-t-0 span > small {
+    display: block;
+    color: #999;
+    margin-left: 42px;
+    font-size: 1em;
+    font-style: italic;
+}

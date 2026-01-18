@@ -1,0 +1,101 @@
+@font-face {
+    font-family: "flaticon";
+    src: url("./flaticon.ttf?fed50e6bf2d1f1cf533c4349080ddc85") format("truetype"),
+url("./flaticon.woff?fed50e6bf2d1f1cf533c4349080ddc85") format("woff"),
+url("./flaticon.woff2?fed50e6bf2d1f1cf533c4349080ddc85") format("woff2"),
+url("./flaticon.eot?fed50e6bf2d1f1cf533c4349080ddc85#iefix") format("embedded-opentype"),
+url("./flaticon.svg?fed50e6bf2d1f1cf533c4349080ddc85#flaticon") format("svg");
+}
+
+i[class^="flaticon-"]:before, i[class*=" flaticon-"]:before {
+    font-family: flaticon !important;
+    font-style: normal;
+    font-weight: normal !important;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.flaticon-dashboard:before {
+    content: "\f101";
+}
+.flaticon-businessman:before {
+    content: "\f102";
+}
+.flaticon-reading-book:before {
+    content: "\f103";
+}
+.flaticon-teacher-with-laptop:before {
+    content: "\f104";
+}
+.flaticon-schedule:before {
+    content: "\f105";
+}
+.flaticon-megaphone:before {
+    content: "\f106";
+}
+.flaticon-deadline:before {
+    content: "\f107";
+}
+.flaticon-book:before {
+    content: "\f108";
+}
+.flaticon-students:before {
+    content: "\f109";
+}
+.flaticon-money:before {
+    content: "\f10a";
+}
+.flaticon-user:before {
+    content: "\f10b";
+}
+.flaticon-note:before {
+    content: "\f10c";
+}
+.flaticon-note-1:before {
+    content: "\f10d";
+}
+.flaticon-front-of-bus:before {
+    content: "\f10e";
+}
+.flaticon-report:before {
+    content: "\f10f";
+}
+.flaticon-chat:before {
+    content: "\f110";
+}
+.flaticon-patent:before {
+    content: "\f111";
+}
+.flaticon-invoice:before {
+    content: "\f112";
+}
+.flaticon-gear:before {
+    content: "\f113";
+}
+.flaticon-profile:before {
+    content: "\f114";
+}
+.flaticon-notification:before {
+    content: "\f115";
+}
+.flaticon-pin:before {
+    content: "\f116";
+}
+.flaticon-loupe:before {
+    content: "\f117";
+}
+.flaticon-review:before {
+    content: "\f118";
+}
+.flaticon-group:before {
+    content: "\f119";
+}
+.flaticon-multiple-users-silhouette:before {
+    content: "\f11a";
+}
+.flaticon-calendar-and-clock:before {
+    content: "\f11b";
+}

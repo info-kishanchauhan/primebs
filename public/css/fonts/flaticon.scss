@@ -1,0 +1,133 @@
+$flaticon-font: "flaticon";
+
+@font-face {
+    font-family: $flaticon-font;
+    src: url("./flaticon.ttf?fed50e6bf2d1f1cf533c4349080ddc85") format("truetype"),
+url("./flaticon.woff?fed50e6bf2d1f1cf533c4349080ddc85") format("woff"),
+url("./flaticon.woff2?fed50e6bf2d1f1cf533c4349080ddc85") format("woff2"),
+url("./flaticon.eot?fed50e6bf2d1f1cf533c4349080ddc85#iefix") format("embedded-opentype"),
+url("./flaticon.svg?fed50e6bf2d1f1cf533c4349080ddc85#flaticon") format("svg");
+}
+
+i[class^="flaticon-"]:before, i[class*=" flaticon-"]:before {
+    font-family: flaticon !important;
+    font-style: normal;
+    font-weight: normal !important;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+$flaticon-map: (
+    "dashboard": "\f101",
+    "businessman": "\f102",
+    "reading-book": "\f103",
+    "teacher-with-laptop": "\f104",
+    "schedule": "\f105",
+    "megaphone": "\f106",
+    "deadline": "\f107",
+    "book": "\f108",
+    "students": "\f109",
+    "money": "\f10a",
+    "user": "\f10b",
+    "note": "\f10c",
+    "note-1": "\f10d",
+    "front-of-bus": "\f10e",
+    "report": "\f10f",
+    "chat": "\f110",
+    "patent": "\f111",
+    "invoice": "\f112",
+    "gear": "\f113",
+    "profile": "\f114",
+    "notification": "\f115",
+    "pin": "\f116",
+    "loupe": "\f117",
+    "review": "\f118",
+    "group": "\f119",
+    "multiple-users-silhouette": "\f11a",
+    "calendar-and-clock": "\f11b",
+);
+
+.flaticon-dashboard:before {
+    content: map-get($flaticon-map, "dashboard");
+}
+.flaticon-businessman:before {
+    content: map-get($flaticon-map, "businessman");
+}
+.flaticon-reading-book:before {
+    content: map-get($flaticon-map, "reading-book");
+}
+.flaticon-teacher-with-laptop:before {
+    content: map-get($flaticon-map, "teacher-with-laptop");
+}
+.flaticon-schedule:before {
+    content: map-get($flaticon-map, "schedule");
+}
+.flaticon-megaphone:before {
+    content: map-get($flaticon-map, "megaphone");
+}
+.flaticon-deadline:before {
+    content: map-get($flaticon-map, "deadline");
+}
+.flaticon-book:before {
+    content: map-get($flaticon-map, "book");
+}
+.flaticon-students:before {
+    content: map-get($flaticon-map, "students");
+}
+.flaticon-money:before {
+    content: map-get($flaticon-map, "money");
+}
+.flaticon-user:before {
+    content: map-get($flaticon-map, "user");
+}
+.flaticon-note:before {
+    content: map-get($flaticon-map, "note");
+}
+.flaticon-note-1:before {
+    content: map-get($flaticon-map, "note-1");
+}
+.flaticon-front-of-bus:before {
+    content: map-get($flaticon-map, "front-of-bus");
+}
+.flaticon-report:before {
+    content: map-get($flaticon-map, "report");
+}
+.flaticon-chat:before {
+    content: map-get($flaticon-map, "chat");
+}
+.flaticon-patent:before {
+    content: map-get($flaticon-map, "patent");
+}
+.flaticon-invoice:before {
+    content: map-get($flaticon-map, "invoice");
+}
+.flaticon-gear:before {
+    content: map-get($flaticon-map, "gear");
+}
+.flaticon-profile:before {
+    content: map-get($flaticon-map, "profile");
+}
+.flaticon-notification:before {
+    content: map-get($flaticon-map, "notification");
+}
+.flaticon-pin:before {
+    content: map-get($flaticon-map, "pin");
+}
+.flaticon-loupe:before {
+    content: map-get($flaticon-map, "loupe");
+}
+.flaticon-review:before {
+    content: map-get($flaticon-map, "review");
+}
+.flaticon-group:before {
+    content: map-get($flaticon-map, "group");
+}
+.flaticon-multiple-users-silhouette:before {
+    content: map-get($flaticon-map, "multiple-users-silhouette");
+}
+.flaticon-calendar-and-clock:before {
+    content: map-get($flaticon-map, "calendar-and-clock");
+}

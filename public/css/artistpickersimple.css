@@ -1,0 +1,530 @@
+.imgStore,
+.noImageSquare {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+}
+
+.noImageSquare {
+    background-color: #eeeeee;
+}
+
+.list-storeIds {
+    max-width: 100%;
+}
+
+.list-storeIds,
+.selected-storeId {
+    background-color: #FFFFFF;
+    border: 1px solid rgb(204, 204, 204);
+    border-radius: 3px;
+}
+
+.msgNoInBd {;
+    background-color: #f5f5f5;
+}
+
+.list-storeIds ul {
+    margin: 0;
+    max-height: 500px;
+    overflow: auto;
+    padding-left: 0;
+}
+
+.selected-storeId ul {
+    margin: 0;
+    max-height: 100px;
+    padding-left: 2px !important;
+}
+
+.list-storeIds li {
+    /* display: inline-block; */
+    padding: 0px 5px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.list-storeIds li .storeIds div {
+    font-size: 10px;
+}
+
+.list-storeIds li .storeIds div i {
+    margin-right: 4px;
+}
+
+.selected-storeId li {
+    padding: 0px 5px;
+}
+
+.storeIdsInfo {
+    display: inline-block;
+    min-width: 60px;
+}
+
+.list-storeIds img {
+    margin: 6px;
+}
+
+.selected-storeId img {
+    margin: 6px;
+}
+
+.list-storeIds a, a:hover {
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.list-storeIds li:hover {
+    background-color: #f5f5f5;
+}
+
+.searchContent {
+    display: none;
+    border: 1px solid #bdbdbd;
+    background: white;
+    /* height : 200px; */
+}
+
+.searchContent .ui-widget-content {
+    border: none !important;
+}
+
+.searchOtherBlv {
+    width: 100%;
+    list-style: none;
+    margin-bottom: 0;
+    padding-left: 0;
+}
+
+.searchOtherBlv2 {
+    width: 96%;
+    margin: 0 10px;
+    max-height: 200px;
+    list-style: none;
+    padding-left: 0;
+    overflow-y: hidden;
+}
+
+.searchOtherBlv2:hover {
+    overflow-y: auto;
+}
+
+div.default-value ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.searchOtherBlv li {
+    padding: 0;
+}
+
+.searchOtherBlv2 li {
+    float: inherit;
+    padding: 5px;
+}
+
+.default-value {
+    padding: 10px 10px 5px;
+    max-height: 130px;
+    background-color: #fafafa;
+}
+
+.default-value input {
+    height: 20px;
+    margin: 0 10px 0 0;
+}
+
+.default-value .desc {
+    display: flex;
+    align-items: center;
+    margin-left: 5px;
+}
+
+.default-value .input {
+    margin-left: 28px;
+    margin-top: 4px;
+}
+
+.button {
+    background-color: #e7e7e7;
+    color: black;
+    border: none;
+    padding: 5px 5px;
+    text-align: center;
+    text-decoration: none;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+
+.libleu {
+    background-color: #0e84b5;
+    color: white;
+}
+
+.div-action {
+    text-align: right;
+    padding: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    background-color: #fafafa;
+}
+
+.errorpagename {
+    color: red;
+}
+
+.content-main {
+    display: flow-root;
+    /*padding-bottom: 5px;*/
+}
+
+#loading {
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    position: fixed;
+    opacity: 0.7;
+    background-color: #fff;
+    z-index: 99;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+#loading-image {
+    z-index: 999;
+    background-image: url(images/ajax-big-loader.gif);
+    height: 100%;
+    width: 100%;
+    background-repeat: no-repeat, no-repeat;
+    background-position: center;
+}
+
+.editBySotreId {
+    padding: 2px 10px;
+    cursor: pointer;
+}
+
+.closeButtonEdit {
+    cursor: pointer;
+}
+
+.searchNotInDb {
+    display: none;
+}
+
+.new-contributor {
+    background-color: #e7e7e7;
+    width: 120px;
+    cursor: pointer;
+}
+
+.editContrib, .closeButtonEdit {
+    display: none;
+}
+
+
+.idContributorAction img,
+.selected-storeId img {
+    height: 30px;
+    width: 30px;
+    border-radius: 15px;
+}
+
+.link_artist {
+    margin-left: auto;
+    display: flex;
+    align-self: center;
+}
+
+.idContributorAction span,
+.selected-storeId b {
+    align-self: center;
+}
+
+.idContributorAction,
+.selected-storeId {
+    font-size: 12px;
+    font-family: open_sansregular;
+    font-weight: 700;
+    align-self: center;
+}
+
+.selected-storeId ul li {
+    display: flex;
+    justify-content: space-between;
+    color: #424242;
+}
+
+
+.selected-storeId .links {
+    align-self: center;
+    font-size: 17px;
+    display: flex;
+    align-items: center;
+}
+
+.selected-storeId .infos {
+    display: flex;
+    flex-direction: row;
+    align-self: center;
+    align-items: center;
+}
+
+div.contribNoImage {
+    height: 30px;
+    width: 30px;
+    border-radius: 15px;
+    background-color: #eeeeee;
+    margin: 6px;
+}
+
+.idContributorAction {
+    display: flex;
+    flex-direction: row;
+    align-self: center;
+    color: #424242;
+    flex-grow: 1;
+}
+
+.idContributorAction:hover {
+    color: #212121;
+}
+
+li .storeIds {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+li .storeIds a {
+    white-space: nowrap;
+    justify-content: center;
+    font-size: 17px;
+    display: flex;
+    align-self: center;
+}
+
+.link_artist.spotify,
+.searchNotInDb.button i.fa-spotify {
+    color: #4caf50;
+}
+
+.link_artist.apple,
+.searchNotInDb.button i.fa-itunes {
+    color: #ec407a;
+}
+
+.link_artist.ytm {
+    font-size: 20px;
+    margin-top: 1px;
+    color: #f44336;
+}
+
+a i.fab.fa-itunes,
+a i.fab.fa-spotify,
+a i.fab.fa-youtube {
+    margin-right: 4px;
+}
+
+.link_tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.link_tooltip .tooltiptext {
+    visibility: hidden;
+    width: auto;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    top: -5px;
+    right: 120%;
+    font-size: 12px;
+}
+
+.link_tooltip .tooltiptext::after {
+    content: " ";
+    position: absolute;
+    top: 50%;
+    left: 100%; /* To the right of the tooltip */
+    margin-top: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent transparent black;
+}
+
+.link_tooltip:hover .tooltiptext {
+    visibility: visible;
+}
+
+.link_tooltip .fa-itunes {
+    color: #ec407a;
+}
+
+.link_tooltip .fa-spotify {
+    color: #4caf50;
+}
+
+.link_tooltip .fa-youtube {
+    color: #f44336;
+    font-size: 20px;
+}
+
+.addSAID {
+    display: flex;
+    align-items: center;
+    font-size: 11px;
+    border-radius: 5px;
+    padding: 1px 4px 2px;
+    color: white;
+    margin-right: 4px;
+    height: fit-content;
+    opacity: 0.6;
+}
+
+.addSAID i {
+    margin-left: 3px;
+}
+
+.addSAID.spo {
+    background-color: #4caf50;
+}
+
+.addSAID.apm {
+    background-color: #ec407a;
+}
+
+.addSAID.ytm {
+    background-color: #f44336;
+}
+
+.button-ok,
+.button-cancel {
+    padding: 2px 8px;
+    border-radius: 5px;
+}
+
+.button-ok {
+    color: white;
+    background: #2196f3;
+    margin-left: 4px;
+}
+
+ul.searchOtherBlv2 li:first-child {
+    font-style: italic;
+    font-size: smaller;
+}
+
+.artistProposal {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.artistProposal img,
+.artistProposal div.noImageSquare {
+    margin-left: 8px;
+}
+
+.artistProposal .artistNameAndId {
+    display: flex;
+    flex-direction: column;
+    font-size: 12px;
+    margin-left: 8px;
+}
+
+.artistProposal .artistNameAndId .name {
+    margin-bottom: 4px;
+    font-weight: bold;
+}
+
+.artistProposal .artistNameAndId .id {
+    font-size: 10px;
+    text-decoration: underline;
+    opacity: 0.5;
+    color: #0645ad;
+}
+
+.artistProposal .artistNameAndId div:not(.id) {
+    font-weight: bold;
+}
+
+.deleteContributor {
+    font-size: 12px;
+    margin-left: 6px;
+    color: #333333;
+}
+
+.artistNotExist {
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f5f5f5;
+    font-weight: bold;
+    color: black;
+}
+
+.findOn {
+    padding: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #F5F5F5;
+}
+
+.findOn i {
+    font-size: 10px;
+    margin-right: 4px;
+}
+
+.searchNotInDb.button {
+    justify-content: center;
+    align-items: center;
+    padding: 8px;
+    background-color: #f5f5f5;
+    margin: 0;
+    border-top: 1px solid #e0e0e0;
+}
+
+.searchNotInDb.button i,
+.searchNotInDb.button i {
+    margin-right: 8px;
+    font-size: 18px;
+}
+
+.notInStore {
+    margin-left: 5px;
+}
+
+.searchContent.youtube input[type="radio"] {
+    visibility: hidden;
+}
+
+.artistpicker_alert {
+    padding: 8px 12px;
+    margin-bottom: 0px;
+}
+
+/* CIN-5288 remove tmp youtube aoc */
+.addSAID.ytm,
+.link_tooltip.ytm,
+.link_artist.ytm {
+    display: none;
+}
+
+.artistPickerInError {
+    border: 1px solid #d32f2f;
+    padding: 4px 8px;
+    background: #ff6659;
+    border-radius: 0 0 3px 3px;
+}

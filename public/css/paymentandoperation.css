@@ -1,0 +1,1380 @@
+#bs-main {
+    background-color: #e8ebf2;
+}
+
+.row {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.newRelease {
+    margin-left: 0px !important;
+}
+
+/** mes revenus design **/
+#mesRevenusTitle,
+#myOperationsTitle,
+#myRecoupmentTitle,
+.balance-info-block-title,
+.advanceTitle {
+    font-weight: 400;
+    font-style: normal;
+    font-size: 21px;
+    color: #000000;
+    line-height: 18px;
+}
+
+#myOperationsTitle, #myRecoupmentTitle {
+    margin-top: 20px;
+}
+
+
+#infoBlock {
+    margin-top: 20px;
+    margin-bottom: 40px;
+}
+
+#mesRevenusText,
+.advanceText,
+.balance-info-block-secondary-title{
+    font-weight: 400;
+    font-style: normal;
+    color: #828893;
+    line-height: 10px;
+    font-size: 13px;
+    margin-top: 18px;
+}
+
+#faq {
+    text-decoration: underline;
+    line-height: 10px;
+    margin-top: 8px
+}
+
+#infosBalance,.balance-info-block-row {
+    background-color: rgb(246, 247, 250);
+    margin: 20px 0 0 15px;
+    border-radius: 4px;
+}
+
+#infosCompte{
+    border-bottom: 1px solid rgba(232, 235, 242, 1);
+    padding: 15px 0 0 10px;
+}
+
+#clock-icon {
+    width: 10px;
+    height: 10px;
+}
+
+.filter-gray{
+    filter: invert(56%) sepia(6%) saturate(615%) hue-rotate(185deg) brightness(89%) contrast(85%);
+}
+
+tr.isUpcoming td {
+    color: #BABABA !important;
+}
+
+tr.isUpcoming td:first-child:before {
+    content: '\f017';
+    font-family: "FontAwesome";
+    position: relative;
+    left: -15px;
+    margin-left: -10px;
+}
+
+.balance-info-block-inner-row {
+    border-bottom: 1px solid rgba(232, 235, 242, 1);
+    padding: 15px 10px;
+}
+
+#opDetails #infosCompte {
+    padding: 15px 0 0 0;
+}
+
+#opDetails #infosCompte #infosDevise #currentRoyaltiesAmount{
+    font-size: 40px;
+    padding-top: 10px
+}
+
+#opDetails, .divInfos {
+    padding-top: 60px !important;
+    padding-bottom: 60px !important;
+}
+#libelleCompte,
+.balance-info-block-text1 {
+    font-weight: 700;
+    font-style: normal;
+    color: #000000;
+    line-height: 20px;
+    font-size: 13px;
+}
+
+#infosBill {
+    padding-left: 0;
+}
+
+#libelleCompte {
+    font-weight: 700;
+    font-style: normal;
+    color: #000000;
+    line-height: 11px;
+    margin-bottom: 8px;
+}
+
+#methodPayPanel, .panelInfo {
+    font-weight: 700;
+    font-style: normal;
+    line-height: 10px;
+    font-size: 13px;
+    letter-spacing: normal;
+    margin-bottom: 15px;
+}
+
+#methodPayText,.messageText {
+    color:#828893;
+}
+
+#dateRevenus, #totalUpcoming {
+    font-weight: 700;
+    font-style: normal;
+    font-size: 11px;
+    color: #828893;
+    text-align: right;
+    line-height: 8px;
+    letter-spacing: normal;
+    margin-bottom: 8px;
+}
+
+#currentRoyaltiesAmount , .boldMessage{
+    font-weight: 700;
+    font-style: normal;
+    font-size: 21px;
+    color: #000000;
+    text-align: right;
+    line-height: 16px;
+    letter-spacing: normal;
+    margin-bottom: 15px;
+}
+
+#ask-my-payment {
+    cursor: pointer;
+    outline: none;
+    background: inherit;
+    background-color: rgba(0, 120, 255, 1);
+    border: none;
+    border-radius: 4px;
+    box-shadow: none;
+    font-weight: 600;
+    font-style: normal;
+    margin-bottom: 20px;
+	font-size:13px !important;
+}
+
+#ask-my-payment:disabled {
+    background-color: #c4c6cc !important;
+    opacity: 1;
+}
+
+#ask-my-payment:hover {
+    background-color: rgba(0, 105, 224, 1);
+}
+
+#msgNotAllowedToRequestPayment {
+    margin-top: 10px;
+    margin-bottom: 20px;
+    font-weight: bolder;
+    font-style: normal;
+    font-size: 13px;
+    letter-spacing: normal;
+    font-family: 'Open Sans', sans-serif;
+}
+
+#listeOp {
+    margin: 20px 0 20px 10px;
+    font-size: 13px;
+    letter-spacing: normal;
+    font-weight: 700;
+    font-style: normal;
+    color: #0078FF;
+}
+
+#panelOps {
+    cursor: pointer;
+}
+
+#panelOps:hover {
+    background-color: rgba(255, 255, 255, 1);
+}
+
+#panelOps a:hover {
+    color: #0078FF;
+    text-decoration: none;
+}
+
+#chevron {
+    font-size: 10px;
+    color: #45a0f9;
+}
+
+.operationHelp {
+    font-size: 13px;
+    letter-spacing: normal;
+    font-weight: 700;
+    font-style: normal;
+}
+
+/**Solde view**/
+
+#solde {
+    margin-top: 60px;
+}
+
+#solde #infosBank
+{
+    margin-bottom: 50px;
+}
+
+#solde #mesRevenusText {
+    line-height: 16px;
+}
+
+
+div.payment-step-wrapper{
+    display : flex ;
+    align-items: center;
+    justify-content: center;
+    margin : 14px 0px;
+    max-width : 750px;
+}
+div.payment-step-wrapper .payment-step{
+    flex : 0 0 auto;
+}
+div.payment-step-wrapper .payment-step .step-name{
+    font-weight : 700;
+}
+
+div.payment-step-wrapper .payment-step .step-number{
+    border : 2px solid #333333;
+    color : #333333;
+    font-weight : 700;
+    border-radius : 100px;
+    padding : 0px;
+    text-align: center;
+    alignment-baseline: middle;
+    vertical-align: middle;
+    margin : 8px;
+    width: 26px;
+    height: 26px;
+    line-height: 22px;
+    box-sizing: border-box;
+    display: inline-block;
+}
+
+div.payment-step-wrapper .payment-step.done{
+    color : #d8d8d8;
+}
+
+div.payment-step-wrapper .payment-step.done .step-number{
+    border-color : #d8d8d8;
+    color : transparent;
+}
+div.payment-step-wrapper .payment-step.done .step-number::before{
+    content : "\2714";
+    color : #d8d8d8;
+    position: relative;
+    left : 3px;
+}
+div.payment-step-wrapper .spacer{
+    flex : 1 1 auto;
+    vertical-align:  middle ;
+    height : 1px ;
+    background : #cccccc;
+    margin : 8px;
+}
+div.payment-step-wrapper .payment-step.done:not(.current) + .spacer{
+    background-color: #d8d8d8;
+}
+
+#currentPaymentStepText{
+    font-weight: 700;
+}
+
+
+/**Operations Details - Balance History**/
+#balanceHistory table thead {
+    background-color: #ffffff;
+}
+
+#balanceHistory table tbody td.no-data{
+    font-size: 24px;
+    font-weight: bold;
+    font-style: normal;
+    font-stretch: normal;
+    letter-spacing: 0.24px;
+    text-align: center;
+    color: #7c808c;
+    padding-top : 72px;
+    padding-bottom : 72px;
+}
+
+#balanceHistory {
+    margin-left: -10px;
+    margin-right: -30px;
+    margin-bottom: 50px;
+}
+
+#balanceHistory table thead tr th {
+    font-size: 11px;
+    font-weight: 700;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 8px;
+    letter-spacing: normal;
+    color: #7c808c;
+    vertical-align: middle;
+    border: none;
+}
+#balanceHistory table thead tr {
+    height: 40px;
+}
+
+#balanceHistory table tbody tr:hover {
+    background-color: rgba(239, 241, 246, 1);
+}
+
+#balanceHistory table tbody tr td:nth-child(1),
+#balanceHistory table thead tr th:nth-child(1){
+    width : 20%;
+    padding-left: 40px;
+}
+
+#balanceHistory table tbody tr td:nth-child(2),
+#balanceHistory table thead tr th:nth-child(2),
+#balanceHistory table tbody tr td:nth-child(3),
+#balanceHistory table thead tr th:nth-child(3){
+    width : 25%;
+}
+
+#balanceHistory table tbody tr td:nth-child(4),
+#balanceHistory table thead tr th:nth-child(4),
+#balanceHistory table tbody tr td:nth-child(5),
+#balanceHistory table thead tr th:nth-child(5)
+{
+    width : 15%;
+}
+
+#balanceHistory table tbody tr td:nth-child(5){
+    padding-top: 10px;
+}
+
+#balanceHistory table thead tr th:nth-child(6),
+#balanceHistory table tbody tr td:nth-child(6){
+    width : 4%;
+    min-width : 40px;
+    padding-top: 2px;
+    padding-right: 40px;
+}
+
+#balanceHistory  table tr td.description,
+#balanceHistory  table tr td.operation.debit{
+    color : black ;
+    font-weight: 600;
+}
+
+#balanceHistory  table tr td.operation.credit{
+    font-weight: 600;
+    color: #04ab9b;
+}
+
+
+#balanceHistory  table tr td.operation.blank-amount,
+#balanceHistory  table tr td.operation.advance-amount{
+    color: #BABABA;
+}
+
+#balanceHistory  table tr td.datefield,
+#balanceHistory  table tr td.cell__limit-text-length,
+#balanceHistory  table tr td.solde{
+    font-family: open_sansregular;
+    font-weight: 400;
+    font-style: normal;
+    color: #828893;
+    line-height: 17px;
+    font-size: 13px;
+    letter-spacing: normal;
+}
+
+#bs-main-content-container {
+    padding-top: 0 !important;
+}
+#downloadButton {
+    background: #EFF0F1;
+    border-bottom: 1px solid #E5E6E8;
+    color: #000000;
+    padding-top: 10px;
+    height: 50px;
+    margin-left: -30px;
+    margin-right: -30px;
+}
+
+#exportHistory {
+    cursor: pointer;
+    outline: none;
+    background: inherit;
+    border: none;
+    border-radius: 4px;
+    font-weight: 600;
+    font-style: normal;
+    margin-bottom: 20px;
+    float: right;
+    display: block;
+    margin-right: 70px;
+}
+
+
+#exportHistory:hover {
+    box-shadow: inset 1px -1px 20px 20px rgb(222, 224, 231);
+}
+/** Modal Balance **/
+.modal-vertical-align-helper,
+.modalVerticalAlignHelper{
+    display : flex ;
+    flex-wrap : wrap;
+    min-height : 100% ;
+    width: 100%;
+}
+.modal-vertical-align{
+    flex : 0 0 auto;
+    align-self: center;
+}
+.modalVerticalCenter{
+    flex : 1 1 auto ;
+    align-self:center;
+}
+
+#balanceModal {
+    font-family: open_sansregular;
+    font-style: normal;
+    font-stretch: normal;
+}
+
+
+#balanceModal .modal-header{
+    background-color: #ffffff;
+    height : 64px;
+    padding : 20px 24px;
+
+}
+
+#balanceModal .modal-title{
+    font-size: 21px;
+    font-weight: bold;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.2;
+    letter-spacing: 0.21px;
+    text-align: left;
+    color: #000000;
+}
+
+
+#balanceModal .modal-body {
+    padding : 16px 24px 16px 24px;
+    font-size: 13px;
+    color: black;
+}
+
+#balanceModal .modal-content .payment-type-notice {
+    margin-bottom: 10px;
+}
+
+
+#balanceModal .modal-content{
+    border-radius: 4px;
+    box-shadow: 0 12px 24px 0 rgba(0, 0, 0, 0.4);
+    background-color: #f6f7fa;
+    overflow: hidden;
+    font-size : 13px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.85;
+    color : #7c808c;
+}
+
+
+#balanceModal .modal-content div#error-wrapper{
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+#balanceModal .modal-content .popin-icons {
+    font-size : 48px;
+    opacity : 0.5;
+}
+#balanceModal .modal-content .popin-icons.error {
+    color : red;
+}
+
+
+
+#balanceModal .modal-content .form-group {
+    margin-bottom: 0;
+}
+
+#balanceModal .modal-content .form-group label {
+    font-weight: normal;
+}
+
+#balanceModal .modal-content .form-group p {
+    font-weight: 700;
+}
+#balanceModal .modal-content hr{
+    margin : 6px 0px;
+}
+
+#balanceModal .modal-footer{
+    padding-top : 0px;
+    height : 60px;
+    border : none;
+}
+
+#balanceModal .modal-footer .btn-link,
+#balanceModal .modal-footer .btn-link:hover
+{
+    font-size: 15px;
+    font-weight: bold;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.07;
+    letter-spacing: 0.15px;
+    text-align: center;
+    text-decoration : none ;
+}
+
+#balanceModal .modal-footer .btn-link:focus
+{
+    outline : 0 ;
+}
+
+#balanceModal .modal-footer #confirmBalanceModal:disabled{
+    pointer-events: auto;
+    cursor : not-allowed;
+}
+
+#balanceModal .modal-footer #confirmBalanceModal,
+#balanceModal .modal-footer #closeBalanceModal{
+    border-radius: 4px;
+    background-color: #0078FF;
+    color: white;
+}
+
+#balanceModal .modal-footer #confirmBalanceModal:hover:not(:disabled),
+#balanceModal .modal-footer #closeBalanceModal:hover {
+    color: white;
+    font-weight: bolder;
+}
+
+#balanceModal .modal-footer #cancelBalanceModal{
+    background-color: black;
+    color : white;
+    border-radius: 4px;
+}
+
+
+#balanceModal.info #cancelBalanceModal,
+#balanceModal.info #confirmBalanceModal
+{
+    display : none ;
+}
+
+#balanceModal.confirm #closeBalanceModal{
+    display :none ;
+}
+
+/* request payment modal */
+#balanceModal .modal-content #validateBankAccountForm #labelCheckValidateBankAccount input[type=checkbox]{
+    position: relative;
+    margin-bottom: 20px;
+}
+
+#balanceModal .modal-content #validateBankAccountForm #labelCheckValidateBankAccount #acceptConditions{
+    font-weight: 700;
+    margin-left: 10px
+}
+#balanceModal .modal-content #validateBankAccountForm #labelCheckValidateBankAccount a{
+    text-decoration: none !important;
+}
+#balanceModal .modal-content #validateBankAccountForm #labelCheckValidateBankAccount a:hover {
+    text-decoration : underline!important;
+}
+#balanceModal #acceptConditions{
+    font-style: normal;
+}
+#balanceModal .modal-content .payment-notice {
+    margin-top: 10px;
+    margin-bottom : 10px
+}
+#balanceModal .modal-content #validateBankAccountForm {
+    margin-bottom : auto ;
+
+}
+
+/* info payment modal */
+#balanceModal .payment-timeline {
+    margin-top: 44px   ;
+}
+#balanceModal .payment-amount{
+    font-size: 21px;
+    font-weight: bold;
+    color: #000000;
+}
+
+#balanceModal .payment-info-text{
+    letter-spacing: 0.13px;
+}
+
+#balanceModal .payment-event .event-title{
+    font-size: 21px;
+    font-weight: 600;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 0.86;
+    letter-spacing: normal;
+    text-align: left;
+    color: #000000;
+}
+#balanceModal .payment-event .event-text{
+    line-height: 1.38;
+    text-align: left;
+    padding-top : 8px;
+}
+
+#balanceModal .payment-event .event-icon{
+    text-align: center;
+    width: 40px;
+    padding: 0px 10px;
+}
+#balanceModal .payment-event .event-icon i{
+    height : 20px;
+    width : 20px;
+    font-size : 20px;
+}
+
+#balanceModal .payment-event.waiting .event-icon i{
+    color : #caccd0;
+}
+#balanceModal .payment-event.current .event-icon i{
+    color : #ff931e;
+}
+#balanceModal .payment-event.done .event-icon i{
+    color : #0078ff;
+}
+
+#balanceModal .payment-event .event-vertical-line{
+    height : 40px ;
+    width : 1px;
+    background-color : #e8ebf2;
+    display : inline-block;
+}
+#balanceModal .payment-event:last-child .event-vertical-line{
+    visibility : hidden ;
+}
+
+/** info threshold modal **/
+
+.backlink-separator{
+    display : flex ;
+    flex-wrap : nowrap ;
+    align-items: center;
+    margin : 12px 0px ;
+}
+.backlink-separator .line{
+    flex : 1 1 auto ;
+    height : 1px ;
+    background-color : #e8ebf2;
+
+}
+.backlink-separator .line:first-child{
+    margin-right : 40px ;
+}
+.backlink-separator .line:last-child{
+    margin-left : 40px ;
+}
+
+.backlink-separator i.fa-lightbulb-o{
+    flex : 0 0 auto ;
+    font-size : 48px;
+}
+
+.promo-section-title{
+    font-size : 18px;
+    line-height: 1.2;
+    letter-spacing: 0.18px;
+    font-weight: 600 ;
+    color : #000000;
+    padding : 6px 0px;
+}
+
+
+
+/** WIP payments and operations  responsive **/
+
+@media (max-width : 992px) {
+    #bs-main-header-menu li.middle span:last-child {
+        white-space: nowrap;
+    }
+
+    li#program-version {
+        display: none;
+    }
+
+    #balanceHistory table thead tr th {
+        text-align: center;
+    }
+
+    div.payment-step-wrapper .payment-step:not(.current) {
+        display: none;
+    }
+
+    div.payment-step-wrapper .spacer {
+        display: none;
+    }
+}
+
+/**  BalanceManager responsive **/
+
+@media (max-width: 768px) {
+    #mesRevenusText, .advanceText {
+        line-height: 18px;
+    }
+
+    #exportHistory,
+    #exportHistoryRecoupment {
+        display: none;
+    }
+
+    #opDetails, .panelDetails #infosBank {
+        background-color: rgb(246, 247, 250);
+        margin: 20px 0 0 15px;
+        border-radius: 4px;
+    }
+
+    #opDetails, .divInfos, .panelDetails #infosBank {
+        padding-top: 15px !important;
+        padding-bottom: 15px !important;
+    }
+
+    #opDetails #infosCompte {
+        border: none;
+    }
+
+    #balanceHistory {
+        margin-top: 60px;
+    }
+
+    #msgNotAllowedToRequestPayment {
+        margin-top: 15px;
+        margin-bottom: 20px;
+        font-weight: bolder;
+        font-style: normal;
+        font-size: 13px;
+        letter-spacing: normal;
+        font-family: 'Open Sans', sans-serif;
+    }
+
+    #requestMyPayment{
+        margin-top: 20px;
+    }
+
+    #currentRoyaltiesAmount{
+        margin-top: 15px;
+    }
+}
+
+
+@media (min-width: 768px) {
+    .modal-dialog {
+        width: 800px;
+    }
+}
+
+@media (max-width: 992px) {
+    #bs-main {
+        text-align: center;
+    }
+    #dateRevenus {
+        text-align: center;
+    }
+
+    #currentRoyaltiesAmount {
+        text-align: center;
+    }
+
+    #infosBank {
+        margin-bottom: 15px;
+    }
+
+
+}
+
+/** WIP menu responsive **/
+#bs-left{
+    position: fixed;
+    display: block;
+    min-height: 100%;}
+
+#bs-table-container {
+    background-color: #e8ebf2;
+}
+
+#bs-table-container #bs-main-header-title{
+    flex: 1 1 auto ;
+}
+#bs-table-container #bs-main-header-logo{
+    flex : 0 0 256px ;
+    align-self : flex-start ;
+    position : relative ;
+    top : -10px ;
+    left : -20px ;
+    text-align : center ;
+}
+#bs-table-container #bs-main{
+    display: block;
+    min-height: 100%;
+    margin-left: 0px;
+    -webkit-transition: margin-left 0.25s ease-out;
+    -moz-transition: margin-left 0.25s ease-out;
+    -o-transition: margin-left 0.25s ease-out;
+    transition: margin-left 0.25s ease-out;
+}
+
+@media (max-width: 768px){
+    #bs-table-container #bs-main-header-logo{
+        flex : 0 0 170px;
+    }
+    #bs-main-header-menu ul{
+        padding-left : 15px ;
+    }
+
+    #balanceModal .modal-dialog{
+        width : 98%;
+        margin-left : 1%;
+    }
+
+    #balanceModal .modal-dialog .payment-timeline .payment-event .col-xs-11{
+        width : 90%
+    }
+}
+
+
+@media (min-width : 992px) {
+    #bs-table-container #bs-main,
+    #bs-table-container #bs-main.left-menu-expanded {
+        margin-left: 232px;
+    }
+
+    #bs-table-container #bs-main.left-menu-collapsed {
+        margin-left: 0px;
+    }
+}
+
+
+/** LEFT MENU SCROLLBAR **/
+#bs-table-container #bs-left.expanded #bs-left-menu{
+    padding-right : 4px ;
+}
+
+#bs-table-container #bs-left.expanded #bs-left-menu .mCSB_inside>.mCSB_container{
+    margin-right : 16px;
+    padding-bottom : 12px;
+    padding-right : 4px ;
+}
+
+#bs-table-container #bs-left.expanded #bs-left-menu .mCSB_scrollTools{
+    bottom : 12px;
+}
+#bs-table-container #bs-left.expanded #bs-left-menu .mCSB_scrollTools .mCSB_dragger{
+    height: 50px !important;
+}
+#bs-table-container #bs-left.expanded #bs-left-menu:hover .mCSB_scrollTools .mCSB_dragger .mCSB_dragger_bar,
+#bs-table-container #bs-left.expanded #bs-left-menu .mCSB_scrollTools.scrolling .mCSB_dragger .mCSB_dragger_bar {
+    opacity : 0.4 ;
+}
+#bs-table-container #bs-left.expanded #bs-left-menu .mCSB_scrollTools .mCSB_dragger .mCSB_dragger_bar {
+    background-color : #7c808c;
+    opacity : 0 ;
+    border-radius : 4px;
+}
+#bs-table-container #bs-left.expanded #bs-left-menu .mCSB_draggerRail {
+    background-color : transparent ;
+}
+
+#bs-left{
+    max-height : 100%;
+}
+
+#bs-table-container #bs-left #bs-left-container{
+    height : 100%;
+    position : absolute ;
+    left : 0px ;
+    right : 0px ;
+}
+
+#bs-left #bs-left-menu{
+    max-height: 91%;
+}
+
+
+
+
+
+#registerPayoneerModal .modal-dialog {
+    width : auto ;
+}
+
+#registerPayoneerModal .modal-content{
+    border-radius : 16px ;
+    width : 64%;
+    max-width : 850px ;
+    padding: 0px;
+    background:#FFF;
+    overflow:hidden;
+    margin: 0px auto;
+}
+#registerPayoneerModal .modal-body{
+    padding : 0px ;
+}
+#registerPayoneerModal .modal-header,
+#registerPayoneerModal .modal-body section,
+#registerPayoneerModal .modal-footer{
+    height : auto ;
+    padding : 40px 80px ;
+    border-width:  0px ;
+}
+
+#registerPayoneerModal .modal-header{
+    padding-top : 40px ;
+    background-color : #F6F7FA;
+}
+
+#registerPayoneerModal #headerLogos{
+    margin-bottom : 30px ;
+}
+#registerPayoneerModal #payoneer-logo{
+    height : 50px ;
+    position : relative ;
+    margin-left : 24px;
+}
+#registerPayoneerModal #believe-logo{
+    height : 30px ;
+}
+
+#registerPayoneerModal .modal-header .text-description {
+    font-size : 12px ;
+}
+#registerPayoneerModal .modal-header .close {
+    position : absolute ;
+    top : 24px ;
+    right : 48px;
+}
+#registerPayoneerModal .modal-header h2{
+    margin : 4px 0px 30px;
+    font-weight : bold ;
+    font-size : 24px;
+    color : #000000;
+}
+#registerPayoneerModal h4{
+    font-weight : bold ;
+    color : #000000;
+}
+
+#registerPayoneerModal .modal-body p,
+#registerPayoneerModal .modal-header .text-description{
+    color : #707580 ;
+    font-size : 14px ;
+}
+
+#registerPayoneerModal .modal-body .modal-sub-list{
+    display : flex ;
+    flex-direction : row ;
+    justify-content: space-between;
+}
+
+#registerPayoneerModal .modal-body .modal-sub-list .modal-sub-item {
+    flex : 0 1 30% ;
+    box-sizing : border-box ;
+}
+
+#registerPayoneerModal .modal-body section:last-child{
+    background-color : #F6F7FA;
+}
+
+#registerPayoneerModal .payoneer-register-link{
+    background-color : #0078FF;
+    color : #FFFFFF;
+    border-radius : 20px ;
+    padding : 8px 24px ;
+    font-size : 16px ;
+    font-weight : bold ;
+    border : none ;
+    cursor : pointer;
+}
+#registerPayoneerModal .payoneer-register-link:hover{
+    background-color: #005ABF;
+}
+
+#registerPayoneerModal .modal-footer h4 {
+    font-size : 14px ;
+}
+#registerPayoneerModal .modal-footer{
+    padding-bottom : 20px ;
+    text-align : left ;
+    font-size : 12px ;
+}
+#registerPayoneerModal .modal-footer p {
+    color : #707580;
+}
+
+
+
+@media (max-width : 768px) {
+    #registerPayoneerModal .modal-body .modal-sub-list{
+        flex-direction: column;
+    }
+    #registerPayoneerModal .modal-body .modal-sub-list-item{
+        flex : 1 1 auto ;
+    }
+
+    #registerPayoneerModal .modal-content {
+        width : 98%;
+    }
+
+    #registerPayoneerModal .modal-header,
+    #registerPayoneerModal .modal-body section,
+    #registerPayoneerModal .modal-footer{
+        height : auto ;
+        padding : 40px 20px ;
+        border-width:  0px ;
+    }
+}
+.progress {
+    height: 12px !important;
+    background-color: #333 !important;
+}
+.progress-bar {
+    background-color: #0078ff;
+    border-radius: 4px;
+}
+
+.divRow{
+    margin-bottom: 2px;
+}
+.divRowSpace{
+    margin-bottom: 13px;
+}
+.advanceTitle{
+    margin-top: 20px;
+}
+.advanceText{
+    margin-bottom: 12px;
+}
+.myAdvances{
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+.divSeparator {
+    height: 20px;
+    width: 100%;
+    background-color: #e8ebf2;
+}
+
+
+.custom-select {
+    background-color: rgba(0, 120, 255, 1);
+    width: 200px;
+    color: white;
+    padding: 5px;
+    border: none;
+    font-size: 12px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.01);
+    -webkit-appearance: button;
+    appearance: button;
+    outline: none;
+}
+.custom-select option:not(:checked) {
+    background-color: #FFF;
+    color: #0A246A;
+}
+.margin-top-40 {
+    margin-top: 40px;
+}
+
+/*******************/
+/* ADVANCE REQUEST */
+/*******************/
+.dataBlock {
+    padding: 15px 25px;
+    background-color: #F6F7FA;
+    border-radius: 4px;
+    margin-top: 20px;
+    margin-left: 15px;
+}
+.dataTitle {
+    font-weight: bold;
+}
+.dataText {
+    font-weight: bold;
+    color: #828893;
+}
+.dataText span {
+    color: #000000;
+}
+
+.maintenance{
+    margin-top : calc(20% - 50px);
+    text-align: center;
+}
+
+.maintenance #quickPauseImage {
+    margin-top: 50px;
+}
+
+.maintenance #imageTitle {
+    color: #7c808c;
+    font-size: 3em;
+    margin-bottom: 30px;
+}
+
+.maintenance #maintext{
+    font-size : 1.7em;
+    margin-bottom : 15px;
+    color: #d8d8d8;
+}
+
+.maintenance #secondarytext {
+    font-size : 1em;
+    color : #AAAAAA;
+    font-weight : bold;
+}
+.maintenance a font {
+    color : #d8d8d8;
+}
+.operationHelp{
+    margin: 15px;
+    margin-bottom: 50px;
+}
+@media only screen and (max-width: 1281px) {
+    div#defaultContainer {
+        width: 95%;
+        margin: 0 auto;
+    }
+
+    #maintext {
+        font-size: 2em;
+    }
+
+    #secondarytext {
+        font-size: 1em;
+    }
+
+    #sitelogo {
+        margin-top: 3em;
+    }
+}
+#clock-icon {
+    display: inline-block;
+}
+
+#wizardStep
+{
+	
+	    border-bottom: 1px solid rgba(232, 235, 242, 1);
+}
+.design-process-content {
+   
+   position: relative;
+    padding: 0px 30px 30px;
+    font-weight: 500;
+    line-height: 23px;
+    font-size: 14px;
+    text-align: center;
+}
+.design-process-content img {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 0;
+    max-height: 100%;
+}
+.design-process-content h3 {
+    margin-bottom: 16px;
+}
+.design-process-content p {
+    line-height: 26px;
+    margin-bottom: 12px;
+}
+.process-model {
+    list-style: none;
+    padding: 0;
+    position: relative;
+    margin: 20px auto 26px;
+    border: none;
+    z-index: 0;
+}
+.process-model li::after {
+    background: #e5e5e5 none repeat scroll 0 0;
+    bottom: 0;
+    content: "";
+    display: block;
+    height: 4px;
+    margin: 0 auto;
+    position: absolute;
+	right: calc(-50%);
+    top: 33px;
+    width: 100%;
+    z-index: -1;
+}
+.process-model li.visited::after {
+    background: #399af9; 
+}
+.process-model li:last-child::after {
+    width: 0;
+}
+.process-model li {
+    display: inline-block;
+    width: 33%;
+    text-align: center;
+    float: none;
+}
+.nav-tabs.process-model > li.active > a, .nav-tabs.process-model > li.active > a:hover, .nav-tabs.process-model > li.active > a:focus, .process-model li a:hover, .process-model li a:focus {
+    border: none;
+    background: transparent;
+
+}
+.process-model li a {
+    padding: 0;
+    border: none;
+    color: #606060;
+	cursor: default;
+	pointer-events:none;
+}
+.process-model li.active,
+.process-model li.visited {
+    color: #399af9;
+}
+.process-model li.active a,
+.process-model li.active a:hover,
+.process-model li.active a:focus,
+.process-model li.visited a,
+.process-model li.visited a:hover,
+.process-model li.visited a:focus {
+    color: #399af9;
+}
+.process-model li.active p,
+.process-model li.visited p {
+    font-weight: 600;
+}
+.process-model li i {
+    display: block;
+    height: 68px;
+    width: 68px;
+    text-align: center;
+    margin: 0 auto;
+    background: #f5f6f7;
+    border: 2px solid #e5e5e5;
+    line-height: 65px;
+    font-size: 30px;
+    border-radius: 50%;
+}
+.process-model li.active i, .process-model li.visited i  {
+    background: #fff;
+    border-color: #399af9;
+}
+.process-model li p {
+    font-size: 14px;
+    margin-top: 11px;
+}
+.process-model.contact-us-tab li.visited a, .process-model.contact-us-tab li.visited p {
+    color: #606060!important;
+    font-weight: normal
+}
+.process-model.contact-us-tab li::after  {
+    display: none; 
+}
+.process-model.contact-us-tab li.visited i {
+    border-color: #e5e5e5; 
+}
+
+
+
+@media screen and (max-width: 560px) {
+  .more-icon-preocess.process-model li span {
+        font-size: 23px;
+        height: 50px;
+        line-height: 46px;
+        width: 50px;
+    }
+    .more-icon-preocess.process-model li::after {
+        top: 24px;
+    }
+}
+@media screen and (max-width: 380px) { 
+    .process-model.more-icon-preocess li {
+        width: 16%;
+    }
+    .more-icon-preocess.process-model li span {
+        font-size: 16px;
+        height: 35px;
+        line-height: 32px;
+        width: 35px;
+    }
+    .more-icon-preocess.process-model li p {
+        font-size: 8px;
+    }
+    .more-icon-preocess.process-model li::after {
+        top: 18px;
+    }
+    .process-model.more-icon-preocess {
+        text-align: center;
+    }
+}
+.select2-container-multi .select2-choices
+{
+	border-radius:4px;
+}
+#nextStepButtonPlugin1,#nextStepButtonPlugin2
+{
+	background: #d8d8d8;
+    color: #fff;
+    border-color: #d8d8d8;
+    text-decoration: none;
+    -moz-user-select: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.5;
+    padding: 8px 12px;
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+	float:right;
+}
+button[disabled]{
+    pointer-events: none;
+    cursor: not-allowed;
+    filter: alpha(opacity = 65);
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    opacity: .65;
+}
+.nav-tabs li:not(.active) a {
+    color: #d8d8d8;
+}
+.nav-tabs li.visited a {
+    color: #399af9;
+}
